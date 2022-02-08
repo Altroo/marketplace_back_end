@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+__pycache__/
+# venv/
+# media/
+# logs/
+tests/
+# debug.log
