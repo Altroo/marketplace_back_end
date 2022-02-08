@@ -14,8 +14,8 @@ class CustomTempProductAdmin(ModelAdmin):
 
 
 class CustomTempDeliveryAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_product', 'temp_delivery_city', 'temp_delivery_price')
-    search_fields = ('pk', 'temp_delivery_city', 'temp_delivery_price')
+    list_display = ('pk', 'temp_product', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days')
+    search_fields = ('pk', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days')
     ordering = ('-pk',)
 
 

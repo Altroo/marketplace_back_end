@@ -23,7 +23,7 @@ class BaseTempShopProductSerializer(serializers.ModelSerializer):
 class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
     class Meta:
         model = TempDelivery
-        fields = ['temp_product', 'temp_delivery_city', 'temp_delivery_price']
+        fields = ['temp_product', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days']
 
 
 class BaseTempProductClickAndCollectSerializer(serializers.ModelSerializer):

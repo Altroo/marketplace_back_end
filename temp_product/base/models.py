@@ -209,11 +209,13 @@ class TempDelivery(Model):
                                            verbose_name='Temp Delivery City',
                                            related_name='temp_delivery_city')
     temp_delivery_price = models.PositiveIntegerField(verbose_name='Temp delivery Price', default=0)
+    temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.temp_product.pk,
-                                     self.temp_delivery_city.city_en,
-                                     self.temp_delivery_price)
+        return '{} - {} - {} - {}'.format(self.temp_product.pk,
+                                          self.temp_delivery_city.city_en,
+                                          self.temp_delivery_price,
+                                          self.temp_delivery_days)
 
     class Meta:
         verbose_name = 'Temp Delivery'

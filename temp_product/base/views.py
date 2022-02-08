@@ -118,17 +118,24 @@ class TempShopProductView(APIView):
             # Deliveries
             delivery_city_1_pk = request.data.get('delivery_city_1', None)
             delivery_price_1 = request.data.get('delivery_price_1', None)
+            delivery_days_1 = request.data.get('delivery_days_1', None)
+
             delivery_city_2_pk = request.data.get('delivery_city_2', None)
             delivery_price_2 = request.data.get('delivery_price_2', None)
+            delivery_days_2 = request.data.get('delivery_days_2', None)
+
             delivery_city_3_pk = request.data.get('delivery_city_3', None)
             delivery_price_3 = request.data.get('delivery_price_3', None)
+            delivery_days_3 = request.data.get('delivery_days_3', None)
+
             deliveries = []
             if delivery_city_1_pk:
                 deliveries.append(
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': int(delivery_city_1_pk),
-                        'temp_delivery_price': int(delivery_price_1)
+                        'temp_delivery_price': int(delivery_price_1),
+                        'temp_delivery_days': int(delivery_days_1)
                     }
                 )
             if delivery_city_2_pk:
@@ -136,7 +143,8 @@ class TempShopProductView(APIView):
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': int(delivery_city_2_pk),
-                        'temp_delivery_price': int(delivery_price_2)
+                        'temp_delivery_price': int(delivery_price_2),
+                        'temp_delivery_days': int(delivery_days_2)
                     }
                 )
             if delivery_city_3_pk:
@@ -144,7 +152,8 @@ class TempShopProductView(APIView):
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': int(delivery_city_3_pk),
-                        'temp_delivery_price': int(delivery_price_3)
+                        'temp_delivery_price': int(delivery_price_3),
+                        'temp_delivery_days': int(delivery_days_3)
                     }
                 )
 
@@ -323,17 +332,24 @@ class TempShopProductView(APIView):
                 # Deliveries
                 delivery_city_1_pk = request.data.get('delivery_city_1', None)
                 delivery_price_1 = request.data.get('delivery_price_1', None)
+                delivery_days_1 = request.data.get('delivery_days_1', None)
+
                 delivery_city_2_pk = request.data.get('delivery_city_2', None)
                 delivery_price_2 = request.data.get('delivery_price_2', None)
+                delivery_days_2 = request.data.get('delivery_days_2', None)
+
                 delivery_city_3_pk = request.data.get('delivery_city_3', None)
                 delivery_price_3 = request.data.get('delivery_price_3', None)
+                delivery_days_3 = request.data.get('delivery_days_3', None)
+
                 deliveries = []
                 if delivery_city_1_pk:
                     deliveries.append(
                         {
                             'temp_product': id_temp_product,
                             'temp_delivery_city': int(delivery_city_1_pk),
-                            'temp_delivery_price': int(delivery_price_1)
+                            'temp_delivery_price': int(delivery_price_1),
+                            'temp_delivery_days': int(delivery_days_1),
                         }
                     )
                 if delivery_city_2_pk:
@@ -341,7 +357,8 @@ class TempShopProductView(APIView):
                         {
                             'temp_product': id_temp_product,
                             'temp_delivery_city': int(delivery_city_2_pk),
-                            'temp_delivery_price': int(delivery_price_2)
+                            'temp_delivery_price': int(delivery_price_2),
+                            'temp_delivery_days': int(delivery_days_2),
                         }
                     )
                 if delivery_city_3_pk:
@@ -349,7 +366,8 @@ class TempShopProductView(APIView):
                         {
                             'temp_product': id_temp_product,
                             'temp_delivery_city': int(delivery_city_3_pk),
-                            'temp_delivery_price': int(delivery_price_3)
+                            'temp_delivery_price': int(delivery_price_3),
+                            'temp_delivery_days': int(delivery_days_3),
                         }
                     )
 
