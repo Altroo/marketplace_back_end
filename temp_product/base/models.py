@@ -2,7 +2,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
 from os import path
-from auth_shop.models import Categories
+from auth_shop.models import Categories, Colors, Sizes
 from places.base.models import Cities
 from uuid import uuid4
 from io import BytesIO
@@ -114,9 +114,10 @@ class TempProduct(Model):
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.CharField(verbose_name='For Whom', max_length=1,
                                 choices=ShopChoices.FOR_WHOM_CHOICES)
-    product_color = models.CharField(verbose_name='Product Color', max_length=2, choices=ShopChoices.COLOR_CHOICES)
-    product_size = models.CharField(verbose_name='Product Size', max_length=1,
-                                    choices=ShopChoices.SIZE_CHOICES)
+    product_color = models.ManyToManyField(Colors, verbose_name='Product Colors',
+                                           related_name='temp_product_colors')
+    product_size = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
+                                          related_name='temp_product_sizes')
     quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
     price = models.PositiveIntegerField(verbose_name='Price', default=0)
     price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.PRICE_BY_CHOICES, max_length=1)
@@ -205,17 +206,15 @@ class TempDelivery(Model):
     temp_product = models.ForeignKey(TempProduct, on_delete=models.CASCADE,
                                      verbose_name='Temp product',
                                      related_name='temp_delivery_temp_product')
-    temp_delivery_city = models.ForeignKey(Cities, on_delete=models.CASCADE,
-                                           verbose_name='Temp Delivery City',
-                                           related_name='temp_delivery_city')
+    temp_delivery_city = models.ManyToManyField(Cities, verbose_name='Temp Delivery City',
+                                                related_name='temp_delivery_city')
     temp_delivery_price = models.PositiveIntegerField(verbose_name='Temp delivery Price', default=0)
     temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {} - {}'.format(self.temp_product.pk,
-                                          self.temp_delivery_city.city_en,
-                                          self.temp_delivery_price,
-                                          self.temp_delivery_days)
+        return '{} - {} - {}'.format(self.temp_product.pk,
+                                     self.temp_delivery_price,
+                                     self.temp_delivery_days)
 
     class Meta:
         verbose_name = 'Temp Delivery'

@@ -10,8 +10,9 @@ from os import rename, path, remove
 from Qaryb_API_new.settings import IMAGES_ROOT_NAME, PRODUCT_IMAGES_BASE_NAME, API_URL
 from uuid import uuid4
 from temp_product.base.tasks import base_generate_product_thumbnails
-from temp_product.base.models import TempShop, TempProduct
-from auth_shop.models import Categories
+from temp_product.base.models import TempShop, TempProduct, TempDelivery
+from auth_shop.models import Categories, Colors, Sizes
+from places.base.models import Cities
 from temp_product.mixins import PaginationMixinBy5
 
 
@@ -43,8 +44,6 @@ class TempShopProductView(APIView):
             'picture_4': request.data.get('picture_4', None),
             'description': request.data.get('description'),
             'for_whom': request.data.get('for_whom'),
-            'product_color': request.data.get('product_color'),
-            'product_size': request.data.get('product_size'),
             'quantity': request.data.get('quantity'),
             'price': request.data.get('price'),
             'price_by': request.data.get('price_by'),
@@ -86,8 +85,10 @@ class TempShopProductView(APIView):
                 "product_categories": [
                 ],
                 "description": temp_product.description,
-                "product_color": temp_product.product_color,
-                "product_size": temp_product.product_size,
+                "product_colors": [
+                ],
+                "product_size": [
+                ],
                 "price": temp_product.price,
                 "price_by": temp_product.price_by,
                 "click_and_collect": [
@@ -100,6 +101,37 @@ class TempShopProductView(APIView):
                 "deliveries": [
                 ]
             }
+
+            # Colors
+            colors = str(request.data.get('product_color')).split(',')
+            colors = Colors.objects.filter(code_color__in=colors)
+            product_colors = []
+            for color in colors:
+                temp_product.product_color.add(color.pk)
+                product_colors.append(
+                    {
+                        "pk": color.pk,
+                        "code_color": color.code_color,
+                        "name_color": color.name_color
+                    }
+                )
+            data['product_colors'] = product_colors
+
+            # Sizes
+            sizes = str(request.data.get('product_size')).split(',')
+            sizes = Sizes.objects.filter(code_size__in=sizes)
+            product_sizes = []
+            for size in sizes:
+                temp_product.product_size.add(size.pk)
+                product_sizes.append(
+                    {
+                        "pk": size.pk,
+                        "code_color": size.code_size,
+                        "name_color": size.name_size
+                    }
+                )
+            data['product_size'] = product_sizes
+
             # Categories
             categories = str(request.data.get('product_categories')).split(',')
             categories = Categories.objects.filter(code_category__in=categories)
@@ -116,59 +148,142 @@ class TempShopProductView(APIView):
             data['product_categories'] = product_categories
 
             # Deliveries
-            delivery_city_1_pk = request.data.get('delivery_city_1', None)
             delivery_price_1 = request.data.get('delivery_price_1', None)
             delivery_days_1 = request.data.get('delivery_days_1', None)
 
-            delivery_city_2_pk = request.data.get('delivery_city_2', None)
             delivery_price_2 = request.data.get('delivery_price_2', None)
             delivery_days_2 = request.data.get('delivery_days_2', None)
 
-            delivery_city_3_pk = request.data.get('delivery_city_3', None)
             delivery_price_3 = request.data.get('delivery_price_3', None)
             delivery_days_3 = request.data.get('delivery_days_3', None)
 
+            # Delivery 1 cities
+            delivery_city_1 = request.data.get('delivery_city_1')
+            delivery_cities_1_pk = []
+            if delivery_city_1:
+                cities_str = str(delivery_city_1).split(',')
+                cities = []
+                for city in cities_str:
+                    cities.append(int(city))
+
+                cities = Cities.objects.filter(pk__in=cities)
+                delivery_cities_1 = []
+                for city in cities:
+                    delivery_cities_1.append(
+                        {
+                            "pk": city.pk,
+                            "city_en": city.city_en,
+                            "city_fr": city.city_fr,
+                            "city_ar": city.city_ar
+                        }
+                    )
+                    delivery_cities_1_pk.append(
+                        city.pk
+                    )
+
+            # Delivery 2 cities
+            delivery_city_2 = request.data.get('delivery_city_2')
+            delivery_cities_2_pk = []
+            if delivery_city_2:
+                cities_str = str(delivery_city_2).split(',')
+                cities = []
+                for city in cities_str:
+                    cities.append(int(city))
+
+                cities = Cities.objects.filter(pk__in=cities)
+                delivery_cities_2 = []
+                for city in cities:
+                    delivery_cities_2.append(
+                        {
+                            "pk": city.pk,
+                            "city_en": city.city_en,
+                            "city_fr": city.city_fr,
+                            "city_ar": city.city_ar
+                        }
+                    )
+                    delivery_cities_2_pk.append(
+                        city.pk
+                    )
+
+            # Delivery 3 cities
+            delivery_city_3 = request.data.get('delivery_city_3')
+            delivery_cities_3_pk = []
+            if delivery_city_3:
+                cities_str = str(delivery_city_3).split(',')
+                cities = []
+                for city in cities_str:
+                    cities.append(int(city))
+
+                cities = Cities.objects.filter(pk__in=cities)
+                delivery_cities_3 = []
+                for city in cities:
+                    delivery_cities_3.append(
+                        {
+                            "pk": city.pk,
+                            "city_en": city.city_en,
+                            "city_fr": city.city_fr,
+                            "city_ar": city.city_ar
+                        }
+                    )
+                    delivery_cities_3_pk.append(
+                        city.pk
+                    )
+
             deliveries = []
-            if delivery_city_1_pk:
+            city_1_check = False
+            city_2_check = False
+            city_3_check = False
+            if delivery_city_1:
+                city_1_check = True
                 deliveries.append(
                     {
                         'temp_product': temp_product_pk,
-                        'temp_delivery_city': int(delivery_city_1_pk),
+                        'temp_delivery_city': delivery_cities_1_pk,
                         'temp_delivery_price': int(delivery_price_1),
                         'temp_delivery_days': int(delivery_days_1)
                     }
                 )
-            if delivery_city_2_pk:
+            if delivery_city_2:
+                city_2_check = True
                 deliveries.append(
                     {
                         'temp_product': temp_product_pk,
-                        'temp_delivery_city': int(delivery_city_2_pk),
+                        'temp_delivery_city': delivery_cities_2_pk,
                         'temp_delivery_price': int(delivery_price_2),
                         'temp_delivery_days': int(delivery_days_2)
                     }
                 )
-            if delivery_city_3_pk:
+            if delivery_city_3:
+                city_3_check = True
                 deliveries.append(
                     {
                         'temp_product': temp_product_pk,
-                        'temp_delivery_city': int(delivery_city_3_pk),
+                        'temp_delivery_city': delivery_cities_3_pk,
                         'temp_delivery_price': int(delivery_price_3),
                         'temp_delivery_days': int(delivery_days_3)
                     }
                 )
-
             delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
             if delivery_serializer.is_valid():
-                delivery_serializer.save()
+                deliveries_serializer = delivery_serializer.save()
+                for delivery in deliveries_serializer:
+                    if city_1_check:
+                        delivery.temp_delivery_city.add(*delivery_cities_1_pk)
+                        city_1_check = False
+                    elif city_2_check:
+                        delivery.temp_delivery_city.add(*delivery_cities_2_pk)
+                        city_2_check = False
+                    elif city_3_check:
+                        delivery.temp_delivery_city.add(*delivery_cities_3_pk)
+                        city_3_check = False
                 data['deliveries'] = deliveries
             return Response(data=data, status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        id_temp_product = request.data.get('id_temp_product')
+        temp_product_pk = request.data.get('id_temp_product')
         try:
-            temp_product = TempProduct.objects.get(pk=id_temp_product)
-            # Correct the order of pictures if changed
+            temp_product = TempProduct.objects.get(pk=temp_product_pk)
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
             picture_3 = request.data.get('picture_3', None)
@@ -301,8 +416,6 @@ class TempShopProductView(APIView):
                 'picture_4': picture_4,
                 'description': request.data.get('description', ''),
                 'for_whom': request.data.get('for_whom', ''),
-                'product_color': request.data.get('product_color', ''),
-                'product_size': request.data.get('product_size', ''),
                 'quantity': request.data.get('quantity', ''),
                 'price': request.data.get('price', ''),
                 'price_by': request.data.get('price_by', ''),
@@ -327,47 +440,151 @@ class TempShopProductView(APIView):
                             "name_category": category.name_category
                         }
                     )
+                # Edit colors
+                temp_product.product_color.clear()
+                colors = str(request.data.get('product_color')).split(',')
+                new_colors = Colors.objects.filter(code_color__in=colors)
+                product_colors = []
+                for color in new_colors:
+                    temp_product.product_color.add(color.pk)
+                    product_colors.append(
+                        {
+                            "pk": color.pk,
+                            "code_color": color.code_color,
+                            "name_color": color.name_color
+                        }
+                    )
+                # Edit sizes
+                temp_product.product_size.clear()
+                sizes = str(request.data.get('product_size')).split(',')
+                new_sizes = Sizes.objects.filter(code_size__in=sizes)
+                product_sizes = []
+                for size in new_sizes:
+                    temp_product.product_size.add(size.pk)
+                    product_sizes.append(
+                        {
+                            "pk": size.pk,
+                            "code_size": size.code_size,
+                            "name_size": size.name_size
+                        }
+                    )
                 # Edit deliveries
                 temp_product.temp_delivery_temp_product.all().delete()
                 # Deliveries
-                delivery_city_1_pk = request.data.get('delivery_city_1', None)
                 delivery_price_1 = request.data.get('delivery_price_1', None)
                 delivery_days_1 = request.data.get('delivery_days_1', None)
 
-                delivery_city_2_pk = request.data.get('delivery_city_2', None)
                 delivery_price_2 = request.data.get('delivery_price_2', None)
                 delivery_days_2 = request.data.get('delivery_days_2', None)
 
-                delivery_city_3_pk = request.data.get('delivery_city_3', None)
                 delivery_price_3 = request.data.get('delivery_price_3', None)
                 delivery_days_3 = request.data.get('delivery_days_3', None)
 
+                # Delivery 1 cities
+                delivery_city_1 = request.data.get('delivery_city_1')
+                delivery_cities_1_pk = []
+                if delivery_city_1:
+                    cities_str = str(delivery_city_1).split(',')
+                    cities = []
+                    for city in cities_str:
+                        cities.append(int(city))
+
+                    cities = Cities.objects.filter(pk__in=cities)
+                    delivery_cities_1 = []
+                    for city in cities:
+                        delivery_cities_1.append(
+                            {
+                                "pk": city.pk,
+                                "city_en": city.city_en,
+                                "city_fr": city.city_fr,
+                                "city_ar": city.city_ar
+                            }
+                        )
+                        delivery_cities_1_pk.append(
+                            city.pk
+                        )
+
+                # Delivery 2 cities
+                delivery_city_2 = request.data.get('delivery_city_2')
+                delivery_cities_2_pk = []
+                if delivery_city_2:
+                    cities_str = str(delivery_city_2).split(',')
+                    cities = []
+                    for city in cities_str:
+                        cities.append(int(city))
+
+                    cities = Cities.objects.filter(pk__in=cities)
+                    delivery_cities_2 = []
+                    for city in cities:
+                        delivery_cities_2.append(
+                            {
+                                "pk": city.pk,
+                                "city_en": city.city_en,
+                                "city_fr": city.city_fr,
+                                "city_ar": city.city_ar
+                            }
+                        )
+                        delivery_cities_2_pk.append(
+                            city.pk
+                        )
+
+                # Delivery 3 cities
+                delivery_city_3 = request.data.get('delivery_city_3')
+                delivery_cities_3_pk = []
+                if delivery_city_3:
+                    cities_str = str(delivery_city_3).split(',')
+                    cities = []
+                    for city in cities_str:
+                        cities.append(int(city))
+
+                    cities = Cities.objects.filter(pk__in=cities)
+                    delivery_cities_3 = []
+                    for city in cities:
+                        delivery_cities_3.append(
+                            {
+                                "pk": city.pk,
+                                "city_en": city.city_en,
+                                "city_fr": city.city_fr,
+                                "city_ar": city.city_ar
+                            }
+                        )
+                        delivery_cities_3_pk.append(
+                            city.pk
+                        )
+
                 deliveries = []
-                if delivery_city_1_pk:
+                city_1_check = False
+                city_2_check = False
+                city_3_check = False
+
+                if delivery_city_1:
+                    city_1_check = True
                     deliveries.append(
                         {
-                            'temp_product': id_temp_product,
-                            'temp_delivery_city': int(delivery_city_1_pk),
+                            'temp_product': temp_product_pk,
+                            'temp_delivery_city': delivery_cities_1_pk,
                             'temp_delivery_price': int(delivery_price_1),
-                            'temp_delivery_days': int(delivery_days_1),
+                            'temp_delivery_days': int(delivery_days_1)
                         }
                     )
-                if delivery_city_2_pk:
+                if delivery_city_2:
+                    city_2_check = True
                     deliveries.append(
                         {
-                            'temp_product': id_temp_product,
-                            'temp_delivery_city': int(delivery_city_2_pk),
+                            'temp_product': temp_product_pk,
+                            'temp_delivery_city': delivery_cities_2_pk,
                             'temp_delivery_price': int(delivery_price_2),
-                            'temp_delivery_days': int(delivery_days_2),
+                            'temp_delivery_days': int(delivery_days_2)
                         }
                     )
-                if delivery_city_3_pk:
+                if delivery_city_3:
+                    city_3_check = True
                     deliveries.append(
                         {
-                            'temp_product': id_temp_product,
-                            'temp_delivery_city': int(delivery_city_3_pk),
+                            'temp_product': temp_product_pk,
+                            'temp_delivery_city': delivery_cities_3_pk,
                             'temp_delivery_price': int(delivery_price_3),
-                            'temp_delivery_days': int(delivery_days_3),
+                            'temp_delivery_days': int(delivery_days_3)
                         }
                     )
 
@@ -375,7 +592,20 @@ class TempShopProductView(APIView):
                 deliveries_list = []
                 delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
                 if delivery_serializer.is_valid():
-                    delivery_serializer.save()
+                    # Delete old deliveries cities
+                    TempDelivery.objects.filter(temp_product__pk=temp_product_pk).delete()
+                    # Add new deliveries
+                    deliveries_serializer = delivery_serializer.save()
+                    for delivery in deliveries_serializer:
+                        if city_1_check:
+                            delivery.temp_delivery_city.add(*delivery_cities_1_pk)
+                            city_1_check = False
+                        elif city_2_check:
+                            delivery.temp_delivery_city.add(*delivery_cities_2_pk)
+                            city_2_check = False
+                        elif city_3_check:
+                            delivery.temp_delivery_city.add(*delivery_cities_3_pk)
+                            city_3_check = False
                     deliveries_list = deliveries
                 if temp_product.picture_1:
                     temp_product.picture_1 = self.rename_product_pictures(temp_product.picture_1)
@@ -407,8 +637,8 @@ class TempShopProductView(APIView):
                     "store_name": temp_updated_product.temp_shop.shop_name,
                     "product_categories": product_categories,
                     "description": temp_updated_product.description,
-                    "product_color": temp_updated_product.product_color,
-                    "product_size": temp_updated_product.product_size,
+                    "product_color": product_colors,
+                    "product_size": product_sizes,
                     "price": temp_updated_product.price,
                     "price_by": temp_updated_product.price_by,
                     "click_and_collect": [

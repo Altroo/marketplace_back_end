@@ -4,8 +4,8 @@ from django.contrib.admin import ModelAdmin
 
 
 class CustomCitiesAdmin(ModelAdmin):
-    list_display = ('city_en', 'city_fr', 'city_ar',)
-    search_fields = ('city_en', 'city_fr', 'city_ar',)
+    list_display = ('pk', 'city_en', 'city_fr', 'city_ar',)
+    search_fields = ('pk', 'city_en', 'city_fr', 'city_ar',)
     ordering = ('pk',)
 
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from temp_product.base.models import TempProduct, TempDelivery
-from auth_shop.models import Categories
+from auth_shop.models import Categories, Colors, Sizes
+from places.base.models import Cities
 
 
 class BaseTempShopCategorySerializer(serializers.ModelSerializer):
@@ -9,7 +10,21 @@ class BaseTempShopCategorySerializer(serializers.ModelSerializer):
         fields = ('pk', 'code_category', 'name_category')
 
 
+class BaseTempShopColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Colors
+        fields = ('pk', 'code_color', 'name_color')
+
+
+class BaseTempShopSizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sizes
+        fields = ('pk', 'code_size', 'name_size')
+
+
 class BaseTempShopProductSerializer(serializers.ModelSerializer):
+    product_color = BaseTempShopColorSerializer(many=True, read_only=True)
+    product_size = BaseTempShopSizeSerializer(many=True, read_only=True)
     product_category = BaseTempShopCategorySerializer(many=True, read_only=True)
 
     class Meta:
@@ -20,7 +35,16 @@ class BaseTempShopProductSerializer(serializers.ModelSerializer):
                   'shop_longitude', 'shop_latitude', 'shop_address']
 
 
+class BaseTempShopCitySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Cities
+        fields = ['pk', 'city_en', 'city_fr', 'city_ar']
+
+
 class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
+    temp_delivery_city = BaseTempShopCitySerializer(many=True, read_only=True)
+
     class Meta:
         model = TempDelivery
         fields = ['temp_product', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days']
@@ -45,10 +69,10 @@ class BaseTempProductDetailsSerializer(serializers.Serializer):
     product_name = serializers.CharField()
     store_name = serializers.CharField(source='temp_shop.shop_name')
     # Product categories
-    product_categories = BaseTempShopCategorySerializer(many=True, read_only=True, source='product_category')
+    product_categories = BaseTempShopCategorySerializer(many=True, read_only=True)
     description = serializers.CharField()
-    product_color = serializers.CharField()
-    product_size = serializers.CharField()
+    product_color = BaseTempShopColorSerializer(many=True, read_only=True)
+    product_size = BaseTempShopSizeSerializer(many=True, read_only=True)
     price = serializers.IntegerField()
     price_by = serializers.CharField()
     # click and collect
@@ -102,7 +126,7 @@ class TempProductPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempProduct
         fields = ['product_name', 'picture_1', 'picture_2', 'picture_3', 'picture_4', 'description',
-                  'for_whom', 'product_color', 'product_size', 'quantity', 'price', 'price_by',
+                  'for_whom', 'quantity', 'price', 'price_by',
                   'shop_longitude', 'shop_latitude', 'shop_address']
         extra_kwargs = {
             'picture_1': {'required': False},
@@ -119,8 +143,6 @@ class TempProductPutSerializer(serializers.ModelSerializer):
         instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
         instance.for_whom = validated_data.get('for_whom', instance.for_whom)
-        instance.product_color = validated_data.get('product_color', instance.product_color)
-        instance.product_size = validated_data.get('product_size', instance.product_size)
         instance.quantity = validated_data.get('quantity', instance.quantity)
         instance.price = validated_data.get('price', instance.price)
         instance.price_by = validated_data.get('price_by', instance.price_by)

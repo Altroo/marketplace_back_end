@@ -3412,3 +3412,887 @@ django.db.utils.IntegrityError: null value in column "temp_product_id" of relati
 DETAIL:  Failing row contains (4, 10, 1, null).
 
 "PUT /api/temp_product/ HTTP/1.1" 500 200716
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 190, in post
+    cities.append(int(city))
+ValueError: invalid literal for int() with base 10: 'None'
+"POST /api/temp_product/ HTTP/1.1" 500 102682
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 264, in post
+    deliveries.temp_delivery_city.add(1)
+AttributeError: 'list' object has no attribute 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 106567
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    response = response.render()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/template/response.py", line 105, in render
+    self.content = self.rendered_content
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/renderers.py", line 100, in render
+    ret = json.dumps(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/json.py", line 25, in dumps
+    return json.dumps(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/encoders.py", line 67, in default
+    return super().default(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type TempDelivery is not JSON serializable
+"POST /api/temp_product/ HTTP/1.1" 500 112234
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 264, in post
+    print(deliveries.temp_delivert_city)
+AttributeError: 'list' object has no attribute 'temp_delivert_city'
+"POST /api/temp_product/ HTTP/1.1" 500 106550
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    response = response.render()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/template/response.py", line 105, in render
+    self.content = self.rendered_content
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/renderers.py", line 100, in render
+    ret = json.dumps(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/json.py", line 25, in dumps
+    return json.dumps(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/encoders.py", line 67, in default
+    return super().default(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type TempDelivery is not JSON serializable
+"POST /api/temp_product/ HTTP/1.1" 500 112234
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 264, in post
+    print(deliveries.temp_delivery_city)
+AttributeError: 'list' object has no attribute 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 106668
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    response = response.render()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/template/response.py", line 105, in render
+    self.content = self.rendered_content
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/renderers.py", line 100, in render
+    ret = json.dumps(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/json.py", line 25, in dumps
+    return json.dumps(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/encoders.py", line 67, in default
+    return super().default(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type TempDelivery is not JSON serializable
+"POST /api/temp_product/ HTTP/1.1" 500 112257
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 265, in post
+    print(delivery.temp_delivery_city.pk)
+AttributeError: 'ManyRelatedManager' object has no attribute 'pk'
+"POST /api/temp_product/ HTTP/1.1" 500 106818
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 204, in _get_response
+    response = response.render()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/template/response.py", line 105, in render
+    self.content = self.rendered_content
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/response.py", line 70, in rendered_content
+    ret = renderer.render(self.data, accepted_media_type, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/renderers.py", line 100, in render
+    ret = json.dumps(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/json.py", line 25, in dumps
+    return json.dumps(*args, **kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 199, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 257, in iterencode
+    return _iterencode(o, 0)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/encoders.py", line 67, in default
+    return super().default(obj)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/json/encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type TempDelivery is not JSON serializable
+"POST /api/temp_product/ HTTP/1.1" 500 112257
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 260, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 54, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city')
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 122265
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 260, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 54, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city_1')
+KeyError: 'temp_delivery_city_1'
+"POST /api/temp_product/ HTTP/1.1" 500 122281
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 260, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 55, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city')
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 122256
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 263, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 55, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city')
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 122348
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 263, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 50, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city')
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 121868
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 263, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 50, in create
+    temp_delivery_city = validated_data.pop('temp_delivery_city')
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 121857
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 262, in post
+    if delivery_serializer.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 748, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 618, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 666, in to_internal_value
+    validated = self.child.run_validation(item)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 426, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 479, in to_internal_value
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 362, in _writable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 357, in fields
+    fields[key] = value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/serializer_helpers.py", line 152, in __setitem__
+    field.bind(field_name=key, parent=self.serializer)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/fields.py", line 378, in bind
+    assert self.source != field_name, (
+AssertionError: It is redundant to specify `source='temp_delivery_city'` on field 'ListSerializer' in serializer 'BaseTempShopDeliverySerializer', because it is the same as the field name. Remove the `source` keyword argument.
+"POST /api/temp_product/ HTTP/1.1" 500 150292
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 263, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 50, in create
+    print(self.temp_delivery_city)
+AttributeError: 'BaseTempShopDeliverySerializer' object has no attribute 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 122351
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 269, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 49, in create
+    print(validated_data.temp_product)
+AttributeError: 'dict' object has no attribute 'temp_product'
+"POST /api/temp_product/ HTTP/1.1" 500 125690
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 269, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 49, in create
+    print(validated_data['temp_delivery_city'])
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 125434
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 269, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 49, in create
+    print(validated_data['temp_delivery_city'])
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 125368
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 269, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 49, in create
+    print(validated_data['temp_delivery_city'])
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 125434
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 269, in post
+    delivery_serializer.save()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 731, in save
+    self.instance = self.create(validated_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 703, in create
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 704, in <listcomp>
+    self.child.create(attrs) for attrs in validated_data
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/serializers.py", line 49, in create
+    print(validated_data['temp_delivery_city'])
+KeyError: 'temp_delivery_city'
+"POST /api/temp_product/ HTTP/1.1" 500 125446
+Internal Server Error: /api/temp_product/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 453, in put
+    "code_color": color.code_category,
+AttributeError: 'Colors' object has no attribute 'code_category'
+"PUT /api/temp_product/ HTTP/1.1" 500 98621
+Internal Server Error: /api/temp_product/get/53
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 676, in get
+    return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 357, in fields
+    fields[key] = value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/utils/serializer_helpers.py", line 152, in __setitem__
+    field.bind(field_name=key, parent=self.serializer)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/fields.py", line 378, in bind
+    assert self.source != field_name, (
+AssertionError: It is redundant to specify `source='product_color'` on field 'ListSerializer' in serializer 'BaseTempProductDetailsSerializer', because it is the same as the field name. Remove the `source` keyword argument.
+"GET /api/temp_product/get/53 HTTP/1.1" 500 128248
+Internal Server Error: /api/temp_product/get/53
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 676, in get
+    return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1076, in get_fields
+    field_class, field_kwargs = self.build_field(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1222, in build_field
+    return self.build_unknown_field(field_name, model_class)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1340, in build_unknown_field
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: Field name `__all__` is not valid for model `Cities`.
+"GET /api/temp_product/get/53 HTTP/1.1" 500 156900
+Internal Server Error: /api/temp_product/get/53
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 676, in get
+    return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1076, in get_fields
+    field_class, field_kwargs = self.build_field(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1222, in build_field
+    return self.build_unknown_field(field_name, model_class)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1340, in build_unknown_field
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: Field name `__all__` is not valid for model `Cities`.
+"GET /api/temp_product/get/53 HTTP/1.1" 500 156900
+Internal Server Error: /api/temp_product/get/53
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 676, in get
+    return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1076, in get_fields
+    field_class, field_kwargs = self.build_field(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1222, in build_field
+    return self.build_unknown_field(field_name, model_class)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1340, in build_unknown_field
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: Field name `__all__` is not valid for model `Cities`.
+"GET /api/temp_product/get/53 HTTP/1.1" 500 156900
+Internal Server Error: /api/temp_product/get/53
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_product/base/views.py", line 676, in get
+    return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 522, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 686, in to_representation
+    return [
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 687, in <listcomp>
+    self.child.to_representation(item) for item in iterable
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1076, in get_fields
+    field_class, field_kwargs = self.build_field(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1222, in build_field
+    return self.build_unknown_field(field_name, model_class)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1340, in build_unknown_field
+    raise ImproperlyConfigured(
+django.core.exceptions.ImproperlyConfigured: Field name `__All__` is not valid for model `Cities`.
+"GET /api/temp_product/get/53 HTTP/1.1" 500 156900

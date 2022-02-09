@@ -14,9 +14,13 @@ class CustomTempProductAdmin(ModelAdmin):
 
 
 class CustomTempDeliveryAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_product', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days')
-    search_fields = ('pk', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days')
+    list_display = ('pk', 'temp_product', 'show_cities', 'temp_delivery_price', 'temp_delivery_days')
+    search_fields = ('pk', 'temp_delivery_price', 'temp_delivery_days')
     ordering = ('-pk',)
+
+    @staticmethod
+    def show_cities(obj):
+        return "\n".join([i.city_en for i in obj.temp_delivery_city.all()])
 
 
 admin.site.register(TempProduct, CustomTempProductAdmin)
