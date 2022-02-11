@@ -10,4 +10,5 @@ class BaseCitiesListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cities
-        fields = ['pk', 'city_en', 'city_fr', 'city_ar']
+        # fields = ['pk', 'city_en', 'city_fr', 'city_ar']
+        fields = ['pk', 'city_fr']

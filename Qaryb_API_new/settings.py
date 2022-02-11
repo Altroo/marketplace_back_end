@@ -16,8 +16,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    # config('API_IP'),
-    # config('API_DOMAIN')
+    config('API_IP'),
+    config('API_DOMAIN')
 ]
 
 # Application definition
