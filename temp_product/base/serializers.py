@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from temp_product.base.models import TempProduct, TempDelivery
-from auth_shop.models import Categories, Colors, Sizes
+from temp_product.base.models import TempProduct, TempDelivery, TempSolder
+from auth_shop.models import Categories, Colors, Sizes, ForWhom
 from places.base.models import Cities
 
 
@@ -22,10 +22,17 @@ class BaseTempShopSizeSerializer(serializers.ModelSerializer):
         fields = ('pk', 'code_size', 'name_size')
 
 
+class BaseTempShopForWhomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForWhom
+        fields = ('pk', 'code_for_whom', 'name_for_whom')
+
+
 class BaseTempShopProductSerializer(serializers.ModelSerializer):
     product_color = BaseTempShopColorSerializer(many=True, read_only=True)
     product_size = BaseTempShopSizeSerializer(many=True, read_only=True)
     product_category = BaseTempShopCategorySerializer(many=True, read_only=True)
+    for_whom = BaseTempShopForWhomSerializer(many=True, read_only=True)
 
     class Meta:
         model = TempProduct
@@ -36,7 +43,6 @@ class BaseTempShopProductSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopCitySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Cities
         fields = ['pk', 'city_en', 'city_fr', 'city_ar']
@@ -73,6 +79,7 @@ class BaseTempProductDetailsSerializer(serializers.Serializer):
     description = serializers.CharField()
     product_color = BaseTempShopColorSerializer(many=True, read_only=True)
     product_size = BaseTempShopSizeSerializer(many=True, read_only=True)
+    for_whom = BaseTempShopForWhomSerializer(many=True, read_only=True)
     price = serializers.IntegerField()
     price_by = serializers.CharField()
     # click and collect
@@ -125,8 +132,8 @@ class TempProductPutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TempProduct
-        fields = ['product_name', 'picture_1', 'picture_2', 'picture_3', 'picture_4', 'description',
-                  'for_whom', 'quantity', 'price', 'price_by',
+        fields = ['product_name', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'description', 'quantity', 'price', 'price_by',
                   'shop_longitude', 'shop_latitude', 'shop_address']
         extra_kwargs = {
             'picture_1': {'required': False},
@@ -142,12 +149,38 @@ class TempProductPutSerializer(serializers.ModelSerializer):
         instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
         instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
-        instance.for_whom = validated_data.get('for_whom', instance.for_whom)
         instance.quantity = validated_data.get('quantity', instance.quantity)
         instance.price = validated_data.get('price', instance.price)
         instance.price_by = validated_data.get('price_by', instance.price_by)
         instance.shop_longitude = validated_data.get('shop_longitude', instance.shop_longitude)
         instance.shop_latitude = validated_data.get('shop_latitude', instance.shop_latitude)
         instance.shop_address = validated_data.get('shop_address', instance.shop_address)
+        instance.save()
+        return instance
+
+
+class BaseTempShopSolderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempSolder
+        fields = ['temp_product', 'temp_solder_type', 'temp_solder_value']
+
+    def save(self):
+        temp_solder = TempSolder(
+            temp_product=self.validated_data['temp_product'],
+            temp_solder_type=self.validated_data['temp_solder_type'],
+            temp_solder_value=self.validated_data['temp_solder_value'],
+        )
+        temp_solder.save()
+        return temp_solder
+
+
+class BaseTempShopSolderPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempSolder
+        fields = ['temp_solder_type', 'temp_solder_value']
+
+    def update(self, instance, validated_data):
+        instance.temp_solder_type = validated_data.get('temp_solder_type', instance.temp_solder_type)
+        instance.temp_solder_value = validated_data.get('temp_solder_value', instance.temp_solder_value)
         instance.save()
         return instance

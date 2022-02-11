@@ -5,13 +5,14 @@ from rest_framework.views import APIView
 from rest_framework import status, permissions
 from temp_product.base.serializers import BaseTempShopProductSerializer, \
     BaseTempShopDeliverySerializer, BaseTempProductDetailsSerializer, \
-    BaseTempProductsListSerializer, TempProductPutSerializer
+    BaseTempProductsListSerializer, TempProductPutSerializer, \
+    BaseTempShopSolderSerializer, BaseTempShopSolderPutSerializer
 from os import rename, path, remove
 from Qaryb_API_new.settings import IMAGES_ROOT_NAME, PRODUCT_IMAGES_BASE_NAME, API_URL
 from uuid import uuid4
 from temp_product.base.tasks import base_generate_product_thumbnails
-from temp_product.base.models import TempShop, TempProduct, TempDelivery
-from auth_shop.models import Categories, Colors, Sizes
+from temp_product.base.models import TempShop, TempProduct, TempDelivery, TempSolder
+from auth_shop.models import Categories, Colors, Sizes, ForWhom
 from places.base.models import Cities
 from temp_product.mixins import PaginationMixinBy5
 
@@ -43,7 +44,6 @@ class TempShopProductView(APIView):
             'picture_3': request.data.get('picture_3', None),
             'picture_4': request.data.get('picture_4', None),
             'description': request.data.get('description'),
-            'for_whom': request.data.get('for_whom'),
             'quantity': request.data.get('quantity'),
             'price': request.data.get('price'),
             'price_by': request.data.get('price_by'),
@@ -88,6 +88,8 @@ class TempShopProductView(APIView):
                 "product_colors": [
                 ],
                 "product_size": [
+                ],
+                "for_whom": [
                 ],
                 "price": temp_product.price,
                 "price_by": temp_product.price_by,
@@ -146,6 +148,21 @@ class TempShopProductView(APIView):
                     }
                 )
             data['product_categories'] = product_categories
+
+            # ForWhom
+            for_whom = str(request.data.get('for_whom')).split(',')
+            for_whom = ForWhom.objects.filter(code_for_whom__in=for_whom)
+            product_for_whom = []
+            for for_who in for_whom:
+                temp_product.for_whom.add(for_who.pk)
+                product_for_whom.append(
+                    {
+                        "pk": for_who.pk,
+                        "code_for_whom": for_who.code_size,
+                        "name_for_whom": for_who.name_size
+                    }
+                )
+            data['for_whom'] = product_for_whom
 
             # Deliveries
             delivery_price_1 = request.data.get('delivery_price_1', None)
@@ -415,7 +432,6 @@ class TempShopProductView(APIView):
                 'picture_3': picture_3,
                 'picture_4': picture_4,
                 'description': request.data.get('description', ''),
-                'for_whom': request.data.get('for_whom', ''),
                 'quantity': request.data.get('quantity', ''),
                 'price': request.data.get('price', ''),
                 'price_by': request.data.get('price_by', ''),
@@ -466,6 +482,20 @@ class TempShopProductView(APIView):
                             "pk": size.pk,
                             "code_size": size.code_size,
                             "name_size": size.name_size
+                        }
+                    )
+                # Edit for_whom
+                temp_product.for_whom.clear()
+                for_whom = str(request.data.get('for_whom')).split(',')
+                for_whom = ForWhom.objects.filter(code_for_whom__in=for_whom)
+                product_for_whom = []
+                for for_who in for_whom:
+                    temp_product.for_whom.add(for_who.pk)
+                    product_for_whom.append(
+                        {
+                            "pk": for_who.pk,
+                            "code_for_whom": for_who.code_size,
+                            "name_for_whom": for_who.name_size
                         }
                     )
                 # Edit deliveries
@@ -637,6 +667,7 @@ class TempShopProductView(APIView):
                     "store_name": temp_updated_product.temp_shop.shop_name,
                     "product_categories": product_categories,
                     "description": temp_updated_product.description,
+                    "for_whom": product_for_whom,
                     "product_color": product_colors,
                     "product_size": product_sizes,
                     "price": temp_updated_product.price,
@@ -689,3 +720,53 @@ class GetTempShopProductsListView(APIView, PaginationMixinBy5):
         except TempProduct.DoesNotExist:
             data = {'errors': ['Temp shop unique_id not found.']}
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+
+class TempShopSolderView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        temp_product_id = kwargs.get('temp_product_id')
+        try:
+            temp_solder = TempSolder.objects.get(temp_product=temp_product_id)
+            temp_product_details_serializer = BaseTempShopSolderSerializer(temp_solder)
+        except TempSolder.DoesNotExist:
+            data = {'errors': ['Temp product solder not found.']}
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+        return Response(temp_product_details_serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        temp_product_id = request.data.get('temp_product_id')
+        temp_product = TempProduct.objects.get(pk=temp_product_id).pk
+        serializer = BaseTempShopSolderSerializer(data={
+            'temp_product': temp_product,
+            'temp_solder_type': request.data.get('temp_solder_type'),
+            'temp_solder_value': request.data.get('temp_solder_value'),
+        })
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        temp_product_id = request.data.get('temp_product_id')
+        temp_solder = TempSolder.objects.get(temp_product=temp_product_id)
+        serializer = BaseTempShopSolderPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(temp_solder, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        data = {}
+        temp_product_id = kwargs.get('temp_product_id')
+        try:
+            TempSolder.objects.get(temp_product=temp_product_id).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except TempSolder.DoesNotExist:
+            data['errors'] = ["Temp product solder not found."]
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

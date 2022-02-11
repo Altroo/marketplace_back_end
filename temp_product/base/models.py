@@ -2,7 +2,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
 from os import path
-from auth_shop.models import Categories, Colors, Sizes
+from auth_shop.models import Categories, Colors, Sizes, ForWhom
 from places.base.models import Cities
 from uuid import uuid4
 from io import BytesIO
@@ -42,40 +42,15 @@ class ShopChoices:
         ('L', 'Location')
     )
 
-    FOR_WHOM_CHOICES = (
-        ('A', 'All'),
-        ('K', 'Kid'),
-        ('F', 'Female'),
-        ('M', 'Man'),
-    )
-
-    COLOR_CHOICES = (
-        ('BK', 'Black'),
-        ('WT', 'White'),
-        ('BR', 'Brown'),
-        ('BL', 'Blue'),
-        ('GN', 'Green'),
-        ('PR', 'Purple'),
-        ('OR', 'Orange'),
-        ('PI', 'Pink'),
-        ('YE', 'Yellow'),
-        ('GR', 'Gray'),
-        ('MC', 'MultiColor'),
-        ('RD', 'Red'),
-    )
-
-    SIZE_CHOICES = (
-        ('S', 'Small'),
-        ('M', 'Medium'),
-        ('L', 'Large'),
-        ('X', 'XLarge'),
-    )
-
     PRICE_BY_CHOICES = (
         ('U', 'Unity'),
         ('K', 'Kilogram'),
         ('L', 'Liter'),
+    )
 
+    SOLDER_BY_CHOICES = (
+        ('F', 'Prix fix'),
+        ('P', 'Pourcentage'),
     )
 
 
@@ -112,14 +87,14 @@ class TempProduct(Model):
     picture_4_thumbnail = models.ImageField(verbose_name='Picture 4 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_products_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
-    for_whom = models.CharField(verbose_name='For Whom', max_length=1,
-                                choices=ShopChoices.FOR_WHOM_CHOICES)
+    for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
+                                      related_name='temp_product_for_whom')
     product_color = models.ManyToManyField(Colors, verbose_name='Product Colors',
                                            related_name='temp_product_colors')
     product_size = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
                                           related_name='temp_product_sizes')
     quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
-    price = models.PositiveIntegerField(verbose_name='Price', default=0)
+    price = models.FloatField(verbose_name='Price', default=0.0)
     price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.PRICE_BY_CHOICES, max_length=1)
     shop_longitude = models.FloatField(verbose_name='Shop Longitude', blank=True,
                                        null=True, max_length=10, validators=[ShopValidators.long_validator],
@@ -219,3 +194,17 @@ class TempDelivery(Model):
     class Meta:
         verbose_name = 'Temp Delivery'
         verbose_name_plural = 'Temp Deliveries'
+
+
+class TempSolder(Model):
+    temp_product = models.OneToOneField(TempProduct, on_delete=models.CASCADE,
+                                        verbose_name='Temp product',
+                                        related_name='temp_product_solder', unique=True)
+    temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=ShopChoices.SOLDER_BY_CHOICES,
+                                        max_length=1)
+    temp_solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.temp_product.pk,
+                                     self.temp_solder_type,
+                                     self.temp_solder_value)

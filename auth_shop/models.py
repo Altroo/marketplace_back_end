@@ -145,3 +145,15 @@ class Sizes(Model):
     class Meta:
         verbose_name = 'Size'
         verbose_name_plural = 'Sizes'
+
+
+class ForWhom(Model):
+    code_for_whom = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_for_whom = models.CharField(max_length=255, verbose_name='For whom Name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_for_whom, self.name_for_whom)
+
+    class Meta:
+        verbose_name = 'For Whom'
+        verbose_name_plural = 'For Whom'

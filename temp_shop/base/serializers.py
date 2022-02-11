@@ -50,8 +50,6 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
-    # avatar = serializers.ImageField(required=False)
-
     class Meta:
         model = TempShop
         fields = ['avatar']
@@ -63,8 +61,6 @@ class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopNamePutSerializer(serializers.ModelSerializer):
-    # shop_name = serializers.CharField(required=True)
-
     class Meta:
         model = TempShop
         fields = ['shop_name']
@@ -76,8 +72,6 @@ class BaseTempShopNamePutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
-    # bio = serializers.CharField(required=False)
-
     class Meta:
         model = TempShop
         fields = ['bio']
@@ -89,12 +83,6 @@ class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopAvailabilityPutSerializer(serializers.ModelSerializer):
-    # opening_days = serializers.CharField(required=True)
-    # morning_hour_from = serializers.TimeField(required=False)
-    # morning_hour_to = serializers.TimeField(required=False)
-    # afternoon_hour_from = serializers.TimeField(required=False)
-    # afternoon_hour_to = serializers.TimeField(required=False)
-
     class Meta:
         model = TempShop
         fields = ['opening_days', 'morning_hour_from', 'morning_hour_to',
@@ -111,14 +99,6 @@ class BaseTempShopAvailabilityPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
-    # phone = serializers.CharField(required=False)
-    # contact_email = serializers.EmailField(required=False)
-    # website_link = serializers.URLField(required=False)
-    # facebook_link = serializers.URLField(required=False)
-    # twitter_link = serializers.URLField(required=False)
-    # instagram_link = serializers.URLField(required=False)
-    # whatsapp = serializers.CharField(required=False)
-
     class Meta:
         model = TempShop
         fields = ['phone', 'contact_email',
@@ -138,12 +118,6 @@ class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
-    # ZONE_BY_CHOICES = (
-    #     ('A', 'Address'),
-    #     ('S', 'Sector')
-    # )
-    # zone_by = serializers.ChoiceField(required=False, choices=ZONE_BY_CHOICES)
-
     class Meta:
         model = TempShop
         fields = ['zone_by', 'longitude', 'latitude', 'address_name', 'km_radius']

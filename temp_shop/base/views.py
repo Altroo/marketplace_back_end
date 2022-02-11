@@ -53,7 +53,6 @@ class TempShopView(APIView):
             'latitude': request.data.get('latitude'),
             'address_name': request.data.get('address_name'),
             'km_radius': request.data.get('km_radius'),
-            # TODO Remove unique_id
             'qaryb_link': 'https://qaryb.com/' + qaryb_url + str(unique_id),
             'unique_id': str(unique_id),
         })

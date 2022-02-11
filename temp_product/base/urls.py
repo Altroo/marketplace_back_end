@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import TempShopProductView, GetOneTempProductView, GetTempShopProductsListView
+from .views import TempShopProductView, GetOneTempProductView, \
+    GetTempShopProductsListView, TempShopSolderView
 
 app_name = 'temp_product'
 
@@ -14,4 +15,8 @@ urlpatterns = [
     # Get Temp shop products list
     # GET :
     path('temp_shop/<str:unique_id>', GetTempShopProductsListView.as_view()),
+    # POST, PUT
+    path('solder', TempShopSolderView.as_view()),
+    # GET, DELETE
+    path('solder/<int:temp_product_id>', TempShopSolderView.as_view()),
 ]

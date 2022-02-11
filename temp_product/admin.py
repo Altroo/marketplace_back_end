@@ -1,5 +1,5 @@
 from django.contrib import admin
-from temp_product.base.models import TempProduct, TempDelivery
+from temp_product.base.models import TempProduct, TempDelivery, TempSolder
 from django.contrib.admin import ModelAdmin
 
 
@@ -23,5 +23,12 @@ class CustomTempDeliveryAdmin(ModelAdmin):
         return "\n".join([i.city_en for i in obj.temp_delivery_city.all()])
 
 
+class CustomTempSolderAdmin(ModelAdmin):
+    list_display = ('pk', 'temp_product', 'temp_solder_type', 'temp_solder_value')
+    search_fields = ('pk', 'temp_product', 'temp_solder_type', 'temp_solder_value')
+    ordering = ('-pk',)
+
+
 admin.site.register(TempProduct, CustomTempProductAdmin)
 admin.site.register(TempDelivery, CustomTempDeliveryAdmin)
+admin.site.register(TempSolder, CustomTempSolderAdmin)
