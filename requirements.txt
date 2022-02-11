@@ -11,3 +11,4 @@ celery==5.2.3
 opencv-python==4.5.5.62
 opencv-contrib-python==4.5.5.62
 django-colorfield==0.6.3
+gevent==21.12.0
