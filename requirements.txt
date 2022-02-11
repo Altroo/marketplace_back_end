@@ -12,3 +12,4 @@ opencv-python==4.5.5.62
 opencv-contrib-python==4.5.5.62
 django-colorfield==0.6.3
 gevent==21.12.0
+redis==4.1.3
