@@ -12,7 +12,7 @@ app.autodiscover_tasks(
     packages=(
         'auth_shop.base.tasks',
         'temp_shop.base.tasks',
-        'temp_product_base.tasks',
+        'temp_product.base.tasks',
     )
 )
 
