@@ -80,7 +80,7 @@ class BaseTempProductDetailsSerializer(serializers.Serializer):
     product_color = BaseTempShopColorSerializer(many=True, read_only=True)
     product_size = BaseTempShopSizeSerializer(many=True, read_only=True)
     for_whom = BaseTempShopForWhomSerializer(many=True, read_only=True)
-    price = serializers.IntegerField()
+    price = serializers.FloatField()
     price_by = serializers.CharField()
     # click and collect
     click_and_collect = BaseTempProductClickAndCollectSerializer(source='*')
@@ -98,7 +98,7 @@ class BaseTempProductsListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     thumbnail = serializers.SerializerMethodField()
     product_name = serializers.CharField()
-    price = serializers.IntegerField()
+    price = serializers.FloatField()
 
     @staticmethod
     def get_thumbnail(instance):
@@ -159,7 +159,7 @@ class TempProductPutSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BaseTempShopSolderSerializer(serializers.ModelSerializer):
+class BaseTempShopProductSolderSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempSolder
         fields = ['temp_product', 'temp_solder_type', 'temp_solder_value']
@@ -174,7 +174,7 @@ class BaseTempShopSolderSerializer(serializers.ModelSerializer):
         return temp_solder
 
 
-class BaseTempShopSolderPutSerializer(serializers.ModelSerializer):
+class BaseTempShopProductSolderPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempSolder
         fields = ['temp_solder_type', 'temp_solder_value']

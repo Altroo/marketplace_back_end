@@ -1,4 +1,4 @@
-from django.core.exceptions import SuspiciousFileOperation
+from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,7 +6,7 @@ from rest_framework import status, permissions
 from temp_product.base.serializers import BaseTempShopProductSerializer, \
     BaseTempShopDeliverySerializer, BaseTempProductDetailsSerializer, \
     BaseTempProductsListSerializer, TempProductPutSerializer, \
-    BaseTempShopSolderSerializer, BaseTempShopSolderPutSerializer
+    BaseTempShopProductSolderSerializer, BaseTempShopProductSolderPutSerializer
 from os import rename, path, remove
 from Qaryb_API_new.settings import IMAGES_ROOT_NAME, PRODUCT_IMAGES_BASE_NAME, API_URL
 from uuid import uuid4
@@ -21,16 +21,16 @@ class TempShopProductView(APIView):
     permission_classes = (permissions.AllowAny,)
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
-    def rename_product_pictures(self, picture):
-        picture_name, picture_extension = path.splitext(str(picture))
-        picture_id_name = str(uuid4()) + str(picture_extension)
-        try:
-            rename(self.parent_file_dir + IMAGES_ROOT_NAME + 'media/' +
-                   picture_name + picture_extension,
-                   self.parent_file_dir + PRODUCT_IMAGES_BASE_NAME + '/' + picture_id_name)
-        except FileNotFoundError:
-            pass
-        return PRODUCT_IMAGES_BASE_NAME + '/' + picture_id_name
+    # def rename_product_pictures(self, picture):
+    #     picture_name, picture_extension = path.splitext(str(picture))
+    #     picture_id_name = str(uuid4()) + str(picture_extension)
+    #     try:
+    #         rename(self.parent_file_dir + IMAGES_ROOT_NAME + 'media/' +
+    #                picture_name + picture_extension,
+    #                self.parent_file_dir + PRODUCT_IMAGES_BASE_NAME + '/' + picture_id_name)
+    #     except FileNotFoundError:
+    #         pass
+    #     return PRODUCT_IMAGES_BASE_NAME + '/' + picture_id_name
 
     def post(self, request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
@@ -53,18 +53,18 @@ class TempShopProductView(APIView):
         })
         if serializer.is_valid():
             temp_product = serializer.save()
-            if temp_product.picture_1:
-                temp_product.picture_1 = self.rename_product_pictures(temp_product.picture_1)
-                temp_product.save()
-            if temp_product.picture_2:
-                temp_product.picture_2 = self.rename_product_pictures(temp_product.picture_2)
-                temp_product.save()
-            if temp_product.picture_3:
-                temp_product.picture_3 = self.rename_product_pictures(temp_product.picture_3)
-                temp_product.save()
-            if temp_product.picture_4:
-                temp_product.picture_4 = self.rename_product_pictures(temp_product.picture_4)
-                temp_product.save()
+            # if temp_product.picture_1:
+            #     temp_product.picture_1 = self.rename_product_pictures(temp_product.picture_1)
+            #     temp_product.save()
+            # if temp_product.picture_2:
+            #     temp_product.picture_2 = self.rename_product_pictures(temp_product.picture_2)
+            #     temp_product.save()
+            # if temp_product.picture_3:
+            #     temp_product.picture_3 = self.rename_product_pictures(temp_product.picture_3)
+            #     temp_product.save()
+            # if temp_product.picture_4:
+            #     temp_product.picture_4 = self.rename_product_pictures(temp_product.picture_4)
+            #     temp_product.save()
             temp_product_pk = temp_product.pk
 
             # Generate thumbnails
@@ -158,8 +158,8 @@ class TempShopProductView(APIView):
                 product_for_whom.append(
                     {
                         "pk": for_who.pk,
-                        "code_for_whom": for_who.code_size,
-                        "name_for_whom": for_who.name_size
+                        "code_for_whom": for_who.code_for_whom,
+                        "name_for_whom": for_who.name_for_whom
                     }
                 )
             data['for_whom'] = product_for_whom
@@ -256,7 +256,7 @@ class TempShopProductView(APIView):
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': delivery_cities_1_pk,
-                        'temp_delivery_price': int(delivery_price_1),
+                        'temp_delivery_price': float(delivery_price_1),
                         'temp_delivery_days': int(delivery_days_1)
                     }
                 )
@@ -266,7 +266,7 @@ class TempShopProductView(APIView):
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': delivery_cities_2_pk,
-                        'temp_delivery_price': int(delivery_price_2),
+                        'temp_delivery_price': float(delivery_price_2),
                         'temp_delivery_days': int(delivery_days_2)
                     }
                 )
@@ -276,7 +276,7 @@ class TempShopProductView(APIView):
                     {
                         'temp_product': temp_product_pk,
                         'temp_delivery_city': delivery_cities_3_pk,
-                        'temp_delivery_price': int(delivery_price_3),
+                        'temp_delivery_price': float(delivery_price_3),
                         'temp_delivery_days': int(delivery_days_3)
                     }
                 )
@@ -593,7 +593,7 @@ class TempShopProductView(APIView):
                         {
                             'temp_product': temp_product_pk,
                             'temp_delivery_city': delivery_cities_1_pk,
-                            'temp_delivery_price': int(delivery_price_1),
+                            'temp_delivery_price': float(delivery_price_1),
                             'temp_delivery_days': int(delivery_days_1)
                         }
                     )
@@ -603,7 +603,7 @@ class TempShopProductView(APIView):
                         {
                             'temp_product': temp_product_pk,
                             'temp_delivery_city': delivery_cities_2_pk,
-                            'temp_delivery_price': int(delivery_price_2),
+                            'temp_delivery_price': float(delivery_price_2),
                             'temp_delivery_days': int(delivery_days_2)
                         }
                     )
@@ -613,7 +613,7 @@ class TempShopProductView(APIView):
                         {
                             'temp_product': temp_product_pk,
                             'temp_delivery_city': delivery_cities_3_pk,
-                            'temp_delivery_price': int(delivery_price_3),
+                            'temp_delivery_price': float(delivery_price_3),
                             'temp_delivery_days': int(delivery_days_3)
                         }
                     )
@@ -637,18 +637,18 @@ class TempShopProductView(APIView):
                             delivery.temp_delivery_city.add(*delivery_cities_3_pk)
                             city_3_check = False
                     deliveries_list = deliveries
-                if temp_product.picture_1:
-                    temp_product.picture_1 = self.rename_product_pictures(temp_product.picture_1)
-                    temp_product.save()
-                if temp_product.picture_2:
-                    temp_product.picture_2 = self.rename_product_pictures(temp_product.picture_2)
-                    temp_product.save()
-                if temp_product.picture_3:
-                    temp_product.picture_3 = self.rename_product_pictures(temp_product.picture_3)
-                    temp_product.save()
-                if temp_product.picture_4:
-                    temp_product.picture_4 = self.rename_product_pictures(temp_product.picture_4)
-                    temp_product.save()
+                # if temp_product.picture_1:
+                #     temp_product.picture_1 = self.rename_product_pictures(temp_product.picture_1)
+                #     temp_product.save()
+                # if temp_product.picture_2:
+                #     temp_product.picture_2 = self.rename_product_pictures(temp_product.picture_2)
+                #     temp_product.save()
+                # if temp_product.picture_3:
+                #     temp_product.picture_3 = self.rename_product_pictures(temp_product.picture_3)
+                #     temp_product.save()
+                # if temp_product.picture_4:
+                #     temp_product.picture_4 = self.rename_product_pictures(temp_product.picture_4)
+                #     temp_product.save()
                 temp_product_pk = temp_product.pk
                 # Generate thumbnails
                 base_generate_product_thumbnails.apply_async((temp_product_pk,), )
@@ -722,7 +722,7 @@ class GetTempShopProductsListView(APIView, PaginationMixinBy5):
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
 
-class TempShopSolderView(APIView):
+class TempShopProductSolderView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
@@ -730,7 +730,7 @@ class TempShopSolderView(APIView):
         temp_product_id = kwargs.get('temp_product_id')
         try:
             temp_solder = TempSolder.objects.get(temp_product=temp_product_id)
-            temp_product_details_serializer = BaseTempShopSolderSerializer(temp_solder)
+            temp_product_details_serializer = BaseTempShopProductSolderSerializer(temp_solder)
         except TempSolder.DoesNotExist:
             data = {'errors': ['Temp product solder not found.']}
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
@@ -740,7 +740,7 @@ class TempShopSolderView(APIView):
     def post(request, *args, **kwargs):
         temp_product_id = request.data.get('temp_product_id')
         temp_product = TempProduct.objects.get(pk=temp_product_id).pk
-        serializer = BaseTempShopSolderSerializer(data={
+        serializer = BaseTempShopProductSolderSerializer(data={
             'temp_product': temp_product,
             'temp_solder_type': request.data.get('temp_solder_type'),
             'temp_solder_value': request.data.get('temp_solder_value'),
@@ -754,7 +754,7 @@ class TempShopSolderView(APIView):
     def put(request, *args, **kwargs):
         temp_product_id = request.data.get('temp_product_id')
         temp_solder = TempSolder.objects.get(temp_product=temp_product_id)
-        serializer = BaseTempShopSolderPutSerializer(data=request.data)
+        serializer = BaseTempShopProductSolderPutSerializer(data=request.data)
         if serializer.is_valid():
             serializer.update(temp_solder, serializer.validated_data)
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -770,3 +770,83 @@ class TempShopSolderView(APIView):
         except TempSolder.DoesNotExist:
             data['errors'] = ["Temp product solder not found."]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TempShopProductDuplicateView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        temp_product_id = request.data.get('temp_product_id')
+        temp_product = TempProduct.objects.get(pk=temp_product_id)
+        # Categories
+        temp_product_category = list(temp_product.product_category.all().values_list('pk', flat=True))
+        # For whom
+        temp_product_for_whom = list(temp_product.for_whom.all().values_list('pk', flat=True))
+        # Color
+        temp_product_color = list(temp_product.product_color.all().values_list('pk', flat=True))
+        # Size
+        temp_product_size = list(temp_product.product_size.all().values_list('pk', flat=True))
+        # Deliveries
+        temp_product_deliveries = list(temp_product.temp_delivery_temp_product.all())
+        # Serializer
+        serializer = BaseTempShopProductSerializer(data={
+            'temp_shop': temp_product.temp_shop.pk,
+            'product_type': temp_product.product_type,
+            'product_name': temp_product.product_name,
+            'picture_1': temp_product.picture_1 if temp_product.picture_1 else None,
+            'picture_2': temp_product.picture_2 if temp_product.picture_2 else None,
+            'picture_3': temp_product.picture_3 if temp_product.picture_3 else None,
+            'picture_4': temp_product.picture_4 if temp_product.picture_4 else None,
+            'description': temp_product.description,
+            'quantity': temp_product.quantity,
+            'price': temp_product.price,
+            'price_by': temp_product.price_by,
+            'shop_longitude': temp_product.shop_longitude,
+            'shop_latitude': temp_product.shop_latitude,
+            'shop_address': temp_product.shop_address,
+        })
+        if serializer.is_valid():
+            temp_product_serializer = serializer.save()
+            # Category
+            for category in temp_product_category:
+                temp_product_serializer.product_category.add(category)
+            # Color
+            for color in temp_product_color:
+                temp_product_serializer.product_color.add(color)
+            # Size
+            for size in temp_product_size:
+                temp_product_serializer.product_size.add(size)
+            # For whom
+            for for_whom in temp_product_for_whom:
+                temp_product_serializer.for_whom.add(for_whom)
+            # Deliveries
+            deliveries = []
+            for delivery in temp_product_deliveries:
+                deliveries.append(
+                    {
+                        'temp_product': delivery.temp_product,
+                        'temp_delivery_city': list(delivery.temp_delivery_city.all().values_list('pk', flat=True)),
+                        'temp_delivery_price': float(delivery.temp_delivery_price),
+                        'temp_delivery_days': int(delivery.temp_delivery_days)
+                    }
+                )
+            delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
+            if delivery_serializer.is_valid():
+                delivery_serializer.save()
+
+            # Solder
+            try:
+                product_solder = temp_product.temp_product_solder
+                solder_serializer = BaseTempShopProductSolderSerializer(data={
+                    'temp_product': temp_product_serializer.pk,
+                    'temp_solder_type': product_solder.temp_solder_type,
+                    'temp_solder_value': product_solder.temp_solder_value
+                })
+                if solder_serializer.is_valid():
+                    solder_serializer.save()
+            except ObjectDoesNotExist:
+                pass
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

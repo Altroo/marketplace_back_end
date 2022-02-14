@@ -125,7 +125,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "static"
-MEDIA_ROOT = "media"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 USER_IMAGES_BASE_NAME = "/media/avatar"
 PRODUCT_IMAGES_BASE_NAME = "/media/shop_products"
 IMAGES_ROOT_NAME = "/"

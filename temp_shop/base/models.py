@@ -30,48 +30,6 @@ class ShopChoices:
         ('S', 'Sector')
     )
 
-    PRODUCT_TYPE_CHOICES = (
-        ('V', 'Sell'),
-        ('S', 'Service'),
-        ('L', 'Location')
-    )
-
-    FOR_WHOM_CHOICES = (
-        ('A', 'All'),
-        ('K', 'Kid'),
-        ('F', 'Female'),
-        ('M', 'Man'),
-    )
-
-    COLOR_CHOICES = (
-        ('BK', 'Black'),
-        ('WT', 'White'),
-        ('BR', 'Brown'),
-        ('BL', 'Blue'),
-        ('GN', 'Green'),
-        ('PR', 'Purple'),
-        ('OR', 'Orange'),
-        ('PI', 'Pink'),
-        ('YE', 'Yellow'),
-        ('GR', 'Gray'),
-        ('MC', 'MultiColor'),
-        ('RD', 'Red'),
-    )
-
-    SIZE_CHOICES = (
-        ('S', 'Small'),
-        ('M', 'Medium'),
-        ('L', 'Large'),
-        ('X', 'XLarge'),
-    )
-
-    PRICE_BY_CHOICES = (
-        ('U', 'Unity'),
-        ('K', 'Kilogram'),
-        ('L', 'Liter'),
-
-    )
-
 
 class ShopValidators:
     lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
