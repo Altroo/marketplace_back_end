@@ -266,3 +266,7 @@ class TempSolder(Model):
         return "{} - {} - {}".format(self.temp_offer.pk,
                                      self.temp_solder_type,
                                      self.temp_solder_value)
+
+    class Meta:
+        verbose_name = 'Temp Solder'
+        verbose_name_plural = 'Temp Solders'
