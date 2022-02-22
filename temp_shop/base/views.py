@@ -5,12 +5,9 @@ from temp_shop.base.serializers import BaseTempShopSerializer, BaseTempShopAvata
     BaseTempShopNamePutSerializer, BaseTempShopBioPutSerializer, BaseTempShopAvailabilityPutSerializer, \
     BaseTempShopContactPutSerializer, BaseTempShopAddressPutSerializer, BaseTempShopColorPutSerializer, \
     BaseTempShopFontPutSerializer
-from os import rename, path, remove
-from Qaryb_API_new.settings import USER_IMAGES_BASE_NAME, IMAGES_ROOT_NAME
+from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
-from random import choice
-from string import ascii_letters, digits
 from datetime import datetime, timedelta
 from temp_shop.base.tasks import base_start_deleting_expired_shops
 from temp_shop.base.models import TempShop
@@ -22,11 +19,7 @@ class TempShopView(APIView):
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
     @staticmethod
-    def random_unique_id(length=15):
-        letters_digits = ascii_letters + digits
-        return ''.join(choice(letters_digits) for i in range(length))
-
-    def post(self, request, *args, **kwargs):
+    def post(request, *args, **kwargs):
         shop_name = request.data.get('shop_name')
         qaryb_url = quote_plus(shop_name)
         unique_id = uuid4()
@@ -58,19 +51,7 @@ class TempShopView(APIView):
         })
         if serializer.is_valid():
             temp_shop = serializer.save()
-            if temp_shop.avatar:
-                avatar_name, avatar_extension = path.splitext(str(temp_shop.avatar))
-                avatar_id_name = str(uuid4()) + str(avatar_extension)
-                try:
-                    rename(self.parent_file_dir + IMAGES_ROOT_NAME + 'media/' +
-                           avatar_name + avatar_extension,
-                           self.parent_file_dir + USER_IMAGES_BASE_NAME + '/' + avatar_id_name)
-                except FileNotFoundError:
-                    pass
-                    # data = {'errors': [err.strerror, err.filename, err.filename2]}
-                    # return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-                temp_shop.avatar = USER_IMAGES_BASE_NAME + '/' + avatar_id_name
-                temp_shop.save()
+            temp_shop.save()
             data = {
                 'unique_id': unique_id,
             }
@@ -82,29 +63,19 @@ class TempShopView(APIView):
 
 class TempShopAvatarPutView(APIView):
     permission_classes = (permissions.AllowAny,)
-    parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
-    def put(self, request, *args, **kwargs):
+    @staticmethod
+    def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         temp_shop = TempShop.objects.get(unique_id=unique_id)
         serializer = BaseTempShopAvatarPutSerializer(data=request.data)
         if serializer.is_valid():
             if temp_shop.avatar:
                 try:
-                    remove(str(self.parent_file_dir) + '/' + str(temp_shop.avatar))
+                    remove(temp_shop.avatar.path)
                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                     pass
-            instance = serializer.update(temp_shop, serializer.validated_data)
-            avatar_name, avatar_extension = path.splitext(str(instance.avatar))
-            avatar_id_name = str(uuid4()) + str(avatar_extension)
-            try:
-                rename(self.parent_file_dir + IMAGES_ROOT_NAME + 'media/' +
-                       avatar_name + avatar_extension,
-                       self.parent_file_dir + USER_IMAGES_BASE_NAME + '/' + avatar_id_name)
-                instance.avatar = USER_IMAGES_BASE_NAME + '/' + avatar_id_name
-                temp_shop.save()
-            except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                pass
+            serializer.update(temp_shop, serializer.validated_data)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

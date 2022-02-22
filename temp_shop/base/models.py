@@ -1,12 +1,8 @@
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
-from os import path
 from colorfield.fields import ColorField
-
-
-def get_avatar_path(instance, filename):
-    return path.join('avatar/', filename)
+from auth_shop.models import get_avatar_path, Days
 
 
 class ShopChoices:
@@ -46,8 +42,7 @@ class TempShop(Model):
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     font_name = models.CharField(verbose_name='Font name', max_length=2, choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
-    opening_days = models.CharField(verbose_name='Opening days', max_length=13, blank=False, null=False,
-                                    default='0,0,0,0,0,0,0')
+    opening_days = models.ManyToManyField(Days, verbose_name='Opening days', related_name='temp_shop_opening_days')
     morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
     morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True, default=None)
@@ -69,7 +64,8 @@ class TempShop(Model):
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     qaryb_link = models.URLField(verbose_name='Qaryb link', max_length=200, blank=False, null=False, unique=True)
     unique_id = models.CharField(verbose_name='Unique ID', unique=True, max_length=40)
-    created_date = models.DateTimeField(editable=False, auto_now=True)
+    created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
+    updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
     @property
     def property_extra_info(self):

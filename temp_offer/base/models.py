@@ -2,7 +2,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
 from os import path
-from auth_shop.models import Categories, Colors, Sizes, ForWhom
+from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days
 from places.base.models import Cities
 from uuid import uuid4
 from io import BytesIO
@@ -14,7 +14,6 @@ from temp_shop.base.models import TempShop
 def get_shop_products_path(instance, filename):
     filename, file_extension = path.splitext(filename)
     return path.join('shop_products/', str(uuid4()) + file_extension)
-    # return path.join('shop_products/', filename)
 
 
 class ShopChoices:
@@ -38,16 +37,24 @@ class ShopChoices:
         ('S', 'Sector')
     )
 
-    PRODUCT_TYPE_CHOICES = (
+    OFFER_TYPE_CHOICES = (
         ('V', 'Sell'),
         ('S', 'Service'),
         ('L', 'Location')
     )
 
-    PRICE_BY_CHOICES = (
+    PRODUCT_PRICE_BY_CHOICES = (
         ('U', 'Unity'),
         ('K', 'Kilogram'),
         ('L', 'Liter'),
+    )
+
+    SERVICE_PRICE_BY_CHOICES = (
+        ('H', 'Heur'),
+        ('J', 'Jour'),
+        ('S', 'Semaine'),
+        ('M', 'Mois'),
+        ('P', 'Prestation'),
     )
 
     SOLDER_BY_CHOICES = (
@@ -64,14 +71,14 @@ class ShopValidators:
                                     'Only Geo numbers are allowed.')
 
 
-class TempProduct(Model):
+class TempOffers(Model):
     temp_shop = models.ForeignKey(TempShop, on_delete=models.CASCADE,
                                   verbose_name='Temp Shop', related_name='temp_shop')
-    product_type = models.CharField(verbose_name='Product Type', max_length=1,
-                                    choices=ShopChoices.PRODUCT_TYPE_CHOICES)
-    product_category = models.ManyToManyField(Categories, verbose_name='Product Categories',
-                                              related_name='temp_product_categories')
-    product_name = models.CharField(verbose_name='Product Name', max_length=150, blank=False, null=False)
+    offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
+                                  choices=ShopChoices.OFFER_TYPE_CHOICES)
+    offer_categories = models.ManyToManyField(Categories, verbose_name='Offer Categories',
+                                              related_name='temp_offer_categories')
+    title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
     picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_products_path, blank=True, null=True,
                                   default=None, max_length=1000)
     picture_2 = models.ImageField(verbose_name='Picture 2', upload_to=get_shop_products_path, blank=True, null=True,
@@ -91,21 +98,9 @@ class TempProduct(Model):
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='temp_product_for_whom')
-    product_color = models.ManyToManyField(Colors, verbose_name='Product Colors',
-                                           related_name='temp_product_colors')
-    product_size = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
-                                          related_name='temp_product_sizes')
-    quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
     price = models.FloatField(verbose_name='Price', default=0.0)
-    price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.PRICE_BY_CHOICES, max_length=1)
-    shop_longitude = models.FloatField(verbose_name='Shop Longitude', blank=True,
-                                       null=True, max_length=10, validators=[ShopValidators.long_validator],
-                                       default=None)
-    shop_latitude = models.FloatField(verbose_name='Shop Latitude', blank=True,
-                                      null=True, max_length=10, validators=[ShopValidators.lat_validator], default=None)
-    shop_address = models.CharField(verbose_name='Shop Address', max_length=255,
-                                    blank=True, null=True, default=None)
-    created_date = models.DateTimeField(editable=False, auto_now=True)
+    created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
+    updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
     @property
     def property_extra_info(self):
@@ -113,13 +108,13 @@ class TempProduct(Model):
         return (data[:50] + '..') if len(data) > 50 else data
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.product_type,
-                                     self.product_name,
+        return '{} - {} - {}'.format(self.offer_type,
+                                     self.title,
                                      self.price)
 
     class Meta:
-        verbose_name = 'Temp Product'
-        verbose_name_plural = 'Temp Products'
+        verbose_name = 'Temp Offer'
+        verbose_name_plural = 'Temp Offers'
         ordering = ('created_date',)
 
     @property
@@ -179,17 +174,77 @@ class TempProduct(Model):
                                        save=True)
 
 
+class TempProducts(Model):
+    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                      verbose_name='Temp Offer', related_name='temp_offer_products')
+    product_colors = models.ManyToManyField(Colors, verbose_name='Product Colors',
+                                            related_name='temp_product_colors')
+    product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
+                                           related_name='temp_product_sizes')
+    product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
+    product_price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.PRODUCT_PRICE_BY_CHOICES,
+                                        max_length=1)
+    product_longitude = models.FloatField(verbose_name='Product Longitude', blank=True,
+                                          null=True, max_length=10, validators=[ShopValidators.long_validator],
+                                          default=None)
+    product_latitude = models.FloatField(verbose_name='Product Latitude', blank=True,
+                                         null=True, max_length=10,
+                                         validators=[ShopValidators.lat_validator], default=None)
+    product_address = models.CharField(verbose_name='Product Address', max_length=255,
+                                       blank=True, null=True, default=None)
+
+    def __str__(self):
+        return '{}'.format(self.temp_offer.title)
+
+    class Meta:
+        verbose_name = 'Temp Product'
+        verbose_name_plural = 'Temp Products'
+        ordering = ('-pk',)
+
+
+class TempServices(Model):
+    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                      verbose_name='Temp Offer', related_name='temp_offer_services')
+    service_availability_days = models.ManyToManyField(Days, verbose_name='Opening days',
+                                                       related_name='temp_service_availability_days')
+    service_morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
+    service_morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
+    service_afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True,
+                                                   default=None)
+    service_afternoon_hour_to = models.TimeField(verbose_name='Afternoon hour to', blank=True, null=True, default=None)
+    service_zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=ShopChoices.ZONE_BY_CHOICES,
+                                       default='A')
+    service_price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.SERVICE_PRICE_BY_CHOICES,
+                                        max_length=1)
+    service_longitude = models.FloatField(verbose_name='Service Longitude', blank=True,
+                                          null=True, max_length=10, validators=[ShopValidators.long_validator],
+                                          default=None)
+    service_latitude = models.FloatField(verbose_name='Service Latitude', blank=True,
+                                         null=True, max_length=10,
+                                         validators=[ShopValidators.lat_validator], default=None)
+    service_address = models.CharField(verbose_name='Service Address', max_length=255,
+                                       blank=True, null=True, default=None)
+
+    def __str__(self):
+        return '{}'.format(self.temp_offer.title)
+
+    class Meta:
+        verbose_name = 'Temp Service'
+        verbose_name_plural = 'Temp Services'
+        ordering = ('-pk',)
+
+
 class TempDelivery(Model):
-    temp_product = models.ForeignKey(TempProduct, on_delete=models.CASCADE,
-                                     verbose_name='Temp product',
-                                     related_name='temp_delivery_temp_product')
+    temp_offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
+                                   verbose_name='Temp Offer',
+                                   related_name='temp_offer_delivery')
     temp_delivery_city = models.ManyToManyField(Cities, verbose_name='Temp Delivery City',
                                                 related_name='temp_delivery_city')
     temp_delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
     temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.temp_product.pk,
+        return '{} - {} - {}'.format(self.temp_offer.pk,
                                      self.temp_delivery_price,
                                      self.temp_delivery_days)
 
@@ -199,14 +254,14 @@ class TempDelivery(Model):
 
 
 class TempSolder(Model):
-    temp_product = models.OneToOneField(TempProduct, on_delete=models.CASCADE,
-                                        verbose_name='Temp product',
-                                        related_name='temp_product_solder', unique=True)
+    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                      verbose_name='Temp Offer',
+                                      related_name='temp_offer_solder', unique=True)
     temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=ShopChoices.SOLDER_BY_CHOICES,
                                         max_length=1)
     temp_solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
 
     def __str__(self):
-        return "{} - {} - {}".format(self.temp_product.pk,
+        return "{} - {} - {}".format(self.temp_offer.pk,
                                      self.temp_solder_type,
                                      self.temp_solder_value)

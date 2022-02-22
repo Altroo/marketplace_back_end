@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomAuthShopCreationForm, CustomAuthShopChangeForm
-from .models import AuthShop, Categories, Colors, Sizes, ForWhom
+from .models import AuthShop, Categories, Colors, Sizes, ForWhom, Days
 from django.contrib.admin import ModelAdmin
 
 
@@ -75,8 +75,15 @@ class CustomForWhomAdmin(ModelAdmin):
     ordering = ('pk',)
 
 
+class CustomDaysAdmin(ModelAdmin):
+    list_display = ('pk', 'code_day', 'name_day',)
+    search_fields = ('pk', 'code_day', 'name_day',)
+    ordering = ('pk',)
+
+
 admin.site.register(AuthShop, CustomAuthShopAdmin)
 admin.site.register(Categories, CustomCategoriesAdmin)
 admin.site.register(Colors, CustomColorsAdmin)
 admin.site.register(Sizes, CustomSizesAdmin)
 admin.site.register(ForWhom, CustomForWhomAdmin)
+admin.site.register(Days, CustomDaysAdmin)

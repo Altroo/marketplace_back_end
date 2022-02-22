@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django_filters',
     'auth_shop.apps.AuthShopConfig',
     'temp_shop.apps.TempShopConfig',
-    'temp_product.apps.TempProductConfig',
+    'temp_offer.apps.TempOfferConfig',
     'places.apps.PlacesConfig',
     'colorfield',
 ]
@@ -184,4 +184,5 @@ MAP_DOMAIN = config('MAP_DOMAIN')
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 # Celery Debug localhost
-CELERY_TASK_ALWAYS_EAGER = True
+# Doesn't call eta shift
+# CELERY_TASK_ALWAYS_EAGER = True

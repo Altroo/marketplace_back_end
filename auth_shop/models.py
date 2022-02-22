@@ -9,12 +9,12 @@ from .managers import CustomUserManager
 from os import path
 from Qaryb_API_new.settings import API_URL
 from colorfield.fields import ColorField
+from uuid import uuid4
 
 
 def get_avatar_path(instance, filename):
-    # filename, file_extension = path.splitext(filename)
-    # return path.join('media/photos/', str(instance.id) + file_extension)
-    return path.join('avatar/', filename)
+    filename, file_extension = path.splitext(filename)
+    return path.join('avatar/', str(uuid4()) + file_extension)
 
 
 class ShopChoices:
@@ -108,7 +108,6 @@ class AuthShop(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Auth Shop'
         verbose_name_plural = 'Auth Shops'
         ordering = ('created_date',)
-        # unique_together = (('email', 'phone'),)
 
 
 class Categories(Model):
@@ -157,3 +156,15 @@ class ForWhom(Model):
     class Meta:
         verbose_name = 'For Whom'
         verbose_name_plural = 'For Whom'
+
+
+class Days(Model):
+    code_day = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_day = models.CharField(max_length=255, verbose_name='Day name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_day, self.name_day)
+
+    class Meta:
+        verbose_name = 'Day'
+        verbose_name_plural = 'Days'
