@@ -9,8 +9,8 @@ from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
 from datetime import datetime, timedelta
-from temp_shop.base.tasks import base_start_deleting_expired_shops
-from temp_shop.base.models import TempShop
+from temp_shop.base.tasks import base_start_deleting_expired_shops, base_generate_avatar_thumbnail
+from temp_shop.base.models import TempShop, Days
 from django.core.exceptions import SuspiciousFileOperation
 
 
@@ -29,7 +29,6 @@ class TempShopView(APIView):
             'color_code': request.data.get('color_code'),
             'font_name': request.data.get('font_name'),
             'bio': request.data.get('bio'),
-            'opening_days': request.data.get('opening_days'),
             'morning_hour_from': request.data.get('morning_hour_from'),
             'morning_hour_to': request.data.get('morning_hour_to'),
             'afternoon_hour_from': request.data.get('afternoon_hour_from'),
@@ -52,12 +51,19 @@ class TempShopView(APIView):
         if serializer.is_valid():
             temp_shop = serializer.save()
             temp_shop.save()
+            # Opening days
+            opening_days = str(request.data.get('opening_days')).split(',')
+            opening_days = Days.objects.filter(code_day__in=opening_days)
+            for opening_day in opening_days:
+                temp_shop.opening_days.add(opening_day.pk)
             data = {
                 'unique_id': unique_id,
             }
+            # Generate thumbnail
+            base_generate_avatar_thumbnail.apply_async((temp_shop.pk,), )
             shift = datetime.utcnow() + timedelta(hours=24)
             base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
-            return Response(data=data, status=status.HTTP_204_NO_CONTENT)
+            return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -75,7 +81,14 @@ class TempShopAvatarPutView(APIView):
                     remove(temp_shop.avatar.path)
                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                     pass
-            serializer.update(temp_shop, serializer.validated_data)
+            if temp_shop.avatar_thumbnail:
+                try:
+                    remove(temp_shop.avatar_thumbnail.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            new_avatar = serializer.update(temp_shop, serializer.validated_data)
+            # Generate new avatar thumbnail
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,9 +128,18 @@ class TempShopAvailabilityPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         temp_shop = TempShop.objects.get(unique_id=unique_id)
-        serializer = BaseTempShopAvailabilityPutSerializer(data=request.data)
+        serializer = BaseTempShopAvailabilityPutSerializer(data={
+            'morning_hour_from': request.data.get('morning_hour_from'),
+            'morning_hour_to': request.data.get('morning_hour_to'),
+            'afternoon_hour_from': request.data.get('afternoon_hour_from'),
+            'afternoon_hour_to': request.data.get('afternoon_hour_to'),
+        })
         if serializer.is_valid():
-            serializer.update(temp_shop, serializer.validated_data)
+            new_availability = serializer.update(temp_shop, serializer.validated_data)
+            opening_days = str(request.data.get('opening_days')).split(',')
+            opening_days = Days.objects.filter(code_day__in=opening_days)
+            for day in opening_days:
+                new_availability.opening_days.add(day.pk)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

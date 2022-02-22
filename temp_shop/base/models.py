@@ -3,6 +3,10 @@ from django.db import models
 from django.db.models import Model
 from colorfield.fields import ColorField
 from auth_shop.models import get_avatar_path, Days
+from Qaryb_API_new.settings import API_URL
+from uuid import uuid4
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 class ShopChoices:
@@ -39,6 +43,8 @@ class TempShop(Model):
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
     avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
                                default=None)
+    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
+                                         default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     font_name = models.CharField(verbose_name='Font name', max_length=2, choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
@@ -81,3 +87,24 @@ class TempShop(Model):
         verbose_name = 'Temp Shop'
         verbose_name_plural = 'Temp Shops'
         ordering = ('created_date',)
+
+    @property
+    def get_absolute_avatar_img(self):
+        if self.avatar:
+            return "{0}/media{1}".format(API_URL, self.avatar.url)
+        return None
+
+    @property
+    def get_absolute_avatar_thumbnail(self):
+        if self.avatar_thumbnail:
+            return "{0}/media{1}".format(API_URL, self.avatar_thumbnail.url)
+        return None
+
+    def save_image(self, field_name, image):
+        if not isinstance(image, BytesIO):
+            return
+
+        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+                                       ContentFile(image.getvalue()),
+                                       save=True)
+

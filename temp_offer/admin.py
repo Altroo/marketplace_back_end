@@ -49,11 +49,11 @@ class CustomTempServiceAdmin(ModelAdmin):
     list_display = ('pk', 'temp_offer', 'show_availability_days', 'service_morning_hour_from',
                     'service_morning_hour_to', 'service_afternoon_hour_from', 'service_afternoon_hour_to',
                     'service_zone_by', 'service_price_by', 'service_longitude', 'service_latitude',
-                    'service_address')
+                    'service_address', 'service_km_radius')
     search_fields = ('pk', 'temp_offer', 'service_morning_hour_from', 'service_morning_hour_to',
                      'service_afternoon_hour_from', 'service_afternoon_hour_to',
                      'service_zone_by', 'service_price_by', 'service_longitude', 'service_latitude',
-                     'service_address')
+                     'service_address', 'service_km_radius')
     list_filter = ('service_zone_by', 'service_price_by', )
     ordering = ('-pk',)
 

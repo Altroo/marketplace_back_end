@@ -224,6 +224,7 @@ class TempServices(Model):
                                          validators=[ShopValidators.lat_validator], default=None)
     service_address = models.CharField(verbose_name='Service Address', max_length=255,
                                        blank=True, null=True, default=None)
+    service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
 
     def __str__(self):
         return '{}'.format(self.temp_offer.title)

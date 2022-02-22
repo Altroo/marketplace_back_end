@@ -95,7 +95,7 @@ class BaseTempShopServiceSerializer(serializers.ModelSerializer):
                   'service_morning_hour_from', 'service_morning_hour_to',
                   'service_afternoon_hour_from', 'service_afternoon_hour_to',
                   'service_zone_by', 'service_price_by',
-                  'service_longitude', 'service_latitude', 'service_address']
+                  'service_longitude', 'service_latitude', 'service_address', 'service_km_radius']
 
 
 class BaseTempShopCitySerializer(serializers.ModelSerializer):
@@ -115,7 +115,7 @@ class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
 class BaseDetailsTempProductSerializer(serializers.Serializer):
     # Details Product
     product_quantity = serializers.IntegerField()
-    product_price_by = serializers.FloatField()
+    product_price_by = serializers.CharField()
     product_longitude = serializers.CharField()
     product_latitude = serializers.CharField()
     product_address = serializers.CharField()
@@ -141,6 +141,7 @@ class BaseDetailsTempServiceSerializer(serializers.Serializer):
     service_longitude = serializers.CharField()
     service_latitude = serializers.CharField()
     service_address = serializers.CharField()
+    service_km_radius = serializers.CharField()
 
     def update(self, instance, validated_data):
         pass
@@ -189,11 +190,10 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
 class BaseTempOfferssListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     thumbnail = serializers.SerializerMethodField()
-    product_name = serializers.CharField()
+    product_name = serializers.CharField(source='*')
     price = serializers.FloatField()
-    temp_solder_type = serializers.CharField(source='temp_product_solder.temp_solder_type')
-    temp_solder_value = serializers.FloatField(source='temp_product_solder.temp_solder_value')
-
+    temp_solder_type = serializers.CharField(source='temp_offer_solder.temp_solder_type')
+    temp_solder_value = serializers.FloatField(source='temp_offer_solder.temp_solder_value')
     details_offer = serializers.SerializerMethodField()
 
     @staticmethod
@@ -279,7 +279,7 @@ class BaseTempServicePutSerializer(serializers.ModelSerializer):
         fields = ['service_morning_hour_from', 'service_morning_hour_to',
                   'service_afternoon_hour_from', 'service_afternoon_hour_to',
                   'service_zone_by', 'service_price_by',
-                  'service_longitude', 'service_latitude', 'service_address']
+                  'service_longitude', 'service_latitude', 'service_address', 'service_km_radius']
 
     def update(self, instance, validated_data):
         instance.service_morning_hour_from = validated_data.get('service_morning_hour_from',

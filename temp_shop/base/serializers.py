@@ -8,7 +8,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
         fields = ['shop_name',
                   'avatar', 'color_code',
                   'font_name', 'bio',
-                  'opening_days',
+                  # 'opening_days',
                   'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
                   'phone', 'contact_email', 'website_link',
@@ -25,7 +25,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
             color_code=self.validated_data['color_code'],
             font_name=self.validated_data['font_name'],
             bio=self.validated_data['bio'],
-            opening_days=self.validated_data['opening_days'],
+            # opening_days=self.validated_data['opening_days'],
             morning_hour_from=self.validated_data['morning_hour_from'],
             morning_hour_to=self.validated_data['morning_hour_to'],
             afternoon_hour_from=self.validated_data['afternoon_hour_from'],
@@ -85,11 +85,10 @@ class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
 class BaseTempShopAvailabilityPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
-        fields = ['opening_days', 'morning_hour_from', 'morning_hour_to',
+        fields = ['morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to']
 
     def update(self, instance, validated_data):
-        instance.opening_days = validated_data.get('opening_days', instance.opening_days)
         instance.morning_hour_from = validated_data.get('morning_hour_from', instance.morning_hour_from)
         instance.morning_hour_to = validated_data.get('morning_hour_to', instance.morning_hour_to)
         instance.afternoon_hour_from = validated_data.get('afternoon_hour_from', instance.afternoon_hour_from)
