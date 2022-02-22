@@ -3,6 +3,7 @@ from django.core.management import BaseCommand
 from auth_shop.models import Days
 from csv import reader
 from os import path
+from django.db.utils import IntegrityError
 
 
 class InsertDays:
@@ -12,7 +13,10 @@ class InsertDays:
         with open(self.parent_file_dir + '/csv_data/days.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
-                Days.objects.create(code_day=row[0], name_day=row[1])
+                try:
+                    Days.objects.create(code_day=row[0], name_day=row[1])
+                except IntegrityError:
+                    continue
 
 
 class Command(BaseCommand):

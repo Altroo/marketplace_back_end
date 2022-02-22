@@ -3,6 +3,7 @@ from django.core.management import BaseCommand
 from auth_shop.models import Categories
 from csv import reader
 from os import path
+from django.db.utils import IntegrityError
 
 
 class InsertCategories:
@@ -12,7 +13,10 @@ class InsertCategories:
         with open(self.parent_file_dir + '/csv_data/categories.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
-                Categories.objects.create(code_category=row[0], name_category=row[1])
+                try:
+                    Categories.objects.create(code_category=row[0], name_category=row[1])
+                except IntegrityError:
+                    continue
 
 
 class Command(BaseCommand):

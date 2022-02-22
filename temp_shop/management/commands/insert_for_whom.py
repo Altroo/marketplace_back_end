@@ -3,6 +3,7 @@ from django.core.management import BaseCommand
 from auth_shop.models import ForWhom
 from csv import reader
 from os import path
+from django.db.utils import IntegrityError
 
 
 class InsertForWhom:
@@ -12,7 +13,10 @@ class InsertForWhom:
         with open(self.parent_file_dir + '/csv_data/for_whom.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
-                ForWhom.objects.create(code_for_whom=row[0], name_for_whom=row[1])
+                try:
+                    ForWhom.objects.create(code_for_whom=row[0], name_for_whom=row[1])
+                except IntegrityError:
+                    continue
 
 
 class Command(BaseCommand):
