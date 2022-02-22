@@ -579,8 +579,8 @@ class TempShopOfferView(APIView):
                         offer_for_whom_list.append(
                             {
                                 "pk": for_who.pk,
-                                "code_for_whom": for_who.code_size,
-                                "name_for_whom": for_who.name_size
+                                "code_for_whom": for_who.code_for_whom,
+                                "name_for_whom": for_who.name_for_whom
                             }
                         )
                     data['for_whom'] = offer_for_whom_list
@@ -657,7 +657,7 @@ class TempShopOfferView(APIView):
                         data['service_address'] = temp_updated_service.service_address,
                         data['service_km_radius'] = temp_updated_service.service_km_radius,
                     # UPDATE DELIVERIES
-                    temp_offer.temp_delivery_temp_product.all().delete()
+                    temp_offer.temp_offer_delivery.all().delete()
                     delivery_price_1 = request.data.get('delivery_price_1', None)
                     delivery_days_1 = request.data.get('delivery_days_1', None)
 
