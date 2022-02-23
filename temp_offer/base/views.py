@@ -956,7 +956,7 @@ class TempShopOfferSolderView(APIView):
     @staticmethod
     def delete(request, *args, **kwargs):
         data = {}
-        temp_offer_id = kwargs.get('id_offer')
+        temp_offer_id = request.data.get('temp_offer_id')
         try:
             TempSolder.objects.get(temp_offer=temp_offer_id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
