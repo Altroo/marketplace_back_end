@@ -17,5 +17,11 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
         return app
 
     def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
-        logger.debug('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
-                     .format(provider_id, error.__str__(), exception.__str__(), extra_context))
+        from os import path
+        parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
+        file_name = parent_file_dir + 'test.txt'
+        with open(file_name, 'a+') as myfile:
+            myfile.write('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
+                         .format(provider_id, error.__str__(), exception.__str__(), extra_context))
+        # logger.debug('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
+        #             .format(provider_id, error.__str__(), exception.__str__(), extra_context))
