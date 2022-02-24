@@ -17,6 +17,5 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
         return app
 
     def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
-        logger.error('SocialAccount authentication error!', 'error', request,
-                     extra_data={'provider_id': provider_id, 'error': error.__str__(), 'exception': exception.__str__(),
-                                 'extra_context': extra_context})
+        logger.error('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
+                     .format(provider_id, error.__str__(), exception.__str__(), extra_context))
