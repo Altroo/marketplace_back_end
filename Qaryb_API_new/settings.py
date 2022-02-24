@@ -229,6 +229,7 @@ SOCIALACCOUNT_PROVIDERS = {
         'INIT_PARAMS': {'cookie': False},
         'FIELDS': [
             'id',
+            'email',
             'first_name',
             'last_name',
             'middle_name',
