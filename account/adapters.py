@@ -1,4 +1,7 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -12,3 +15,8 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
         app.client_id = config['client_id']
         app.secret = config['secret']
         return app
+
+    def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
+        logger.error('SocialAccount authentication error!', 'error', request,
+                     extra_data={'provider_id': provider_id, 'error': error.__str__(), 'exception': exception.__str__(),
+                                 'extra_context': extra_context})
