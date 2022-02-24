@@ -22,6 +22,10 @@ ALLOWED_HOSTS = [
     config('API_DOMAIN'),
 ]
 
+# Cors Origin
+CORS_ORIGIN_ALLOW_ALL = True
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 INSTALLED_APPS = [
@@ -202,8 +206,6 @@ API_URL = "http://127.0.0.1:8000"
 # Nominatim settings
 NOMINATIM_PROTOCOL = config('NOMINATIM_PROTOCOL')
 MAP_DOMAIN = config('MAP_DOMAIN')
-# Cors Origin
-CORS_ORIGIN_ALLOW_ALL = True
 
 # SIMPLE_JWT
 SIMPLE_JWT = {
