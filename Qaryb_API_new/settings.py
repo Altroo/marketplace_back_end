@@ -238,7 +238,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'short_name',
         ],
         'EXCHANGE_TOKEN': True,
-        'VERIFIED_EMAIL': True,
+        'VERIFIED_EMAIL': False,
         'VERSION': 'v13.0',
         # 'APP': {
         #     'client_id': '326143142278628',
