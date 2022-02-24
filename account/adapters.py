@@ -21,7 +21,7 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
         # parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
         file_name = '/home/git/Qaryb_API_new/www/test.txt'
         with open(file_name, 'a+') as myfile:
-            myfile.write('Facebook error! - provider id : {} - error : {} - exception : {}'
+            myfile.write('Facebook error! - provider id : {} - error : {} - exception : {}\n'
                          .format(provider_id, error.__str__(), exception.__str__()))
         # logger.debug('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
         #             .format(provider_id, error.__str__(), exception.__str__(), extra_context))
