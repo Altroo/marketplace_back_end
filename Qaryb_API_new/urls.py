@@ -4,6 +4,13 @@ from django.views.static import serve
 from Qaryb_API_new.settings import STATIC_ROOT, MEDIA_ROOT
 
 urlpatterns = [
+    # Account
+    # Socials included (facebook, google)
+    path('api/account/', include('account.base.urls', namespace='1.0.0')),
+    path('api/account/', include('dj_rest_auth.urls')),
+    path('api/account/registration/', include('dj_rest_auth.registration.urls')),
+    # For local testing
+    path('api/socials/', include('allauth.urls')),
     # Auth Shop
     path('api/shop/', include('auth_shop.base.urls', namespace='1.0.0')),
     # Temporary shops
