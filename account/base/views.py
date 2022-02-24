@@ -16,4 +16,4 @@ class GoogleLoginAccess(SocialLoginView):
 
 class HomeView(ConnectionsView):
     permission_classes = (permissions.IsAuthenticated,)
-    template_name = 'signup.html'
+    template_name = 'home.html'
