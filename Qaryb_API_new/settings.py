@@ -70,7 +70,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:4000'
+     'http://localhost:4000',
 ]
 
 ROOT_URLCONF = 'Qaryb_API_new.urls'
