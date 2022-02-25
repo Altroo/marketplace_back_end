@@ -10,6 +10,7 @@ urlpatterns = [
     # Auth shop
     # POST : Create temp shop
     path('', TempShopView.as_view()),
+    # GET :
     # PUT : Edit temp store
     path('edit/avatar', TempShopAvatarPutView.as_view()),
     path('edit/store_name', TempShopNamePutView.as_view()),
