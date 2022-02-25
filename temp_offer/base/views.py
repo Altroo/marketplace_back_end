@@ -25,7 +25,11 @@ class TempShopOfferView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
-        temp_shop = TempShop.objects.get(unique_id=unique_id).pk
+        try:
+            temp_shop = TempShop.objects.get(unique_id=unique_id).pk
+        except TempShop.DoesNotExist:
+            data = {'errors': ['Temp offer not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         offer_type = request.data.get('offer_type')
         title = request.data.get('title')
         description = request.data.get('description')
