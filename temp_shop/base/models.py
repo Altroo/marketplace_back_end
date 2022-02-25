@@ -45,7 +45,7 @@ class TempShop(Model):
                                default=None)
     avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
                                          default=None)
-    color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    color_code = models.CharField(verbose_name='Color code', max_length=20, default=None, blank=True, null=True)
     font_name = models.CharField(verbose_name='Font name', max_length=2, choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
     opening_days = models.ManyToManyField(Days, verbose_name='Opening days', related_name='temp_shop_opening_days')

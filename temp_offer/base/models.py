@@ -8,6 +8,7 @@ from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
+
 from temp_shop.base.models import TempShop
 
 

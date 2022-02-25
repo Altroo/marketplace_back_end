@@ -13,10 +13,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     GENDER_CHOICES = (
+        ('', 'Unset'),
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='M')
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='')
     birth_date = models.DateField(verbose_name="Date of birth", blank=True, null=True)
     city = models.DateField(verbose_name="City", blank=True, null=True)
     country = models.DateField(verbose_name="Country", blank=True, null=True)
