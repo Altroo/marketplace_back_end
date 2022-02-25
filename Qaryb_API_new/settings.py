@@ -209,8 +209,8 @@ MAP_DOMAIN = config('MAP_DOMAIN')
 
 # SIMPLE_JWT
 SIMPLE_JWT = {
-   'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
-   'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
 }
 
 # Celery, Redis settings
@@ -219,6 +219,15 @@ CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 # Celery Debug localhost
 # Doesn't call eta shift
 # CELERY_TASK_ALWAYS_EAGER = True
+
+# Email settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+# Gmail
+EMAIL_HOST_USER = "no-reply@qaryb.com"
+EMAIL_HOST_PASSWORD = "24YAqua09"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = "587"
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
@@ -283,3 +292,6 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 LOGIN_REDIRECT_URL = "/api/account/home/"
+
+JWT_AUTH_COOKIE = 'qaryb-jwt-auth'
+JWT_AUTH_REFRESH_COOKIE = 'qaryb-jwt-auth-refresh'

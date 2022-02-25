@@ -36,6 +36,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                     ), )
     # DATES
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    # Codes
+    activation_code = models.IntegerField(verbose_name='Account Activation Code', blank=True, null=True)
+    password_reset_code = models.IntegerField(verbose_name='Password Reset Code', blank=True, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

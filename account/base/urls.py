@@ -1,33 +1,36 @@
-from django.urls import path, include
-from .views import FacebookLoginAccess, GoogleLoginAccess, HomeView
+from django.urls import path
+from .views import FacebookLoginAccess, GoogleLoginAccess, \
+    CheckEmailView, RegistrationView, ActivateAccountView, \
+    ResendActivationCodeView, PasswordResetView, SendPasswordResetView
+from dj_rest_auth.views import LoginView, LogoutView, PasswordChangeView
+from rest_framework_simplejwt.views import TokenVerifyView
+from dj_rest_auth.jwt_auth import get_refresh_view
 
 app_name = 'account'
 
 urlpatterns = [
-    # TOKENS
-    # verify token : token/verify/
-    # refresh access token : token/refresh/
-
-    # User auth
-    # Send email password reset : password/reset/
-    # Resend password reset email confirmed : password/reset/confirm/
-    # Change password : password/change/
-    # Login with email : login/
-    # URLs that require a user to be logged in with a valid session / token.
-    # Logout : logout/
-    # Get user details : user/
-    # path('', include('dj_rest_auth.urls')),
-    # Registration emails
-    # Create new account : registration/
-    # Verify email : registration/verify-email
-    # Resend verification email : registration/resend-email
-    # Confirm email : registration/account-confirm-email/<keyn>
-    # UNKNOWN : registration/account-email-verification-sent/
-    # path('registration/', include('dj_rest_auth.registration.urls')),
-    # Socials
-    # path('check-account/', CheckAccountView.as_view()),
-    path('facebook-access/', FacebookLoginAccess.as_view(), name='fb_login_access'),
-    path('google-access/', GoogleLoginAccess.as_view(), name='fb_login_access'),
-    # path('connections/', ConnectionsRestView.as_view(), name='connections'),
-    path('home/', HomeView.as_view()),
+    # Get facebook token
+    path('facebook-access/', FacebookLoginAccess.as_view()),
+    # Get google token
+    path('google-access/', GoogleLoginAccess.as_view()),
+    # Check if email already exists
+    path('check-email/', CheckEmailView.as_view()),
+    # Login with raw email/password
+    path('login/', LoginView.as_view()),
+    # Logout
+    path('logout/', LogoutView.as_view()),
+    # Create account - verification code sent
+    path('register/', RegistrationView.as_view()),
+    # Activate account
+    path('activate-account/<str:email>/<int:code>/', ActivateAccountView.as_view(), name='activate_account'),
+    # Resend activation code
+    path('resend-activation/', ResendActivationCodeView.as_view()),
+    # Change password (from dj-rest-auth)
+    path('password-change/', PasswordChangeView.as_view()),
+    # Password reset
+    path('send-password-reset/', SendPasswordResetView.as_view()),
+    path('password-reset/<str:email>/<int:code>/', PasswordResetView.as_view(), name='password_reset'),
+    # Tokens, Verify if token valid, Refresh access token
+    path('token/verify/', TokenVerifyView.as_view()),
+    path('token/refresh/', get_refresh_view().as_view()),
 ]
