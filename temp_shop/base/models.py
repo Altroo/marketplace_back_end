@@ -48,7 +48,8 @@ class TempShop(Model):
     color_code = models.CharField(verbose_name='Color code', max_length=20, default=None, blank=True, null=True)
     font_name = models.CharField(verbose_name='Font name', max_length=20, default=None, blank=True, null=True)
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
-    opening_days = models.ManyToManyField(Days, verbose_name='Opening days', related_name='temp_shop_opening_days')
+    opening_days = models.ManyToManyField(Days, verbose_name='Opening days',
+                                          related_name='temp_shop_opening_days', blank=True)
     morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
     morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True, default=None)

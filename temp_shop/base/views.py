@@ -4,7 +4,7 @@ from rest_framework import status, permissions
 from temp_shop.base.serializers import BaseTempShopSerializer, BaseTempShopAvatarPutSerializer, \
     BaseTempShopNamePutSerializer, BaseTempShopBioPutSerializer, BaseTempShopAvailabilityPutSerializer, \
     BaseTempShopContactPutSerializer, BaseTempShopAddressPutSerializer, BaseTempShopColorPutSerializer, \
-    BaseTempShopFontPutSerializer
+    BaseTempShopFontPutSerializer, BaseGETTempShopInfoSerializer
 from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
@@ -69,6 +69,17 @@ class TempShopView(APIView):
             base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
             return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        unique_id = kwargs.get('unique_id')
+        try:
+            temp_shop = TempShop.objects.get(unique_id=unique_id)
+            temp_shop_details_serializer = BaseGETTempShopInfoSerializer(temp_shop)
+            return Response(temp_shop_details_serializer.data, status=status.HTTP_200_OK)
+        except TempShop.DoesNotExist:
+            data = {'errors': ['Temp shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TempShopAvatarPutView(APIView):

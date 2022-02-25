@@ -9,8 +9,9 @@ app_name = 'temp_shop'
 urlpatterns = [
     # Auth shop
     # POST : Create temp shop
+    # GET : Get temp shop info
     path('', TempShopView.as_view()),
-    # GET :
+    path('<str:unique_id>', TempShopView.as_view()),
     # PUT : Edit temp store
     path('edit/avatar', TempShopAvatarPutView.as_view()),
     path('edit/store_name', TempShopNamePutView.as_view()),

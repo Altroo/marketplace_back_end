@@ -51,6 +51,14 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
         return temp_shop
 
 
+class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
+    avatar = serializers.CharField(source='get_absolute_avatar_img')
+
+    class Meta:
+        model = TempShop
+        fields = ['shop_name', 'avatar', 'color_code', 'font_name']
+
+
 class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop

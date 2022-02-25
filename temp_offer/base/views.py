@@ -889,10 +889,10 @@ class GetOneTempOfferView(APIView):
                 .prefetch_related('temp_offer_delivery') \
                 .get(pk=offer_id)
             temp_offer_details_serializer = BaseTempOfferDetailsSerializer(temp_offer)
+            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
         except TempOffers.DoesNotExist:
             data = {'errors': ['Temp offer not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
 
 
 class GetTempShopOffersListView(APIView, PaginationMixinBy5):
@@ -928,10 +928,10 @@ class TempShopOfferSolderView(APIView):
         try:
             temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
             temp_offer_details_serializer = BaseTempShopOfferSolderSerializer(temp_solder)
+            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
         except TempSolder.DoesNotExist:
             data = {'errors': ['Temp offer solder not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request, *args, **kwargs):
