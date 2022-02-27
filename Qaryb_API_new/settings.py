@@ -22,9 +22,6 @@ ALLOWED_HOSTS = [
     config('API_DOMAIN'),
 ]
 
-# Cors Origin
-# CORS_ORIGIN_ALLOW_ALL = True
-
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
@@ -41,7 +38,7 @@ INSTALLED_APPS = [
     # 'channels',
     'rest_framework',
     'rest_framework_simplejwt',
-    # 'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'dj_rest_auth',
     'allauth',
@@ -55,7 +52,6 @@ INSTALLED_APPS = [
     'temp_shop.apps.TempShopConfig',
     'temp_offer.apps.TempOfferConfig',
     'places.apps.PlacesConfig',
-    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -166,7 +162,6 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': "rest_framework.versioning.NamespaceVersioning",
     'ALLOWED_VERSIONS': ('1.0.0',),
     'DEFAULT_VERSION': "1.0.0",
-    # 'DEFAULT_AUTHENTICATION_CLASSES': ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     'DEFAULT_PAGINATION_CLASS': "rest_framework.pagination.PageNumberPagination",
     'PAGE_SIZE': 10,
     'DEFAULT_RENDERER_CLASSES': ("rest_framework.renderers.JSONRenderer",),
@@ -175,6 +170,9 @@ REST_FRAMEWORK = {
 }
 
 REST_USE_JWT = True
+JWT_AUTH_RETURN_EXPIRATION = True
+JWT_AUTH_COOKIE = 'qaryb-jwt-access'
+JWT_AUTH_REFRESH_COOKIE = 'qaryb-jwt-refresh'
 REST_AUTH_TOKEN_MODEL = None
 
 # Logging
@@ -296,8 +294,4 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
-
-LOGIN_REDIRECT_URL = "/api/account/home/"
-
-JWT_AUTH_COOKIE = 'qaryb-jwt-auth'
-JWT_AUTH_REFRESH_COOKIE = 'qaryb-jwt-auth-refresh'
+# LOGIN_REDIRECT_URL = "/api/account/home/"

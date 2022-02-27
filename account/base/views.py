@@ -83,9 +83,9 @@ class ActivateAccountView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def get(request, *args, **kwargs):
-        email = str(kwargs.get('email')).lower()
-        code = kwargs.get('code')
+    def post(request, *args, **kwargs):
+        email = str(request.data.get('email')).lower()
+        code = request.data.get('code')
         data = {}
         try:
             user = CustomUser.objects.get(email=email)
@@ -135,7 +135,7 @@ class ResendActivationCodeView(APIView):
             email.send(fail_silently=False)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
-            data['email'] = ['Invalid email address!']
+            data['email'] = ["User Doesn't exist!"]
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -173,12 +173,27 @@ class SendPasswordResetView(APIView):
                     email.send(fail_silently=False)
                     return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
-            data['email'] = ['Invalid email address!']
+            data['email'] = ["User Doesn't exist!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetView(APIView):
     permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        email = str(kwargs.get('email')).lower()
+        code = kwargs.get('code')
+        data = {}
+        try:
+            user = CustomUser.objects.get(email=email)
+            if code is not None and code == user.confirm_password_reset_token:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            data['errors'] = ['Code invalid!']
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            data['errors'] = ["User Doesn't exist!"]
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def put(request, *args, **kwargs):
@@ -195,14 +210,14 @@ class PasswordResetView(APIView):
                     new_password2 = serializer.data.get("new_password2")
                     # set_password also hashes the password that the user will get
                     if new_password != new_password2:
-                        return Response({"new_password": ["Password doesn't match!"]},
+                        return Response({"new_password": ["Passwords doesn't match!"]},
                                         status=status.HTTP_400_BAD_REQUEST)
                     user.set_password(serializer.data.get("new_password"))
                     user.password_reset_code = ''
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            data['errors'] = ['Token invalid!']
+            data['errors'] = ['Code invalid!']
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             data['errors'] = ["User Doesn't exist!"]
@@ -213,7 +228,7 @@ class CheckEmailView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def post(request):
+    def post(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
         data = {}
         try:
@@ -221,4 +236,4 @@ class CheckEmailView(APIView):
             data['email'] = ['This email address already exists.']
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)

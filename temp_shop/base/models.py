@@ -1,7 +1,6 @@
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
-from colorfield.fields import ColorField
 from auth_shop.models import get_avatar_path, Days
 from Qaryb_API_new.settings import API_URL
 from uuid import uuid4
