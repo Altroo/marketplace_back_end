@@ -87,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-# ASGI_APPLICATION = "Qaryb_API_new.asgi.application"
+ASGI_APPLICATION = "Qaryb_API_new.asgi.application"
 WSGI_APPLICATION = "Qaryb_API_new.wsgi.application"
 
 # Database
@@ -218,6 +218,14 @@ SIMPLE_JWT = {
 }
 
 # Celery, Redis settings
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'CONFIG': {
+            "hosts": ["127.0.0.1", "6379"],
+        },
+    },
+}
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 # Celery Debug localhost
