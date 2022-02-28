@@ -1,4 +1,3 @@
-# from django.contrib.auth.models import AnonymousUser
 from django.utils.functional import cached_property
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter
