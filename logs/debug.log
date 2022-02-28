@@ -28921,3 +28921,147 @@ Unauthorized: /api/account/password_change/
 "POST /api/account/password_change/ HTTP/1.1" 401 176
 Unauthorized: /api/account/password_change/
 "POST /api/account/password_change/ HTTP/1.1" 401 176
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Not Found: /
+"GET / HTTP/1.1" 404 2992
+Not Found: /favicon.ico
+Not Found: /api/
+"GET /api/ HTTP/1.1" 404 3022
+Not Found: /favicon.ico
+Not Found: /api/socials/
+"GET /api/socials/ HTTP/1.1" 404 6968
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /accounts/profile/
+"GET /accounts/profile/ HTTP/1.1" 404 3061
+Not Found: /favicon.ico
+Not Found: /api/socials/
+"GET /api/socials/ HTTP/1.1" 404 6968
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /
+"GET / HTTP/1.1" 404 2992
+Not Found: /favicon.ico
+Not Found: /api/socials/
+"GET /api/socials/ HTTP/1.1" 404 6968
+Not Found: /api/socials/google/
+"GET /api/socials/google/ HTTP/1.1" 404 7315
+Not Found: /favicon.ico
+Internal Server Error: /api/socials/google/login/callback/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 80, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 129, in dispatch
+    return render_authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 67, in render_authentication_error
+    get_adapter(request).authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/account/adapters.py", line 23, in authentication_error
+    with open(file_name, 'a+') as myfile:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/git/Qaryb_API_new/www/test.txt'
+"GET /api/socials/google/login/callback/ HTTP/1.1" 500 83486
+Not Found: /favicon.ico
+Internal Server Error: /api/socials/google/login/callback/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 80, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 129, in dispatch
+    return render_authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 67, in render_authentication_error
+    get_adapter(request).authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/account/adapters.py", line 24, in authentication_error
+    with open(file_name, 'a+') as myfile:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/git/Qaryb_API_new/www/test.txt'
+"GET /api/socials/google/login/callback/ HTTP/1.1" 500 83800
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 3043
+Internal Server Error: /api/socials/google/login/callback/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 80, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 129, in dispatch
+    return render_authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 67, in render_authentication_error
+    get_adapter(request).authentication_error(
+  File "/Users/youness/Desktop/Qaryb_API_new/account/adapters.py", line 24, in authentication_error
+    with open(file_name, 'a+') as myfile:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/git/Qaryb_API_new/www/test.txt'
+"GET /api/socials/google/login/callback/ HTTP/1.1" 500 83800
+Not Found: /favicon.ico
+Not Found: /api/socials/
+"GET /api/socials/ HTTP/1.1" 404 3752
+Not Found: /favicon.ico
+Not Found: /api/socials/google/
+"GET /api/socials/google/ HTTP/1.1" 404 3773
+Not Found: /favicon.ico
+Not Found: /api/socials/google/
+"GET /api/socials/google/ HTTP/1.1" 404 7315
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /accounts/profile/
+"GET /accounts/profile/ HTTP/1.1" 404 3061
+Not Found: /accounts/profile/
+"GET /accounts/profile/ HTTP/1.1" 404 3061
+Not Found: /favicon.ico
+Not Found: /
+"GET / HTTP/1.1" 404 2992
+Not Found: /favicon.ico
+Internal Server Error: /api/socials/google/login/callback/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 80, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/oauth2/views.py", line 139, in dispatch
+    login = self.adapter.complete_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/google/views.py", line 25, in complete_login
+    login = self.get_provider().sociallogin_from_response(request, extra_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/providers/base/provider.py", line 74, in sociallogin_from_response
+    user.set_unusable_password()
+AttributeError: 'NoneType' object has no attribute 'set_unusable_password'
+"GET /api/socials/google/login/callback/?state=DUqLuEpI6jeQ&code=4%2F0AX4XfWg5qDnRAoGGtFS_aeNnZWF1eQLr4zeNJlKkPcJSZ3gtbAPG7gc87JMcev1UFL4q2g&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid&authuser=1&prompt=consent HTTP/1.1" 500 94161
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico

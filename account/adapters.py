@@ -1,5 +1,6 @@
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 import logging
+from Qaryb_API_new.settings import SOCIAL_ERROR_FILE_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -19,9 +20,9 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
     def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
         from os import path
         # parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
-        file_name = '/home/git/Qaryb_API_new/www/test.txt'
-        with open(file_name, 'a+') as myfile:
+        # file_name = '/home/git/Qaryb_API_new/www/test.txt'
+        with open(SOCIAL_ERROR_FILE_PATH, 'a+') as myfile:
             myfile.write('Facebook error! - provider id : {} - error : {} - exception : {}\n'
                          .format(provider_id, error.__str__(), exception.__str__()))
-        # logger.debug('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
-        #             .format(provider_id, error.__str__(), exception.__str__(), extra_context))
+        logger.warning('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
+                       .format(provider_id, error.__str__(), exception.__str__(), extra_context))
