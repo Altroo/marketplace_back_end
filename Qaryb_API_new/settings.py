@@ -204,9 +204,8 @@ LOGGING = {
         },
     },
 }
-SOCIAL_ERROR_FILE_PATH = config('SOCIAL_ERROR_FILE_PATH')
 
-API_URL = "http://127.0.0.1:8000"
+API_URL = config('API_URL')
 
 # Nominatim settings
 NOMINATIM_PROTOCOL = config('NOMINATIM_PROTOCOL')
