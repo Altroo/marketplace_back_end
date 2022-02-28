@@ -153,6 +153,7 @@ class TempShopAvailabilityPutView(APIView):
             new_availability = serializer.update(temp_shop, serializer.validated_data)
             opening_days = str(request.data.get('opening_days')).split(',')
             opening_days = Days.objects.filter(code_day__in=opening_days)
+            new_availability.opening_days.clear()
             for day in opening_days:
                 new_availability.opening_days.add(day.pk)
             return Response(status=status.HTTP_204_NO_CONTENT)
