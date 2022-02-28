@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from temp_shop.base.models import TempShop
+from temp_shop.base.models import TempShop, Days
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):
@@ -51,8 +51,19 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
         return temp_shop
 
 
+class BaseTempShopOpeningDaysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Days
+        fields = ['code_day']
+
+
 class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
+    opening_days = BaseTempShopOpeningDaysSerializer(many=True, read_only=True)
+    morning_hour_from = serializers.TimeField(format='%H:%M')
+    morning_hour_to = serializers.TimeField(format='%H:%M')
+    afternoon_hour_from = serializers.TimeField(format='%H:%M')
+    afternoon_hour_to = serializers.TimeField(format='%H:%M')
 
     class Meta:
         model = TempShop
