@@ -14,7 +14,7 @@ from Qaryb_API_new.settings import API_URL
 from temp_offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
 from temp_offer.base.models import TempShop, TempOffers, TempDelivery, TempSolder, TempProducts, TempServices
 from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import Cities
+from places.base.models import City
 from temp_offer.mixins import PaginationMixinBy5
 
 
@@ -226,7 +226,7 @@ class TempShopOfferView(APIView):
                     for city in cities_str:
                         cities.append(int(city))
 
-                    cities = Cities.objects.filter(pk__in=cities)
+                    cities = City.objects.filter(pk__in=cities)
                     delivery_cities_1 = []
                     for city in cities:
                         delivery_cities_1.append(
@@ -250,7 +250,7 @@ class TempShopOfferView(APIView):
                     for city in cities_str:
                         cities.append(int(city))
 
-                    cities = Cities.objects.filter(pk__in=cities)
+                    cities = City.objects.filter(pk__in=cities)
                     delivery_cities_2 = []
                     for city in cities:
                         delivery_cities_2.append(
@@ -274,7 +274,7 @@ class TempShopOfferView(APIView):
                     for city in cities_str:
                         cities.append(int(city))
 
-                    cities = Cities.objects.filter(pk__in=cities)
+                    cities = City.objects.filter(pk__in=cities)
                     delivery_cities_3 = []
                     for city in cities:
                         delivery_cities_3.append(
@@ -680,7 +680,7 @@ class TempShopOfferView(APIView):
                         for city in cities_str:
                             cities.append(int(city))
 
-                        cities = Cities.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(pk__in=cities)
                         delivery_cities_1 = []
                         for city in cities:
                             delivery_cities_1.append(
@@ -704,7 +704,7 @@ class TempShopOfferView(APIView):
                         for city in cities_str:
                             cities.append(int(city))
 
-                        cities = Cities.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(pk__in=cities)
                         delivery_cities_2 = []
                         for city in cities:
                             delivery_cities_2.append(
@@ -728,7 +728,7 @@ class TempShopOfferView(APIView):
                         for city in cities_str:
                             cities.append(int(city))
 
-                        cities = Cities.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(pk__in=cities)
                         delivery_cities_3 = []
                         for city in cities:
                             delivery_cities_3.append(
@@ -1185,7 +1185,7 @@ class TempShopOfferDuplicateView(APIView):
                 # Delivery 1 cities
                 delivery_cities_1_pk = []
                 if delivery_city_1:
-                    cities = Cities.objects.filter(pk__in=delivery_city_1)
+                    cities = City.objects.filter(pk__in=delivery_city_1)
                     delivery_cities_1 = []
                     for city in cities:
                         delivery_cities_1.append(
@@ -1202,7 +1202,7 @@ class TempShopOfferDuplicateView(APIView):
                 # Delivery 2 cities
                 delivery_cities_2_pk = []
                 if delivery_city_2:
-                    cities = Cities.objects.filter(pk__in=delivery_city_2)
+                    cities = City.objects.filter(pk__in=delivery_city_2)
                     delivery_cities_2 = []
                     for city in cities:
                         delivery_cities_2.append(
@@ -1219,7 +1219,7 @@ class TempShopOfferDuplicateView(APIView):
                 # Delivery 3 cities
                 delivery_cities_3_pk = []
                 if delivery_city_3:
-                    cities = Cities.objects.filter(pk__in=delivery_city_3)
+                    cities = City.objects.filter(pk__in=delivery_city_3)
                     delivery_cities_3 = []
                     for city in cities:
                         delivery_cities_3.append(

@@ -5,6 +5,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from .managers import CustomUserManager
+from places.base.models import City, Country, PlaceType
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -19,11 +20,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='')
     birth_date = models.DateField(verbose_name="Date of birth", blank=True, null=True)
-    city = models.DateField(verbose_name="City", blank=True, null=True)
-    country = models.DateField(verbose_name="Country", blank=True, null=True)
-    # city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL)
-    # country = models.ForeignKey(Place, verbose_name='Country', blank=True, null=True, related_name='users',
-    #                            on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
+    # city = models.DateField(verbose_name="City", blank=True, null=True)
+    # country = models.DateField(verbose_name="Country", blank=True, null=True)
+    city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL)
+    country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True, related_name='users',
+                                on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
     phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
     # permissions
     is_staff = models.BooleanField(_('staff status'),

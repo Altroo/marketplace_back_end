@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Model
 from os import path
 from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import Cities
+from places.base.models import City
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -240,7 +240,7 @@ class TempDelivery(Model):
     temp_offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
                                    verbose_name='Temp Offer',
                                    related_name='temp_offer_delivery')
-    temp_delivery_city = models.ManyToManyField(Cities, verbose_name='Temp Delivery City',
+    temp_delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
                                                 related_name='temp_delivery_city')
     temp_delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
     temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)

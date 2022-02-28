@@ -2,7 +2,7 @@ from rest_framework import serializers
 from temp_offer.base.models import TempOffers, TempDelivery, \
     TempSolder, TempProducts, TempServices
 from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import Cities
+from places.base.models import City
 
 
 class BaseTempOfferCategoriesSerializer(serializers.ModelSerializer):
@@ -100,7 +100,7 @@ class BaseTempShopServiceSerializer(serializers.ModelSerializer):
 
 class BaseTempShopCitySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cities
+        model = City
         fields = ['pk', 'city_en', 'city_fr', 'city_ar']
 
 

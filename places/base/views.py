@@ -1,55 +1,49 @@
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from places.base.models import Cities
-from rest_framework import status, permissions
-from places.base.serializers import BaseCitiesListSerializer
-from places.base.language_cleaner import LanguageCleaner
-from places.base.nominatim import NominatimSearch
+from django.db.models.functions import Coalesce
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
+
+from places.base.filters import UserLanguageMixin, CountryFilterSet, CityFilterSet
+from places.base.serializers import BaseCountrySerializer, BaseCitySerializer
+from places.base.choices import PlaceType
+from places.base.models import Country, City
 
 
-class CitiesListView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class PlaceLanguageMixin(UserLanguageMixin):
+    """
+    Mixin of places
+    """
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        cities = Cities.objects.all()
-        serializer = BaseCitiesListSerializer(instance=cities, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    permission_classes = (AllowAny,)
+
+    def get_queryset(self):
+        return super().get_queryset() \
+            .annotate(language_name=Coalesce(f'name_{self.user_language.lower()}', 'name')) \
+            .defer('name').exclude(language_name__exact='').order_by('language_name')
 
 
-class GetLocalisationNameView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class CountriesListView(PlaceLanguageMixin, ListAPIView):
+    """
+    List of countries
+    """
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        lang = 'FR'
-        port = '7079'
-        long = float(kwargs.get('lon'))
-        lat = float(kwargs.get('lat'))
-        try:
-            clean_result = NominatimSearch(language=lang, port=port) \
-                .get_name_of_place(lat=lat, long=long, additional_info=True)[0].get('address')
-            needed_keys = ['commercial', 'road', 'industrial', 'neighbourhood', 'suburb',
-                           'city_district', 'hamlet', 'town', 'village',
-                           'county', 'residential', 'city']
+    permission_classes = (AllowAny,)
+    queryset = Country.objects.filter(cities__isnull=False, type=PlaceType.COUNTRY).distinct()
+    serializer_class = BaseCountrySerializer
+    filter_class = CountryFilterSet
+    pagination_class = None
 
-            final_result = None
-            for i in needed_keys:
-                result = clean_result.get(i)
-                if result is not None:
-                    final_result = result
-                    break
 
-            if final_result is None:
-                data = {'errors': 'The given geo is not a valid road!'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+class CitiesListView(PlaceLanguageMixin, ListAPIView):
+    """
+    List of countries
+    """
 
-            clean_result = LanguageCleaner().clear_string(final_result, 'tifinagh',
-                                                          {'tifinagh': {'start': 'u2d30', 'end': 'u2d7f'}})
+    queryset = City.objects.all()
+    serializer_class = BaseCitySerializer
+    filter_class = CityFilterSet
+    pagination_class = None
 
-            data = {'localisation_name': clean_result}
-            return Response(data=data, status=status.HTTP_200_OK)
-
-        except (IndexError, AttributeError):
-            data = {'errors': 'The given geo is not a valid road!'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        if not self.request.GET.get('code'):
+            return self.queryset.model.objects.none()
+        return super().get_queryset()

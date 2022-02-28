@@ -1,14 +1,35 @@
 from rest_framework import serializers
-from places.base.models import Cities
+
+from places.base.models import Country, City
 
 
-class BaseCitiesListSerializer(serializers.ModelSerializer):
-    # pk = serializers.IntegerField(source='city.pk')
-    # city_en = serializers.CharField(source='city.name_en')
-    # city_fr = serializers.CharField(source='city.name_fr')
-    # city_ar = serializers.CharField(source='city.name_ar')
+class BasePlaceBaseSerializer(serializers.ModelSerializer):
+    """
+    Place Base serializer
+    """
+    name = serializers.CharField(source='language_name')
 
     class Meta:
-        model = Cities
-        # fields = ['pk', 'city_en', 'city_fr', 'city_ar']
-        fields = ['pk', 'city_fr']
+        fields = (
+            'pk',
+            'name',
+        )
+
+
+class BaseCountrySerializer(BasePlaceBaseSerializer):
+    """
+    Country serializer
+    """
+
+    class Meta(BasePlaceBaseSerializer.Meta):
+        model = Country
+        fields = BasePlaceBaseSerializer.Meta.fields + ('code',)
+
+
+class BaseCitySerializer(BasePlaceBaseSerializer):
+    """
+    City serializer
+    """
+
+    class Meta(BasePlaceBaseSerializer.Meta):
+        model = City

@@ -29065,3 +29065,375 @@ Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
+Not Found: /
+"GET / HTTP/1.1" 404 2880
+Not Found: /favicon.ico
+Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+psycopg2.errors.UndefinedColumn: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/admin/sites.py", line 417, in login
+    return LoginView.as_view(**defaults)(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 90, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/views.py", line 64, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 101, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/edit.py", line 143, in post
+    if form.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 190, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 185, in errors
+    self.full_clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 405, in full_clean
+    self._clean_form()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 426, in _clean_form
+    cleaned_data = self.clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/forms.py", line 205, in clean
+    self.user_cache = authenticate(self.request, username=username, password=password)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 42, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/__init__.py", line 76, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/backends.py", line 42, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/base_user.py", line 44, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 435, in get
+    num = len(clone)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1354, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1202, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute
+    with self.db.wrap_database_errors:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+django.db.utils.ProgrammingError: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+"POST /admin/login/?next=/admin/ HTTP/1.1" 500 231698
+Not Found: /favicon.ico
+Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+psycopg2.errors.UndefinedColumn: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/admin/sites.py", line 417, in login
+    return LoginView.as_view(**defaults)(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 90, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/views.py", line 64, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 101, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/edit.py", line 143, in post
+    if form.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 190, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 185, in errors
+    self.full_clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 405, in full_clean
+    self._clean_form()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 426, in _clean_form
+    cleaned_data = self.clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/forms.py", line 205, in clean
+    self.user_cache = authenticate(self.request, username=username, password=password)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 42, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/__init__.py", line 76, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/backends.py", line 42, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/base_user.py", line 44, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 435, in get
+    num = len(clone)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1354, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1202, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute
+    with self.db.wrap_database_errors:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+django.db.utils.ProgrammingError: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+"POST /admin/login/?next=/admin/ HTTP/1.1" 500 232538
+Not Found: /favicon.ico
+Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+psycopg2.errors.UndefinedColumn: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/admin/sites.py", line 417, in login
+    return LoginView.as_view(**defaults)(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 90, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/views.py", line 64, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 101, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/edit.py", line 143, in post
+    if form.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 190, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 185, in errors
+    self.full_clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 405, in full_clean
+    self._clean_form()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 426, in _clean_form
+    cleaned_data = self.clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/forms.py", line 205, in clean
+    self.user_cache = authenticate(self.request, username=username, password=password)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 42, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/__init__.py", line 76, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/backends.py", line 42, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/base_user.py", line 44, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 435, in get
+    num = len(clone)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1354, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1202, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute
+    with self.db.wrap_database_errors:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+django.db.utils.ProgrammingError: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+"POST /admin/login/?next=/admin/ HTTP/1.1" 500 232538
+Internal Server Error: /admin/login/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+psycopg2.errors.UndefinedColumn: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/admin/sites.py", line 417, in login
+    return LoginView.as_view(**defaults)(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 90, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/cache.py", line 57, in _wrapped_view_func
+    response = view_func(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/views.py", line 64, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 101, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/edit.py", line 143, in post
+    if form.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 190, in is_valid
+    return self.is_bound and not self.errors
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 185, in errors
+    self.full_clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 405, in full_clean
+    self._clean_form()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/forms/forms.py", line 426, in _clean_form
+    cleaned_data = self.clean()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/forms.py", line 205, in clean
+    self.user_cache = authenticate(self.request, username=username, password=password)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 42, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/__init__.py", line 76, in authenticate
+    user = backend.authenticate(request, **credentials)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/backends.py", line 42, in authenticate
+    user = UserModel._default_manager.get_by_natural_key(username)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/base_user.py", line 44, in get_by_natural_key
+    return self.get(**{self.model.USERNAME_FIELD: username})
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 435, in get
+    num = len(clone)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 262, in __len__
+    self._fetch_all()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1354, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 51, in __iter__
+    results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1202, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 99, in execute
+    return super().execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(sql, params, many=False, executor=self._execute)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 76, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute
+    with self.db.wrap_database_errors:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/utils.py", line 90, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 85, in _execute
+    return self.cursor.execute(sql, params)
+django.db.utils.ProgrammingError: column accounts_customuser.city_id does not exist
+LINE 1: ...er"."gender", "accounts_customuser"."birth_date", "accounts_...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
+
+"POST /admin/login/?next=/admin/ HTTP/1.1" 500 232538
+Not Found: /favicon.ico
+Not Found: /api/places/cities&code=MA
+"GET /api/places/cities&code=MA HTTP/1.1" 404 3209
