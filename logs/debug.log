@@ -29438,6 +29438,85 @@ Not Found: /favicon.ico
 Not Found: /api/places/cities&code=MA
 "GET /api/places/cities&code=MA HTTP/1.1" 404 3209
 Not Found: /favicon.ico
+<<<<<<< HEAD
 Not Found: /favicon.ico
 Not Found: /favicon.ico
+=======
+Internal Server Error: /api/temp_shop/get/b139a6e2-f21b-44d6-bec6-f9ad99e2d9c5/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_shop/base/views.py", line 79, in get
+    return Response(temp_shop_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1052, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1148, in get_field_names
+    assert field_name in fields, (
+AssertionError: The field 'BaseTempShopOpeningDaysSerializer' was declared on serializer BaseGETTempShopInfoSerializer, but has not been included in the 'fields' option.
+"GET /api/temp_shop/get/b139a6e2-f21b-44d6-bec6-f9ad99e2d9c5/ HTTP/1.1" 500 145075
+Internal Server Error: /api/temp_shop/get/b139a6e2-f21b-44d6-bec6-f9ad99e2d9c5/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 69, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/temp_shop/base/views.py", line 79, in get
+    return Response(temp_shop_details_serializer.data, status=status.HTTP_200_OK)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 253, in data
+    self._data = self.to_representation(self.instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 507, in to_representation
+    for field in fields:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 368, in _readable_fields
+    for field in self.fields.values():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 48, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 356, in fields
+    for key, value in self.get_fields().items():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1052, in get_fields
+    field_names = self.get_field_names(declared_fields, info)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 1148, in get_field_names
+    assert field_name in fields, (
+AssertionError: The field 'BaseTempShopOpeningDaysSerializer' was declared on serializer BaseGETTempShopInfoSerializer, but has not been included in the 'fields' option.
+"GET /api/temp_shop/get/b139a6e2-f21b-44d6-bec6-f9ad99e2d9c5/ HTTP/1.1" 500 145125
+>>>>>>> master
 Not Found: /favicon.ico
