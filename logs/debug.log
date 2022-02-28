@@ -29437,3 +29437,7 @@ HINT:  Perhaps you meant to reference the column "accounts_customuser.city".
 Not Found: /favicon.ico
 Not Found: /api/places/cities&code=MA
 "GET /api/places/cities&code=MA HTTP/1.1" 404 3209
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
