@@ -56,7 +56,13 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TempShop
-        fields = ['shop_name', 'avatar', 'color_code', 'font_name']
+        fields = ['shop_name', 'avatar', 'color_code', 'font_name', 'bio',
+                  'opening_days', 'morning_hour_from', 'morning_hour_to',
+                  'afternoon_hour_from', 'afternoon_hour_to',
+                  'phone', 'contact_email',
+                  'website_link', 'facebook_link', 'twitter_link', 'instagram_link',
+                  'whatsapp', 'zone_by', 'longitude', 'latitude',
+                  'address_name', 'km_radius']
 
 
 class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
