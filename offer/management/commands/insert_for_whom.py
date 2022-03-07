@@ -1,36 +1,36 @@
 import sys
 from django.core.management import BaseCommand
-from auth_shop.models import Categories
+from offer.base.models import ForWhom
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError
 
 
-class InsertCategories:
+class InsertForWhom:
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../../.."))
 
-    def insert_categories(self):
-        with open(self.parent_file_dir + '/csv_data/categories.csv', 'r+', encoding='UTF8') as f:
+    def insert_for_whom(self):
+        with open(self.parent_file_dir + '/csv_data/for_whom.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
                 try:
-                    Categories.objects.create(code_category=row[0], name_category=row[1])
+                    ForWhom.objects.create(code_for_whom=row[0], name_for_whom=row[1])
                 except IntegrityError:
                     continue
 
 
 class Command(BaseCommand):
-    help = 'Insert Categories'
+    help = 'Insert For Whom'
 
     def handle(self, *args, **options):
-        sys.stdout.write(f'Start processing Categories.\n')
-        self.insert_categories()
+        sys.stdout.write(f'Start processing For whom.\n')
+        self.insert_for_whom()
         sys.stdout.write('\n')
 
     @staticmethod
-    def insert_categories():
-        categories_inserter = InsertCategories()
+    def insert_for_whom():
+        for_whom_inserter = InsertForWhom()
         try:
-            categories_inserter.insert_categories()
+            for_whom_inserter.insert_for_whom()
         except Exception as e:
             sys.stdout.write('{}.\n'.format(e))

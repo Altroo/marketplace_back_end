@@ -48,9 +48,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'account.apps.AccountConfig',
-    'auth_shop.apps.AuthShopConfig',
     'temp_shop.apps.TempShopConfig',
+    'auth_shop.apps.AuthShopConfig',
     'temp_offer.apps.TempOfferConfig',
+    'offer.apps.OfferConfig',
     'places.apps.PlacesConfig',
 ]
 

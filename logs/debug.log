@@ -29520,3 +29520,7 @@ AssertionError: The field 'BaseTempShopOpeningDaysSerializer' was declared on se
 "GET /api/temp_shop/get/b139a6e2-f21b-44d6-bec6-f9ad99e2d9c5/ HTTP/1.1" 500 145125
 >>>>>>> master
 Not Found: /favicon.ico
+Not Found: /
+"GET / HTTP/1.1" 404 2990
+Not Found: /favicon.ico
+Not Found: /favicon.ico

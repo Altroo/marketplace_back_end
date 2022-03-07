@@ -11,14 +11,61 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('temp_shop', '0001_initial'),
+        ('auth_shop', '0001_initial'),
         ('places', '0001_initial'),
-        ('offer', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TempOffers',
+            name='Categories',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code_category', models.CharField(blank=True, default=None, max_length=2, null=True, unique=True)),
+                ('name_category', models.CharField(max_length=255, unique=True, verbose_name='Category Name')),
+            ],
+            options={
+                'verbose_name': 'Category',
+                'verbose_name_plural': 'Categories',
+            },
+        ),
+        migrations.CreateModel(
+            name='Colors',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code_color', models.CharField(blank=True, default=None, max_length=2, null=True, unique=True)),
+                ('name_color', models.CharField(max_length=255, unique=True, verbose_name='Color Name')),
+            ],
+            options={
+                'verbose_name': 'Color',
+                'verbose_name_plural': 'Colors',
+            },
+        ),
+        migrations.CreateModel(
+            name='Days',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code_day', models.CharField(blank=True, default=None, max_length=2, null=True, unique=True)),
+                ('name_day', models.CharField(max_length=255, unique=True, verbose_name='Day name')),
+            ],
+            options={
+                'verbose_name': 'Day',
+                'verbose_name_plural': 'Days',
+            },
+        ),
+        migrations.CreateModel(
+            name='ForWhom',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code_for_whom', models.CharField(blank=True, default=None, max_length=2, null=True, unique=True)),
+                ('name_for_whom', models.CharField(max_length=255, unique=True, verbose_name='For whom Name')),
+            ],
+            options={
+                'verbose_name': 'For Whom',
+                'verbose_name_plural': 'For Whom',
+            },
+        ),
+        migrations.CreateModel(
+            name='Offers',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('offer_type', models.CharField(choices=[('V', 'Sell'), ('S', 'Service'), ('L', 'Location')], max_length=1, verbose_name='Offer Type')),
@@ -35,31 +82,43 @@ class Migration(migrations.Migration):
                 ('price', models.FloatField(default=0.0, verbose_name='Price')),
                 ('created_date', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='Created date')),
                 ('updated_date', models.DateTimeField(auto_now=True, verbose_name='Updated date')),
-                ('for_whom', models.ManyToManyField(related_name='temp_product_for_whom', to='offer.forwhom', verbose_name='For Whom')),
-                ('offer_categories', models.ManyToManyField(related_name='temp_offer_categories', to='offer.categories', verbose_name='Offer Categories')),
-                ('temp_shop', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='temp_shop', to='temp_shop.tempshop', verbose_name='Temp Shop')),
+                ('auth_shop', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='auth_shop_offers', to='auth_shop.authshop', verbose_name='Auth Shop')),
+                ('for_whom', models.ManyToManyField(related_name='product_for_whom', to='offer.forwhom', verbose_name='For Whom')),
+                ('offer_categories', models.ManyToManyField(related_name='offer_categories', to='offer.categories', verbose_name='Offer Categories')),
             ],
             options={
-                'verbose_name': 'Temp Offer',
-                'verbose_name_plural': 'Temp Offers',
+                'verbose_name': 'Offer',
+                'verbose_name_plural': 'Offers',
                 'ordering': ('created_date',),
             },
         ),
         migrations.CreateModel(
-            name='TempSolder',
+            name='Sizes',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('temp_solder_type', models.CharField(choices=[('F', 'Prix fix'), ('P', 'Pourcentage')], max_length=1, verbose_name='Temp solder type')),
-                ('temp_solder_value', models.FloatField(default=0.0, verbose_name='Temp solder value')),
-                ('temp_offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='temp_offer_solder', to='temp_offer.tempoffers', verbose_name='Temp Offer')),
+                ('code_size', models.CharField(blank=True, default=None, max_length=2, null=True, unique=True)),
+                ('name_size', models.CharField(max_length=255, unique=True, verbose_name='Size Name')),
             ],
             options={
-                'verbose_name': 'Temp Solder',
-                'verbose_name_plural': 'Temp Solders',
+                'verbose_name': 'Size',
+                'verbose_name_plural': 'Sizes',
             },
         ),
         migrations.CreateModel(
-            name='TempServices',
+            name='Solder',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('solder_type', models.CharField(choices=[('F', 'Prix fix'), ('P', 'Pourcentage')], max_length=1, verbose_name='Solder type')),
+                ('solder_value', models.FloatField(default=0.0, verbose_name='Solder value')),
+                ('offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='offer_solder', to='offer.offers', verbose_name='Offer')),
+            ],
+            options={
+                'verbose_name': 'Solder',
+                'verbose_name_plural': 'Solders',
+            },
+        ),
+        migrations.CreateModel(
+            name='Services',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('service_morning_hour_from', models.TimeField(blank=True, default=None, null=True, verbose_name='Morning hour from')),
@@ -72,17 +131,17 @@ class Migration(migrations.Migration):
                 ('service_latitude', models.FloatField(blank=True, default=None, max_length=10, null=True, validators=[django.core.validators.RegexValidator('^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$', 'Only Geo numbers are allowed.')], verbose_name='Service Latitude')),
                 ('service_address', models.CharField(blank=True, default=None, max_length=255, null=True, verbose_name='Service Address')),
                 ('service_km_radius', models.FloatField(blank=True, default=None, null=True, verbose_name='Km radius')),
-                ('service_availability_days', models.ManyToManyField(related_name='temp_service_availability_days', to='offer.days', verbose_name='Opening days')),
-                ('temp_offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='temp_offer_services', to='temp_offer.tempoffers', verbose_name='Temp Offer')),
+                ('offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='offer_services', to='offer.offers', verbose_name='Offer')),
+                ('service_availability_days', models.ManyToManyField(related_name='service_availability_days', to='offer.days', verbose_name='Opening days')),
             ],
             options={
-                'verbose_name': 'Temp Service',
-                'verbose_name_plural': 'Temp Services',
+                'verbose_name': 'Service',
+                'verbose_name_plural': 'Services',
                 'ordering': ('-pk',),
             },
         ),
         migrations.CreateModel(
-            name='TempProducts',
+            name='Products',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('product_quantity', models.PositiveIntegerField(default=0, verbose_name='Quantity')),
@@ -90,28 +149,28 @@ class Migration(migrations.Migration):
                 ('product_longitude', models.FloatField(blank=True, default=None, max_length=10, null=True, validators=[django.core.validators.RegexValidator('^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,6})?))$', 'Only Geo numbers are allowed.')], verbose_name='Product Longitude')),
                 ('product_latitude', models.FloatField(blank=True, default=None, max_length=10, null=True, validators=[django.core.validators.RegexValidator('^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$', 'Only Geo numbers are allowed.')], verbose_name='Product Latitude')),
                 ('product_address', models.CharField(blank=True, default=None, max_length=255, null=True, verbose_name='Product Address')),
-                ('product_colors', models.ManyToManyField(related_name='temp_product_colors', to='offer.colors', verbose_name='Product Colors')),
-                ('product_sizes', models.ManyToManyField(related_name='temp_product_sizes', to='offer.sizes', verbose_name='Product Sizes')),
-                ('temp_offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='temp_offer_products', to='temp_offer.tempoffers', verbose_name='Temp Offer')),
+                ('offer', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='offer_products', to='offer.offers', verbose_name='Offer')),
+                ('product_colors', models.ManyToManyField(related_name='product_colors', to='offer.colors', verbose_name='Product Colors')),
+                ('product_sizes', models.ManyToManyField(related_name='product_sizes', to='offer.sizes', verbose_name='Product Sizes')),
             ],
             options={
-                'verbose_name': 'Temp Product',
-                'verbose_name_plural': 'Temp Products',
+                'verbose_name': 'Product',
+                'verbose_name_plural': 'Products',
                 'ordering': ('-pk',),
             },
         ),
         migrations.CreateModel(
-            name='TempDelivery',
+            name='Delivery',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('temp_delivery_price', models.FloatField(default=0.0, verbose_name='Temp delivery Price')),
-                ('temp_delivery_days', models.PositiveIntegerField(default=0, verbose_name='Temp number of Days')),
-                ('temp_delivery_city', models.ManyToManyField(related_name='temp_delivery_city', to='places.city', verbose_name='Temp Delivery City')),
-                ('temp_offer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='temp_offer_delivery', to='temp_offer.tempoffers', verbose_name='Temp Offer')),
+                ('delivery_price', models.FloatField(default=0.0, verbose_name='Delivery Price')),
+                ('delivery_days', models.PositiveIntegerField(default=0, verbose_name='Number of Days')),
+                ('delivery_city', models.ManyToManyField(related_name='delivery_city', to='places.city', verbose_name='Delivery City')),
+                ('offer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='offer_delivery', to='offer.offers', verbose_name='Offer')),
             ],
             options={
-                'verbose_name': 'Temp Delivery',
-                'verbose_name_plural': 'Temp Deliveries',
+                'verbose_name': 'Delivery',
+                'verbose_name_plural': 'Deliveries',
             },
         ),
     ]

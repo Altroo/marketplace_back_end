@@ -2,7 +2,6 @@ from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
 from temp_shop.base.models import TempShop
 from temp_offer.base.models import TempOffers
-from temp_offer.base.tasks import start_generating_thumbnail
 from os import remove, path
 
 
@@ -79,13 +78,3 @@ def base_start_deleting_expired_shops(self, shop_id):
                 pass
         # Delete object
         temp_shop.delete()
-
-
-@app.task(bind=True)
-def base_generate_avatar_thumbnail(self, temp_shop_id):
-    temp_shop = TempShop.objects.get(pk=temp_shop_id)
-    temp_shop_avatar = temp_shop.avatar.url if temp_shop.avatar else None
-    if temp_shop_avatar is not None:
-        avatar_path = parent_file_dir + '/media' + temp_shop.avatar.url
-        avatar_thumbnail = start_generating_thumbnail(avatar_path, False)
-        temp_shop.save_image('avatar_thumbnail', avatar_thumbnail)

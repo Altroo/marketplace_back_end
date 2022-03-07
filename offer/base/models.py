@@ -1,23 +1,123 @@
+from os import path
 from django.db import models
 from django.db.models import Model
-from offer.base.models import Categories, Colors, Sizes, ForWhom, Days
+from auth_shop.base.models import AuthShop
+from Qaryb_API_new.settings import API_URL
 from auth_shop.base.models import LonLatValidators
 from places.base.models import City
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
-from Qaryb_API_new.settings import API_URL
-from temp_shop.base.models import TempShop
-from offer.base.models import get_shop_products_path, OfferChoices
 
 
-class TempOffers(Model):
-    temp_shop = models.ForeignKey(TempShop, on_delete=models.CASCADE,
-                                  verbose_name='Temp Shop', related_name='temp_shop')
+def get_shop_products_path(instance, filename):
+    filename, file_extension = path.splitext(filename)
+    return path.join('shop_products/', str(uuid4()) + file_extension)
+
+
+class OfferChoices:
+    """
+    Type of shop choices
+    """
+
+    ZONE_BY_CHOICES = (
+        ('A', 'Address'),
+        ('S', 'Sector')
+    )
+
+    OFFER_TYPE_CHOICES = (
+        ('V', 'Sell'),
+        ('S', 'Service'),
+        ('L', 'Location')
+    )
+
+    PRODUCT_PRICE_BY_CHOICES = (
+        ('U', 'Unity'),
+        ('K', 'Kilogram'),
+        ('L', 'Liter'),
+    )
+
+    SERVICE_PRICE_BY_CHOICES = (
+        ('H', 'Heur'),
+        ('J', 'Jour'),
+        ('S', 'Semaine'),
+        ('M', 'Mois'),
+        ('P', 'Prestation'),
+    )
+
+    SOLDER_BY_CHOICES = (
+        ('F', 'Prix fix'),
+        ('P', 'Pourcentage'),
+    )
+
+
+class Categories(Model):
+    code_category = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_category = models.CharField(max_length=255, verbose_name='Category Name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_category, self.name_category)
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+
+
+class Colors(Model):
+    code_color = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_color = models.CharField(max_length=255, verbose_name='Color Name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_color, self.name_color)
+
+    class Meta:
+        verbose_name = 'Color'
+        verbose_name_plural = 'Colors'
+
+
+class Sizes(Model):
+    code_size = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_size = models.CharField(max_length=255, verbose_name='Size Name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_size, self.name_size)
+
+    class Meta:
+        verbose_name = 'Size'
+        verbose_name_plural = 'Sizes'
+
+
+class ForWhom(Model):
+    code_for_whom = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_for_whom = models.CharField(max_length=255, verbose_name='For whom Name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_for_whom, self.name_for_whom)
+
+    class Meta:
+        verbose_name = 'For Whom'
+        verbose_name_plural = 'For Whom'
+
+
+class Days(Model):
+    code_day = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_day = models.CharField(max_length=255, verbose_name='Day name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_day, self.name_day)
+
+    class Meta:
+        verbose_name = 'Day'
+        verbose_name_plural = 'Days'
+
+
+class Offers(Model):
+    auth_shop = models.ForeignKey(AuthShop, on_delete=models.CASCADE,
+                                  verbose_name='Auth Shop', related_name='auth_shop_offers')
     offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
                                   choices=OfferChoices.OFFER_TYPE_CHOICES)
     offer_categories = models.ManyToManyField(Categories, verbose_name='Offer Categories',
-                                              related_name='temp_offer_categories')
+                                              related_name='offer_categories')
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
     picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_products_path, blank=True, null=True,
                                   default=None, max_length=1000)
@@ -37,7 +137,7 @@ class TempOffers(Model):
                                             upload_to=get_shop_products_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
-                                      related_name='temp_product_for_whom')
+                                      related_name='product_for_whom')
     price = models.FloatField(verbose_name='Price', default=0.0)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
@@ -53,8 +153,8 @@ class TempOffers(Model):
                                      self.price)
 
     class Meta:
-        verbose_name = 'Temp Offer'
-        verbose_name_plural = 'Temp Offers'
+        verbose_name = 'Offer'
+        verbose_name_plural = 'Offers'
         ordering = ('created_date',)
 
     @property
@@ -114,13 +214,13 @@ class TempOffers(Model):
                                        save=True)
 
 
-class TempProducts(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer', related_name='temp_offer_products')
+class Products(Model):
+    offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
+                                 verbose_name='Offer', related_name='offer_products')
     product_colors = models.ManyToManyField(Colors, verbose_name='Product Colors',
-                                            related_name='temp_product_colors')
+                                            related_name='product_colors')
     product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
-                                           related_name='temp_product_sizes')
+                                           related_name='product_sizes')
     product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
     product_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.PRODUCT_PRICE_BY_CHOICES,
                                         max_length=1)
@@ -134,19 +234,19 @@ class TempProducts(Model):
                                        blank=True, null=True, default=None)
 
     def __str__(self):
-        return '{}'.format(self.temp_offer.title)
+        return '{}'.format(self.offer.title)
 
     class Meta:
-        verbose_name = 'Temp Product'
-        verbose_name_plural = 'Temp Products'
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
         ordering = ('-pk',)
 
 
-class TempServices(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer', related_name='temp_offer_services')
+class Services(Model):
+    offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
+                                      verbose_name='Offer', related_name='offer_services')
     service_availability_days = models.ManyToManyField(Days, verbose_name='Opening days',
-                                                       related_name='temp_service_availability_days')
+                                                       related_name='service_availability_days')
     service_morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
     service_morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     service_afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True,
@@ -167,46 +267,46 @@ class TempServices(Model):
     service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
 
     def __str__(self):
-        return '{}'.format(self.temp_offer.title)
+        return '{}'.format(self.offer.title)
 
     class Meta:
-        verbose_name = 'Temp Service'
-        verbose_name_plural = 'Temp Services'
+        verbose_name = 'Service'
+        verbose_name_plural = 'Services'
         ordering = ('-pk',)
 
 
-class TempDelivery(Model):
-    temp_offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
-                                   verbose_name='Temp Offer',
-                                   related_name='temp_offer_delivery')
-    temp_delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
-                                                related_name='temp_delivery_city')
-    temp_delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
-    temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
+class Delivery(Model):
+    offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
+                                   verbose_name='Offer',
+                                   related_name='offer_delivery')
+    delivery_city = models.ManyToManyField(City, verbose_name='Delivery City',
+                                                related_name='delivery_city')
+    delivery_price = models.FloatField(verbose_name='Delivery Price', default=0.0)
+    delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.temp_offer.pk,
-                                     self.temp_delivery_price,
-                                     self.temp_delivery_days)
+        return '{} - {} - {}'.format(self.offer.pk,
+                                     self.delivery_price,
+                                     self.delivery_days)
 
     class Meta:
-        verbose_name = 'Temp Delivery'
-        verbose_name_plural = 'Temp Deliveries'
+        verbose_name = 'Delivery'
+        verbose_name_plural = 'Deliveries'
 
 
-class TempSolder(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer',
-                                      related_name='temp_offer_solder', unique=True)
-    temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
+class Solder(Model):
+    offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
+                                      verbose_name='Offer',
+                                      related_name='offer_solder', unique=True)
+    solder_type = models.CharField(verbose_name='Solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
                                         max_length=1)
-    temp_solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
+    solder_value = models.FloatField(verbose_name='Solder value', default=0.0)
 
     def __str__(self):
-        return "{} - {} - {}".format(self.temp_offer.pk,
-                                     self.temp_solder_type,
-                                     self.temp_solder_value)
+        return "{} - {} - {}".format(self.offer.pk,
+                                     self.solder_type,
+                                     self.solder_value)
 
     class Meta:
-        verbose_name = 'Temp Solder'
-        verbose_name_plural = 'Temp Solders'
+        verbose_name = 'Solder'
+        verbose_name_plural = 'Solders'

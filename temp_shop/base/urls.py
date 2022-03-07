@@ -7,7 +7,7 @@ from .views import TempShopView, \
 app_name = 'temp_shop'
 
 urlpatterns = [
-    # Auth shop
+    # Temp shop
     # POST : Create temp shop
     # GET : Get temp shop info
     path('', TempShopView.as_view()),

@@ -3,39 +3,39 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
-from temp_offer.base.serializers import BaseTempShopOfferSerializer, \
-    BaseTempShopDeliverySerializer, BaseTempOfferDetailsSerializer, \
-    BaseTempOfferssListSerializer, BaseTempShopOfferSolderSerializer, \
-    BaseTempShopOfferSolderPutSerializer, BaseTempShopProductSerializer, \
-    BaseTempShopServiceSerializer, BaseTempProductPutSerializer, \
-    BaseTempServicePutSerializer, BaseTempOfferPutSerializer, BaseTempShopOfferDuplicateSerializer
+from offer.base.serializers import BaseShopOfferSerializer, \
+    BaseShopDeliverySerializer, BaseOfferDetailsSerializer, \
+    BaseOfferssListSerializer, BaseShopOfferSolderSerializer, \
+    BaseShopOfferSolderPutSerializer, BaseShopProductSerializer, \
+    BaseShopServiceSerializer, BaseProductPutSerializer, \
+    BaseServicePutSerializer, BaseOfferPutSerializer, BaseShopOfferDuplicateSerializer
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
-from temp_offer.base.models import TempShop, TempOffers, TempDelivery, TempSolder, TempProducts, TempServices
+from offer.base.models import AuthShop, Offers, Delivery, Solder, Products, Services
 from offer.base.models import Categories, Colors, Sizes, ForWhom, Days
 from places.base.models import City
 from offer.mixins import PaginationMixinBy5
 
 
-class TempShopOfferView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class ShopOfferView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
     @staticmethod
     def post(request, *args, **kwargs):
-        unique_id = request.data.get('unique_id')
+        user = request.user
         try:
-            temp_shop = TempShop.objects.get(unique_id=unique_id).pk
-        except TempShop.DoesNotExist:
-            data = {'errors': ['Temp offer not found.']}
+            shop = AuthShop.objects.get(user=user).pk
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['User shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         offer_type = request.data.get('offer_type')
         title = request.data.get('title')
         description = request.data.get('description')
         price = request.data.get('price')
-        offer_serializer = BaseTempShopOfferSerializer(data={
-            'temp_shop': temp_shop,
+        offer_serializer = BaseShopOfferSerializer(data={
+            'auth_shop': shop,
             'offer_type': offer_type,
             'title': title,
             'picture_1': request.data.get('picture_1', None),
@@ -49,22 +49,22 @@ class TempShopOfferView(APIView):
             product_valid = False
             product_serializer_errors = None
             service_serializer_errors = None
-            temp_offer = offer_serializer.save()
-            temp_offer_pk = temp_offer.pk
+            offer = offer_serializer.save()
+            offer_pk = offer.pk
             # Generate thumbnails
-            base_generate_offer_thumbnails.apply_async((temp_offer_pk, 'TempOffers'), )
+            base_generate_offer_thumbnails.apply_async((offer_pk, 'Offers'), )
             data = {
-                'pk': temp_offer_pk,
+                'pk': offer_pk,
                 'offer_type': offer_type,
                 'title': title,
-                'picture_1': temp_offer.get_absolute_picture_1_img,
-                'picture_1_thumb': temp_offer.get_absolute_picture_1_thumbnail,
-                'picture_2': temp_offer.get_absolute_picture_2_img,
-                'picture_2_thumb': temp_offer.get_absolute_picture_2_thumbnail,
-                'picture_3': temp_offer.get_absolute_picture_3_img,
-                'picture_3_thumb': temp_offer.get_absolute_picture_3_thumbnail,
-                'picture_4': temp_offer.get_absolute_picture_4_img,
-                'picture_4_thumb': temp_offer.get_absolute_picture_4_thumbnail,
+                'picture_1': offer.get_absolute_picture_1_img,
+                'picture_1_thumb': offer.get_absolute_picture_1_thumbnail,
+                'picture_2': offer.get_absolute_picture_2_img,
+                'picture_2_thumb': offer.get_absolute_picture_2_thumbnail,
+                'picture_3': offer.get_absolute_picture_3_img,
+                'picture_3_thumb': offer.get_absolute_picture_3_thumbnail,
+                'picture_4': offer.get_absolute_picture_4_img,
+                'picture_4_thumb': offer.get_absolute_picture_4_thumbnail,
                 'description': description,
                 'price': price
             }
@@ -73,7 +73,7 @@ class TempShopOfferView(APIView):
             offer_categories = Categories.objects.filter(code_category__in=offer_categories)
             offer_categories_list = []
             for category in offer_categories:
-                temp_offer.offer_categories.add(category.pk)
+                offer.offer_categories.add(category.pk)
                 offer_categories_list.append(
                     {
                         "pk": category.pk,
@@ -87,7 +87,7 @@ class TempShopOfferView(APIView):
             for_whom = ForWhom.objects.filter(code_for_whom__in=for_whom)
             offer_for_whom_list = []
             for for_who in for_whom:
-                temp_offer.for_whom.add(for_who.pk)
+                offer.for_whom.add(for_who.pk)
                 offer_for_whom_list.append(
                     {
                         "pk": for_who.pk,
@@ -103,8 +103,8 @@ class TempShopOfferView(APIView):
                 product_longitude = request.data.get('product_longitude')
                 product_latitude = request.data.get('product_latitude')
                 product_address = request.data.get('product_address')
-                product_serializer = BaseTempShopProductSerializer(data={
-                    'temp_offer': temp_offer_pk,
+                product_serializer = BaseShopProductSerializer(data={
+                    'offer': offer_pk,
                     'product_quantity': product_quantity,
                     'product_price_by': product_price_by,
                     'product_longitude': product_longitude,
@@ -113,13 +113,13 @@ class TempShopOfferView(APIView):
                 })
                 if product_serializer.is_valid():
                     product_valid = True
-                    temp_product = product_serializer.save()
+                    product = product_serializer.save()
                     # Colors
                     colors = str(request.data.get('product_colors')).split(',')
                     colors = Colors.objects.filter(code_color__in=colors)
                     product_colors_list = []
                     for color in colors:
-                        temp_product.product_colors.add(color.pk)
+                        product.product_colors.add(color.pk)
                         product_colors_list.append(
                             {
                                 "pk": color.pk,
@@ -133,7 +133,7 @@ class TempShopOfferView(APIView):
                     sizes = Sizes.objects.filter(code_size__in=sizes)
                     product_sizes_list = []
                     for size in sizes:
-                        temp_product.product_sizes.add(size.pk)
+                        product.product_sizes.add(size.pk)
                         product_sizes_list.append(
                             {
                                 "pk": size.pk,
@@ -161,8 +161,8 @@ class TempShopOfferView(APIView):
                 service_latitude = request.data.get('service_latitude')
                 service_address = request.data.get('service_address')
                 service_km_radius = request.data.get('service_km_radius')
-                service_serializer = BaseTempShopServiceSerializer(data={
-                    'temp_offer': temp_offer_pk,
+                service_serializer = BaseShopServiceSerializer(data={
+                    'offer': offer_pk,
                     'service_morning_hour_from': service_morning_hour_from,
                     'service_morning_hour_to': service_morning_hour_to,
                     'service_afternoon_hour_from': service_afternoon_hour_from,
@@ -175,13 +175,13 @@ class TempShopOfferView(APIView):
                     'service_km_radius': service_km_radius,
                 })
                 if service_serializer.is_valid():
-                    temp_service = service_serializer.save()
+                    service = service_serializer.save()
                     # Availability Days
                     availability_days = str(request.data.get('service_availability_days')).split(',')
                     availability_days = Days.objects.filter(code_day__in=availability_days)
                     service_availability_days_list = []
                     for availability_day in availability_days:
-                        temp_service.service_availability_days.add(availability_day.pk)
+                        service.service_availability_days.add(availability_day.pk)
                         service_availability_days_list.append(
                             {
                                 "pk": availability_day.pk,
@@ -191,16 +191,16 @@ class TempShopOfferView(APIView):
                         )
                     data['service_availability_days'] = service_availability_days_list
                     # SERVICE RETURN DATA
-                    data['service_morning_hour_from'] = temp_service.service_morning_hour_from
-                    data['service_morning_hour_to'] = temp_service.service_morning_hour_to
-                    data['service_afternoon_hour_from'] = temp_service.service_afternoon_hour_from
-                    data['service_afternoon_hour_to'] = temp_service.service_afternoon_hour_to
-                    data['service_zone_by'] = temp_service.service_zone_by
-                    data['service_price_by'] = temp_service.service_price_by
-                    data['service_longitude'] = temp_service.service_longitude
-                    data['service_latitude'] = temp_service.service_latitude
-                    data['service_address'] = temp_service.service_address
-                    data['service_km_radius'] = temp_service.service_km_radius
+                    data['service_morning_hour_from'] = service.service_morning_hour_from
+                    data['service_morning_hour_to'] = service.service_morning_hour_to
+                    data['service_afternoon_hour_from'] = service.service_afternoon_hour_from
+                    data['service_afternoon_hour_to'] = service.service_afternoon_hour_to
+                    data['service_zone_by'] = service.service_zone_by
+                    data['service_price_by'] = service.service_price_by
+                    data['service_longitude'] = service.service_longitude
+                    data['service_latitude'] = service.service_latitude
+                    data['service_address'] = service.service_address
+                    data['service_km_radius'] = service.service_km_radius
                     # For services
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
@@ -296,44 +296,44 @@ class TempShopOfferView(APIView):
                     city_1_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_pk,
-                            'temp_delivery_city': delivery_cities_1_pk,
-                            'temp_delivery_price': float(delivery_price_1),
-                            'temp_delivery_days': int(delivery_days_1)
+                            'offer': offer_pk,
+                            'delivery_city': delivery_cities_1_pk,
+                            'delivery_price': float(delivery_price_1),
+                            'delivery_days': int(delivery_days_1)
                         }
                     )
                 if delivery_city_2:
                     city_2_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_pk,
-                            'temp_delivery_city': delivery_cities_2_pk,
-                            'temp_delivery_price': float(delivery_price_2),
-                            'temp_delivery_days': int(delivery_days_2)
+                            'offer': offer_pk,
+                            'delivery_city': delivery_cities_2_pk,
+                            'delivery_price': float(delivery_price_2),
+                            'delivery_days': int(delivery_days_2)
                         }
                     )
                 if delivery_city_3:
                     city_3_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_pk,
-                            'temp_delivery_city': delivery_cities_3_pk,
-                            'temp_delivery_price': float(delivery_price_3),
-                            'temp_delivery_days': int(delivery_days_3)
+                            'offer': offer_pk,
+                            'delivery_city': delivery_cities_3_pk,
+                            'delivery_price': float(delivery_price_3),
+                            'delivery_days': int(delivery_days_3)
                         }
                     )
-                delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
+                delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
                 if delivery_serializer.is_valid():
                     deliveries_serializer = delivery_serializer.save()
                     for delivery in deliveries_serializer:
                         if city_1_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_1_pk)
+                            delivery.delivery_city.add(*delivery_cities_1_pk)
                             city_1_check = False
                         elif city_2_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_2_pk)
+                            delivery.delivery_city.add(*delivery_cities_2_pk)
                             city_2_check = False
                         elif city_3_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_3_pk)
+                            delivery.delivery_city.add(*delivery_cities_3_pk)
                             city_3_check = False
                     data['deliveries'] = deliveries
                     # For products
@@ -341,7 +341,7 @@ class TempShopOfferView(APIView):
                 else:
                     return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                temp_offer.delete()
+                offer.delete()
                 if offer_type == 'V' and product_serializer_errors:
                     return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
                 if offer_type == 'S' and service_serializer_errors:
@@ -349,129 +349,129 @@ class TempShopOfferView(APIView):
         return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        temp_offer_pk = request.data.get('offer_id')
+        offer_pk = request.data.get('offer_id')
         try:
-            temp_offer = TempOffers.objects.get(pk=temp_offer_pk)
-            temp_offer_pk = temp_offer.pk
+            offer = Offers.objects.get(pk=offer_pk)
+            offer_pk = offer.pk
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
             picture_3 = request.data.get('picture_3', None)
             picture_4 = request.data.get('picture_4', None)
 
             previous_images = list()
-            previous_images.append(API_URL + temp_offer.picture_1.url
-                                   if temp_offer.picture_1 else False)
-            previous_images.append(API_URL + temp_offer.picture_2.url
-                                   if temp_offer.picture_2 else False)
-            previous_images.append(API_URL + temp_offer.picture_3.url
-                                   if temp_offer.picture_3 else False)
-            previous_images.append(API_URL + temp_offer.picture_4.url
-                                   if temp_offer.picture_4 else False)
+            previous_images.append(API_URL + offer.picture_1.url
+                                   if offer.picture_1 else False)
+            previous_images.append(API_URL + offer.picture_2.url
+                                   if offer.picture_2 else False)
+            previous_images.append(API_URL + offer.picture_3.url
+                                   if offer.picture_3 else False)
+            previous_images.append(API_URL + offer.picture_4.url
+                                   if offer.picture_4 else False)
 
             if isinstance(picture_1, InMemoryUploadedFile):
                 try:
-                    picture_1_path = self.parent_file_dir + temp_offer.picture_1.url
-                    picture_1_thumb_path = self.parent_file_dir + temp_offer.picture_1_thumbnail.url
+                    picture_1_path = self.parent_file_dir + offer.picture_1.url
+                    picture_1_thumb_path = self.parent_file_dir + offer.picture_1_thumbnail.url
                     remove(picture_1_path)
                     remove(picture_1_thumb_path)
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                temp_offer.picture_1 = None
-                temp_offer.save()
+                offer.picture_1 = None
+                offer.save()
             else:
-                # src
+                
                 if picture_1 in previous_images:
                     try:
                         img_1_index = previous_images.index(picture_1)
                         if img_1_index == 0:
-                            picture_1 = temp_offer.picture_1
+                            picture_1 = offer.picture_1
                         elif img_1_index == 1:
-                            picture_1 = temp_offer.picture_2
+                            picture_1 = offer.picture_2
                         elif img_1_index == 2:
-                            picture_1 = temp_offer.picture_3
+                            picture_1 = offer.picture_3
                         else:
-                            picture_1 = temp_offer.picture_4
+                            picture_1 = offer.picture_4
                     # None wasn't sent
                     except ValueError:
                         picture_1 = None
 
             if isinstance(picture_2, InMemoryUploadedFile):
                 try:
-                    picture_2_path = self.parent_file_dir + temp_offer.picture_2.url
-                    picture_2_thumb_path = self.parent_file_dir + temp_offer.picture_2_thumbnail.url
+                    picture_2_path = self.parent_file_dir + offer.picture_2.url
+                    picture_2_thumb_path = self.parent_file_dir + offer.picture_2_thumbnail.url
                     remove(picture_2_path)
                     remove(picture_2_thumb_path)
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                temp_offer.picture_2 = None
-                temp_offer.save()
+                offer.picture_2 = None
+                offer.save()
             else:
                 # src
                 if picture_2 in previous_images:
                     try:
                         img_2_index = previous_images.index(picture_2)
                         if img_2_index == 0:
-                            picture_2 = temp_offer.picture_2
+                            picture_2 = offer.picture_2
                         elif img_2_index == 1:
-                            picture_2 = temp_offer.picture_2
+                            picture_2 = offer.picture_2
                         elif img_2_index == 2:
-                            picture_2 = temp_offer.picture_2
+                            picture_2 = offer.picture_2
                         else:
-                            picture_2 = temp_offer.picture_2
-                    # None wasn't sent
+                            picture_2 = offer.picture_2
+                    # None wasn't
                     except ValueError:
                         picture_2 = None
 
             if isinstance(picture_3, InMemoryUploadedFile):
                 try:
-                    picture_3_path = self.parent_file_dir + temp_offer.picture_3.url
-                    picture_3_thumb_path = self.parent_file_dir + temp_offer.picture_3_thumbnail.url
+                    picture_3_path = self.parent_file_dir + offer.picture_3.url
+                    picture_3_thumb_path = self.parent_file_dir + offer.picture_3_thumbnail.url
                     remove(picture_3_path)
                     remove(picture_3_thumb_path)
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                temp_offer.picture_3 = None
-                temp_offer.save()
+                offer.picture_3 = None
+                offer.save()
             else:
                 # src
                 if picture_3 in previous_images:
                     try:
                         img_3_index = previous_images.index(picture_3)
                         if img_3_index == 0:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = offer.picture_3
                         elif img_3_index == 1:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = offer.picture_3
                         elif img_3_index == 2:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = offer.picture_3
                         else:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_3 = None
 
             if isinstance(picture_4, InMemoryUploadedFile):
                 try:
-                    picture_4_path = self.parent_file_dir + temp_offer.picture_4.url
-                    picture_4_thumb_path = self.parent_file_dir + temp_offer.picture_4_thumbnail.url
+                    picture_4_path = self.parent_file_dir + offer.picture_4.url
+                    picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
                     remove(picture_4_path)
                     remove(picture_4_thumb_path)
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                temp_offer.picture_4 = None
-                temp_offer.save()
+                offer.picture_4 = None
+                offer.save()
             else:
                 # src
                 if picture_4 in previous_images:
                     try:
                         img_4_index = previous_images.index(picture_4)
                         if img_4_index == 0:
-                            picture_4 = temp_offer.picture_4
+                            picture_4 = offer.picture_4
                         elif img_4_index == 1:
-                            picture_4 = temp_offer.picture_4
+                            picture_4 = offer.picture_4
                         elif img_4_index == 2:
-                            picture_4 = temp_offer.picture_4
+                            picture_4 = offer.picture_4
                         else:
-                            picture_4 = temp_offer.picture_4
+                            picture_4 = offer.picture_4
                     # None wasn't sent
                     except ValueError:
                         picture_4 = None
@@ -479,8 +479,8 @@ class TempShopOfferView(APIView):
             title = request.data.get('title', '')
             description = request.data.get('description', '')
             price = request.data.get('price', '')
-            # Temp product PUT serializer
-            temp_offer_serializer = BaseTempOfferPutSerializer(data={
+            # Product PUT serializer
+            offer_serializer = BaseOfferPutSerializer(data={
                 'title': title,
                 'picture_1': picture_1,
                 'picture_2': picture_2,
@@ -489,32 +489,32 @@ class TempShopOfferView(APIView):
                 'description': description,
                 'price': price,
             })
-            if temp_offer_serializer.is_valid():
-                offer_type = temp_offer.offer_type
+            if offer_serializer.is_valid():
+                offer_type = offer.offer_type
                 product_valid = False
                 service_valid = False
                 product_serializer_errors = None
                 service_serializer_errors = None
                 # Generate thumbnails
-                base_generate_offer_thumbnails.apply_async((temp_offer_pk, 'TempOffers'), )
-                if temp_offer.offer_type == 'V':
+                base_generate_offer_thumbnails.apply_async((offer_pk, 'Offers'), )
+                if offer.offer_type == 'V':
                     product_quantity = request.data.get('product_quantity', '')
                     product_price_by = request.data.get('product_price_by', '')
                     product_longitude = request.data.get('product_longitude', '')
                     product_latitude = request.data.get('product_latitude', '')
                     product_address = request.data.get('product_address', '')
-                    temp_product_serializer = BaseTempProductPutSerializer(data={
+                    product_serializer = BaseProductPutSerializer(data={
                         'product_quantity': product_quantity,
                         'product_price_by': product_price_by,
                         'product_longitude': product_longitude,
                         'product_latitude': product_latitude,
                         'product_address': product_address,
                     })
-                    if temp_product_serializer.is_valid():
+                    if product_serializer.is_valid():
                         product_valid = True
                     else:
-                        product_serializer_errors = temp_product_serializer.errors
-                elif temp_offer.offer_type == 'S':
+                        product_serializer_errors = product_serializer.errors
+                elif offer.offer_type == 'S':
                     service_morning_hour_from = request.data.get('service_morning_hour_from', '')
                     service_morning_hour_to = request.data.get('service_morning_hour_to', '')
                     service_afternoon_hour_from = request.data.get('service_afternoon_hour_from', '')
@@ -524,7 +524,7 @@ class TempShopOfferView(APIView):
                     service_longitude = request.data.get('service_longitude', '')
                     service_latitude = request.data.get('service_latitude', '')
                     service_address = request.data.get('service_address', '')
-                    temp_service_serializer = BaseTempServicePutSerializer(data={
+                    service_serializer = BaseServicePutSerializer(data={
                         'service_morning_hour_from': service_morning_hour_from,
                         'service_morning_hour_to': service_morning_hour_to,
                         'service_afternoon_hour_from': service_afternoon_hour_from,
@@ -535,36 +535,35 @@ class TempShopOfferView(APIView):
                         'service_latitude': service_latitude,
                         'service_address': service_address,
                     })
-                    if temp_service_serializer.is_valid():
+                    if service_serializer.is_valid():
                         service_valid = True
                     else:
-                        service_serializer_errors = temp_service_serializer.errors
+                        service_serializer_errors = service_serializer.errors
                 if product_valid or service_valid:
                     # UPDATE OFFER TABLE
-                    temp_updated_offer = temp_offer_serializer.update(temp_offer,
-                                                                      temp_offer_serializer.validated_data)
+                    updated_offer = offer_serializer.update(offer, offer_serializer.validated_data)
                     data = {
-                        'pk': temp_updated_offer.pk,
-                        'offer_type': temp_updated_offer.offer_type,
-                        'title': temp_updated_offer.title,
-                        'picture_1': temp_updated_offer.get_absolute_picture_1_img,
-                        'picture_1_thumb': temp_updated_offer.get_absolute_picture_1_thumbnail,
-                        'picture_2': temp_updated_offer.get_absolute_picture_2_img,
-                        'picture_2_thumb': temp_updated_offer.get_absolute_picture_2_thumbnail,
-                        'picture_3': temp_updated_offer.get_absolute_picture_3_img,
-                        'picture_3_thumb': temp_updated_offer.get_absolute_picture_3_thumbnail,
-                        'picture_4': temp_updated_offer.get_absolute_picture_4_img,
-                        'picture_4_thumb': temp_updated_offer.get_absolute_picture_4_thumbnail,
-                        'description': temp_updated_offer.description,
-                        'price': temp_updated_offer.price
+                        'pk': updated_offer.pk,
+                        'offer_type': updated_offer.offer_type,
+                        'title': updated_offer.title,
+                        'picture_1': updated_offer.get_absolute_picture_1_img,
+                        'picture_1_thumb': updated_offer.get_absolute_picture_1_thumbnail,
+                        'picture_2': updated_offer.get_absolute_picture_2_img,
+                        'picture_2_thumb': updated_offer.get_absolute_picture_2_thumbnail,
+                        'picture_3': updated_offer.get_absolute_picture_3_img,
+                        'picture_3_thumb': updated_offer.get_absolute_picture_3_thumbnail,
+                        'picture_4': updated_offer.get_absolute_picture_4_img,
+                        'picture_4_thumb': updated_offer.get_absolute_picture_4_thumbnail,
+                        'description': updated_offer.description,
+                        'price': updated_offer.price
                     }
                     # UPDATE CATEGORIES
-                    temp_offer.offer_categories.clear()
+                    offer.offer_categories.clear()
                     offer_categories = str(request.data.get('offer_categories')).split(',')
                     new_categories = Categories.objects.filter(code_category__in=offer_categories)
                     offer_categories_list = []
                     for category in new_categories:
-                        temp_offer.offer_categories.add(category.pk)
+                        offer.offer_categories.add(category.pk)
                         offer_categories_list.append(
                             {
                                 "pk": category.pk,
@@ -574,12 +573,12 @@ class TempShopOfferView(APIView):
                         )
                     data['offer_categories'] = offer_categories_list
                     # UPDATE FOR WHOM
-                    temp_offer.for_whom.clear()
+                    offer.for_whom.clear()
                     offer_for_whom = str(request.data.get('for_whom')).split(',')
                     new_for_whom = ForWhom.objects.filter(code_for_whom__in=offer_for_whom)
                     offer_for_whom_list = []
                     for for_who in new_for_whom:
-                        temp_offer.for_whom.add(for_who.pk)
+                        offer.for_whom.add(for_who.pk)
                         offer_for_whom_list.append(
                             {
                                 "pk": for_who.pk,
@@ -589,17 +588,16 @@ class TempShopOfferView(APIView):
                         )
                     data['for_whom'] = offer_for_whom_list
                     if product_valid:
-                        temp_product = TempProducts.objects.get(temp_offer=temp_offer.pk)
+                        product = Products.objects.get(offer=offer.pk)
                         # serializer referenced before assignment fixed by the product_valid = True
-                        temp_updated_product = temp_product_serializer.update(temp_product,
-                                                                              temp_product_serializer.validated_data)
+                        updated_product = product_serializer.update(product, product_serializer.validated_data)
                         # UPDATE COLORS
-                        temp_product.product_colors.clear()
+                        product.product_colors.clear()
                         colors = str(request.data.get('product_colors')).split(',')
                         new_colors = Colors.objects.filter(code_color__in=colors)
                         product_colors_list = []
                         for color in new_colors:
-                            temp_product.product_colors.add(color.pk)
+                            product.product_colors.add(color.pk)
                             product_colors_list.append(
                                 {
                                     "pk": color.pk,
@@ -609,12 +607,12 @@ class TempShopOfferView(APIView):
                             )
                         data['product_colors'] = product_colors_list
                         # UPDATE SIZES
-                        temp_product.product_sizes.clear()
+                        product.product_sizes.clear()
                         sizes = str(request.data.get('product_sizes')).split(',')
                         new_sizes = Sizes.objects.filter(code_size__in=sizes)
                         product_sizes_list = []
                         for size in new_sizes:
-                            temp_product.product_sizes.add(size.pk)
+                            product.product_sizes.add(size.pk)
                             product_sizes_list.append(
                                 {
                                     "pk": size.pk,
@@ -624,23 +622,22 @@ class TempShopOfferView(APIView):
                             )
                         data['product_sizes'] = product_sizes_list
                         # PRODUCT RETURN DATA
-                        data['product_quantity'] = temp_updated_product.product_quantity
-                        data['product_price_by'] = temp_updated_product.product_price_by
-                        data['product_longitude'] = temp_updated_product.product_longitude
-                        data['product_latitude'] = temp_updated_product.product_latitude
-                        data['product_address'] = temp_updated_product.product_address
+                        data['product_quantity'] = updated_product.product_quantity
+                        data['product_price_by'] = updated_product.product_price_by
+                        data['product_longitude'] = updated_product.product_longitude
+                        data['product_latitude'] = updated_product.product_latitude
+                        data['product_address'] = updated_product.product_address
                     if service_valid:
-                        temp_service = TempServices.objects.get(temp_offer=temp_offer.pk)
+                        service = Services.objects.get(offer=offer.pk)
                         # serializer referenced before assignment fixed by the service_valid = True
-                        temp_updated_service = temp_service_serializer.update(temp_service,
-                                                                              temp_service_serializer.validated_data)
+                        updated_service = service_serializer.update(service, service_serializer.validated_data)
                         # UPDATE AVAILABILITY DAYS
-                        temp_service.service_availability_days.clear()
+                        service.service_availability_days.clear()
                         availability_days = str(request.data.get('service_availability_days')).split(',')
                         new_availability_days = Days.objects.filter(code_day__in=availability_days)
                         service_availability_days_list = []
                         for availability_day in new_availability_days:
-                            temp_service.service_availability_days.add(availability_day.pk)
+                            service.service_availability_days.add(availability_day.pk)
                             service_availability_days_list.append(
                                 {
                                     "pk": availability_day.pk,
@@ -650,18 +647,18 @@ class TempShopOfferView(APIView):
                             )
                         data['service_availability_days'] = service_availability_days_list
                         # SERVICE RETURN DATA
-                        data['service_morning_hour_from'] = temp_updated_service.service_morning_hour_from,
-                        data['service_morning_hour_to'] = temp_updated_service.service_morning_hour_to,
-                        data['service_afternoon_hour_from'] = temp_updated_service.service_afternoon_hour_from,
-                        data['service_afternoon_hour_to'] = temp_updated_service.service_afternoon_hour_to,
-                        data['service_zone_by'] = temp_updated_service.service_zone_by,
-                        data['service_price_by'] = temp_updated_service.service_price_by,
-                        data['service_longitude'] = temp_updated_service.service_longitude,
-                        data['service_latitude'] = temp_updated_service.service_latitude,
-                        data['service_address'] = temp_updated_service.service_address,
-                        data['service_km_radius'] = temp_updated_service.service_km_radius,
+                        data['service_morning_hour_from'] = updated_service.service_morning_hour_from,
+                        data['service_morning_hour_to'] = updated_service.service_morning_hour_to,
+                        data['service_afternoon_hour_from'] = updated_service.service_afternoon_hour_from,
+                        data['service_afternoon_hour_to'] = updated_service.service_afternoon_hour_to,
+                        data['service_zone_by'] = updated_service.service_zone_by,
+                        data['service_price_by'] = updated_service.service_price_by,
+                        data['service_longitude'] = updated_service.service_longitude,
+                        data['service_latitude'] = updated_service.service_latitude,
+                        data['service_address'] = updated_service.service_address,
+                        data['service_km_radius'] = updated_service.service_km_radius,
                     # UPDATE DELIVERIES
-                    temp_offer.temp_offer_delivery.all().delete()
+                    offer.offer_delivery.all().delete()
                     delivery_price_1 = request.data.get('delivery_price_1', None)
                     delivery_days_1 = request.data.get('delivery_days_1', None)
 
@@ -752,49 +749,49 @@ class TempShopOfferView(APIView):
                         city_1_check = True
                         deliveries.append(
                             {
-                                'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_1_pk,
-                                'temp_delivery_price': float(delivery_price_1),
-                                'temp_delivery_days': int(delivery_days_1)
+                                'offer': offer_pk,
+                                'delivery_city': delivery_cities_1_pk,
+                                'delivery_price': float(delivery_price_1),
+                                'delivery_days': int(delivery_days_1)
                             }
                         )
                     if delivery_city_2:
                         city_2_check = True
                         deliveries.append(
                             {
-                                'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_2_pk,
-                                'temp_delivery_price': float(delivery_price_2),
-                                'temp_delivery_days': int(delivery_days_2)
+                                'offer': offer_pk,
+                                'delivery_city': delivery_cities_2_pk,
+                                'delivery_price': float(delivery_price_2),
+                                'delivery_days': int(delivery_days_2)
                             }
                         )
                     if delivery_city_3:
                         city_3_check = True
                         deliveries.append(
                             {
-                                'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_3_pk,
-                                'temp_delivery_price': float(delivery_price_3),
-                                'temp_delivery_days': int(delivery_days_3)
+                                'offer': offer_pk,
+                                'delivery_city': delivery_cities_3_pk,
+                                'delivery_price': float(delivery_price_3),
+                                'delivery_days': int(delivery_days_3)
                             }
                         )
 
                     # Save edited deliveries
-                    delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
+                    delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
                     if delivery_serializer.is_valid():
                         # Delete old deliveries cities
-                        TempDelivery.objects.filter(temp_offer__pk=temp_offer_pk).delete()
+                        Delivery.objects.filter(offer__pk=offer_pk).delete()
                         # Add new deliveries
                         deliveries_serializer = delivery_serializer.save()
                         for delivery in deliveries_serializer:
                             if city_1_check:
-                                delivery.temp_delivery_city.add(*delivery_cities_1_pk)
+                                delivery.delivery_city.add(*delivery_cities_1_pk)
                                 city_1_check = False
                             elif city_2_check:
-                                delivery.temp_delivery_city.add(*delivery_cities_2_pk)
+                                delivery.delivery_city.add(*delivery_cities_2_pk)
                                 city_2_check = False
                             elif city_3_check:
-                                delivery.temp_delivery_city.add(*delivery_cities_3_pk)
+                                delivery.delivery_city.add(*delivery_cities_3_pk)
                                 city_3_check = False
                         data['deliveries'] = deliveries
                         return Response(data, status=status.HTTP_200_OK)
@@ -805,142 +802,148 @@ class TempShopOfferView(APIView):
                         return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
                     if offer_type == 'S' and service_serializer_errors:
                         return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(temp_offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except TempOffers.DoesNotExist:
-            data = {'errors': ['Temp offer not found.']}
+            return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Offers.DoesNotExist:
+            data = {'errors': [' offer not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        temp_offer_pk = request.data.get('id_offer')
-        unique_id = request.data.get('unique_id')
+        offer_pk = request.data.get('id_offer')
+        user = request.user
         try:
-            temp_offer = TempOffers.objects.get(pk=temp_offer_pk)
-            if temp_offer.temp_shop.unique_id != unique_id:
-                data = {'errors': ['Temp offer not yours to delete.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            # Delete temp product images
-            # Picture 1
-            try:
-                picture_1 = temp_offer.picture_1.path
-                remove(picture_1)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 1 thumbnail
-            try:
-                picture_1_thumbnail = temp_offer.picture_1_thumbnail.path
-                remove(picture_1_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 2
-            try:
-                picture_2 = temp_offer.picture_2.path
-                remove(picture_2)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 2 thumbnail
-            try:
-                picture_2_thumbnail = temp_offer.picture_2_thumbnail.path
-                remove(picture_2_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 3
-            try:
-                picture_3 = temp_offer.picture_3.path
-                remove(picture_3)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 3 thumbnail
-            try:
-                picture_3_thumbnail = temp_offer.picture_3_thumbnail.path
-                remove(picture_3_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 4
-            try:
-                picture_4 = temp_offer.picture_4.path
-                remove(picture_4)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 4 thumbnail
-            try:
-                picture_4_thumbnail = temp_offer.picture_4_thumbnail.path
-                remove(picture_4_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            temp_offer.delete()
+            shop = AuthShop.objects.get(user=user)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['User shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        offers = Offers.objects.filter(auth_shop=shop)
+        deleted = False
+        for offer in offers:
+            if offer.pk == offer_pk:
+                # Delete  product images
+                # Picture 1
+                try:
+                    picture_1 = offer.picture_1.path
+                    remove(picture_1)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 1 thumbnail
+                try:
+                    picture_1_thumbnail = offer.picture_1_thumbnail.path
+                    remove(picture_1_thumbnail)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 2
+                try:
+                    picture_2 = offer.picture_2.path
+                    remove(picture_2)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 2 thumbnail
+                try:
+                    picture_2_thumbnail = offer.picture_2_thumbnail.path
+                    remove(picture_2_thumbnail)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 3
+                try:
+                    picture_3 = offer.picture_3.path
+                    remove(picture_3)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 3 thumbnail
+                try:
+                    picture_3_thumbnail = offer.picture_3_thumbnail.path
+                    remove(picture_3_thumbnail)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 4
+                try:
+                    picture_4 = offer.picture_4.path
+                    remove(picture_4)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 4 thumbnail
+                try:
+                    picture_4_thumbnail = offer.picture_4_thumbnail.path
+                    remove(picture_4_thumbnail)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                offer.delete()
+                deleted = True
+        if deleted:
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except TempOffers.DoesNotExist:
-            data = {'errors': ['Temp offer not found.']}
+        else:
+            data = {'errors': ['Offer not yours to delete.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetOneTempOfferView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class GetOneOfferView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def get(request, *args, **kwargs):
         offer_id = kwargs.get('id_offer')
         try:
-            temp_offer = TempOffers.objects \
-                .select_related('temp_offer_solder') \
-                .select_related('temp_offer_products') \
-                .select_related('temp_offer_services') \
-                .prefetch_related('temp_offer_delivery') \
+            offer = Offers.objects \
+                .select_related('offer_solder') \
+                .select_related('offer_products') \
+                .select_related('offer_services') \
+                .prefetch_related('offer_delivery') \
                 .get(pk=offer_id)
-            temp_offer_details_serializer = BaseTempOfferDetailsSerializer(temp_offer)
-            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
-        except TempOffers.DoesNotExist:
-            data = {'errors': ['Temp offer not found.']}
+            offer_details_serializer = BaseOfferDetailsSerializer(offer)
+            return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
+        except Offers.DoesNotExist:
+            data = {'errors': ['Offer not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetTempShopOffersListView(APIView, PaginationMixinBy5):
-    permission_classes = (permissions.AllowAny,)
+class GetShopOffersListView(APIView, PaginationMixinBy5):
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        unique_id = kwargs.get('unique_id')
+        user = request.user
         try:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            temp_shop_offers = TempOffers.objects \
-                .select_related('temp_offer_solder') \
-                .select_related('temp_offer_products') \
-                .select_related('temp_offer_services') \
-                .prefetch_related('temp_offer_delivery') \
-                .filter(temp_shop=temp_shop).order_by('-created_date')
-            page = self.paginate_queryset(queryset=temp_shop_offers)
+            shop = AuthShop.objects.get(user=user)
+            shop_offers = Offers.objects \
+                .select_related('offer_solder') \
+                .select_related('offer_products') \
+                .select_related('offer_services') \
+                .prefetch_related('offer_delivery') \
+                .filter(shop=shop).order_by('-created_date')
+            page = self.paginate_queryset(queryset=shop_offers)
             if page is not None:
-                serializer = BaseTempOfferssListSerializer(instance=page, many=True)
+                serializer = BaseOfferssListSerializer(instance=page, many=True)
                 return self.get_paginated_response(serializer.data)
-            data = {'response': 'Temp shop has no products.'}
+            data = {'response': 'Shop has no products.'}
             return Response(data=data, status=status.HTTP_200_OK)
-        except TempShop.DoesNotExist:
-            data = {'errors': ['Temp shop unique_id not found.']}
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['User shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TempShopOfferSolderView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class ShopOfferSolderView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def get(request, *args, **kwargs):
-        temp_offer_id = kwargs.get('id_offer')
+        offer_id = kwargs.get('id_offer')
         try:
-            temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
-            temp_offer_details_serializer = BaseTempShopOfferSolderSerializer(temp_solder)
-            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
-        except TempSolder.DoesNotExist:
-            data = {'errors': ['Temp offer solder not found.']}
+            solder = Solder.objects.get(offer=offer_id)
+            offer_details_serializer = BaseShopOfferSolderSerializer(solder)
+            return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
+        except Solder.DoesNotExist:
+            data = {'errors': ['Offer solder not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def post(request, *args, **kwargs):
-        temp_offer_id = request.data.get('temp_offer_id')
-        temp_offer = TempOffers.objects.get(pk=temp_offer_id).pk
-        serializer = BaseTempShopOfferSolderSerializer(data={
-            'temp_offer': temp_offer,
-            'temp_solder_type': request.data.get('temp_solder_type'),
-            'temp_solder_value': request.data.get('temp_solder_value'),
+        offer_id = request.data.get('offer_id')
+        offer = Offers.objects.get(pk=offer_id).pk
+        serializer = BaseShopOfferSolderSerializer(data={
+            'offer': offer,
+            'solder_type': request.data.get('solder_type'),
+            'solder_value': request.data.get('solder_value'),
         })
         if serializer.is_valid():
             serializer.save()
@@ -949,100 +952,100 @@ class TempShopOfferSolderView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        temp_offer_id = request.data.get('temp_offer_id')
-        temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
-        serializer = BaseTempShopOfferSolderPutSerializer(data=request.data)
+        offer_id = request.data.get('offer_id')
+        solder = Solder.objects.get(offer=offer_id)
+        serializer = BaseShopOfferSolderPutSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.update(temp_solder, serializer.validated_data)
+            serializer.update(solder, serializer.validated_data)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def delete(request, *args, **kwargs):
         data = {}
-        temp_offer_id = request.data.get('temp_offer_id')
+        offer_id = request.data.get('offer_id')
         try:
-            TempSolder.objects.get(temp_offer=temp_offer_id).delete()
+            Solder.objects.get(offer=offer_id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except TempSolder.DoesNotExist:
-            data['errors'] = ["Temp offer solder not found."]
+        except Solder.DoesNotExist:
+            data['errors'] = ["Offer solder not found."]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TempShopOfferDuplicateView(APIView):
-    permission_classes = (permissions.AllowAny,)
+class ShopOfferDuplicateView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
     @staticmethod
     def post(request, *args, **kwargs):
-        temp_offer_id = request.data.get('temp_offer_id')
-        temp_offer = TempOffers.objects \
-            .select_related('temp_offer_solder') \
-            .select_related('temp_offer_products') \
-            .select_related('temp_offer_services') \
-            .prefetch_related('temp_offer_delivery') \
-            .get(pk=temp_offer_id)
+        offer_id = request.data.get('offer_id')
+        offer = Offers.objects \
+            .select_related('offer_solder') \
+            .select_related('offer_products') \
+            .select_related('offer_services') \
+            .prefetch_related('offer_delivery') \
+            .get(pk=offer_id)
         # Title
-        title = temp_offer.title
+        title = offer.title
         # Description
-        description = temp_offer.description
+        description = offer.description
         # Price
-        price = temp_offer.price
+        price = offer.price
         # Offer type
-        offer_type = temp_offer.offer_type
-        temp_offer_serializer = BaseTempShopOfferDuplicateSerializer(data={
-            'temp_shop': temp_offer.temp_shop.pk,
+        offer_type = offer.offer_type
+        offer_serializer = BaseShopOfferDuplicateSerializer(data={
+            'shop': offer.shop.pk,
             'offer_type': offer_type,
             'title': title,
-            'picture_1': temp_offer.picture_1 if temp_offer.picture_1 else None,
-            'picture_2': temp_offer.picture_2 if temp_offer.picture_2 else None,
-            'picture_3': temp_offer.picture_3 if temp_offer.picture_3 else None,
-            'picture_4': temp_offer.picture_4 if temp_offer.picture_4 else None,
-            'picture_1_thumbnail': temp_offer.picture_1_thumbnail if temp_offer.picture_1_thumbnail else None,
-            'picture_2_thumbnail': temp_offer.picture_2_thumbnail if temp_offer.picture_2_thumbnail else None,
-            'picture_3_thumbnail': temp_offer.picture_3_thumbnail if temp_offer.picture_3_thumbnail else None,
-            'picture_4_thumbnail': temp_offer.picture_4_thumbnail if temp_offer.picture_4_thumbnail else None,
+            'picture_1': offer.picture_1 if offer.picture_1 else None,
+            'picture_2': offer.picture_2 if offer.picture_2 else None,
+            'picture_3': offer.picture_3 if offer.picture_3 else None,
+            'picture_4': offer.picture_4 if offer.picture_4 else None,
+            'picture_1_thumbnail': offer.picture_1_thumbnail if offer.picture_1_thumbnail else None,
+            'picture_2_thumbnail': offer.picture_2_thumbnail if offer.picture_2_thumbnail else None,
+            'picture_3_thumbnail': offer.picture_3_thumbnail if offer.picture_3_thumbnail else None,
+            'picture_4_thumbnail': offer.picture_4_thumbnail if offer.picture_4_thumbnail else None,
             'description': description,
             'price': price
         })
-        if temp_offer_serializer.is_valid():
+        if offer_serializer.is_valid():
             # Duplicate offer
-            temp_offer_serializer = temp_offer_serializer.save()
+            offer_serializer = offer_serializer.save()
             # Duplicate pictures
-            base_duplicate_offer_images.apply_async(args=(temp_offer.pk, temp_offer_serializer.pk, 'TempOffers'), )
+            base_duplicate_offer_images.apply_async(args=(offer.pk, offer_serializer.pk, 'Offers'), )
             # Solder
             try:
-                product_solder = temp_offer.temp_offer_solder
-                solder_serializer = BaseTempShopOfferSolderSerializer(data={
-                    'temp_offer': temp_offer_serializer.pk,
-                    'temp_solder_type': product_solder.temp_solder_type,
-                    'temp_solder_value': product_solder.temp_solder_value
+                product_solder = offer.offer_solder
+                solder_serializer = BaseShopOfferSolderSerializer(data={
+                    'offer': offer_serializer.pk,
+                    'solder_type': product_solder.solder_type,
+                    'solder_value': product_solder.solder_value
                 })
                 if solder_serializer.is_valid():
                     solder_serializer.save()
             except ObjectDoesNotExist:
                 pass
             data = {
-                'pk': temp_offer_serializer.pk,
-                'offer_type': temp_offer_serializer.offer_type,
-                'title': temp_offer_serializer.title,
-                'picture_1': temp_offer_serializer.get_absolute_picture_1_img,
-                'picture_1_thumb': temp_offer_serializer.get_absolute_picture_1_thumbnail,
-                'picture_2': temp_offer_serializer.get_absolute_picture_2_img,
-                'picture_2_thumb': temp_offer_serializer.get_absolute_picture_2_thumbnail,
-                'picture_3': temp_offer_serializer.get_absolute_picture_3_img,
-                'picture_3_thumb': temp_offer_serializer.get_absolute_picture_3_thumbnail,
-                'picture_4': temp_offer_serializer.get_absolute_picture_4_img,
-                'picture_4_thumb': temp_offer_serializer.get_absolute_picture_4_thumbnail,
-                'description': temp_offer_serializer.description,
-                'price': temp_offer_serializer.price
+                'pk': offer_serializer.pk,
+                'offer_type': offer_serializer.offer_type,
+                'title': offer_serializer.title,
+                'picture_1': offer_serializer.get_absolute_picture_1_img,
+                'picture_1_thumb': offer_serializer.get_absolute_picture_1_thumbnail,
+                'picture_2': offer_serializer.get_absolute_picture_2_img,
+                'picture_2_thumb': offer_serializer.get_absolute_picture_2_thumbnail,
+                'picture_3': offer_serializer.get_absolute_picture_3_img,
+                'picture_3_thumb': offer_serializer.get_absolute_picture_3_thumbnail,
+                'picture_4': offer_serializer.get_absolute_picture_4_img,
+                'picture_4_thumb': offer_serializer.get_absolute_picture_4_thumbnail,
+                'description': offer_serializer.description,
+                'price': offer_serializer.price
             }
             # Categories
-            offer_categories = list(temp_offer.offer_categories.all().values_list('pk', flat=True))
+            offer_categories = list(offer.offer_categories.all().values_list('pk', flat=True))
             offer_categories = Categories.objects.filter(pk__in=offer_categories)
             offer_categories_list = []
             for category in offer_categories:
-                temp_offer_serializer.offer_categories.add(category.pk)
+                offer_serializer.offer_categories.add(category.pk)
                 offer_categories_list.append(
                     {
                         "pk": category.pk,
@@ -1052,11 +1055,11 @@ class TempShopOfferDuplicateView(APIView):
                 )
             data['offer_categories'] = offer_categories_list
             # For whom
-            for_whom = list(temp_offer.for_whom.all().values_list('pk', flat=True))
+            for_whom = list(offer.for_whom.all().values_list('pk', flat=True))
             for_whom = ForWhom.objects.filter(pk__in=for_whom)
             offer_for_whom_list = []
             for for_who in for_whom:
-                temp_offer_serializer.for_whom.add(for_who.pk)
+                offer_serializer.for_whom.add(for_who.pk)
                 offer_for_whom_list.append(
                     {
                         "pk": for_who.pk,
@@ -1069,29 +1072,29 @@ class TempShopOfferDuplicateView(APIView):
             product_valid = False
             product_serializer_errors = None
             service_serializer_errors = None
-            if temp_offer_serializer.offer_type == 'V':
-                product_quantity = temp_offer.temp_offer_products.product_quantity
-                product_price_by = temp_offer.temp_offer_products.product_price_by
-                product_longitude = temp_offer.temp_offer_products.product_longitude
-                product_latitude = temp_offer.temp_offer_products.product_latitude
-                product_address = temp_offer.temp_offer_products.product_address
-                temp_product_serializer = BaseTempShopProductSerializer(data={
-                    'temp_offer': temp_offer_serializer.pk,
+            if offer_serializer.offer_type == 'V':
+                product_quantity = offer.offer_products.product_quantity
+                product_price_by = offer.offer_products.product_price_by
+                product_longitude = offer.offer_products.product_longitude
+                product_latitude = offer.offer_products.product_latitude
+                product_address = offer.offer_products.product_address
+                product_serializer = BaseShopProductSerializer(data={
+                    'offer': offer_serializer.pk,
                     'product_quantity': product_quantity,
                     'product_price_by': product_price_by,
                     'product_longitude': product_longitude,
                     'product_latitude': product_latitude,
                     'product_address': product_address,
                 })
-                if temp_product_serializer.is_valid():
+                if product_serializer.is_valid():
                     product_valid = True
-                    temp_product_serializer.save()
+                    product_serializer.save()
                     # Color
-                    colors = list(temp_offer.temp_offer_products.product_colors.all().values_list('pk', flat=True))
+                    colors = list(offer.offer_products.product_colors.all().values_list('pk', flat=True))
                     colors = Colors.objects.filter(pk__in=colors)
                     product_colors_list = []
                     for color in colors:
-                        temp_offer_serializer.temp_offer_products.product_colors.add(color.pk)
+                        offer_serializer.offer_products.product_colors.add(color.pk)
                         product_colors_list.append(
                             {
                                 "pk": color.pk,
@@ -1101,11 +1104,11 @@ class TempShopOfferDuplicateView(APIView):
                         )
                     data['product_colors'] = product_colors_list
                     # Size
-                    sizes = list(temp_offer.temp_offer_products.product_sizes.all().values_list('pk', flat=True))
+                    sizes = list(offer.offer_products.product_sizes.all().values_list('pk', flat=True))
                     sizes = Sizes.objects.filter(pk__in=sizes)
                     product_sizes_list = []
                     for size in sizes:
-                        temp_offer_serializer.temp_offer_products.product_sizes.add(size.pk)
+                        offer_serializer.offer_products.product_sizes.add(size.pk)
                         product_sizes_list.append(
                             {
                                 "pk": size.pk,
@@ -1115,20 +1118,20 @@ class TempShopOfferDuplicateView(APIView):
                         )
                     data['product_sizes'] = product_sizes_list
                 else:
-                    product_serializer_errors = temp_product_serializer.errors
+                    product_serializer_errors = product_serializer.errors
             # Duplicate Service
-            elif temp_offer_serializer.offer_type == 'S':
-                service_morning_hour_from = temp_offer.temp_offer_services.service_morning_hour_from
-                service_morning_hour_to = temp_offer.temp_offer_services.service_morning_hour_to
-                service_afternoon_hour_from = temp_offer.temp_offer_services.service_afternoon_hour_from
-                service_afternoon_hour_to = temp_offer.temp_offer_services.service_afternoon_hour_to
-                service_zone_by = temp_offer.temp_offer_services.service_zone_by
-                service_price_by = temp_offer.temp_offer_services.service_price_by
-                service_longitude = temp_offer.temp_offer_services.service_longitude
-                service_latitude = temp_offer.temp_offer_services.service_latitude
-                service_address = temp_offer.temp_offer_services.service_address
-                temp_service_serializer = BaseTempShopServiceSerializer(data={
-                    'temp_offer': temp_offer_serializer.pk,
+            elif offer_serializer.offer_type == 'S':
+                service_morning_hour_from = offer.offer_services.service_morning_hour_from
+                service_morning_hour_to = offer.offer_services.service_morning_hour_to
+                service_afternoon_hour_from = offer.offer_services.service_afternoon_hour_from
+                service_afternoon_hour_to = offer.offer_services.service_afternoon_hour_to
+                service_zone_by = offer.offer_services.service_zone_by
+                service_price_by = offer.offer_services.service_price_by
+                service_longitude = offer.offer_services.service_longitude
+                service_latitude = offer.offer_services.service_latitude
+                service_address = offer.offer_services.service_address
+                service_serializer = BaseShopServiceSerializer(data={
+                    'offer': offer_serializer.pk,
                     'service_morning_hour_from': service_morning_hour_from,
                     'service_morning_hour_to': service_morning_hour_to,
                     'service_afternoon_hour_from': service_afternoon_hour_from,
@@ -1139,15 +1142,15 @@ class TempShopOfferDuplicateView(APIView):
                     'service_latitude': service_latitude,
                     'service_address': service_address,
                 })
-                if temp_service_serializer.is_valid():
-                    temp_service_serializer = temp_service_serializer.save()
+                if service_serializer.is_valid():
+                    service_serializer = service_serializer.save()
                     # Availability Days
-                    availability_days = list(temp_offer.temp_offer_services.service_availability_days.all()
+                    availability_days = list(offer.offer_services.service_availability_days.all()
                                              .values_list('pk', flat=True))
                     availability_days = Days.objects.filter(pk__in=availability_days)
                     service_availability_days_list = []
                     for availability_day in availability_days:
-                        temp_service_serializer.service_availability_days.add(availability_day.pk)
+                        service_serializer.service_availability_days.add(availability_day.pk)
                         service_availability_days_list.append(
                             {
                                 "pk": availability_day.pk,
@@ -1157,9 +1160,9 @@ class TempShopOfferDuplicateView(APIView):
                         )
                     data['service_availability_days'] = service_availability_days_list
                 else:
-                    service_serializer_errors = temp_service_serializer.errors
+                    service_serializer_errors = service_serializer.errors
             if product_valid:
-                deliveries = temp_offer.temp_offer_delivery.all()
+                deliveries = offer.offer_delivery.all()
                 delivery_price_1 = None
                 delivery_days_1 = None
                 delivery_city_1 = None
@@ -1170,15 +1173,15 @@ class TempShopOfferDuplicateView(APIView):
                 delivery_days_3 = None
                 delivery_city_3 = None
                 try:
-                    delivery_price_1 = deliveries[0].temp_delivery_price
-                    delivery_days_1 = deliveries[0].temp_delivery_days
-                    delivery_city_1 = deliveries[0].temp_delivery_city.all().values_list('pk', flat=True)
-                    delivery_price_2 = deliveries[1].temp_delivery_price
-                    delivery_days_2 = deliveries[1].temp_delivery_days
-                    delivery_city_2 = deliveries[1].temp_delivery_city.all().values_list('pk', flat=True)
-                    delivery_price_3 = deliveries[2].temp_delivery_price
-                    delivery_days_3 = deliveries[2].temp_delivery_days
-                    delivery_city_3 = deliveries[2].temp_delivery_city.all().values_list('pk', flat=True)
+                    delivery_price_1 = deliveries[0].delivery_price
+                    delivery_days_1 = deliveries[0].delivery_days
+                    delivery_city_1 = deliveries[0].delivery_city.all().values_list('pk', flat=True)
+                    delivery_price_2 = deliveries[1].delivery_price
+                    delivery_days_2 = deliveries[1].delivery_days
+                    delivery_city_2 = deliveries[1].delivery_city.all().values_list('pk', flat=True)
+                    delivery_price_3 = deliveries[2].delivery_price
+                    delivery_days_3 = deliveries[2].delivery_days
+                    delivery_city_3 = deliveries[2].delivery_city.all().values_list('pk', flat=True)
                 except IndexError:
                     pass
                 # Delivery 1 cities
@@ -1240,53 +1243,53 @@ class TempShopOfferDuplicateView(APIView):
                     city_1_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_serializer.pk,
-                            'temp_delivery_city': delivery_cities_1_pk,
-                            'temp_delivery_price': float(delivery_price_1),
-                            'temp_delivery_days': int(delivery_days_1)
+                            'offer': offer_serializer.pk,
+                            'delivery_city': delivery_cities_1_pk,
+                            'delivery_price': float(delivery_price_1),
+                            'delivery_days': int(delivery_days_1)
                         }
                     )
                 if delivery_city_2:
                     city_2_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_serializer.pk,
-                            'temp_delivery_city': delivery_cities_2_pk,
-                            'temp_delivery_price': float(delivery_price_2),
-                            'temp_delivery_days': int(delivery_days_2)
+                            'offer': offer_serializer.pk,
+                            'delivery_city': delivery_cities_2_pk,
+                            'delivery_price': float(delivery_price_2),
+                            'delivery_days': int(delivery_days_2)
                         }
                     )
                 if delivery_city_3:
                     city_3_check = True
                     deliveries.append(
                         {
-                            'temp_offer': temp_offer_serializer.pk,
-                            'temp_delivery_city': delivery_cities_3_pk,
-                            'temp_delivery_price': float(delivery_price_3),
-                            'temp_delivery_days': int(delivery_days_3)
+                            'offer': offer_serializer.pk,
+                            'delivery_city': delivery_cities_3_pk,
+                            'delivery_price': float(delivery_price_3),
+                            'delivery_days': int(delivery_days_3)
                         }
                     )
-                delivery_serializer = BaseTempShopDeliverySerializer(data=deliveries, many=True)
+                delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
                 if delivery_serializer.is_valid():
                     deliveries_serializer = delivery_serializer.save()
                     for delivery in deliveries_serializer:
                         if city_1_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_1_pk)
+                            delivery.delivery_city.add(*delivery_cities_1_pk)
                             city_1_check = False
                         elif city_2_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_2_pk)
+                            delivery.delivery_city.add(*delivery_cities_2_pk)
                             city_2_check = False
                         elif city_3_check:
-                            delivery.temp_delivery_city.add(*delivery_cities_3_pk)
+                            delivery.delivery_city.add(*delivery_cities_3_pk)
                             city_3_check = False
                     data['deliveries'] = deliveries
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
                     return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                temp_offer_serializer.delete()
+                offer_serializer.delete()
                 if offer_type == 'V' and product_serializer_errors:
                     return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
                 if offer_type == 'S' and service_serializer_errors:
                     return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(temp_offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

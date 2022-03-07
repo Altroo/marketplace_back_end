@@ -10,8 +10,10 @@ from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
 from datetime import datetime, timedelta
-from temp_shop.base.tasks import base_start_deleting_expired_shops, base_generate_avatar_thumbnail
-from temp_shop.base.models import TempShop, Days
+from temp_shop.base.tasks import base_start_deleting_expired_shops
+from auth_shop.base.tasks import base_generate_avatar_thumbnail
+from temp_shop.base.models import TempShop
+from offer.base.models import Days
 from django.core.exceptions import SuspiciousFileOperation
 
 
@@ -67,7 +69,7 @@ class TempShopView(APIView):
                 'font_name': temp_shop.font_name
             }
             # Generate thumbnail
-            base_generate_avatar_thumbnail.apply_async((temp_shop.pk,), )
+            base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
             shift = datetime.utcnow() + timedelta(hours=24)
             base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
             return Response(data=data, status=status.HTTP_200_OK)

@@ -1,52 +1,51 @@
 from rest_framework import serializers
-from temp_offer.base.models import TempOffers, TempDelivery, \
-    TempSolder, TempProducts, TempServices
-from offer.base.models import Categories, Colors, Sizes, ForWhom, Days
+from offer.base.models import Offers, Delivery, Solder, Products, Services, \
+    Categories, Colors, Sizes, ForWhom, Days
 from places.base.models import City
 
 
-class BaseTempOfferCategoriesSerializer(serializers.ModelSerializer):
+class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = ['pk', 'code_category', 'name_category']
 
 
-class BaseTempProductColorSerializer(serializers.ModelSerializer):
+class BaseProductColorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Colors
         fields = ['pk', 'code_color', 'name_color']
 
 
-class BaseTempProductSizeSerializer(serializers.ModelSerializer):
+class BaseProductSizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sizes
         fields = ['pk', 'code_size', 'name_size']
 
 
-class BaseTempServiceAvailabilityDaysSerializer(serializers.ModelSerializer):
+class BaseServiceAvailabilityDaysSerializer(serializers.ModelSerializer):
     class Meta:
         model = Days
         fields = ['pk', 'code_day', 'name_day']
 
 
-class BaseTempOfferForWhomSerializer(serializers.ModelSerializer):
+class BaseOfferForWhomSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForWhom
         fields = ['pk', 'code_for_whom', 'name_for_whom']
 
 
 # Offer serializer for Duplicate
-class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
+class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TempOffers
-        fields = ['temp_shop', 'offer_type', 'title',
+        model = Offers
+        fields = ['auth_shop', 'offer_type', 'title',
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_3_thumbnail',
                   'picture_4_thumbnail', 'description', 'price']
 
     def save(self):
-        temp_offer = TempOffers(
-            temp_shop=self.validated_data['temp_shop'],
+        offer = Offers(
+            auth_shop=self.validated_data['auth_shop'],
             offer_type=self.validated_data['offer_type'],
             title=self.validated_data['title'],
             picture_1=self.validated_data['picture_1'],
@@ -60,67 +59,67 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
             description=self.validated_data['description'],
             price=self.validated_data['price'],
         )
-        temp_offer.save()
-        return temp_offer
+        offer.save()
+        return offer
 
 
 # Global Offer serializer
-class BaseTempShopOfferSerializer(serializers.ModelSerializer):
-    offer_categories = BaseTempOfferCategoriesSerializer(many=True, read_only=True)
-    for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
+class BaseShopOfferSerializer(serializers.ModelSerializer):
+    offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
+    for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
 
     class Meta:
-        model = TempOffers
-        fields = ['temp_shop', 'offer_type', 'offer_categories', 'title',
+        model = Offers
+        fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'for_whom', 'price']
 
 
 # Global Product serializer
-class BaseTempShopProductSerializer(serializers.ModelSerializer):
+class BaseShopProductSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = TempProducts
-        fields = ['temp_offer', 'product_quantity', 'product_price_by', 'product_longitude',
+        model = Products
+        fields = ['offer', 'product_quantity', 'product_price_by', 'product_longitude',
                   'product_latitude', 'product_address']
 
 
 # Global Service serializer
-class BaseTempShopServiceSerializer(serializers.ModelSerializer):
-    service_availability_days = BaseTempServiceAvailabilityDaysSerializer(many=True, read_only=True)
+class BaseShopServiceSerializer(serializers.ModelSerializer):
+    service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
 
     class Meta:
-        model = TempServices
-        fields = ['temp_offer', 'service_availability_days',
+        model = Services
+        fields = ['offer', 'service_availability_days',
                   'service_morning_hour_from', 'service_morning_hour_to',
                   'service_afternoon_hour_from', 'service_afternoon_hour_to',
                   'service_zone_by', 'service_price_by',
                   'service_longitude', 'service_latitude', 'service_address', 'service_km_radius']
 
 
-class BaseTempShopCitySerializer(serializers.ModelSerializer):
+class BaseShopCitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ['pk', 'city_en', 'city_fr', 'city_ar']
 
 
-class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
-    temp_delivery_city = BaseTempShopCitySerializer(many=True, read_only=True)
+class BaseShopDeliverySerializer(serializers.ModelSerializer):
+    delivery_city = BaseShopCitySerializer(many=True, read_only=True)
 
     class Meta:
-        model = TempDelivery
-        fields = ['temp_offer', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days']
+        model = Delivery
+        fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
 
 
-class BaseDetailsTempProductSerializer(serializers.Serializer):
+class BaseDetailsProductSerializer(serializers.Serializer):
     # Details Product
     product_quantity = serializers.IntegerField()
     product_price_by = serializers.CharField()
     product_longitude = serializers.CharField()
     product_latitude = serializers.CharField()
     product_address = serializers.CharField()
-    product_colors = BaseTempProductColorSerializer(many=True, read_only=True)
-    product_sizes = BaseTempProductSizeSerializer(many=True, read_only=True)
+    product_colors = BaseProductColorSerializer(many=True, read_only=True)
+    product_sizes = BaseProductSizeSerializer(many=True, read_only=True)
 
     def update(self, instance, validated_data):
         pass
@@ -129,9 +128,9 @@ class BaseDetailsTempProductSerializer(serializers.Serializer):
         pass
 
 
-class BaseDetailsTempServiceSerializer(serializers.Serializer):
+class BaseDetailsServiceSerializer(serializers.Serializer):
     # Details Product
-    service_availability_days = BaseTempServiceAvailabilityDaysSerializer(many=True, read_only=True)
+    service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
     service_morning_hour_from = serializers.TimeField()
     service_morning_hour_to = serializers.TimeField()
     service_afternoon_hour_from = serializers.TimeField()
@@ -150,12 +149,12 @@ class BaseDetailsTempServiceSerializer(serializers.Serializer):
         pass
 
 
-class BaseTempOfferDetailsSerializer(serializers.Serializer):
+class BaseOfferDetailsSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     title = serializers.CharField()
-    categories = BaseTempOfferCategoriesSerializer(many=True, read_only=True)
+    categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     # Store_name
-    store_name = serializers.CharField(source='temp_shop.shop_name')
+    store_name = serializers.CharField(source='auth_shop.shop_name')
     picture_1 = serializers.CharField(source='get_absolute_picture_1_img')
     picture_1_thumb = serializers.CharField(source='get_absolute_picture_1_thumbnail')
     picture_2 = serializers.CharField(source='get_absolute_picture_2_img')
@@ -165,19 +164,19 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
     picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
     picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
-    for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
+    for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     price = serializers.FloatField()
     # details product or details service
     details_offer = serializers.SerializerMethodField()
-    deliveries = BaseTempShopDeliverySerializer(many=True, read_only=True)
+    deliveries = BaseShopDeliverySerializer(many=True, read_only=True)
 
     @staticmethod
     def get_details_offer(instance):
         if instance.offer_type == 'V':
-            details_product = BaseDetailsTempProductSerializer(instance.temp_offer_products)
+            details_product = BaseDetailsProductSerializer(instance.offer_products)
             return details_product.data
         if instance.offer_type == 'S':
-            details_service = BaseDetailsTempServiceSerializer(instance.temp_offer_services)
+            details_service = BaseDetailsServiceSerializer(instance.offer_services)
             return details_service.data
 
     def update(self, instance, validated_data):
@@ -187,22 +186,22 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
         pass
 
 
-class BaseTempOfferssListSerializer(serializers.Serializer):
+class BaseOfferssListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     thumbnail = serializers.SerializerMethodField()
     product_name = serializers.CharField(source='*')
     price = serializers.FloatField()
-    temp_solder_type = serializers.CharField(source='temp_offer_solder.temp_solder_type')
-    temp_solder_value = serializers.FloatField(source='temp_offer_solder.temp_solder_value')
+    solder_type = serializers.CharField(source='offer_solder.solder_type')
+    solder_value = serializers.FloatField(source='offer_solder.solder_value')
     details_offer = serializers.SerializerMethodField()
 
     @staticmethod
     def get_details_offer(instance):
         if instance.offer_type == 'V':
-            details_product = BaseDetailsTempProductSerializer(instance.temp_offer_products)
+            details_product = BaseDetailsProductSerializer(instance.offer_products)
             return details_product.data
         if instance.offer_type == 'S':
-            details_service = BaseDetailsTempServiceSerializer(instance.temp_offer_services)
+            details_service = BaseDetailsServiceSerializer(instance.offer_services)
             return details_service.data
 
     @staticmethod
@@ -225,7 +224,7 @@ class BaseTempOfferssListSerializer(serializers.Serializer):
         pass
 
 
-class BaseTempOfferPutSerializer(serializers.ModelSerializer):
+class BaseOfferPutSerializer(serializers.ModelSerializer):
     picture_1 = serializers.ImageField(required=False, allow_empty_file=True,
                                        default=None, max_length=None, allow_null=True)
     picture_2 = serializers.ImageField(required=False, allow_empty_file=True,
@@ -236,7 +235,7 @@ class BaseTempOfferPutSerializer(serializers.ModelSerializer):
                                        default=None, max_length=None, allow_null=True)
 
     class Meta:
-        model = TempOffers
+        model = Offers
         fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'price']
         extra_kwargs = {
@@ -258,9 +257,9 @@ class BaseTempOfferPutSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BaseTempProductPutSerializer(serializers.ModelSerializer):
+class BaseProductPutSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TempProducts
+        model = Products
         fields = ['product_quantity', 'product_price_by', 'product_longitude', 'product_latitude', 'product_address']
 
     def update(self, instance, validated_data):
@@ -273,9 +272,9 @@ class BaseTempProductPutSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BaseTempServicePutSerializer(serializers.ModelSerializer):
+class BaseServicePutSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TempServices
+        model = Services
         fields = ['service_morning_hour_from', 'service_morning_hour_to',
                   'service_afternoon_hour_from', 'service_afternoon_hour_to',
                   'service_zone_by', 'service_price_by',
@@ -299,28 +298,28 @@ class BaseTempServicePutSerializer(serializers.ModelSerializer):
         return instance
 
 
-class BaseTempShopOfferSolderSerializer(serializers.ModelSerializer):
+class BaseShopOfferSolderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TempSolder
-        fields = ['temp_offer', 'temp_solder_type', 'temp_solder_value']
+        model = Solder
+        fields = ['offer', 'solder_type', 'solder_value']
 
     def save(self):
-        temp_solder = TempSolder(
-            temp_offer=self.validated_data['temp_offer'],
-            temp_solder_type=self.validated_data['temp_solder_type'],
-            temp_solder_value=self.validated_data['temp_solder_value'],
+        solder = Solder(
+            offer=self.validated_data['offer'],
+            solder_type=self.validated_data['solder_type'],
+            solder_value=self.validated_data['solder_value'],
         )
-        temp_solder.save()
-        return temp_solder
+        solder.save()
+        return solder
 
 
-class BaseTempShopOfferSolderPutSerializer(serializers.ModelSerializer):
+class BaseShopOfferSolderPutSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TempSolder
-        fields = ['temp_solder_type', 'temp_solder_value']
+        model = Solder
+        fields = ['solder_type', 'solder_value']
 
     def update(self, instance, validated_data):
-        instance.temp_solder_type = validated_data.get('temp_solder_type', instance.temp_solder_type)
-        instance.temp_solder_value = validated_data.get('temp_solder_value', instance.temp_solder_value)
+        instance.solder_type = validated_data.get('solder_type', instance.solder_type)
+        instance.solder_value = validated_data.get('solder_value', instance.solder_value)
         instance.save()
         return instance

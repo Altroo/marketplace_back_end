@@ -1,36 +1,38 @@
 import sys
 from django.core.management import BaseCommand
-from auth_shop.models import ForWhom
+from offer.base.models import Days
+from auth_shop.base.models import AuthShopDays
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError
 
 
-class InsertForWhom:
+class InsertDays:
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../../.."))
 
-    def insert_for_whom(self):
-        with open(self.parent_file_dir + '/csv_data/for_whom.csv', 'r+', encoding='UTF8') as f:
+    def insert_days(self):
+        with open(self.parent_file_dir + '/csv_data/days.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
                 try:
-                    ForWhom.objects.create(code_for_whom=row[0], name_for_whom=row[1])
+                    Days.objects.create(code_day=row[0], name_day=row[1])
+                    AuthShopDays.objects.create(code_day=row[0], name_day=row[1])
                 except IntegrityError:
                     continue
 
 
 class Command(BaseCommand):
-    help = 'Insert For Whom'
+    help = 'Insert Days'
 
     def handle(self, *args, **options):
-        sys.stdout.write(f'Start processing For whom.\n')
-        self.insert_for_whom()
+        sys.stdout.write(f'Start processing Days.\n')
+        self.insert_days()
         sys.stdout.write('\n')
 
     @staticmethod
-    def insert_for_whom():
-        for_whom_inserter = InsertForWhom()
+    def insert_days():
+        days_inserter = InsertDays()
         try:
-            for_whom_inserter.insert_for_whom()
+            days_inserter.insert_days()
         except Exception as e:
             sys.stdout.write('{}.\n'.format(e))

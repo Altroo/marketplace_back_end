@@ -1,36 +1,36 @@
 import sys
 from django.core.management import BaseCommand
-from auth_shop.models import Colors
+from offer.base.models import Categories
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError
 
 
-class InsertColors:
+class InsertCategories:
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../../.."))
 
-    def insert_colors(self):
-        with open(self.parent_file_dir + '/csv_data/colors.csv', 'r+', encoding='UTF8') as f:
+    def insert_categories(self):
+        with open(self.parent_file_dir + '/csv_data/categories.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
                 try:
-                    Colors.objects.create(code_color=row[0], name_color=row[1])
+                    Categories.objects.create(code_category=row[0], name_category=row[1])
                 except IntegrityError:
                     continue
 
 
 class Command(BaseCommand):
-    help = 'Insert Colors'
+    help = 'Insert Categories'
 
     def handle(self, *args, **options):
-        sys.stdout.write(f'Start processing Colors.\n')
-        self.insert_colors()
+        sys.stdout.write(f'Start processing Categories.\n')
+        self.insert_categories()
         sys.stdout.write('\n')
 
     @staticmethod
-    def insert_colors():
-        colors_inserter = InsertColors()
+    def insert_categories():
+        categories_inserter = InsertCategories()
         try:
-            colors_inserter.insert_colors()
+            categories_inserter.insert_categories()
         except Exception as e:
             sys.stdout.write('{}.\n'.format(e))

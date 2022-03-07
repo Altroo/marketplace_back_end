@@ -1,15 +1,64 @@
-from colorfield.fields import ColorField
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
-from auth_shop.base.models import get_avatar_path, ShopChoices, LonLatValidators
-from auth_shop.base.models import AuthShopDays
-from Qaryb_API_new.settings import API_URL
+from os import path
 from uuid import uuid4
+from colorfield.fields import ColorField
+from Qaryb_API_new.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
+from account.models import CustomUser
 
 
-class TempShop(Model):
+def get_avatar_path(instance, filename):
+    filename, file_extension = path.splitext(filename)
+    return path.join('avatar/', str(uuid4()) + file_extension)
+
+
+class ShopChoices:
+    """
+    Type of shop choices
+    """
+
+    FONT_CHOICES = (
+        ('LI', 'Light'),
+        ('BO', 'Boldy'),
+        ('CL', 'Classic'),
+        ('MA', 'Magazine'),
+        ('PO', 'Pop'),
+        ('SA', 'Sans'),
+        ('PA', 'Pacifico'),
+        ('FI', 'Fira'),
+    )
+
+    ZONE_BY_CHOICES = (
+        ('A', 'Address'),
+        ('S', 'Sector')
+    )
+
+
+class LonLatValidators:
+    lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
+                                   'Only Geo numbers are allowed.')
+    long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
+                                    r'(?:(?:\.[0-9]{1,6})?))$',
+                                    'Only Geo numbers are allowed.')
+
+
+class AuthShopDays(Model):
+    code_day = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
+    name_day = models.CharField(max_length=255, verbose_name='Day name', unique=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.code_day, self.name_day)
+
+    class Meta:
+        verbose_name = 'Day'
+        verbose_name_plural = 'Days'
+
+
+class AuthShop(Model):
+    user = models.OneToOneField(CustomUser, verbose_name='User', on_delete=models.CASCADE, related_name='user_authshop')
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
     avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=False, null=False,
                                default=None)
@@ -21,7 +70,7 @@ class TempShop(Model):
                                  choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
     opening_days = models.ManyToManyField(AuthShopDays, verbose_name='Opening days',
-                                          related_name='temp_shop_opening_days', blank=True)
+                                          related_name='authshop_opening_days', blank=True)
     morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
     morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True, default=None)
@@ -42,7 +91,7 @@ class TempShop(Model):
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     qaryb_link = models.URLField(verbose_name='Qaryb link', max_length=200, blank=False, null=False, unique=True)
-    unique_id = models.CharField(verbose_name='Unique ID', unique=True, max_length=40)
+    # Dates
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
@@ -57,8 +106,8 @@ class TempShop(Model):
                                      self.contact_email)
 
     class Meta:
-        verbose_name = 'Temp Shop'
-        verbose_name_plural = 'Temp Shops'
+        verbose_name = 'Auth Shop'
+        verbose_name_plural = 'Auth Shops'
         ordering = ('created_date',)
 
     @property
