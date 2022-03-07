@@ -1,14 +1,12 @@
-from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Model
 from os import path
-from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days
+from auth_shop.models import Categories, Colors, Sizes, ForWhom, Days, LonLatValidators
 from places.base.models import City
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
-
 from temp_shop.base.models import TempShop
 
 
@@ -17,21 +15,11 @@ def get_shop_products_path(instance, filename):
     return path.join('shop_products/', str(uuid4()) + file_extension)
 
 
-class ShopChoices:
+# TODO CREATE OFFER APP
+class OfferChoices:
     """
     Type of shop choices
     """
-
-    FONT_CHOICES = (
-        ('LI', 'Light'),
-        ('BO', 'Boldy'),
-        ('CL', 'Classic'),
-        ('MA', 'Magazine'),
-        ('PO', 'Pop'),
-        ('SA', 'Sans'),
-        ('PA', 'Pacifico'),
-        ('FI', 'Fira'),
-    )
 
     ZONE_BY_CHOICES = (
         ('A', 'Address'),
@@ -64,19 +52,11 @@ class ShopChoices:
     )
 
 
-class ShopValidators:
-    lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
-                                   'Only Geo numbers are allowed.')
-    long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
-                                    r'(?:(?:\.[0-9]{1,6})?))$',
-                                    'Only Geo numbers are allowed.')
-
-
 class TempOffers(Model):
     temp_shop = models.ForeignKey(TempShop, on_delete=models.CASCADE,
                                   verbose_name='Temp Shop', related_name='temp_shop')
     offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
-                                  choices=ShopChoices.OFFER_TYPE_CHOICES)
+                                  choices=OfferChoices.OFFER_TYPE_CHOICES)
     offer_categories = models.ManyToManyField(Categories, verbose_name='Offer Categories',
                                               related_name='temp_offer_categories')
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
@@ -183,14 +163,14 @@ class TempProducts(Model):
     product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
                                            related_name='temp_product_sizes')
     product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
-    product_price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.PRODUCT_PRICE_BY_CHOICES,
+    product_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.PRODUCT_PRICE_BY_CHOICES,
                                         max_length=1)
     product_longitude = models.FloatField(verbose_name='Product Longitude', blank=True,
-                                          null=True, max_length=10, validators=[ShopValidators.long_validator],
+                                          null=True, max_length=10, validators=[LonLatValidators.long_validator],
                                           default=None)
     product_latitude = models.FloatField(verbose_name='Product Latitude', blank=True,
                                          null=True, max_length=10,
-                                         validators=[ShopValidators.lat_validator], default=None)
+                                         validators=[LonLatValidators.lat_validator], default=None)
     product_address = models.CharField(verbose_name='Product Address', max_length=255,
                                        blank=True, null=True, default=None)
 
@@ -213,16 +193,16 @@ class TempServices(Model):
     service_afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True,
                                                    default=None)
     service_afternoon_hour_to = models.TimeField(verbose_name='Afternoon hour to', blank=True, null=True, default=None)
-    service_zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=ShopChoices.ZONE_BY_CHOICES,
+    service_zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=OfferChoices.ZONE_BY_CHOICES,
                                        default='A')
-    service_price_by = models.CharField(verbose_name='Price by', choices=ShopChoices.SERVICE_PRICE_BY_CHOICES,
+    service_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.SERVICE_PRICE_BY_CHOICES,
                                         max_length=1)
     service_longitude = models.FloatField(verbose_name='Service Longitude', blank=True,
-                                          null=True, max_length=10, validators=[ShopValidators.long_validator],
+                                          null=True, max_length=10, validators=[LonLatValidators.long_validator],
                                           default=None)
     service_latitude = models.FloatField(verbose_name='Service Latitude', blank=True,
                                          null=True, max_length=10,
-                                         validators=[ShopValidators.lat_validator], default=None)
+                                         validators=[LonLatValidators.lat_validator], default=None)
     service_address = models.CharField(verbose_name='Service Address', max_length=255,
                                        blank=True, null=True, default=None)
     service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
@@ -259,7 +239,7 @@ class TempSolder(Model):
     temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
                                       verbose_name='Temp Offer',
                                       related_name='temp_offer_solder', unique=True)
-    temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=ShopChoices.SOLDER_BY_CHOICES,
+    temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
                                         max_length=1)
     temp_solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
 

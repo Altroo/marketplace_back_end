@@ -6,7 +6,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['shop_name',
-                  'avatar', 'color_code',
+                  'avatar', 'color_code', 'bg_color_code',
                   'font_name',
                   # 'bio',
                   # 'opening_days',
@@ -17,7 +17,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
                   # 'zone_by', 'longitude', 'latitude', 'address_name', 'km_radius',
                   'qaryb_link', 'unique_id']
         extra_kwargs = {
-            'avatar': {'required': False},
+            'avatar': {'required': True},
         }
 
     def save(self):
@@ -25,6 +25,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
             shop_name=self.validated_data['shop_name'],
             avatar=self.validated_data['avatar'],
             color_code=self.validated_data['color_code'],
+            bg_color_code=self.validated_data['bg_color_code'],
             font_name=self.validated_data['font_name'],
             # bio=self.validated_data['bio'],
             # opening_days=self.validated_data['opening_days'],
@@ -67,7 +68,7 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TempShop
-        fields = ['shop_name', 'avatar', 'color_code', 'font_name', 'bio',
+        fields = ['shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
                   'phone', 'contact_email',
@@ -143,6 +144,28 @@ class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
         return instance
 
 
+class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempShop
+        fields = ['phone']
+
+    def update(self, instance, validated_data):
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.save()
+        return instance
+
+
+class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempShop
+        fields = ['whatsapp']
+
+    def update(self, instance, validated_data):
+        instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+        instance.save()
+        return instance
+
+
 class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
@@ -161,10 +184,11 @@ class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
 class BaseTempShopColorPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
-        fields = ['color_code']
+        fields = ['color_code', 'bg_color_code']
 
     def update(self, instance, validated_data):
         instance.color_code = validated_data.get('color_code', instance.color_code)
+        instance.bg_color_code = validated_data.get('bg_color_code', instance.bg_color_code)
         instance.save()
         return instance
 

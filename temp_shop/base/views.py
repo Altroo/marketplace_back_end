@@ -4,7 +4,8 @@ from rest_framework import status, permissions
 from temp_shop.base.serializers import BaseTempShopSerializer, BaseTempShopAvatarPutSerializer, \
     BaseTempShopNamePutSerializer, BaseTempShopBioPutSerializer, BaseTempShopAvailabilityPutSerializer, \
     BaseTempShopContactPutSerializer, BaseTempShopAddressPutSerializer, BaseTempShopColorPutSerializer, \
-    BaseTempShopFontPutSerializer, BaseGETTempShopInfoSerializer
+    BaseTempShopFontPutSerializer, BaseGETTempShopInfoSerializer, BaseTempShopTelPutSerializer, \
+    BaseTempShopWtspPutSerializer
 from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
@@ -27,6 +28,7 @@ class TempShopView(APIView):
             'shop_name': shop_name,
             'avatar': request.data.get('avatar'),
             'color_code': request.data.get('color_code'),
+            'bg_color_code': request.data.get('bg_color_code'),
             'font_name': request.data.get('font_name'),
             # 'bio': request.data.get('bio'),
             # 'morning_hour_from': request.data.get('morning_hour_from'),
@@ -61,6 +63,7 @@ class TempShopView(APIView):
                 'shop_name': temp_shop.shop_name,
                 'avatar': temp_shop.get_absolute_avatar_img,
                 'color_code': temp_shop.color_code,
+                'bg_color_code': temp_shop.bg_color_code,
                 'font_name': temp_shop.font_name
             }
             # Generate thumbnail
@@ -171,6 +174,34 @@ class TempShopContactPutView(APIView):
         if serializer.is_valid():
             serializer.update(temp_shop, serializer.validated_data)
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TempShopTelPutView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        unique_id = request.data.get('unique_id')
+        temp_shop = TempShop.objects.get(unique_id=unique_id)
+        serializer = BaseTempShopTelPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(temp_shop, serializer.validated_data)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TempShopWtspPutView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        unique_id = request.data.get('unique_id')
+        temp_shop = TempShop.objects.get(unique_id=unique_id)
+        serializer = BaseTempShopWtspPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(temp_shop, serializer.validated_data)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

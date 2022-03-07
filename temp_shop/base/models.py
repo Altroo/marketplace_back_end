@@ -1,51 +1,42 @@
-from django.core.validators import RegexValidator
+from colorfield.fields import ColorField
 from django.db import models
 from django.db.models import Model
-from auth_shop.models import get_avatar_path, Days
+from auth_shop.models import get_avatar_path, Days, ShopChoices, LonLatValidators
 from Qaryb_API_new.settings import API_URL
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
 
 
-class ShopChoices:
-    """
-    Type of shop choices
-    """
-    #
-    # FONT_CHOICES = (
-    #     ('LI', 'Light'),
-    #     ('BO', 'Boldy'),
-    #     ('CL', 'Classic'),
-    #     ('MA', 'Magazine'),
-    #     ('PO', 'Pop'),
-    #     ('SA', 'Sans'),
-    #     ('PA', 'Pacifico'),
-    #     ('FI', 'Fira'),
-    # )
-
-    ZONE_BY_CHOICES = (
-        ('A', 'Address'),
-        ('S', 'Sector')
-    )
+# class ShopChoices:
+#     """
+#     Type of shop choices
+#     """
+#
+#     ZONE_BY_CHOICES = (
+#         ('A', 'Address'),
+#         ('S', 'Sector')
+#     )
 
 
-class ShopValidators:
-    lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
-                                   'Only Geo numbers are allowed.')
-    long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
-                                    r'(?:(?:\.[0-9]{1,6})?))$',
-                                    'Only Geo numbers are allowed.')
+# class ShopValidators:
+#     lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
+#                                    'Only Geo numbers are allowed.')
+#     long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
+#                                     r'(?:(?:\.[0-9]{1,6})?))$',
+#                                     'Only Geo numbers are allowed.')
 
 
 class TempShop(Model):
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
-    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
+    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=False, null=False,
                                default=None)
     avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
                                          default=None)
-    color_code = models.CharField(verbose_name='Color code', max_length=20, default=None, blank=True, null=True)
-    font_name = models.CharField(verbose_name='Font name', max_length=20, default=None, blank=True, null=True)
+    color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    font_name = models.CharField(verbose_name='Font name', max_length=2,
+                                 choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
     opening_days = models.ManyToManyField(Days, verbose_name='Opening days',
                                           related_name='temp_shop_opening_days', blank=True)
@@ -62,9 +53,9 @@ class TempShop(Model):
     whatsapp = models.CharField(verbose_name='Whatsapp number', max_length=15, blank=True, null=True, default=None)
     zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=ShopChoices.ZONE_BY_CHOICES, default='A')
     longitude = models.FloatField(verbose_name='Longitude', blank=True,
-                                  null=True, max_length=10, validators=[ShopValidators.long_validator], default=None)
+                                  null=True, max_length=10, validators=[LonLatValidators.long_validator], default=None)
     latitude = models.FloatField(verbose_name='Latitude', blank=True,
-                                 null=True, max_length=10, validators=[ShopValidators.lat_validator], default=None)
+                                 null=True, max_length=10, validators=[LonLatValidators.lat_validator], default=None)
     address_name = models.CharField(verbose_name='Address name', max_length=255,
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
