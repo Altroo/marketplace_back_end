@@ -54,7 +54,7 @@ class ShopView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        auth_shop_pk = kwargs.get('pk')
+        auth_shop_pk = kwargs.get('auth_shop_pk')
         try:
             shop = AuthShop.objects.get(pk=auth_shop_pk)
             shop_details_serializer = BaseGETShopInfoSerializer(shop)
@@ -225,7 +225,7 @@ class ShopAvatarPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopAvatarPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -251,7 +251,7 @@ class ShopNamePutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopNamePutSerializer(data=request.data)
         if serializer.is_valid():
@@ -265,7 +265,7 @@ class ShopBioPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopBioPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -279,7 +279,7 @@ class ShopAvailabilityPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopAvailabilityPutSerializer(data={
             'morning_hour_from': request.data.get('morning_hour_from'),
@@ -303,7 +303,7 @@ class ShopContactPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopContactPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -317,7 +317,7 @@ class ShopTelPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopTelPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -331,7 +331,7 @@ class ShopWtspPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopWtspPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -345,7 +345,7 @@ class ShopAddressPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopAddressPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -359,7 +359,7 @@ class ShopColorPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopColorPutSerializer(data=request.data)
         if serializer.is_valid():
@@ -373,7 +373,7 @@ class ShopFontPutView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('pk')
+        auth_shop_pk = request.data.get('auth_shop_pk')
         shop = AuthShop.objects.get(pk=auth_shop_pk)
         serializer = BaseShopFontPutSerializer(data=request.data)
         if serializer.is_valid():

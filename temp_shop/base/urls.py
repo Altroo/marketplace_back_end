@@ -12,9 +12,9 @@ urlpatterns = [
     # GET : Get temp shop info
     path('', TempShopView.as_view()),
     path('get/<str:unique_id>/', TempShopView.as_view()),
-    path('add/phone/', TempShopTelPutView.as_view()),
-    path('add/whatsapp/', TempShopWtspPutView.as_view()),
     # PUT : Edit temp store
+    path('edit/phone/', TempShopTelPutView.as_view()),
+    path('edit/whatsapp/', TempShopWtspPutView.as_view()),
     path('edit/avatar/', TempShopAvatarPutView.as_view()),
     path('edit/store_name/', TempShopNamePutView.as_view()),
     path('edit/bio/', TempShopBioPutView.as_view()),
