@@ -103,12 +103,18 @@ class BaseShopServiceSerializer(serializers.ModelSerializer):
 
 
 class BaseShopDeliverySerializer(serializers.ModelSerializer):
-    # delivery_city = BaseShopCitySerializer(many=True, read_only=True)
-
     class Meta:
         model = Delivery
         fields = ['offer',
                   'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
+                  'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
+                  'delivery_city_3', 'delivery_price_3', 'delivery_days_3']
+
+
+class BaseShopDeliveryPUTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Delivery
+        fields = ['delivery_city_1', 'delivery_price_1', 'delivery_days_1',
                   'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
                   'delivery_city_3', 'delivery_price_3', 'delivery_days_3']
 

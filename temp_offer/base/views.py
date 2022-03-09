@@ -8,7 +8,8 @@ from temp_offer.base.serializers import BaseTempShopOfferSerializer, \
     BaseTempOfferssListSerializer, BaseTempShopOfferSolderSerializer, \
     BaseTempShopOfferSolderPutSerializer, BaseTempShopProductSerializer, \
     BaseTempShopServiceSerializer, BaseTempProductPutSerializer, \
-    BaseTempServicePutSerializer, BaseTempOfferPutSerializer, BaseTempShopOfferDuplicateSerializer
+    BaseTempServicePutSerializer, BaseTempOfferPutSerializer, \
+    BaseTempShopOfferDuplicateSerializer, BaseTempShopDeliveryPUTSerializer
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
@@ -207,7 +208,7 @@ class TempShopOfferView(APIView):
 
             if product_valid:
                 # Deliveries
-                temp_delivery_city_1 = request.data.get('delivery_city_1')
+                temp_delivery_city_1 = request.data.get('delivery_city_1', None)
                 temp_delivery_price_1 = request.data.get('delivery_price_1', None)
                 temp_delivery_days_1 = request.data.get('delivery_days_1', None)
                 temp_delivery_city_2 = request.data.get('delivery_city_2', None)
@@ -230,12 +231,14 @@ class TempShopOfferView(APIView):
                     'temp_delivery_days_3': temp_delivery_days_3,
                 })
                 if delivery_serializer.is_valid():
-                    # try:
-                    # temp_delivery = TempDelivery.objects.get(temp_shop=temp_shop.pk)
-                    # delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
-                    # except TempDelivery.DoesNotExist:
                     delivery_serializer.save()
-                    data['deliveries'] = delivery_serializer.validated_data
+
+                    def removekey(d, key):
+                        r = dict(d)
+                        del r[key]
+                        return r
+                    temp_delivery = removekey(delivery_serializer.data, 'temp_offer')
+                    data['deliveries'] = temp_delivery
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
@@ -249,10 +252,9 @@ class TempShopOfferView(APIView):
         return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        temp_offer_pk = request.data.get('offer_id')
+        temp_offer_pk = request.data.get('temp_offer_pk')
         try:
             temp_offer = TempOffers.objects.get(pk=temp_offer_pk)
-            temp_shop_pk = temp_offer.temp_shop.pk
             temp_offer_pk = temp_offer.pk
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
@@ -545,8 +547,7 @@ class TempShopOfferView(APIView):
                         temp_delivery_price_3 = request.data.get('delivery_price_3', None)
                         temp_delivery_days_3 = request.data.get('delivery_days_3', None)
 
-                        delivery_serializer = BaseTempShopDeliverySerializer(data={
-                            'temp_offer': temp_offer_pk,
+                        delivery_serializer = BaseTempShopDeliveryPUTSerializer(data={
                             'temp_delivery_city_1': temp_delivery_city_1,
                             'temp_delivery_price_1': temp_delivery_price_1,
                             'temp_delivery_days_1': temp_delivery_days_1,
@@ -558,12 +559,10 @@ class TempShopOfferView(APIView):
                             'temp_delivery_days_3': temp_delivery_days_3,
                         })
                         if delivery_serializer.is_valid():
-                            try:
-                                temp_delivery = TempDelivery.objects.get(temp_offer=temp_offer_pk)
-                                delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
-                            except TempDelivery.DoesNotExist:
-                                delivery_serializer.save()
-                            data['deliveries'] = delivery_serializer.validated_data
+                            temp_delivery = TempDelivery.objects.get(temp_offer=temp_offer_pk)
+                            delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
+                            data['deliveries'] = delivery_serializer.data
+                            return Response(data, status=status.HTTP_200_OK)
                         else:
                             return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     if service_valid:
@@ -610,7 +609,7 @@ class TempShopOfferView(APIView):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        temp_offer_pk = request.data.get('id_offer')
+        temp_offer_pk = request.data.get('temp_offer_id')
         unique_id = request.data.get('unique_id')
         try:
             temp_offer = TempOffers.objects.get(pk=temp_offer_pk)
@@ -678,14 +677,14 @@ class GetOneTempOfferView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        offer_id = kwargs.get('id_offer')
+        temp_offer_id = kwargs.get('temp_offer_id')
         try:
             temp_offer = TempOffers.objects \
                 .select_related('temp_offer_solder') \
                 .select_related('temp_offer_products') \
                 .select_related('temp_offer_services') \
-                .select_related('temp_offer_delivery') \
-                .get(pk=offer_id)
+                .prefetch_related('temp_offer_delivery') \
+                .get(pk=temp_offer_id)
             temp_offer_details_serializer = BaseTempOfferDetailsSerializer(temp_offer)
             return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
         except TempOffers.DoesNotExist:
@@ -700,13 +699,13 @@ class GetTempShopOffersListView(APIView, PaginationMixinBy5):
         unique_id = kwargs.get('unique_id')
         try:
             temp_shop = TempShop.objects.get(unique_id=unique_id)
-            temp_shop_offers = TempOffers.objects \
+            temp_offers = TempOffers.objects \
                 .select_related('temp_offer_solder') \
                 .select_related('temp_offer_products') \
                 .select_related('temp_offer_services') \
-                .select_related('temp_offer_delivery') \
+                .prefetch_related('temp_offer_delivery') \
                 .filter(temp_shop=temp_shop).order_by('-created_date')
-            page = self.paginate_queryset(queryset=temp_shop_offers)
+            page = self.paginate_queryset(queryset=temp_offers)
             if page is not None:
                 serializer = BaseTempOfferssListSerializer(instance=page, many=True)
                 return self.get_paginated_response(serializer.data)
@@ -722,7 +721,7 @@ class TempShopOfferSolderView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        temp_offer_id = kwargs.get('id_offer')
+        temp_offer_id = kwargs.get('temp_offer_id')
         try:
             temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
             temp_offer_details_serializer = BaseTempShopOfferSolderSerializer(temp_solder)
@@ -778,7 +777,7 @@ class TempShopOfferDuplicateView(APIView):
             .select_related('temp_offer_solder') \
             .select_related('temp_offer_products') \
             .select_related('temp_offer_services') \
-            .select_related('temp_offer_delivery') \
+            .prefetch_related('temp_offer_delivery') \
             .get(pk=temp_offer_id)
         # Title
         title = temp_offer.title
@@ -980,12 +979,14 @@ class TempShopOfferDuplicateView(APIView):
                     'temp_delivery_days_3': temp_delivery_days_3,
                 })
                 if delivery_serializer.is_valid():
-                    # try:
-                    # temp_delivery = TempDelivery.objects.get(temp_shop=temp_shop_pk)
-                    # delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
-                    # except TempDelivery.DoesNotExist:
                     delivery_serializer.save()
-                    data['deliveries'] = delivery_serializer.validated_data
+
+                    def removekey(d, key):
+                        r = dict(d)
+                        del r[key]
+                        return r
+                    temp_delivery = removekey(delivery_serializer.data, 'temp_offer')
+                    data['deliveries'] = temp_delivery
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
             else:
@@ -995,3 +996,100 @@ class TempShopOfferDuplicateView(APIView):
                 if offer_type == 'S' and service_serializer_errors:
                     return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(temp_offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetLastThreeTempDeliveriesView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        unique_id = kwargs.get('unique_id')
+        try:
+            temp_shop = TempShop.objects.get(unique_id=unique_id)
+            temp_offers = TempOffers.objects \
+                .select_related('temp_offer_products') \
+                .prefetch_related('temp_offer_delivery') \
+                .filter(temp_shop=temp_shop).order_by('-created_date')
+            data = {
+                'temp_delivery_city_1': None,
+                'temp_delivery_price_1': None,
+                'temp_delivery_days_1': None,
+                'temp_delivery_city_2': None,
+                'temp_delivery_price_2': None,
+                'temp_delivery_days_2': None,
+                'temp_delivery_city_3': None,
+                'temp_delivery_price_3': None,
+                'temp_delivery_days_3': None
+            }
+            delivery_1 = False
+            delivery_2 = False
+            delivery_3 = False
+            for temp_offer in temp_offers:
+                if not delivery_1:
+                    if temp_offer.temp_offer_delivery.temp_delivery_city_1:
+                        data['temp_delivery_city_1'] = temp_offer.temp_offer_delivery.temp_delivery_city_1
+                        data['temp_delivery_price_1'] = temp_offer.temp_offer_delivery.temp_delivery_price_1
+                        data['temp_delivery_days_1'] = temp_offer.temp_offer_delivery.temp_delivery_days_1
+                        delivery_1 = True
+                if not delivery_2:
+                    if temp_offer.temp_offer_delivery.temp_delivery_city_2:
+                        data['temp_delivery_city_2'] = temp_offer.temp_offer_delivery.temp_delivery_city_2
+                        data['temp_delivery_price_2'] = temp_offer.temp_offer_delivery.temp_delivery_price_2
+                        data['temp_delivery_days_2'] = temp_offer.temp_offer_delivery.temp_delivery_days_2
+                        delivery_2 = True
+                if not delivery_3:
+                    if temp_offer.temp_offer_delivery.temp_delivery_city_3:
+                        data['temp_delivery_city_3'] = temp_offer.temp_offer_delivery.temp_delivery_city_3
+                        data['temp_delivery_price_3'] = temp_offer.temp_offer_delivery.temp_delivery_price_3
+                        data['temp_delivery_days_3'] = temp_offer.temp_offer_delivery.temp_delivery_days_3
+                        delivery_3 = True
+            return Response(data=data, status=status.HTTP_200_OK)
+        except TempOffers.DoesNotExist:
+            data = {'errors': ['Temp shop unique_id not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetLastTempUsedLocalisationView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        unique_id = kwargs.get('unique_id')
+        offer_type = kwargs.get('temp_offer_type')
+        try:
+            temp_shop = TempShop.objects.get(unique_id=unique_id)
+            temp_offer = TempOffers.objects \
+                .select_related('temp_offer_products') \
+                .select_related('temp_offer_services') \
+                .prefetch_related('temp_offer_delivery') \
+                .filter(temp_shop=temp_shop).order_by('-created_date').last()
+            data_product = {
+                'longitude': None,
+                'latitude': None,
+                'localisation_name': None,
+            }
+            data_service = {
+                'zone_by': None,
+                'longitude': None,
+                'latitude': None,
+                'km_radius': None,
+                'localisation_name': None,
+            }
+            if temp_offer.offer_type == offer_type:
+                if temp_offer.temp_offer_products.product_address:
+                    data_product['longitude'] = temp_offer.temp_offer_products.product_longitude
+                    data_product['latitude'] = temp_offer.temp_offer_products.product_latitude
+                    data_product['localisation_name'] = temp_offer.temp_offer_products.product_address
+                    return Response(data=data_product, status=status.HTTP_200_OK)
+            elif temp_offer.offer_type == offer_type:
+                if temp_offer.temp_offer_services.service_address:
+                    data_service['zone_by'] = temp_offer.temp_offer_services.service_zone_by
+                    data_service['longitude'] = temp_offer.temp_offer_services.service_longitude
+                    data_service['latitude'] = temp_offer.temp_offer_services.service_latitude
+                    data_service['km_radius'] = temp_offer.temp_offer_services.service_km_radius
+                    data_service['localisation_name'] = temp_offer.temp_offer_services.service_address
+                    return Response(data=data_service, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except TempOffers.DoesNotExist:
+            data = {'errors': ['Temp shop unique_id not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

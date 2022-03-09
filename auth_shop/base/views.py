@@ -114,7 +114,7 @@ class TempShopToAuthShopView(APIView):
                 .select_related('temp_offer_products') \
                 .select_related('temp_offer_services') \
                 .select_related('temp_offer_solder') \
-                .select_related('temp_offer_delivery')
+                .prefetch_related('temp_offer_delivery')
             for temp_offer in temp_offers:
                 offer = Offers.objects.create(
                     auth_shop=auth_shop,

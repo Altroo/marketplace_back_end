@@ -180,16 +180,22 @@ class TempDelivery(Model):
                                       related_name='temp_offer_delivery')
     temp_delivery_city_1 = models.CharField(verbose_name='Temp Delivery City 1', max_length=300,
                                             blank=True, null=True, default=None)
-    temp_delivery_price_1 = models.FloatField(verbose_name='Temp delivery Price 1', default=0.0)
-    temp_delivery_days_1 = models.PositiveIntegerField(verbose_name='Temp number of Days 1', default=0)
+    temp_delivery_price_1 = models.FloatField(verbose_name='Temp delivery Price 1',
+                                              default=0.0, blank=True, null=True)
+    temp_delivery_days_1 = models.PositiveIntegerField(verbose_name='Temp number of Days 1',
+                                                       default=0, blank=True, null=True)
     temp_delivery_city_2 = models.CharField(verbose_name='Temp Delivery City 2', max_length=300,
                                             blank=True, null=True, default=None)
-    temp_delivery_price_2 = models.FloatField(verbose_name='Temp delivery Price 2', default=0.0)
-    temp_delivery_days_2 = models.PositiveIntegerField(verbose_name='Temp number of Days 2', default=0)
+    temp_delivery_price_2 = models.FloatField(verbose_name='Temp delivery Price 2',
+                                              default=0.0, blank=True, null=True)
+    temp_delivery_days_2 = models.PositiveIntegerField(verbose_name='Temp number of Days 2',
+                                                       default=0, blank=True, null=True)
     temp_delivery_city_3 = models.CharField(verbose_name='Temp Delivery City 3', max_length=300,
                                             blank=True, null=True, default=None)
-    temp_delivery_price_3 = models.FloatField(verbose_name='Temp delivery Price 3', default=0.0)
-    temp_delivery_days_3 = models.PositiveIntegerField(verbose_name='Temp number of Days 3', default=0)
+    temp_delivery_price_3 = models.FloatField(verbose_name='Temp delivery Price 3',
+                                              default=0.0, blank=True, null=True)
+    temp_delivery_days_3 = models.PositiveIntegerField(verbose_name='Temp number of Days 3',
+                                                       default=0, blank=True, null=True)
 
     def __str__(self):
         return '{} - {} - {} - {}'.format(self.temp_offer.title,

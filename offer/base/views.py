@@ -8,7 +8,8 @@ from offer.base.serializers import BaseShopOfferSerializer, \
     BaseOfferssListSerializer, BaseShopOfferSolderSerializer, \
     BaseShopOfferSolderPutSerializer, BaseShopProductSerializer, \
     BaseShopServiceSerializer, BaseProductPutSerializer, \
-    BaseServicePutSerializer, BaseOfferPutSerializer, BaseShopOfferDuplicateSerializer
+    BaseServicePutSerializer, BaseOfferPutSerializer, \
+    BaseShopOfferDuplicateSerializer, BaseShopDeliveryPUTSerializer
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
@@ -230,12 +231,15 @@ class ShopOfferView(APIView):
                     'delivery_days_3': delivery_days_3,
                 })
                 if delivery_serializer.is_valid():
-                    # try:
-                    # delivery = Delivery.objects.get(auth_shop=auth_shop.pk)
-                    # delivery_serializer.update(delivery, delivery_serializer.validated_data)
-                    # except Delivery.DoesNotExist:
                     delivery_serializer.save()
-                    data['deliveries'] = delivery_serializer.validated_data
+
+                    def removekey(d, key):
+                        r = dict(d)
+                        del r[key]
+                        return r
+
+                    delivery = removekey(delivery_serializer.data, 'offer')
+                    data['deliveries'] = delivery
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
@@ -252,7 +256,6 @@ class ShopOfferView(APIView):
         offer_pk = request.data.get('offer_id')
         try:
             offer = Offers.objects.get(pk=offer_pk)
-            auth_shop_pk = offer.auth_shop.pk
             offer_pk = offer.pk
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
@@ -531,19 +534,17 @@ class ShopOfferView(APIView):
                         data['product_latitude'] = updated_product.product_latitude
                         data['product_address'] = updated_product.product_address
                         # UPDATE DELIVERIES
-                        delivery_city_1 = request.data.get('delivery_city_1')
+                        delivery_city_1 = request.data.get('delivery_city_1', None)
                         delivery_price_1 = request.data.get('delivery_price_1', None)
                         delivery_days_1 = request.data.get('delivery_days_1', None)
-
                         delivery_city_2 = request.data.get('delivery_city_2', None)
                         delivery_price_2 = request.data.get('delivery_price_2', None)
                         delivery_days_2 = request.data.get('delivery_days_2', None)
-
                         delivery_city_3 = request.data.get('delivery_city_3', None)
                         delivery_price_3 = request.data.get('delivery_price_3', None)
                         delivery_days_3 = request.data.get('delivery_days_3', None)
 
-                        delivery_serializer = BaseShopDeliverySerializer(data={
+                        delivery_serializer = BaseShopDeliveryPUTSerializer(data={
                             'offer': offer_pk,
                             'delivery_city_1': delivery_city_1,
                             'delivery_price_1': delivery_price_1,
@@ -556,12 +557,10 @@ class ShopOfferView(APIView):
                             'delivery_days_3': delivery_days_3,
                         })
                         if delivery_serializer.is_valid():
-                            try:
-                                temp_delivery = Delivery.objects.get(offer=offer_pk)
-                                delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
-                            except Delivery.DoesNotExist:
-                                delivery_serializer.save()
-                            data['deliveries'] = delivery_serializer.validated_data
+                            delivery = Delivery.objects.get(offer=offer_pk)
+                            delivery_serializer.update(delivery, delivery_serializer.validated_data)
+                            data['deliveries'] = delivery_serializer.data
+                            return Response(data, status=status.HTTP_200_OK)
                         else:
                             return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     if service_valid:
@@ -607,7 +606,7 @@ class ShopOfferView(APIView):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        offer_pk = request.data.get('id_offer')
+        offer_pk = request.data.get('offer_id')
         user = request.user
         try:
             shop = AuthShop.objects.get(user=user)
@@ -681,13 +680,13 @@ class GetOneOfferView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        offer_id = kwargs.get('id_offer')
+        offer_id = kwargs.get('offer_id')
         try:
             offer = Offers.objects \
                 .select_related('offer_solder') \
                 .select_related('offer_products') \
                 .select_related('offer_services') \
-                .select_related('offer_delivery') \
+                .prefetch_related('offer_delivery') \
                 .get(pk=offer_id)
             offer_details_serializer = BaseOfferDetailsSerializer(offer)
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
@@ -707,7 +706,7 @@ class GetShopOffersListView(APIView, PaginationMixinBy5):
                 .select_related('offer_solder') \
                 .select_related('offer_products') \
                 .select_related('offer_services') \
-                .select_related('offer_delivery') \
+                .prefetch_related('offer_delivery') \
                 .filter(shop=shop).order_by('-created_date')
             page = self.paginate_queryset(queryset=shop_offers)
             if page is not None:
@@ -725,7 +724,7 @@ class ShopOfferSolderView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        offer_id = kwargs.get('id_offer')
+        offer_id = kwargs.get('offer_id')
         try:
             solder = Solder.objects.get(offer=offer_id)
             offer_details_serializer = BaseShopOfferSolderSerializer(solder)
@@ -781,7 +780,7 @@ class ShopOfferDuplicateView(APIView):
             .select_related('offer_solder') \
             .select_related('offer_products') \
             .select_related('offer_services') \
-            .select_related('offer_delivery') \
+            .prefetch_related('offer_delivery') \
             .get(pk=offer_id)
         # Title
         title = offer.title
@@ -972,23 +971,26 @@ class ShopOfferDuplicateView(APIView):
 
                 delivery_serializer = BaseShopDeliverySerializer(data={
                     'offer': offer.pk,
-                    'temp_delivery_city_1': delivery_city_1,
-                    'temp_delivery_price_1': delivery_price_1,
-                    'temp_delivery_days_1': delivery_days_1,
-                    'temp_delivery_city_2': delivery_city_2,
-                    'temp_delivery_price_2': delivery_price_2,
-                    'temp_delivery_days_2': delivery_days_2,
-                    'temp_delivery_city_3': delivery_city_3,
-                    'temp_delivery_price_3': delivery_price_3,
-                    'temp_delivery_days_3': delivery_days_3,
+                    'delivery_city_1': delivery_city_1,
+                    'delivery_price_1': delivery_price_1,
+                    'delivery_days_1': delivery_days_1,
+                    'delivery_city_2': delivery_city_2,
+                    'delivery_price_2': delivery_price_2,
+                    'delivery_days_2': delivery_days_2,
+                    'delivery_city_3': delivery_city_3,
+                    'delivery_price_3': delivery_price_3,
+                    'delivery_days_3': delivery_days_3,
                 })
                 if delivery_serializer.is_valid():
-                    # try:
-                    # delivery = Delivery.objects.get(auth_shop=auth_shop_pk)
-                    # delivery_serializer.update(delivery, delivery_serializer.validated_data)
-                    # except Delivery.DoesNotExist:
                     delivery_serializer.save()
-                    data['deliveries'] = delivery_serializer.validated_data
+
+                    def removekey(d, key):
+                        r = dict(d)
+                        del r[key]
+                        return r
+
+                    delivery = removekey(delivery_serializer.data, 'offer')
+                    data['deliveries'] = delivery
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 offer_serializer.delete()
@@ -997,3 +999,100 @@ class ShopOfferDuplicateView(APIView):
                 if offer_type == 'S' and service_serializer_errors:
                     return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetLastThreeDeliveriesView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        auth_shop_pk = kwargs.get('auth_shop_pk')
+        try:
+            auth_shop = AuthShop.objects.get(pk=auth_shop_pk)
+            offers = Offers.objects \
+                .select_related('offer_products') \
+                .prefetch_related('offer_delivery') \
+                .filter(auth_shop=auth_shop).order_by('-created_date')
+            data = {
+                'delivery_city_1': None,
+                'delivery_price_1': None,
+                'delivery_days_1': None,
+                'delivery_city_2': None,
+                'delivery_price_2': None,
+                'delivery_days_2': None,
+                'delivery_city_3': None,
+                'delivery_price_3': None,
+                'delivery_days_3': None
+            }
+            delivery_1 = False
+            delivery_2 = False
+            delivery_3 = False
+            for offer in offers:
+                if not delivery_1:
+                    if offer.offer_delivery.delivery_city_1:
+                        data['delivery_city_1'] = offer.offer_delivery.delivery_city_1
+                        data['delivery_price_1'] = offer.offer_delivery.delivery_price_1
+                        data['delivery_days_1'] = offer.offer_delivery.delivery_days_1
+                        delivery_1 = True
+                if not delivery_2:
+                    if offer.offer_delivery.delivery_city_2:
+                        data['delivery_city_2'] = offer.offer_delivery.delivery_city_2
+                        data['delivery_price_2'] = offer.offer_delivery.delivery_price_2
+                        data['delivery_days_2'] = offer.offer_delivery.delivery_days_2
+                        delivery_2 = True
+                if not delivery_3:
+                    if offer.offer_delivery.delivery_city_3:
+                        data['delivery_city_3'] = offer.offer_delivery.delivery_city_3
+                        data['delivery_price_3'] = offer.offer_delivery.delivery_price_3
+                        data['delivery_days_3'] = offer.offer_delivery.delivery_days_3
+                        delivery_3 = True
+            return Response(data=data, status=status.HTTP_200_OK)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetLastUsedLocalisationView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        unique_id = kwargs.get('unique_id')
+        offer_type = kwargs.get('offer_type')
+        try:
+            auth_shop = AuthShop.objects.get(unique_id=unique_id)
+            offer = Offers.objects \
+                .select_related('offer_products') \
+                .select_related('offer_services') \
+                .prefetch_related('offer_delivery') \
+                .filter(auth_shop=auth_shop).order_by('-created_date').last()
+            data_product = {
+                'longitude': None,
+                'latitude': None,
+                'localisation_name': None,
+            }
+            data_service = {
+                'zone_by': None,
+                'longitude': None,
+                'latitude': None,
+                'km_radius': None,
+                'localisation_name': None,
+            }
+            if offer.offer_type == offer_type:
+                if offer.offer_products.product_address:
+                    data_product['longitude'] = offer.offer_products.product_longitude
+                    data_product['latitude'] = offer.offer_products.product_latitude
+                    data_product['localisation_name'] = offer.offer_products.product_address
+                    return Response(data=data_product, status=status.HTTP_200_OK)
+            elif offer.offer_type == offer_type:
+                if offer.offer_services.service_address:
+                    data_service['zone_by'] = offer.offer_services.service_zone_by
+                    data_service['longitude'] = offer.offer_services.service_longitude
+                    data_service['latitude'] = offer.offer_services.service_latitude
+                    data_service['km_radius'] = offer.offer_services.service_km_radius
+                    data_service['localisation_name'] = offer.offer_services.service_address
+                    return Response(data=data_service, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

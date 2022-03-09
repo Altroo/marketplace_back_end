@@ -101,14 +101,19 @@ class BaseTempShopServiceSerializer(serializers.ModelSerializer):
 #         model = City
 #         fields = ['pk', 'name_en', 'name_fr', 'name_ar']
 
-
 class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
-    # temp_delivery_city = BaseTempShopCitySerializer(many=True, read_only=True)
-
     class Meta:
         model = TempDelivery
         fields = ['temp_offer',
                   'temp_delivery_city_1', 'temp_delivery_price_1', 'temp_delivery_days_1',
+                  'temp_delivery_city_2', 'temp_delivery_price_2', 'temp_delivery_days_2',
+                  'temp_delivery_city_3', 'temp_delivery_price_3', 'temp_delivery_days_3']
+
+
+class BaseTempShopDeliveryPUTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TempDelivery
+        fields = ['temp_delivery_city_1', 'temp_delivery_price_1', 'temp_delivery_days_1',
                   'temp_delivery_city_2', 'temp_delivery_price_2', 'temp_delivery_days_2',
                   'temp_delivery_city_3', 'temp_delivery_price_3', 'temp_delivery_days_3']
 

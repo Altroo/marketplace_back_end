@@ -280,16 +280,22 @@ class Delivery(Model):
                               related_name='offer_delivery')
     delivery_city_1 = models.CharField(verbose_name='Delivery City 1', max_length=300,
                                        blank=True, null=True, default=None)
-    delivery_price_1 = models.FloatField(verbose_name='Delivery Price 1', default=0.0)
-    delivery_days_1 = models.PositiveIntegerField(verbose_name='Number of Days 1', default=0)
+    delivery_price_1 = models.FloatField(verbose_name='Delivery Price 1',
+                                         default=0.0, blank=True, null=True)
+    delivery_days_1 = models.PositiveIntegerField(verbose_name='Number of Days 1',
+                                                  default=0, blank=True, null=True)
     delivery_city_2 = models.CharField(verbose_name='Delivery City 2', max_length=300,
                                        blank=True, null=True, default=None)
-    delivery_price_2 = models.FloatField(verbose_name='Delivery Price 2', default=0.0)
-    delivery_days_2 = models.PositiveIntegerField(verbose_name='Number of Days 2', default=0)
+    delivery_price_2 = models.FloatField(verbose_name='Delivery Price 2',
+                                         default=0.0, blank=True, null=True)
+    delivery_days_2 = models.PositiveIntegerField(verbose_name='Number of Days 2',
+                                                  default=0, blank=True, null=True)
     delivery_city_3 = models.CharField(verbose_name='Delivery City 3', max_length=300,
                                        blank=True, null=True, default=None)
-    delivery_price_3 = models.FloatField(verbose_name='Delivery Price 3', default=0.0)
-    delivery_days_3 = models.PositiveIntegerField(verbose_name='Number of Days 3', default=0)
+    delivery_price_3 = models.FloatField(verbose_name='Delivery Price 3',
+                                         default=0.0, null=True, blank=True)
+    delivery_days_3 = models.PositiveIntegerField(verbose_name='Number of Days 3',
+                                                  default=0, null=True, blank=True)
 
     def __str__(self):
         return '{} - {} - {} - {}'.format(self.offer.title,
