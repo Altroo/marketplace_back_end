@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from offer.base.models import Offers, Delivery, Solder, Products, Services, \
-    Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import City
+from offer.base.models import Offers, Solder, Products, Services, \
+    Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery
 
 
 class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
@@ -24,7 +23,7 @@ class BaseProductSizeSerializer(serializers.ModelSerializer):
 
 class BaseServiceAvailabilityDaysSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Days
+        model = ServiceDays
         fields = ['pk', 'code_day', 'name_day']
 
 
@@ -97,18 +96,34 @@ class BaseShopServiceSerializer(serializers.ModelSerializer):
                   'service_longitude', 'service_latitude', 'service_address', 'service_km_radius']
 
 
-class BaseShopCitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = City
-        fields = ['pk', 'city_en', 'city_fr', 'city_ar']
+# class BaseShopCitySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = City
+#         fields = ['pk', 'name_en', 'name_fr', 'name_ar']
 
 
 class BaseShopDeliverySerializer(serializers.ModelSerializer):
-    delivery_city = BaseShopCitySerializer(many=True, read_only=True)
+    # delivery_city = BaseShopCitySerializer(many=True, read_only=True)
 
     class Meta:
         model = Delivery
-        fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
+        fields = ['offer',
+                  'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
+                  'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
+                  'delivery_city_3', 'delivery_price_3', 'delivery_days_3']
+
+    def update(self, instance, validated_data):
+        instance.delivery_city_1 = validated_data.get('delivery_city_1', instance.delivery_city_1)
+        instance.delivery_price_1 = validated_data.get('delivery_price_1', instance.delivery_price_1)
+        instance.delivery_days_1 = validated_data.get('delivery_days_1', instance.delivery_days_1)
+        instance.delivery_city_2 = validated_data.get('delivery_city_2', instance.delivery_city_2)
+        instance.delivery_price_2 = validated_data.get('delivery_price_2', instance.delivery_price_2)
+        instance.delivery_days_2 = validated_data.get('delivery_days_2', instance.delivery_days_2)
+        instance.delivery_city_3 = validated_data.get('delivery_city_3', instance.delivery_city_3)
+        instance.delivery_price_3 = validated_data.get('delivery_price_3', instance.delivery_price_3)
+        instance.delivery_days_3 = validated_data.get('delivery_days_3', instance.delivery_days_3)
+        instance.save()
+        return instance
 
 
 class BaseDetailsProductSerializer(serializers.Serializer):

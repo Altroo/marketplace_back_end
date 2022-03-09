@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from temp_shop.base.models import TempShop
-from offer.base.models import Days
+from temp_shop.base.models import TempShop, AuthShopDays
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):
@@ -55,7 +54,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
 
 class BaseTempShopOpeningDaysSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Days
+        model = AuthShopDays
         fields = ['code_day']
 
 

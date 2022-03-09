@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from offer.base.models import Categories, Colors, Days, ForWhom, Sizes
+from offer.base.models import Categories, Colors, ServiceDays, ForWhom, Sizes
 from auth_shop.base.models import AuthShopDays
 from csv import reader
 from os import path
@@ -29,7 +29,7 @@ class InsertAll:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
                 try:
-                    Days.objects.create(code_day=row[0], name_day=row[1])
+                    ServiceDays.objects.create(code_day=row[0], name_day=row[1])
                     AuthShopDays.objects.create(code_day=row[0], name_day=row[1])
                 except IntegrityError:
                     continue

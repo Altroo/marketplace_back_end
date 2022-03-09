@@ -43,6 +43,7 @@ class TempShop(Model):
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     qaryb_link = models.URLField(verbose_name='Qaryb link', max_length=200, blank=False, null=False, unique=True)
     unique_id = models.CharField(verbose_name='Unique ID', unique=True, max_length=40)
+    task_id = models.CharField(verbose_name='Task ID', max_length=40, default=None, null=True, blank=True)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 

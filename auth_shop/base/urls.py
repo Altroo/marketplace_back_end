@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ShopView, \
     ShopAvatarPutView, ShopNamePutView, ShopBioPutView, \
     ShopAvailabilityPutView, ShopContactPutView, ShopAddressPutView, ShopColorPutView, \
-    ShopFontPutView, ShopTelPutView, ShopWtspPutView
+    ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView
 
 app_name = 'auth_shop'
 
@@ -11,6 +11,7 @@ urlpatterns = [
     # POST : Create  shop
     # GET : Get  shop info
     path('', ShopView.as_view()),
+    path('transfer_shop/', TempShopToAuthShopView.as_view()),
     path('get/<int:pk>/', ShopView.as_view()),
     path('add/phone/', ShopTelPutView.as_view()),
     path('add/whatsapp/', ShopWtspPutView.as_view()),

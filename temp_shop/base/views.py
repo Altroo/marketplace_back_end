@@ -12,8 +12,7 @@ from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 from temp_shop.base.tasks import base_start_deleting_expired_shops
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
-from temp_shop.base.models import TempShop
-from offer.base.models import Days
+from temp_shop.base.models import TempShop, AuthShopDays
 from django.core.exceptions import SuspiciousFileOperation
 
 
@@ -71,7 +70,9 @@ class TempShopView(APIView):
             # Generate thumbnail
             base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
             shift = datetime.utcnow() + timedelta(hours=24)
-            base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
+            task_id = base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
+            temp_shop.task_id = str(task_id)
+            temp_shop.save()
             return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -157,7 +158,7 @@ class TempShopAvailabilityPutView(APIView):
         if serializer.is_valid():
             new_availability = serializer.update(temp_shop, serializer.validated_data)
             opening_days = str(request.data.get('opening_days')).split(',')
-            opening_days = Days.objects.filter(code_day__in=opening_days)
+            opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
             new_availability.opening_days.clear()
             for day in opening_days:
                 new_availability.opening_days.add(day.pk)

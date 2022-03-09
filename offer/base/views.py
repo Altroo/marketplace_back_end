@@ -12,9 +12,8 @@ from offer.base.serializers import BaseShopOfferSerializer, \
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
-from offer.base.models import AuthShop, Offers, Delivery, Solder, Products, Services
-from offer.base.models import Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import City
+from offer.base.models import AuthShop, Offers, Solder, Products, Services, Delivery
+from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
 from offer.mixins import PaginationMixinBy5
 
 
@@ -26,7 +25,7 @@ class ShopOfferView(APIView):
     def post(request, *args, **kwargs):
         user = request.user
         try:
-            shop = AuthShop.objects.get(user=user).pk
+            auth_shop = AuthShop.objects.get(user=user)
         except AuthShop.DoesNotExist:
             data = {'errors': ['User shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -35,7 +34,7 @@ class ShopOfferView(APIView):
         description = request.data.get('description')
         price = request.data.get('price')
         offer_serializer = BaseShopOfferSerializer(data={
-            'auth_shop': shop,
+            'auth_shop': auth_shop.pk,
             'offer_type': offer_type,
             'title': title,
             'picture_1': request.data.get('picture_1', None),
@@ -178,7 +177,7 @@ class ShopOfferView(APIView):
                     service = service_serializer.save()
                     # Availability Days
                     availability_days = str(request.data.get('service_availability_days')).split(',')
-                    availability_days = Days.objects.filter(code_day__in=availability_days)
+                    availability_days = ServiceDays.objects.filter(code_day__in=availability_days)
                     service_availability_days_list = []
                     for availability_day in availability_days:
                         service.service_availability_days.add(availability_day.pk)
@@ -207,135 +206,36 @@ class ShopOfferView(APIView):
                     service_serializer_errors = service_serializer.errors
 
             if product_valid:
-                # Deliveries
+                # deliveries
+                delivery_city_1 = request.data.get('delivery_city_1')
                 delivery_price_1 = request.data.get('delivery_price_1', None)
                 delivery_days_1 = request.data.get('delivery_days_1', None)
-
+                delivery_city_2 = request.data.get('delivery_city_2', None)
                 delivery_price_2 = request.data.get('delivery_price_2', None)
                 delivery_days_2 = request.data.get('delivery_days_2', None)
-
+                delivery_city_3 = request.data.get('delivery_city_3', None)
                 delivery_price_3 = request.data.get('delivery_price_3', None)
                 delivery_days_3 = request.data.get('delivery_days_3', None)
 
-                # Delivery 1 cities
-                delivery_city_1 = request.data.get('delivery_city_1')
-                delivery_cities_1_pk = []
-                if delivery_city_1:
-                    cities_str = str(delivery_city_1).split(',')
-                    cities = []
-                    for city in cities_str:
-                        cities.append(int(city))
-
-                    cities = City.objects.filter(pk__in=cities)
-                    delivery_cities_1 = []
-                    for city in cities:
-                        delivery_cities_1.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_1_pk.append(
-                            city.pk
-                        )
-
-                # Delivery 2 cities
-                delivery_city_2 = request.data.get('delivery_city_2')
-                delivery_cities_2_pk = []
-                if delivery_city_2:
-                    cities_str = str(delivery_city_2).split(',')
-                    cities = []
-                    for city in cities_str:
-                        cities.append(int(city))
-
-                    cities = City.objects.filter(pk__in=cities)
-                    delivery_cities_2 = []
-                    for city in cities:
-                        delivery_cities_2.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_2_pk.append(
-                            city.pk
-                        )
-
-                # Delivery 3 cities
-                delivery_city_3 = request.data.get('delivery_city_3')
-                delivery_cities_3_pk = []
-                if delivery_city_3:
-                    cities_str = str(delivery_city_3).split(',')
-                    cities = []
-                    for city in cities_str:
-                        cities.append(int(city))
-
-                    cities = City.objects.filter(pk__in=cities)
-                    delivery_cities_3 = []
-                    for city in cities:
-                        delivery_cities_3.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_3_pk.append(
-                            city.pk
-                        )
-                deliveries = []
-                city_1_check = False
-                city_2_check = False
-                city_3_check = False
-                if delivery_city_1:
-                    city_1_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_pk,
-                            'delivery_city': delivery_cities_1_pk,
-                            'delivery_price': float(delivery_price_1),
-                            'delivery_days': int(delivery_days_1)
-                        }
-                    )
-                if delivery_city_2:
-                    city_2_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_pk,
-                            'delivery_city': delivery_cities_2_pk,
-                            'delivery_price': float(delivery_price_2),
-                            'delivery_days': int(delivery_days_2)
-                        }
-                    )
-                if delivery_city_3:
-                    city_3_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_pk,
-                            'delivery_city': delivery_cities_3_pk,
-                            'delivery_price': float(delivery_price_3),
-                            'delivery_days': int(delivery_days_3)
-                        }
-                    )
-                delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
+                delivery_serializer = BaseShopDeliverySerializer(data={
+                    'offer': offer_pk,
+                    'delivery_city_1': delivery_city_1,
+                    'delivery_price_1': delivery_price_1,
+                    'delivery_days_1': delivery_days_1,
+                    'delivery_city_2': delivery_city_2,
+                    'delivery_price_2': delivery_price_2,
+                    'delivery_days_2': delivery_days_2,
+                    'delivery_city_3': delivery_city_3,
+                    'delivery_price_3': delivery_price_3,
+                    'delivery_days_3': delivery_days_3,
+                })
                 if delivery_serializer.is_valid():
-                    deliveries_serializer = delivery_serializer.save()
-                    for delivery in deliveries_serializer:
-                        if city_1_check:
-                            delivery.delivery_city.add(*delivery_cities_1_pk)
-                            city_1_check = False
-                        elif city_2_check:
-                            delivery.delivery_city.add(*delivery_cities_2_pk)
-                            city_2_check = False
-                        elif city_3_check:
-                            delivery.delivery_city.add(*delivery_cities_3_pk)
-                            city_3_check = False
-                    data['deliveries'] = deliveries
+                    # try:
+                    # delivery = Delivery.objects.get(auth_shop=auth_shop.pk)
+                    # delivery_serializer.update(delivery, delivery_serializer.validated_data)
+                    # except Delivery.DoesNotExist:
+                    delivery_serializer.save()
+                    data['deliveries'] = delivery_serializer.validated_data
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
@@ -352,6 +252,7 @@ class ShopOfferView(APIView):
         offer_pk = request.data.get('offer_id')
         try:
             offer = Offers.objects.get(pk=offer_pk)
+            auth_shop_pk = offer.auth_shop.pk
             offer_pk = offer.pk
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
@@ -379,7 +280,7 @@ class ShopOfferView(APIView):
                 offer.picture_1 = None
                 offer.save()
             else:
-                
+
                 if picture_1 in previous_images:
                     try:
                         img_1_index = previous_images.index(picture_1)
@@ -495,6 +396,8 @@ class ShopOfferView(APIView):
                 service_valid = False
                 product_serializer_errors = None
                 service_serializer_errors = None
+                product_serializer = None
+                service_serializer = None
                 # Generate thumbnails
                 base_generate_offer_thumbnails.apply_async((offer_pk, 'Offers'), )
                 if offer.offer_type == 'V':
@@ -627,6 +530,40 @@ class ShopOfferView(APIView):
                         data['product_longitude'] = updated_product.product_longitude
                         data['product_latitude'] = updated_product.product_latitude
                         data['product_address'] = updated_product.product_address
+                        # UPDATE DELIVERIES
+                        delivery_city_1 = request.data.get('delivery_city_1')
+                        delivery_price_1 = request.data.get('delivery_price_1', None)
+                        delivery_days_1 = request.data.get('delivery_days_1', None)
+
+                        delivery_city_2 = request.data.get('delivery_city_2', None)
+                        delivery_price_2 = request.data.get('delivery_price_2', None)
+                        delivery_days_2 = request.data.get('delivery_days_2', None)
+
+                        delivery_city_3 = request.data.get('delivery_city_3', None)
+                        delivery_price_3 = request.data.get('delivery_price_3', None)
+                        delivery_days_3 = request.data.get('delivery_days_3', None)
+
+                        delivery_serializer = BaseShopDeliverySerializer(data={
+                            'offer': offer_pk,
+                            'delivery_city_1': delivery_city_1,
+                            'delivery_price_1': delivery_price_1,
+                            'delivery_days_1': delivery_days_1,
+                            'delivery_city_2': delivery_city_2,
+                            'delivery_price_2': delivery_price_2,
+                            'delivery_days_2': delivery_days_2,
+                            'delivery_city_3': delivery_city_3,
+                            'delivery_price_3': delivery_price_3,
+                            'delivery_days_3': delivery_days_3,
+                        })
+                        if delivery_serializer.is_valid():
+                            try:
+                                temp_delivery = Delivery.objects.get(offer=offer_pk)
+                                delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
+                            except Delivery.DoesNotExist:
+                                delivery_serializer.save()
+                            data['deliveries'] = delivery_serializer.validated_data
+                        else:
+                            return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     if service_valid:
                         service = Services.objects.get(offer=offer.pk)
                         # serializer referenced before assignment fixed by the service_valid = True
@@ -634,7 +571,7 @@ class ShopOfferView(APIView):
                         # UPDATE AVAILABILITY DAYS
                         service.service_availability_days.clear()
                         availability_days = str(request.data.get('service_availability_days')).split(',')
-                        new_availability_days = Days.objects.filter(code_day__in=availability_days)
+                        new_availability_days = ServiceDays.objects.filter(code_day__in=availability_days)
                         service_availability_days_list = []
                         for availability_day in new_availability_days:
                             service.service_availability_days.add(availability_day.pk)
@@ -647,156 +584,17 @@ class ShopOfferView(APIView):
                             )
                         data['service_availability_days'] = service_availability_days_list
                         # SERVICE RETURN DATA
-                        data['service_morning_hour_from'] = updated_service.service_morning_hour_from,
-                        data['service_morning_hour_to'] = updated_service.service_morning_hour_to,
-                        data['service_afternoon_hour_from'] = updated_service.service_afternoon_hour_from,
-                        data['service_afternoon_hour_to'] = updated_service.service_afternoon_hour_to,
-                        data['service_zone_by'] = updated_service.service_zone_by,
-                        data['service_price_by'] = updated_service.service_price_by,
-                        data['service_longitude'] = updated_service.service_longitude,
-                        data['service_latitude'] = updated_service.service_latitude,
-                        data['service_address'] = updated_service.service_address,
-                        data['service_km_radius'] = updated_service.service_km_radius,
-                    # UPDATE DELIVERIES
-                    offer.offer_delivery.all().delete()
-                    delivery_price_1 = request.data.get('delivery_price_1', None)
-                    delivery_days_1 = request.data.get('delivery_days_1', None)
-
-                    delivery_price_2 = request.data.get('delivery_price_2', None)
-                    delivery_days_2 = request.data.get('delivery_days_2', None)
-
-                    delivery_price_3 = request.data.get('delivery_price_3', None)
-                    delivery_days_3 = request.data.get('delivery_days_3', None)
-
-                    # Delivery 1 cities
-                    delivery_city_1 = request.data.get('delivery_city_1')
-                    delivery_cities_1_pk = []
-                    if delivery_city_1:
-                        cities_str = str(delivery_city_1).split(',')
-                        cities = []
-                        for city in cities_str:
-                            cities.append(int(city))
-
-                        cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_1 = []
-                        for city in cities:
-                            delivery_cities_1.append(
-                                {
-                                    "pk": city.pk,
-                                    "city_en": city.city_en,
-                                    "city_fr": city.city_fr,
-                                    "city_ar": city.city_ar
-                                }
-                            )
-                            delivery_cities_1_pk.append(
-                                city.pk
-                            )
-
-                    # Delivery 2 cities
-                    delivery_city_2 = request.data.get('delivery_city_2')
-                    delivery_cities_2_pk = []
-                    if delivery_city_2:
-                        cities_str = str(delivery_city_2).split(',')
-                        cities = []
-                        for city in cities_str:
-                            cities.append(int(city))
-
-                        cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_2 = []
-                        for city in cities:
-                            delivery_cities_2.append(
-                                {
-                                    "pk": city.pk,
-                                    "city_en": city.city_en,
-                                    "city_fr": city.city_fr,
-                                    "city_ar": city.city_ar
-                                }
-                            )
-                            delivery_cities_2_pk.append(
-                                city.pk
-                            )
-
-                    # Delivery 3 cities
-                    delivery_city_3 = request.data.get('delivery_city_3')
-                    delivery_cities_3_pk = []
-                    if delivery_city_3:
-                        cities_str = str(delivery_city_3).split(',')
-                        cities = []
-                        for city in cities_str:
-                            cities.append(int(city))
-
-                        cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_3 = []
-                        for city in cities:
-                            delivery_cities_3.append(
-                                {
-                                    "pk": city.pk,
-                                    "city_en": city.city_en,
-                                    "city_fr": city.city_fr,
-                                    "city_ar": city.city_ar
-                                }
-                            )
-                            delivery_cities_3_pk.append(
-                                city.pk
-                            )
-
-                    deliveries = []
-                    city_1_check = False
-                    city_2_check = False
-                    city_3_check = False
-
-                    if delivery_city_1:
-                        city_1_check = True
-                        deliveries.append(
-                            {
-                                'offer': offer_pk,
-                                'delivery_city': delivery_cities_1_pk,
-                                'delivery_price': float(delivery_price_1),
-                                'delivery_days': int(delivery_days_1)
-                            }
-                        )
-                    if delivery_city_2:
-                        city_2_check = True
-                        deliveries.append(
-                            {
-                                'offer': offer_pk,
-                                'delivery_city': delivery_cities_2_pk,
-                                'delivery_price': float(delivery_price_2),
-                                'delivery_days': int(delivery_days_2)
-                            }
-                        )
-                    if delivery_city_3:
-                        city_3_check = True
-                        deliveries.append(
-                            {
-                                'offer': offer_pk,
-                                'delivery_city': delivery_cities_3_pk,
-                                'delivery_price': float(delivery_price_3),
-                                'delivery_days': int(delivery_days_3)
-                            }
-                        )
-
-                    # Save edited deliveries
-                    delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
-                    if delivery_serializer.is_valid():
-                        # Delete old deliveries cities
-                        Delivery.objects.filter(offer__pk=offer_pk).delete()
-                        # Add new deliveries
-                        deliveries_serializer = delivery_serializer.save()
-                        for delivery in deliveries_serializer:
-                            if city_1_check:
-                                delivery.delivery_city.add(*delivery_cities_1_pk)
-                                city_1_check = False
-                            elif city_2_check:
-                                delivery.delivery_city.add(*delivery_cities_2_pk)
-                                city_2_check = False
-                            elif city_3_check:
-                                delivery.delivery_city.add(*delivery_cities_3_pk)
-                                city_3_check = False
-                        data['deliveries'] = deliveries
+                        data['service_morning_hour_from'] = updated_service.service_morning_hour_from
+                        data['service_morning_hour_to'] = updated_service.service_morning_hour_to
+                        data['service_afternoon_hour_from'] = updated_service.service_afternoon_hour_from
+                        data['service_afternoon_hour_to'] = updated_service.service_afternoon_hour_to
+                        data['service_zone_by'] = updated_service.service_zone_by
+                        data['service_price_by'] = updated_service.service_price_by
+                        data['service_longitude'] = updated_service.service_longitude
+                        data['service_latitude'] = updated_service.service_latitude
+                        data['service_address'] = updated_service.service_address
+                        data['service_km_radius'] = updated_service.service_km_radius
                         return Response(data, status=status.HTTP_200_OK)
-                    else:
-                        return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     if offer_type == 'V' and product_serializer_errors:
                         return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
@@ -889,7 +687,7 @@ class GetOneOfferView(APIView):
                 .select_related('offer_solder') \
                 .select_related('offer_products') \
                 .select_related('offer_services') \
-                .prefetch_related('offer_delivery') \
+                .select_related('offer_delivery') \
                 .get(pk=offer_id)
             offer_details_serializer = BaseOfferDetailsSerializer(offer)
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
@@ -909,7 +707,7 @@ class GetShopOffersListView(APIView, PaginationMixinBy5):
                 .select_related('offer_solder') \
                 .select_related('offer_products') \
                 .select_related('offer_services') \
-                .prefetch_related('offer_delivery') \
+                .select_related('offer_delivery') \
                 .filter(shop=shop).order_by('-created_date')
             page = self.paginate_queryset(queryset=shop_offers)
             if page is not None:
@@ -983,7 +781,7 @@ class ShopOfferDuplicateView(APIView):
             .select_related('offer_solder') \
             .select_related('offer_products') \
             .select_related('offer_services') \
-            .prefetch_related('offer_delivery') \
+            .select_related('offer_delivery') \
             .get(pk=offer_id)
         # Title
         title = offer.title
@@ -1147,7 +945,7 @@ class ShopOfferDuplicateView(APIView):
                     # Availability Days
                     availability_days = list(offer.offer_services.service_availability_days.all()
                                              .values_list('pk', flat=True))
-                    availability_days = Days.objects.filter(pk__in=availability_days)
+                    availability_days = ServiceDays.objects.filter(pk__in=availability_days)
                     service_availability_days_list = []
                     for availability_day in availability_days:
                         service_serializer.service_availability_days.add(availability_day.pk)
@@ -1162,131 +960,37 @@ class ShopOfferDuplicateView(APIView):
                 else:
                     service_serializer_errors = service_serializer.errors
             if product_valid:
-                deliveries = offer.offer_delivery.all()
-                delivery_price_1 = None
-                delivery_days_1 = None
-                delivery_city_1 = None
-                delivery_price_2 = None
-                delivery_days_2 = None
-                delivery_city_2 = None
-                delivery_price_3 = None
-                delivery_days_3 = None
-                delivery_city_3 = None
-                try:
-                    delivery_price_1 = deliveries[0].delivery_price
-                    delivery_days_1 = deliveries[0].delivery_days
-                    delivery_city_1 = deliveries[0].delivery_city.all().values_list('pk', flat=True)
-                    delivery_price_2 = deliveries[1].delivery_price
-                    delivery_days_2 = deliveries[1].delivery_days
-                    delivery_city_2 = deliveries[1].delivery_city.all().values_list('pk', flat=True)
-                    delivery_price_3 = deliveries[2].delivery_price
-                    delivery_days_3 = deliveries[2].delivery_days
-                    delivery_city_3 = deliveries[2].delivery_city.all().values_list('pk', flat=True)
-                except IndexError:
-                    pass
-                # Delivery 1 cities
-                delivery_cities_1_pk = []
-                if delivery_city_1:
-                    cities = City.objects.filter(pk__in=delivery_city_1)
-                    delivery_cities_1 = []
-                    for city in cities:
-                        delivery_cities_1.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_1_pk.append(
-                            city.pk
-                        )
-                # Delivery 2 cities
-                delivery_cities_2_pk = []
-                if delivery_city_2:
-                    cities = City.objects.filter(pk__in=delivery_city_2)
-                    delivery_cities_2 = []
-                    for city in cities:
-                        delivery_cities_2.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_2_pk.append(
-                            city.pk
-                        )
-                # Delivery 3 cities
-                delivery_cities_3_pk = []
-                if delivery_city_3:
-                    cities = City.objects.filter(pk__in=delivery_city_3)
-                    delivery_cities_3 = []
-                    for city in cities:
-                        delivery_cities_3.append(
-                            {
-                                "pk": city.pk,
-                                "city_en": city.city_en,
-                                "city_fr": city.city_fr,
-                                "city_ar": city.city_ar
-                            }
-                        )
-                        delivery_cities_3_pk.append(
-                            city.pk
-                        )
-                deliveries = []
-                city_1_check = False
-                city_2_check = False
-                city_3_check = False
-                if delivery_city_1:
-                    city_1_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_serializer.pk,
-                            'delivery_city': delivery_cities_1_pk,
-                            'delivery_price': float(delivery_price_1),
-                            'delivery_days': int(delivery_days_1)
-                        }
-                    )
-                if delivery_city_2:
-                    city_2_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_serializer.pk,
-                            'delivery_city': delivery_cities_2_pk,
-                            'delivery_price': float(delivery_price_2),
-                            'delivery_days': int(delivery_days_2)
-                        }
-                    )
-                if delivery_city_3:
-                    city_3_check = True
-                    deliveries.append(
-                        {
-                            'offer': offer_serializer.pk,
-                            'delivery_city': delivery_cities_3_pk,
-                            'delivery_price': float(delivery_price_3),
-                            'delivery_days': int(delivery_days_3)
-                        }
-                    )
-                delivery_serializer = BaseShopDeliverySerializer(data=deliveries, many=True)
+                delivery_city_1 = request.data.get('delivery_city_1')
+                delivery_price_1 = request.data.get('delivery_price_1', None)
+                delivery_days_1 = request.data.get('delivery_days_1', None)
+                delivery_city_2 = request.data.get('delivery_city_2', None)
+                delivery_price_2 = request.data.get('delivery_price_2', None)
+                delivery_days_2 = request.data.get('delivery_days_2', None)
+                delivery_city_3 = request.data.get('delivery_city_3', None)
+                delivery_price_3 = request.data.get('delivery_price_3', None)
+                delivery_days_3 = request.data.get('delivery_days_3', None)
+
+                delivery_serializer = BaseShopDeliverySerializer(data={
+                    'offer': offer.pk,
+                    'temp_delivery_city_1': delivery_city_1,
+                    'temp_delivery_price_1': delivery_price_1,
+                    'temp_delivery_days_1': delivery_days_1,
+                    'temp_delivery_city_2': delivery_city_2,
+                    'temp_delivery_price_2': delivery_price_2,
+                    'temp_delivery_days_2': delivery_days_2,
+                    'temp_delivery_city_3': delivery_city_3,
+                    'temp_delivery_price_3': delivery_price_3,
+                    'temp_delivery_days_3': delivery_days_3,
+                })
                 if delivery_serializer.is_valid():
-                    deliveries_serializer = delivery_serializer.save()
-                    for delivery in deliveries_serializer:
-                        if city_1_check:
-                            delivery.delivery_city.add(*delivery_cities_1_pk)
-                            city_1_check = False
-                        elif city_2_check:
-                            delivery.delivery_city.add(*delivery_cities_2_pk)
-                            city_2_check = False
-                        elif city_3_check:
-                            delivery.delivery_city.add(*delivery_cities_3_pk)
-                            city_3_check = False
-                    data['deliveries'] = deliveries
+                    # try:
+                    # delivery = Delivery.objects.get(auth_shop=auth_shop_pk)
+                    # delivery_serializer.update(delivery, delivery_serializer.validated_data)
+                    # except Delivery.DoesNotExist:
+                    delivery_serializer.save()
+                    data['deliveries'] = delivery_serializer.validated_data
+                    # For products
                     return Response(data=data, status=status.HTTP_200_OK)
-                else:
-                    return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
                 offer_serializer.delete()
                 if offer_type == 'V' and product_serializer_errors:
                     return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)

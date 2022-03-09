@@ -1,5 +1,5 @@
 from offer.base.models import Categories, Colors, Sizes, ForWhom, \
-    Offers, Delivery, Solder, Products, Services, Days
+    Offers, Solder, Products, Services, ServiceDays
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
@@ -12,16 +12,6 @@ class CustomOfferAdmin(ModelAdmin):
     @staticmethod
     def show_categories(obj):
         return "\n".join([i.name_category for i in obj.offer_categories.all()])
-
-
-class CustomDeliveryAdmin(ModelAdmin):
-    list_display = ('pk', 'offer', 'show_cities', 'delivery_price', 'delivery_days')
-    search_fields = ('pk', 'delivery_price', 'delivery_days')
-    ordering = ('-pk',)
-
-    @staticmethod
-    def show_cities(obj):
-        return "\n".join([i.city_en for i in obj.delivery_city.all()])
 
 
 class CustomSolderAdmin(ModelAdmin):
@@ -87,7 +77,7 @@ class CustomForWhomAdmin(ModelAdmin):
     ordering = ('pk',)
 
 
-class CustomDaysAdmin(ModelAdmin):
+class CustomServiceDaysAdmin(ModelAdmin):
     list_display = ('pk', 'code_day', 'name_day',)
     search_fields = ('pk', 'code_day', 'name_day',)
     ordering = ('pk',)
@@ -97,9 +87,8 @@ admin.site.register(Categories, CustomCategoriesAdmin)
 admin.site.register(Colors, CustomColorsAdmin)
 admin.site.register(Sizes, CustomSizesAdmin)
 admin.site.register(ForWhom, CustomForWhomAdmin)
-admin.site.register(Days, CustomDaysAdmin)
+admin.site.register(ServiceDays, CustomServiceDaysAdmin)
 admin.site.register(Offers, CustomOfferAdmin)
-admin.site.register(Delivery, CustomDeliveryAdmin)
 admin.site.register(Solder, CustomSolderAdmin)
 admin.site.register(Products, CustomProductAdmin)
 admin.site.register(Services, CustomServiceAdmin)

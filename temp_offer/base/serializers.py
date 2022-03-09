@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from temp_offer.base.models import TempOffers, TempDelivery, \
-    TempSolder, TempProducts, TempServices
-from offer.base.models import Categories, Colors, Sizes, ForWhom, Days
-from places.base.models import City
+from temp_offer.base.models import TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
+from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
 
 
 class BaseTempOfferCategoriesSerializer(serializers.ModelSerializer):
@@ -25,7 +23,7 @@ class BaseTempProductSizeSerializer(serializers.ModelSerializer):
 
 class BaseTempServiceAvailabilityDaysSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Days
+        model = ServiceDays
         fields = ['pk', 'code_day', 'name_day']
 
 
@@ -98,18 +96,34 @@ class BaseTempShopServiceSerializer(serializers.ModelSerializer):
                   'service_longitude', 'service_latitude', 'service_address', 'service_km_radius']
 
 
-class BaseTempShopCitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = City
-        fields = ['pk', 'city_en', 'city_fr', 'city_ar']
+# class BaseTempShopCitySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = City
+#         fields = ['pk', 'name_en', 'name_fr', 'name_ar']
 
 
 class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
-    temp_delivery_city = BaseTempShopCitySerializer(many=True, read_only=True)
+    # temp_delivery_city = BaseTempShopCitySerializer(many=True, read_only=True)
 
     class Meta:
         model = TempDelivery
-        fields = ['temp_offer', 'temp_delivery_city', 'temp_delivery_price', 'temp_delivery_days']
+        fields = ['temp_offer',
+                  'temp_delivery_city_1', 'temp_delivery_price_1', 'temp_delivery_days_1',
+                  'temp_delivery_city_2', 'temp_delivery_price_2', 'temp_delivery_days_2',
+                  'temp_delivery_city_3', 'temp_delivery_price_3', 'temp_delivery_days_3']
+
+    def update(self, instance, validated_data):
+        instance.temp_delivery_city_1 = validated_data.get('temp_delivery_city_1', instance.temp_delivery_city_1)
+        instance.temp_delivery_price_1 = validated_data.get('temp_delivery_price_1', instance.temp_delivery_price_1)
+        instance.temp_delivery_days_1 = validated_data.get('temp_delivery_days_1', instance.temp_delivery_days_1)
+        instance.temp_delivery_city_2 = validated_data.get('temp_delivery_city_2', instance.temp_delivery_city_2)
+        instance.temp_delivery_price_2 = validated_data.get('temp_delivery_price_2', instance.temp_delivery_price_2)
+        instance.temp_delivery_days_2 = validated_data.get('temp_delivery_days_2', instance.temp_delivery_days_2)
+        instance.temp_delivery_city_3 = validated_data.get('temp_delivery_city_3', instance.temp_delivery_city_3)
+        instance.temp_delivery_price_3 = validated_data.get('temp_delivery_price_3', instance.temp_delivery_price_3)
+        instance.temp_delivery_days_3 = validated_data.get('temp_delivery_days_3', instance.temp_delivery_days_3)
+        instance.save()
+        return instance
 
 
 class BaseDetailsTempProductSerializer(serializers.Serializer):

@@ -4,7 +4,6 @@ from django.db.models import Model
 from auth_shop.base.models import AuthShop
 from Qaryb_API_new.settings import API_URL
 from auth_shop.base.models import LonLatValidators
-from places.base.models import City
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -99,7 +98,7 @@ class ForWhom(Model):
         verbose_name_plural = 'For Whom'
 
 
-class Days(Model):
+class ServiceDays(Model):
     code_day = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
     name_day = models.CharField(max_length=255, verbose_name='Day name', unique=True)
 
@@ -244,8 +243,8 @@ class Products(Model):
 
 class Services(Model):
     offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
-                                      verbose_name='Offer', related_name='offer_services')
-    service_availability_days = models.ManyToManyField(Days, verbose_name='Opening days',
+                                 verbose_name='Offer', related_name='offer_services')
+    service_availability_days = models.ManyToManyField(ServiceDays, verbose_name='Opening days',
                                                        related_name='service_availability_days')
     service_morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
     service_morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
@@ -277,17 +276,26 @@ class Services(Model):
 
 class Delivery(Model):
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
-                                   verbose_name='Offer',
-                                   related_name='offer_delivery')
-    delivery_city = models.ManyToManyField(City, verbose_name='Delivery City',
-                                                related_name='delivery_city')
-    delivery_price = models.FloatField(verbose_name='Delivery Price', default=0.0)
-    delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
+                              verbose_name='Offer',
+                              related_name='offer_delivery')
+    delivery_city_1 = models.CharField(verbose_name='Delivery City 1', max_length=300,
+                                       blank=True, null=True, default=None)
+    delivery_price_1 = models.FloatField(verbose_name='Delivery Price 1', default=0.0)
+    delivery_days_1 = models.PositiveIntegerField(verbose_name='Number of Days 1', default=0)
+    delivery_city_2 = models.CharField(verbose_name='Delivery City 2', max_length=300,
+                                       blank=True, null=True, default=None)
+    delivery_price_2 = models.FloatField(verbose_name='Delivery Price 2', default=0.0)
+    delivery_days_2 = models.PositiveIntegerField(verbose_name='Number of Days 2', default=0)
+    delivery_city_3 = models.CharField(verbose_name='Delivery City 3', max_length=300,
+                                       blank=True, null=True, default=None)
+    delivery_price_3 = models.FloatField(verbose_name='Delivery Price 3', default=0.0)
+    delivery_days_3 = models.PositiveIntegerField(verbose_name='Number of Days 3', default=0)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.offer.pk,
-                                     self.delivery_price,
-                                     self.delivery_days)
+        return '{} - {} - {} - {}'.format(self.offer.title,
+                                          self.delivery_city_1,
+                                          self.delivery_price_1,
+                                          self.delivery_days_1)
 
     class Meta:
         verbose_name = 'Delivery'
@@ -296,10 +304,10 @@ class Delivery(Model):
 
 class Solder(Model):
     offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
-                                      verbose_name='Offer',
-                                      related_name='offer_solder', unique=True)
+                                 verbose_name='Offer',
+                                 related_name='offer_solder', unique=True)
     solder_type = models.CharField(verbose_name='Solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
-                                        max_length=1)
+                                   max_length=1)
     solder_value = models.FloatField(verbose_name='Solder value', default=0.0)
 
     def __str__(self):
