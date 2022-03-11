@@ -61,3 +61,13 @@ class BaseUserEmailSerializer(serializers.ModelSerializer):
             'email': {'write_only': True},
         }
 
+
+class BaseProfileAvatarPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['avatar']
+
+    def update(self, instance, validated_data):
+        instance.avatar = validated_data.get('avatar', instance.avatar)
+        instance.save()
+        return instance

@@ -31396,3 +31396,21 @@ Not Found: /user_avatars/660a0e8d-1c59-4160-a911-fd5ca3d04fff.jpg
 "GET /user_avatars/660a0e8d-1c59-4160-a911-fd5ca3d04fff.jpg HTTP/1.1" 404 3167
 Not Found: /user_avatars/f756e860-055b-4d4e-9256-b0c8bed9e8e2.jpg
 "GET /user_avatars/f756e860-055b-4d4e-9256-b0c8bed9e8e2.jpg HTTP/1.1" 404 3167
+Unauthorized: /api/account/profile/edit/avatar/
+Not Found: /favicon.ico
+Not Found: /user_avatars/b463bcb6-6aff-4d03-87a3-866e26666ca0.png
+"GET /user_avatars/b463bcb6-6aff-4d03-87a3-866e26666ca0.png HTTP/1.1" 404 3167
+Not Found: /user_avatars/afac0d55-d1db-4dfa-84bb-06f3d43f14af.jpg
+"GET /user_avatars/afac0d55-d1db-4dfa-84bb-06f3d43f14af.jpg HTTP/1.1" 404 3167
+Not Found: /media/user_avatars/afac0d55-d1db-4dfa-84bb-06f3d43f14af.jpg
+"GET /media/user_avatars/afac0d55-d1db-4dfa-84bb-06f3d43f14af.jpg HTTP/1.1" 404 3431
+Not Found: /
+"GET / HTTP/1.1" 404 2990
+Not Found: /user_avatars/e95bd530-01fb-4305-8801-d2f4145dbbf9.jpg
+"GET /user_avatars/e95bd530-01fb-4305-8801-d2f4145dbbf9.jpg HTTP/1.1" 404 3167
+Not Found: /user_avatars/98b41271-967b-41f2-bbde-39d10c01cda2.jpg
+"GET /user_avatars/98b41271-967b-41f2-bbde-39d10c01cda2.jpg HTTP/1.1" 404 3167
+Not Found: /user_avatars/1029c44d-c0a3-4aa2-b02c-7bdcfaec9de0.png
+"GET /user_avatars/1029c44d-c0a3-4aa2-b02c-7bdcfaec9de0.png HTTP/1.1" 404 3167
+Not Found: /user_avatars/5128880b-d029-493c-9f33-a7924af836b0.jpg
+"GET /user_avatars/5128880b-d029-493c-9f33-a7924af836b0.jpg HTTP/1.1" 404 3167

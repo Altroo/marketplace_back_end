@@ -44,11 +44,15 @@ def start_generating_avatar_and_thumbnail(last_name, first_name):
     colors = random_color_picker()
     shuffle(colors)
     color = colors.pop()
-    canvas = Image.new("RGB", (300, 300), color=color)
-    font = ImageFont.truetype(STATIC_PATH + "/fonts/Poppins-Bold.ttf", 120)
-    drawn_image = ImageDraw.Draw(canvas)
-    drawn_image.text((50, 68), "{}.{}".format(first_name, last_name), font=font, fill=(0, 0, 0))
-    return canvas
+    avatar = Image.new("RGB", (600, 600), color=color)
+    font_avatar = ImageFont.truetype(STATIC_PATH + "/fonts/Poppins-Bold.ttf", 240)
+    drawn_avatar = ImageDraw.Draw(avatar)
+    drawn_avatar.text((100, 136), "{}.{}".format(first_name, last_name), font=font_avatar, fill=(0, 0, 0))
+    thumbnail = Image.new("RGB", (300, 300), color=color)
+    font_thumb = ImageFont.truetype(STATIC_PATH + "/fonts/Poppins-Bold.ttf", 120)
+    drawn_thumb = ImageDraw.Draw(thumbnail)
+    drawn_thumb.text((50, 68), "{}.{}".format(first_name, last_name), font=font_thumb, fill=(0, 0, 0))
+    return avatar, thumbnail
 
 
 @app.task(bind=True)
@@ -56,6 +60,8 @@ def base_generate_user_thumbnail(self, user_pk):
     user = CustomUser.objects.get(pk=user_pk)
     last_name = str(user.last_name[0]).upper()
     first_name = str(user.first_name[0]).upper()
-    avatar = start_generating_avatar_and_thumbnail(last_name, first_name)
+    avatar, thumbnail = start_generating_avatar_and_thumbnail(last_name, first_name)
     avatar_ = from_img_to_io(avatar, 'PNG')
-    user.save_image('avatar_thumbnail', avatar_)
+    thumbnail_ = from_img_to_io(thumbnail, 'PNG')
+    user.save_image('avatar', avatar_)
+    user.save_image('avatar_thumbnail', thumbnail_)

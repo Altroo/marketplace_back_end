@@ -28,7 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('M', 'Male'),
         ('F', 'Female'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='')
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='', blank=True, null=True)
     birth_date = models.DateField(verbose_name="Date of birth", blank=True, null=True)
     city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL)
     country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True, related_name='users',

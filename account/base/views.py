@@ -3,6 +3,7 @@ from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
+from django.core.exceptions import SuspiciousFileOperation
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
@@ -10,9 +11,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
-    BaseUserEmailSerializer
+    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer
 from account.base.tasks import base_generate_user_thumbnail
 from account.models import CustomUser
+from os import remove
+from auth_shop.base.tasks import base_generate_avatar_thumbnail
 
 
 class FacebookLoginAccess(SocialLoginView):
@@ -240,3 +243,29 @@ class CheckEmailView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_200_OK)
+
+
+class ProfileAvatarPUTView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = CustomUser.objects.get(pk=request.user.pk)
+        serializer = BaseProfileAvatarPutSerializer(data=request.data)
+        if serializer.is_valid():
+            if user.avatar:
+                try:
+                    remove(user.avatar.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError) as err:
+                    print('ERROR avatar : ', err)
+            if user.avatar_thumbnail:
+                try:
+                    remove(user.avatar_thumbnail.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError) as err:
+                    print('ERROR avatar_thumbnail : ', err)
+            new_avatar = serializer.update(user, serializer.validated_data)
+            # Generate new avatar thumbnail
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
