@@ -48,7 +48,7 @@ class ShopView(APIView):
                 'font_name': shop.font_name
             }
             # Generate thumbnail
-            base_generate_avatar_thumbnail.apply_async((shop.pk,), )
+            base_generate_avatar_thumbnail.apply_async((shop.pk, 'AuthShop'), )
             return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -241,7 +241,7 @@ class ShopAvatarPutView(APIView):
                     pass
             new_avatar = serializer.update(shop, serializer.validated_data)
             # Generate new avatar thumbnail
-            base_generate_avatar_thumbnail.apply_async((new_avatar.pk,), )
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

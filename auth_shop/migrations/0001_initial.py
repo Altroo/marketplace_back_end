@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('shop_name', models.CharField(max_length=150, verbose_name='Shop name')),
-                ('avatar', models.ImageField(default=None, upload_to=auth_shop.base.models.get_avatar_path, verbose_name='Avatar')),
-                ('avatar_thumbnail', models.ImageField(blank=True, default=None, null=True, upload_to=auth_shop.base.models.get_avatar_path, verbose_name='Avatar')),
+                ('avatar', models.ImageField(default=None, upload_to=auth_shop.base.models.get_shop_avatar_path, verbose_name='Avatar')),
+                ('avatar_thumbnail', models.ImageField(blank=True, default=None, null=True, upload_to=auth_shop.base.models.get_shop_avatar_path, verbose_name='Avatar')),
                 ('color_code', colorfield.fields.ColorField(default='#FFFFFF', image_field=None, max_length=18, samples=None, verbose_name='Color code')),
                 ('bg_color_code', colorfield.fields.ColorField(default='#FFFFFF', image_field=None, max_length=18, samples=None, verbose_name='Color code')),
                 ('font_name', models.CharField(choices=[('LI', 'Light'), ('BO', 'Boldy'), ('CL', 'Classic'), ('MA', 'Magazine'), ('PO', 'Pop'), ('SA', 'Sans'), ('PA', 'Pacifico'), ('FI', 'Fira')], default='L', max_length=2, verbose_name='Font name')),

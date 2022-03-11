@@ -1,7 +1,7 @@
 from colorfield.fields import ColorField
 from django.db import models
 from django.db.models import Model
-from auth_shop.base.models import get_avatar_path, ShopChoices, LonLatValidators
+from auth_shop.base.models import get_shop_avatar_path, ShopChoices, LonLatValidators
 from auth_shop.base.models import AuthShopDays
 from Qaryb_API_new.settings import API_URL
 from uuid import uuid4
@@ -11,9 +11,9 @@ from django.core.files.base import ContentFile
 
 class TempShop(Model):
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
-    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=False, null=False,
+    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=False, null=False,
                                default=None)
-    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
+    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=True, null=True,
                                          default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')

@@ -10,9 +10,9 @@ from django.core.files.base import ContentFile
 from account.models import CustomUser
 
 
-def get_avatar_path(instance, filename):
+def get_shop_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('avatar/', str(uuid4()) + file_extension)
+    return path.join('shop_avatars/', str(uuid4()) + file_extension)
 
 
 class ShopChoices:
@@ -60,9 +60,9 @@ class AuthShopDays(Model):
 class AuthShop(Model):
     user = models.OneToOneField(CustomUser, verbose_name='User', on_delete=models.CASCADE, related_name='user_authshop')
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
-    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=False, null=False,
+    avatar = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=False, null=False,
                                default=None)
-    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_avatar_path, blank=True, null=True,
+    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=True, null=True,
                                          default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')

@@ -1,3 +1,5 @@
+from random import choice
+from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
@@ -6,12 +8,11 @@ from django.template.loader import render_to_string
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from account.models import CustomUser
+from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
     BaseUserEmailSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
-from random import choice
-from string import digits
+from account.base.tasks import base_generate_user_thumbnail
+from account.models import CustomUser
 
 
 class FacebookLoginAccess(SocialLoginView):
@@ -75,6 +76,8 @@ class RegistrationView(APIView):
                     "last_name": user.last_name
                 }
             }
+            # Generate user avatar and thumbnail
+            base_generate_user_thumbnail.apply_async((user.pk,), )
             return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -17,14 +17,18 @@ class CustomUserAdmin(UserAdmin):
     date_hierarchy = 'date_joined'
     fieldsets = (
         ('Profile', {'fields': ('email', 'password', 'first_name', 'last_name', 'gender',
-                                'birth_date', 'city', 'country', 'phone', 'activation_code', 'password_reset_code',)}),
+                                'birth_date', 'city', 'country', 'phone',
+                                'avatar', 'avatar_thumbnail',
+                                'activation_code', 'password_reset_code',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ("Date d'activité", {'fields': ('date_joined', 'last_login')}),
     )
     # add fields to the admin panel creation model
     add_fieldsets = (
         ('Profile', {'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'gender',
-                                'birth_date', 'city', 'country', 'phone', 'activation_code', 'password_reset_code',)}),
+                                'birth_date', 'city', 'country', 'phone',
+                                'avatar', 'avatar_thumbnail',
+                                'activation_code', 'password_reset_code',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
     )
     search_fields = ('email',)
@@ -37,6 +41,6 @@ class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
 
 
 admin.site.unregister(OutstandingToken)
-admin.site.register(OutstandingToken, OutstandingTokenAdmin)
+admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
 
 admin.site.register(CustomUser, CustomUserAdmin)

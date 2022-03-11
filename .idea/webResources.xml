@@ -7,8 +7,9 @@
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/media" />
             <path value="file://$PROJECT_DIR$/static" />
-            <path value="file://$PROJECT_DIR$/media/avatar" />
+            <path value="file://$PROJECT_DIR$/media/user_avatars" />
             <path value="file://$PROJECT_DIR$/media/shop_products" />
+            <path value="file://$PROJECT_DIR$/media/shop_avatars" />
           </resourceRoots>
         </entryData>
       </entry>

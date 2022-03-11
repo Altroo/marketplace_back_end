@@ -109,7 +109,7 @@ class TempShopAvatarPutView(APIView):
                     pass
             new_avatar = serializer.update(temp_shop, serializer.validated_data)
             # Generate new avatar thumbnail
-            base_generate_avatar_thumbnail.apply_async((new_avatar.pk,), )
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

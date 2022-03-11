@@ -6,6 +6,16 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from .managers import CustomUserManager
 from places.base.models import City, Country, PlaceType
+from os import path
+from uuid import uuid4
+from Qaryb_API_new.settings import API_URL
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+
+def get_avatar_path(instance, filename):
+    filename, file_extension = path.splitext(filename)
+    return path.join('user_avatars/', str(uuid4()) + file_extension)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -24,6 +34,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True, related_name='users',
                                 on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
     phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
+    avatar = models.ImageField(verbose_name='User Avatar', upload_to=get_avatar_path, blank=True, null=True,
+                               default=None)
+    avatar_thumbnail = models.ImageField(verbose_name='User Thumb Avatar', upload_to=get_avatar_path, blank=True,
+                                         null=True, default=None)
     # permissions
     is_staff = models.BooleanField(_('staff status'),
                                    default=False,
@@ -47,7 +61,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return '{}'.format(self.email)
 
+    @property
+    def get_absolute_avatar_img(self):
+        if self.avatar:
+            return "{0}/media{1}".format(API_URL, self.avatar.url)
+        return None
+
+    @property
+    def get_absolute_avatar_thumbnail(self):
+        if self.avatar_thumbnail:
+            return "{0}/media{1}".format(API_URL, self.avatar_thumbnail.url)
+        return None
+
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         ordering = ('date_joined',)
+
+    def save_image(self, field_name, image):
+        if not isinstance(image, BytesIO):
+            return
+
+        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+                                       ContentFile(image.getvalue()),
+                                       save=True)

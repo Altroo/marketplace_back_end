@@ -220,7 +220,7 @@ class Products(Model):
                                             related_name='product_colors')
     product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
                                            related_name='product_sizes')
-    product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=0)
+    product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=None, blank=True, null=True)
     product_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.PRODUCT_PRICE_BY_CHOICES,
                                         max_length=1)
     product_longitude = models.FloatField(verbose_name='Product Longitude', blank=True,
