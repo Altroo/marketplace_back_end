@@ -1,5 +1,5 @@
 from django.contrib import admin
-from auth_shop.base.models import AuthShopDays, AuthShop
+from auth_shop.base.models import AuthShopDays, AuthShop, PhoneCodes
 from django.contrib.admin import ModelAdmin
 
 
@@ -14,6 +14,11 @@ class CustomDaysAdmin(ModelAdmin):
     search_fields = ('pk', 'code_day', 'name_day',)
     ordering = ('pk',)
 
+
+class CustomPhoneCodesAdmin(ModelAdmin):
+    list_display = ('pk', 'phone_code')
+    search_fields = ('pk', 'phone_code')
+    ordering = ('-pk',)
 
 # class CustomDeliveryAdmin(ModelAdmin):
 #     list_display = ('pk', 'offer',
@@ -31,3 +36,4 @@ class CustomDaysAdmin(ModelAdmin):
 
 admin.site.register(AuthShop, CustomAuthShopAdmin)
 admin.site.register(AuthShopDays, CustomDaysAdmin)
+admin.site.register(PhoneCodes, CustomPhoneCodesAdmin)

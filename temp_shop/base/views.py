@@ -12,6 +12,7 @@ from urllib.parse import quote_plus
 from datetime import datetime, timedelta
 from temp_shop.base.tasks import base_start_deleting_expired_shops
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
+from auth_shop.base.models import PhoneCodes
 from temp_shop.base.models import TempShop, AuthShopDays
 from django.core.exceptions import SuspiciousFileOperation
 
@@ -248,3 +249,15 @@ class TempShopFontPutView(APIView):
             serializer.update(temp_shop, serializer.validated_data)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TempShopGetPhoneCodesView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(*args, **kwargs):
+        data = {}
+        phone_codes = PhoneCodes.objects.all().values_list('phone_code', flat=True)
+        data['phone_codes'] = phone_codes
+        return Response(data=data, status=status.HTTP_200_OK)
+

@@ -11,12 +11,14 @@ SECRET_KEY = 'ac@k!7n8s#f(dbbv92(ya_!68%tvi=x&o*k5fp72qt+vkua0=f'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    config('API_IP'),
-    config('API_DOMAIN'),
-]
+# ALLOWED_HOSTS = [
+#     '127.0.0.1',
+#     'localhost',
+#     config('API_IP'),
+#     config('API_DOMAIN'),
+# ]
+
+ALLOWED_HOSTS = ["*"]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
@@ -63,9 +65,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = [
-     'http://localhost:4000',
-]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# CORS_ORIGIN_WHITELIST = [
+#      'http://localhost:4000',
+# ]
 
 ROOT_URLCONF = 'Qaryb_API_new.urls'
 

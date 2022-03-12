@@ -2,7 +2,7 @@ from django.urls import path
 from .views import TempShopView, \
     TempShopAvatarPutView, TempShopNamePutView, TempShopBioPutView, \
     TempShopAvailabilityPutView, TempShopContactPutView, TempShopAddressPutView, TempShopColorPutView, \
-    TempShopFontPutView, TempShopTelPutView, TempShopWtspPutView
+    TempShopFontPutView, TempShopTelPutView, TempShopWtspPutView, TempShopGetPhoneCodesView
 
 app_name = 'temp_shop'
 
@@ -11,6 +11,7 @@ urlpatterns = [
     # POST : Create temp shop
     # GET : Get temp shop info
     path('', TempShopView.as_view()),
+    path('get/phone_codes/', TempShopGetPhoneCodesView.as_view()),
     path('get/<str:unique_id>/', TempShopView.as_view()),
     # PUT : Edit temp store
     path('edit/phone/', TempShopTelPutView.as_view()),

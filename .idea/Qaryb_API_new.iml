@@ -24,6 +24,7 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/places/management/commands" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/offer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/places" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/auth_shop/management" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/tests" />
     </content>

@@ -129,3 +129,14 @@ class AuthShop(Model):
         getattr(self, field_name).save(f'{str(uuid4())}.jpg',
                                        ContentFile(image.getvalue()),
                                        save=True)
+
+
+class PhoneCodes(Model):
+    phone_code = models.CharField(max_length=255, verbose_name='Phone code', unique=True)
+
+    def __str__(self):
+        return '{}'.format(self.phone_code)
+
+    class Meta:
+        verbose_name = 'Phone code'
+        verbose_name_plural = 'Phone codes'

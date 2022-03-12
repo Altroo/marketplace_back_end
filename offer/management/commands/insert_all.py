@@ -2,6 +2,7 @@ import sys
 from django.core.management import BaseCommand
 from offer.base.models import Categories, Colors, ServiceDays, ForWhom, Sizes
 from auth_shop.base.models import AuthShopDays
+from auth_shop.base.models import PhoneCodes
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError
@@ -45,6 +46,13 @@ class InsertAll:
             for row in csv_reader:
                 try:
                     Sizes.objects.create(code_size=row[0], name_size=row[1])
+                except IntegrityError:
+                    continue
+        with open(self.parent_file_dir + '/csv_data/phone_codes.csv', 'r+', encoding='UTF8') as f:
+            csv_reader = reader(f, delimiter=',')
+            for row in csv_reader:
+                try:
+                    PhoneCodes.objects.create(phone_code=row[0])
                 except IntegrityError:
                     continue
 
