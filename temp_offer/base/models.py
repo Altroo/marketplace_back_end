@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
 from temp_shop.base.models import TempShop
 from offer.base.models import get_shop_products_path, OfferChoices
+from places.base.models import City
 
 
 class TempOffers(Model):
@@ -174,34 +175,53 @@ class TempServices(Model):
         ordering = ('-pk',)
 
 
+# class TempDelivery(Model):
+#     temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+#                                       verbose_name='Temp offer',
+#                                       related_name='temp_offer_delivery')
+#     temp_delivery_city_1 = models.CharField(verbose_name='Temp Delivery City 1', max_length=300,
+#                                             blank=True, null=True, default=None)
+#     temp_delivery_price_1 = models.FloatField(verbose_name='Temp delivery Price 1',
+#                                               default=0.0, blank=True, null=True)
+#     temp_delivery_days_1 = models.PositiveIntegerField(verbose_name='Temp number of Days 1',
+#                                                        default=0, blank=True, null=True)
+#     temp_delivery_city_2 = models.CharField(verbose_name='Temp Delivery City 2', max_length=300,
+#                                             blank=True, null=True, default=None)
+#     temp_delivery_price_2 = models.FloatField(verbose_name='Temp delivery Price 2',
+#                                               default=0.0, blank=True, null=True)
+#     temp_delivery_days_2 = models.PositiveIntegerField(verbose_name='Temp number of Days 2',
+#                                                        default=0, blank=True, null=True)
+#     temp_delivery_city_3 = models.CharField(verbose_name='Temp Delivery City 3', max_length=300,
+#                                             blank=True, null=True, default=None)
+#     temp_delivery_price_3 = models.FloatField(verbose_name='Temp delivery Price 3',
+#                                               default=0.0, blank=True, null=True)
+#     temp_delivery_days_3 = models.PositiveIntegerField(verbose_name='Temp number of Days 3',
+#                                                        default=0, blank=True, null=True)
+#
+#     def __str__(self):
+#         return '{} - {} - {} - {}'.format(self.temp_offer.title,
+#                                           self.temp_delivery_city_1,
+#                                           self.temp_delivery_price_1,
+#                                           self.temp_delivery_days_1)
+#
+#     class Meta:
+#         verbose_name = 'Temp Delivery'
+#         verbose_name_plural = 'Temp Deliveries'
+
+
 class TempDelivery(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp offer',
-                                      related_name='temp_offer_delivery')
-    temp_delivery_city_1 = models.CharField(verbose_name='Temp Delivery City 1', max_length=300,
-                                            blank=True, null=True, default=None)
-    temp_delivery_price_1 = models.FloatField(verbose_name='Temp delivery Price 1',
-                                              default=0.0, blank=True, null=True)
-    temp_delivery_days_1 = models.PositiveIntegerField(verbose_name='Temp number of Days 1',
-                                                       default=0, blank=True, null=True)
-    temp_delivery_city_2 = models.CharField(verbose_name='Temp Delivery City 2', max_length=300,
-                                            blank=True, null=True, default=None)
-    temp_delivery_price_2 = models.FloatField(verbose_name='Temp delivery Price 2',
-                                              default=0.0, blank=True, null=True)
-    temp_delivery_days_2 = models.PositiveIntegerField(verbose_name='Temp number of Days 2',
-                                                       default=0, blank=True, null=True)
-    temp_delivery_city_3 = models.CharField(verbose_name='Temp Delivery City 3', max_length=300,
-                                            blank=True, null=True, default=None)
-    temp_delivery_price_3 = models.FloatField(verbose_name='Temp delivery Price 3',
-                                              default=0.0, blank=True, null=True)
-    temp_delivery_days_3 = models.PositiveIntegerField(verbose_name='Temp number of Days 3',
-                                                       default=0, blank=True, null=True)
+    temp_offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
+                                   verbose_name='Temp Offer',
+                                   related_name='temp_offer_delivery')
+    temp_delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
+                                                related_name='temp_delivery_city')
+    temp_delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
+    temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {} - {}'.format(self.temp_offer.title,
-                                          self.temp_delivery_city_1,
-                                          self.temp_delivery_price_1,
-                                          self.temp_delivery_days_1)
+        return '{} - {} - {}'.format(self.temp_offer.pk,
+                                     self.temp_delivery_price,
+                                     self.temp_delivery_days)
 
     class Meta:
         verbose_name = 'Temp Delivery'

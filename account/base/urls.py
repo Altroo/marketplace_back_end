@@ -2,7 +2,7 @@ from django.urls import path
 from .views import FacebookLoginAccess, GoogleLoginAccess, \
     CheckEmailView, RegistrationView, ActivateAccountView, \
     ResendActivationCodeView, PasswordResetView, SendPasswordResetView, \
-    ProfileAvatarPUTView
+    ProfileAvatarPUTView, ProfilePUTView, ProfileGETView
 from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 from rest_framework_simplejwt.views import TokenVerifyView
 from dj_rest_auth.jwt_auth import get_refresh_view
@@ -35,5 +35,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view()),
     path('token/refresh/', get_refresh_view().as_view()),
     # PUT : Edit image
-    path('profile/edit/avatar/', ProfileAvatarPUTView.as_view()),
+    path('edit/avatar/', ProfileAvatarPUTView.as_view()),
+    path('edit/profil/', ProfilePUTView.as_view()),
+    path('get/profil/<int:user_id>/', ProfileGETView.as_view()),
 ]

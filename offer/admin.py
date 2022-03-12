@@ -1,5 +1,5 @@
 from offer.base.models import Categories, Colors, Sizes, ForWhom, \
-    Offers, Solder, Products, Services, ServiceDays
+    Offers, Solder, Products, Services, ServiceDays, Delivery
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
@@ -83,6 +83,17 @@ class CustomServiceDaysAdmin(ModelAdmin):
     ordering = ('pk',)
 
 
+class CustomDeliveryAdmin(ModelAdmin):
+    list_display = ('pk', 'offer', 'show_cities', 'delivery_price', 'delivery_days')
+    search_fields = ('pk', 'delivery_price', 'delivery_days')
+    ordering = ('-pk',)
+
+    @staticmethod
+    def show_cities(obj):
+        return "\n".join([i.city_en for i in obj.delivery_city.all()])
+
+
+admin.site.register(Delivery, CustomDeliveryAdmin)
 admin.site.register(Categories, CustomCategoriesAdmin)
 admin.site.register(Colors, CustomColorsAdmin)
 admin.site.register(Sizes, CustomSizesAdmin)

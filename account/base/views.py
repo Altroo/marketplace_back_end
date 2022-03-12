@@ -11,7 +11,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
-    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer
+    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer, \
+    BaseProfilePutSerializer, BaseProfileGETSerializer
 from account.base.tasks import base_generate_user_thumbnail
 from account.models import CustomUser
 from os import remove
@@ -256,16 +257,43 @@ class ProfileAvatarPUTView(APIView):
             if user.avatar:
                 try:
                     remove(user.avatar.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError) as err:
-                    print('ERROR avatar : ', err)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
             if user.avatar_thumbnail:
                 try:
                     remove(user.avatar_thumbnail.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError) as err:
-                    print('ERROR avatar_thumbnail : ', err)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
             new_avatar = serializer.update(user, serializer.validated_data)
             # Generate new avatar thumbnail
             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProfilePUTView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = CustomUser.objects.get(pk=request.user.pk)
+        serializer = BaseProfilePutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(user, serializer.validated_data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileGETView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user_id = kwargs.get('user_id')
+        try:
+            user = CustomUser.objects.get(pk=user_id)
+            user_serializer = BaseProfileGETSerializer(user)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            data = {'errors': ["User Doesn't exist!"]}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

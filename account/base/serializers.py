@@ -71,3 +71,30 @@ class BaseProfileAvatarPutSerializer(serializers.ModelSerializer):
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.save()
         return instance
+
+
+class BaseProfilePutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.gender = validated_data.get('gender', instance.gender)
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.city = validated_data.get('city', instance.city)
+        instance.country = validated_data.get('country', instance.country)
+        instance.save()
+        return instance
+
+
+class BaseProfileGETSerializer(serializers.ModelSerializer):
+    avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
+    city = serializers.CharField(source='city.name_en')
+    country = serializers.CharField(source='country.name_en')
+
+    class Meta:
+        model = CustomUser
+        fields = ['avatar_thumbnail', 'first_name', 'last_name', 'gender',
+                  'birth_date', 'city', 'country']

@@ -192,24 +192,42 @@ class TempShopToAuthShopView(APIView):
                     solder.save()
                 except TempSolder.DoesNotExist:
                     continue
+                # try:
+                #     temp_deliveries = TempDelivery.objects.get(temp_offer=temp_offer.pk)
+                #     delivery = Delivery.objects.create(
+                #         offer=offer.pk,
+                #         delivery_city_1=temp_deliveries.temp_delivery_city_1,
+                #         delivery_price_1=temp_deliveries.temp_delivery_price_1,
+                #         delivery_days_1=temp_deliveries.temp_delivery_days_1,
+                #         delivery_city_2=temp_deliveries.temp_delivery_city_2,
+                #         delivery_price_2=temp_deliveries.temp_delivery_price_2,
+                #         delivery_days_2=temp_deliveries.temp_delivery_days_2,
+                #         delivery_city_3=temp_deliveries.temp_delivery_city_3,
+                #         delivery_price_3=temp_deliveries.temp_delivery_price_3,
+                #         delivery_days_3=temp_deliveries.temp_delivery_days_3,
+                #     )
+                #     delivery.save()
+                # except TempDelivery.DoesNotExist:
+                #     continue
                 # Transfer deliveries
-                try:
-                    temp_deliveries = TempDelivery.objects.get(temp_offer=temp_offer.pk)
+                # try:
+                # temp_deliveries = TempDelivery.objects.get(temp_offer=temp_offer.pk)
+
+                # Transfer deliveries
+                temp_deliveries = TempDelivery.objects.filter(temp_offer=temp_offer.pk)
+                for temp_delivery in temp_deliveries:
                     delivery = Delivery.objects.create(
                         offer=offer.pk,
-                        delivery_city_1=temp_deliveries.temp_delivery_city_1,
-                        delivery_price_1=temp_deliveries.temp_delivery_price_1,
-                        delivery_days_1=temp_deliveries.temp_delivery_days_1,
-                        delivery_city_2=temp_deliveries.temp_delivery_city_2,
-                        delivery_price_2=temp_deliveries.temp_delivery_price_2,
-                        delivery_days_2=temp_deliveries.temp_delivery_days_2,
-                        delivery_city_3=temp_deliveries.temp_delivery_city_3,
-                        delivery_price_3=temp_deliveries.temp_delivery_price_3,
-                        delivery_days_3=temp_deliveries.temp_delivery_days_3,
+                        # delivery_city
+                        delivery_price=temp_delivery.temp_delivery_price,
+                        delivery_days=temp_delivery.temp_delivery_days,
                     )
                     delivery.save()
-                except TempDelivery.DoesNotExist:
-                    continue
+                    temp_delivery_cities = temp_delivery.temp_delivery_city.all()
+                    for temp_delivery_city in temp_delivery_cities:
+                        delivery.delivery_city.add(temp_delivery_city.pk)
+                # except TempDelivery.DoesNotExist:
+                #    continue
             temp_shop.delete()
             data = {
                 'response': 'Temp shop data transfered into Auth shop!'
