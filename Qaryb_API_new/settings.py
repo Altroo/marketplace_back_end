@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.postgres',
     'corsheaders',
-    # 'channels',
+    'channels',
+    'chat.apps.ChatConfig',
     'rest_framework',
     'colorfield',
     'rest_framework_simplejwt',
@@ -69,7 +70,7 @@ MIDDLEWARE = [
 # CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = [
-     'http://localhost:3000',
+    'http://localhost:3000',
 ]
 
 ROOT_URLCONF = 'Qaryb_API_new.urls'
@@ -228,10 +229,12 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': "channels_redis.core.RedisChannelLayer",
         'CONFIG': {
-            "hosts": ["127.0.0.1", "6379"],
+            "hosts": [("127.0.0.1", "6379")],
         },
     },
 }
+REDIS_HOST = config('REDIS_HOST')
+REDIS_PORT = config('REDIS_PORT')
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 # Celery Debug localhost
@@ -246,6 +249,11 @@ EMAIL_HOST_USER = "no-reply@qaryb.com"
 EMAIL_HOST_PASSWORD = "24YAqua09"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = "587"
+
+# Chat
+# CHAT_BASE_NAME = "media/chat/"
+CONVERSATIONS_TO_LOAD = 10
+MESSAGES_TO_LOAD = 15
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {

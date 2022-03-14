@@ -64,6 +64,168 @@ class ShopView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ShopAvatarPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopAvatarPutSerializer(data=request.data)
+        if serializer.is_valid():
+            if shop.avatar:
+                try:
+                    remove(shop.avatar.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            if shop.avatar_thumbnail:
+                try:
+                    remove(shop.avatar_thumbnail.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            new_avatar = serializer.update(shop, serializer.validated_data)
+            # Generate new avatar thumbnail
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopNamePutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopNamePutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopBioPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopBioPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopAvailabilityPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopAvailabilityPutSerializer(data={
+            'morning_hour_from': request.data.get('morning_hour_from'),
+            'morning_hour_to': request.data.get('morning_hour_to'),
+            'afternoon_hour_from': request.data.get('afternoon_hour_from'),
+            'afternoon_hour_to': request.data.get('afternoon_hour_to'),
+        })
+        if serializer.is_valid():
+            new_availability = serializer.update(shop, serializer.validated_data)
+            opening_days = str(request.data.get('opening_days')).split(',')
+            opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
+            new_availability.opening_days.clear()
+            for day in opening_days:
+                new_availability.opening_days.add(day.pk)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopContactPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopContactPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopTelPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopTelPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopWtspPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopWtspPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopAddressPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopAddressPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopColorPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopColorPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopFontPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        auth_shop_pk = request.data.get('auth_shop_pk')
+        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        serializer = BaseShopFontPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(shop, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TempShopToAuthShopView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -236,165 +398,3 @@ class TempShopToAuthShopView(APIView):
         except TempShop.DoesNotExist:
             data = {'errors': ['User temp shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopAvatarPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopAvatarPutSerializer(data=request.data)
-        if serializer.is_valid():
-            if shop.avatar:
-                try:
-                    remove(shop.avatar.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            if shop.avatar_thumbnail:
-                try:
-                    remove(shop.avatar_thumbnail.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            new_avatar = serializer.update(shop, serializer.validated_data)
-            # Generate new avatar thumbnail
-            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopNamePutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopNamePutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopBioPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopBioPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopAvailabilityPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopAvailabilityPutSerializer(data={
-            'morning_hour_from': request.data.get('morning_hour_from'),
-            'morning_hour_to': request.data.get('morning_hour_to'),
-            'afternoon_hour_from': request.data.get('afternoon_hour_from'),
-            'afternoon_hour_to': request.data.get('afternoon_hour_to'),
-        })
-        if serializer.is_valid():
-            new_availability = serializer.update(shop, serializer.validated_data)
-            opening_days = str(request.data.get('opening_days')).split(',')
-            opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
-            new_availability.opening_days.clear()
-            for day in opening_days:
-                new_availability.opening_days.add(day.pk)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopContactPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopContactPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopTelPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopTelPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopWtspPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopWtspPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopAddressPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopAddressPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopColorPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopColorPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopFontPutView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopFontPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

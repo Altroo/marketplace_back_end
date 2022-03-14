@@ -9,12 +9,12 @@ from temp_shop.base.serializers import BaseTempShopSerializer, BaseTempShopAvata
 from os import path, remove
 from uuid import uuid4
 from urllib.parse import quote_plus
+from django.core.exceptions import SuspiciousFileOperation
+from auth_shop.base.tasks import base_generate_avatar_thumbnail
+from temp_shop.base.models import TempShop, AuthShopDays
 from datetime import datetime, timedelta
 from temp_shop.base.tasks import base_start_deleting_expired_shops
-from auth_shop.base.tasks import base_generate_avatar_thumbnail
 from auth_shop.base.models import PhoneCodes
-from temp_shop.base.models import TempShop, AuthShopDays
-from django.core.exceptions import SuspiciousFileOperation
 
 
 class TempShopView(APIView):
@@ -32,34 +32,12 @@ class TempShopView(APIView):
             'color_code': request.data.get('color_code'),
             'bg_color_code': request.data.get('bg_color_code'),
             'font_name': request.data.get('font_name'),
-            # 'bio': request.data.get('bio'),
-            # 'morning_hour_from': request.data.get('morning_hour_from'),
-            # 'morning_hour_to': request.data.get('morning_hour_to'),
-            # 'afternoon_hour_from': request.data.get('afternoon_hour_from'),
-            # 'afternoon_hour_to': request.data.get('afternoon_hour_to'),
-            # 'phone': request.data.get('phone'),
-            # 'contact_email': request.data.get('contact_email'),
-            # 'website_link': request.data.get('website_link'),
-            # 'facebook_link': request.data.get('facebook_link'),
-            # 'twitter_link': request.data.get('twitter_link'),
-            # 'instagram_link': request.data.get('instagram_link'),
-            # 'whatsapp': request.data.get('whatsapp'),
-            # 'zone_by': request.data.get('zone_by'),
-            # 'longitude': request.data.get('longitude'),
-            # 'latitude': request.data.get('latitude'),
-            # 'address_name': request.data.get('address_name'),
-            # 'km_radius': request.data.get('km_radius'),
             'qaryb_link': 'https://qaryb.com/' + qaryb_url + str(unique_id),
             'unique_id': str(unique_id),
         })
         if serializer.is_valid():
             temp_shop = serializer.save()
             temp_shop.save()
-            # Opening days
-            # opening_days = str(request.data.get('opening_days')).split(',')
-            # opening_days = Days.objects.filter(code_day__in=opening_days)
-            # for opening_day in opening_days:
-            #    temp_shop.opening_days.add(opening_day.pk)
             data = {
                 'unique_id': unique_id,
                 'shop_name': temp_shop.shop_name,

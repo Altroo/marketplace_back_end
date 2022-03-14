@@ -10,6 +10,7 @@
             <path value="file://$PROJECT_DIR$/media/user_avatars" />
             <path value="file://$PROJECT_DIR$/media/shop_products" />
             <path value="file://$PROJECT_DIR$/media/shop_avatars" />
+            <path value="file://$PROJECT_DIR$/media/chat" />
           </resourceRoots>
         </entryData>
       </entry>

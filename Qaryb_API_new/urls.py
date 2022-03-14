@@ -18,6 +18,8 @@ urlpatterns = [
     path('api/offer/', include('offer.base.urls', namespace='1.0.0')),
     # Temporary offers
     path('api/temp_offer/', include('temp_offer.base.urls', namespace='1.0.0')),
+    # Chat
+    path('api/chat/', include('chat.base.urls', namespace='1.0.0')),
     # Cities / Geo reverse
     path('api/places/', include('places.base.urls', namespace='1.0.0')),
     # path('api/version/', include('version.urls', namespace='1.0.0')),
