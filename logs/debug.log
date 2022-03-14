@@ -32854,3 +32854,361 @@ Traceback (most recent call last):
 AssertionError: When a serializer is passed a `data` keyword argument you must call `.is_valid()` before attempting to access the serialized `.data` representation.
 You should either call `.is_valid()` first, or access `.initial_data` instead.
 "GET /api/temp_shop/get/phone_codes/ HTTP/1.1" 500 106843
+Not Found: /
+"GET / HTTP/1.1" 404 2990
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/account/login/
+"POST /api/account/login/ HTTP/1.1" 400 68
+Bad Request: /api/account/login/
+"POST /api/account/login/ HTTP/1.1" 400 68
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 172, in _complete_social_login
+    ret = _process_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 43, in _process_signup
+    ret = complete_social_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 177, in complete_social_signup
+    return complete_signup(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 186, in complete_signup
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 174444
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 172, in _complete_social_login
+    ret = _process_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 43, in _process_signup
+    ret = complete_social_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 177, in complete_social_signup
+    return complete_signup(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 186, in complete_signup
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 174967
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 166, in _complete_social_login
+    ret = _login_social_account(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 48, in _login_social_account
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 166838
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 166, in _complete_social_login
+    ret = _login_social_account(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 48, in _login_social_account
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 166838
+Not Found: /favicon.ico
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40
+Not Found: /
+"GET / HTTP/1.1" 404 3102
+Not Found: /favicon.ico
+Not Found: /accounts/profile/
+"GET /accounts/profile/ HTTP/1.1" 404 3171
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 172, in _complete_social_login
+    ret = _process_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 43, in _process_signup
+    ret = complete_social_signup(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 177, in complete_social_signup
+    return complete_signup(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 186, in complete_signup
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 174953
+Internal Server Error: /api/account/facebook_access/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/decorators.py", line 46, in _wrapper
+    return bound_method(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/debug.py", line 92, in sensitive_post_parameters_wrapper
+    return view(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 53, in dispatch
+    return super().dispatch(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 124, in post
+    self.serializer.is_valid(raise_exception=True)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 429, in run_validation
+    value = self.validate(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/registration/serializers.py", line 151, in validate
+    complete_social_login(request, login)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 151, in complete_social_login
+    return _complete_social_login(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 166, in _complete_social_login
+    ret = _login_social_account(request, sociallogin)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/socialaccount/helpers.py", line 48, in _login_social_account
+    return perform_login(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/utils.py", line 168, in perform_login
+    response = adapter.pre_login(request, user, **hook_kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 402, in pre_login
+    return self.respond_user_inactive(request, user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/allauth/account/adapter.py", line 552, in respond_user_inactive
+    return HttpResponseRedirect(reverse("account_inactive"))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/urls/resolvers.py", line 802, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'account_inactive' not found. 'account_inactive' is not a valid view function or pattern name.
+"POST /api/account/facebook_access/ HTTP/1.1" 500 166844
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/account/google_access/
+"POST /api/account/google_access/ HTTP/1.1" 400 40

@@ -8,8 +8,8 @@ app_name = 'auth_shop'
 
 urlpatterns = [
     # Auth shop
-    # POST : Create  shop
-    # GET : Get  shop info
+    # POST : Create shop
+    # GET : Get shop info
     path('', ShopView.as_view()),
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
     path('get/<int:auth_shop_pk>/', ShopView.as_view()),

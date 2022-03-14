@@ -17,7 +17,7 @@ urlpatterns = [
     path('deliveries/get/<int:auth_shop_pk>/', GetLastThreeDeliveriesView.as_view()),
     # GET : Last used localisation (lon, lat + localisation name)
     path('localisation/get/<str:unique_id>/<str:offer_type>/', GetLastUsedLocalisationView.as_view()),
-    # GET : Temp shop products list
+    # GET : My shop products list
     path('shop/', GetShopOffersListView.as_view()),
     # POST : add solder, PUT : update solder
     path('solder/', ShopOfferSolderView.as_view()),

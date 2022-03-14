@@ -7,8 +7,9 @@ urlpatterns = [
     # Account
     # Socials included (facebook, google)
     path('api/account/', include('account.base.urls', namespace='1.0.0')),
-    # For local testing [TODO check if callbacks at the front or back]
-    # path('api/socials/', include('allauth.urls')),
+    # Needs to be activated to avoid socials connect reverse for user not active
+    # Has authorized callbacks from google console cloud & facebook developers
+    path('api/socials/', include('allauth.urls')),
     # Auth Shop
     path('api/shop/', include('auth_shop.base.urls', namespace='1.0.0')),
     # Temporary shops
