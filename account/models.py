@@ -85,3 +85,35 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         getattr(self, field_name).save(f'{str(uuid4())}.jpg',
                                        ContentFile(image.getvalue()),
                                        save=True)
+
+
+class BlockedUsers(Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             verbose_name='User', related_name='user_block_sender')
+    user_blocked = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                                     verbose_name='Blocked user', related_name='user_block_receiver')
+
+    class Meta:
+        unique_together = (('user', 'user_blocked'),)
+        verbose_name = 'Blocked User'
+        verbose_name_plural = 'Blocked Users'
+
+
+class ReportedUsers(Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             verbose_name='User', related_name='user_report_sender')
+    user_reported = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                                      verbose_name='Reported user', related_name='user_report_receiver')
+
+    REASONS_CHOICES = (
+        ('1', 'Reason 1'),
+        ('2', 'Reason 2'),
+        ('3', 'Reason 3'),
+        ('4', 'Reason 4'),
+    )
+    report_reason = models.CharField(verbose_name='Reason', choices=REASONS_CHOICES, default='1', max_length=1)
+
+    class Meta:
+        # TODO check if user can repport user multiple times
+        # unique_together = (('user', 'user_reported'),)
+        verbose_name_plural = "Reported items"

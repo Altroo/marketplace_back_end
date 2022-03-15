@@ -1,4 +1,8 @@
 from os import path
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
 from offer.base.models import Offers
@@ -64,6 +68,17 @@ def base_generate_offer_thumbnails(self, product_id, which):
         picture_path = parent_file_dir + '/media' + offer.picture_1.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         offer.save_image('picture_1_thumbnail', img_thumbnail)
+        # Send offer images (generated offer image)
+        event = {
+            "type": "recieve_group_message",
+            "message": {
+                "type": "offer_thumbnail",
+                "id": offer.pk,
+                "offer_thumbnail": offer.get_absolute_picture_1_thumbnail,
+            }
+        }
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("%s" % offer.auth_shop.user.pk, event)
 
     offer_picture_2 = offer.picture_2.path if offer.picture_2 else None
     if offer_picture_2 is not None:
@@ -99,6 +114,17 @@ def base_duplicate_offer_images(self, offer_id, new_offer_id, which):
     if offer.picture_1_thumbnail:
         picture_1_thumbnail = start_generating_thumbnail(offer.picture_1_thumbnail.path, True)
         new_offer.save_image('picture_1_thumbnail', picture_1_thumbnail)
+        # Send offer images (generated offer image)
+        event = {
+            "type": "recieve_group_message",
+            "message": {
+                "type": "offer_thumbnail",
+                "id": new_offer.pk,
+                "offer_thumbnail": new_offer.get_absolute_picture_1_thumbnail,
+            }
+        }
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("%s" % offer.auth_shop.user.pk, event)
     if offer.picture_2:
         picture_2 = start_generating_thumbnail(offer.picture_2.path, True)
         new_offer.save_image('picture_2', picture_2)

@@ -2,8 +2,11 @@ from django.urls import path
 from .views import FacebookLoginAccess, GoogleLoginAccess, \
     CheckEmailView, RegistrationView, ActivateAccountView, \
     ResendActivationCodeView, PasswordResetView, SendPasswordResetView, \
-    ProfileAvatarPUTView, ProfilePUTView, ProfileGETView
-from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
+    ProfileAvatarPUTView, ProfilePUTView, ProfileGETView, BlockView, \
+    GetBlockedUsersView, UnblockUserView, ReportView, LoginView, LogoutView
+# from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
+# from dj_rest_auth.views import LogoutView
+from dj_rest_auth.views import PasswordChangeView
 from rest_framework_simplejwt.views import TokenVerifyView
 from dj_rest_auth.jwt_auth import get_refresh_view
 
@@ -36,6 +39,17 @@ urlpatterns = [
     path('token/refresh/', get_refresh_view().as_view()),
     # PUT : Edit image
     path('edit/avatar/', ProfileAvatarPUTView.as_view()),
+    # PUT : Edit profil
     path('edit/profil/', ProfilePUTView.as_view()),
+    # GET : Get profil data
     path('get/profil/<int:user_id>/', ProfileGETView.as_view()),
+    # Blocked Users
+    # Get : Get blocked users list
+    # Post : Block a user
+    # Delete : Unblock a user
+    path('block/', BlockView.as_view()),
+    path('delete/block/<int:user_id>/', UnblockUserView.as_view()),
+    path('get/blocked_users/', GetBlockedUsersView.as_view()),
+    # Repport
+    path('report/', ReportView.as_view()),
 ]

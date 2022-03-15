@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import CustomUser
+from account.models import CustomUser, BlockedUsers, ReportedUsers
 from django.contrib.auth.password_validation import validate_password
 
 
@@ -98,3 +98,31 @@ class BaseProfileGETSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['avatar_thumbnail', 'first_name', 'last_name', 'gender',
                   'birth_date', 'city', 'country']
+
+
+class BaseMyBlockedUsersListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    # Blocked user
+    blocked_user_pk = serializers.IntegerField(source='user_blocked.pk')
+    blocked_user_first_name = serializers.CharField(source='user_blocked.first_name')
+    blocked_user_last_name = serializers.CharField(source='user_blocked.last_name')
+    blocked_user_avatar = serializers.CharField(source='user_blocked.get_absolute_avatar_thumbnail')
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
+class BaseMyBlockUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlockedUsers
+        fields = ['user', 'user_blocked']
+
+
+class BaseMyReportPostsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ReportedUsers
+        fields = ['user', 'user_reported', 'report_reason']

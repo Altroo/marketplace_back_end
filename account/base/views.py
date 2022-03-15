@@ -2,6 +2,8 @@ from random import choice
 from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.mail import EmailMessage
@@ -11,12 +13,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
-    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer, \
-    BaseProfilePutSerializer, BaseProfileGETSerializer
+    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer, BaseProfilePutSerializer, \
+    BaseProfileGETSerializer, BaseMyBlockUserSerializer, \
+    BaseMyBlockedUsersListSerializer, BaseMyReportPostsSerializer
 from account.base.tasks import base_generate_user_thumbnail
-from account.models import CustomUser
+from account.models import CustomUser, BlockedUsers
 from os import remove
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
+from rest_framework.pagination import PageNumberPagination
+from dj_rest_auth.views import LoginView as Dj_rest_login
+from dj_rest_auth.views import LogoutView as Dj_rest_logout
+from chat.base.models import Status, MessageModel
 
 
 class FacebookLoginAccess(SocialLoginView):
@@ -246,6 +253,77 @@ class CheckEmailView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 
+class LoginView(Dj_rest_login):
+    def login(self):
+        super(LoginView, self).login()
+        try:
+            user_status = Status.objects.get(user=self.user)
+            user_status.online = True
+            user_status.save()
+        except Status.DoesNotExist:
+            Status.objects.create(user=self.user, online=True)
+        channel_layer = get_channel_layer()
+        my_set = set()
+        result_msg_user = MessageModel.objects.filter(user=self.user.pk)
+        result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
+        for i in result_msg_user:
+            if i != self.user.pk:
+                my_set.add(i.recipient.pk)
+        for i in result_msg_recipient:
+            if i != self.user.pk:
+                my_set.add(i.user.pk)
+        for user_id in CustomUser.objects.filter(id__in=my_set, status__online=True) \
+                .exclude(is_active=False).values_list('id', flat=True):
+            if Status.objects.filter(user__id=user_id).exists() and Status.objects.get(
+                    user__id=user_id).online:
+                event = {
+                    'type': 'recieve_group_message',
+                    'message': {
+                        'type': 'status',
+                        'user_id': self.user.pk,
+                        'online': True,
+                        'recipient': user_id,
+                    }
+                }
+                async_to_sync(channel_layer.group_send)("%s" % user_id, event)
+
+
+class LogoutView(Dj_rest_logout):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def logout(self, request):
+        try:
+            user_status = Status.objects.get(user=request.user)
+            user_status.online = False
+            user_status.save()
+        except Status.DoesNotExist:
+            Status.objects.create(user=request.user, online=False)
+        channel_layer = get_channel_layer()
+        my_set = set()
+        result_msg_user = MessageModel.objects.filter(user=request.user.pk)
+        result_msg_recipient = MessageModel.objects.filter(recipient=request.user.pk)
+        for i in result_msg_user:
+            if i != request.user.pk:
+                my_set.add(i.recipient.pk)
+        for i in result_msg_recipient:
+            if i != request.user.pk:
+                my_set.add(i.user.pk)
+        for user_id in CustomUser.objects.filter(id__in=my_set, status__online=True) \
+                .exclude(is_active=False).values_list('id', flat=True):
+            if Status.objects.filter(user__id=user_id).exists() and Status.objects.get(user__id=user_id).online:
+                event = {
+                    'type': 'recieve_group_message',
+                    'message': {
+                        'type': 'status',
+                        'user_id': request.user.pk,
+                        'online': False,
+                        'recipient': user_id,
+                    }
+                }
+                async_to_sync(channel_layer.group_send)("%s" % user_id, event)
+        return super(LogoutView, self).logout(request)
+
+
 class ProfileAvatarPUTView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -297,3 +375,75 @@ class ProfileGETView(APIView):
         except CustomUser.DoesNotExist:
             data = {'errors': ["User Doesn't exist!"]}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BlockView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user_id = request.user.pk
+        user_blocked_id = int(request.data.get('user_id'))
+        if user_id == user_blocked_id:
+            data = {'errors': ['You can\'t block yourself!']}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        serializer = BaseMyBlockUserSerializer(data={
+            "user": user_id,
+            "user_blocked": user_blocked_id,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            # TODO mark every message as read
+            # mark_every_messages_as_read = BaseMarkEveryMessagesAsRead()
+            # mark_every_messages_as_read.apply_async(args=(user_blocked_id, user_id,))
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetBlockedUsersView(APIView, PageNumberPagination):
+    permission_classes = (permissions.IsAuthenticated,)
+    page_size = 10
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user
+        posts = BlockedUsers.objects.filter(user=user_id)
+        page = self.paginate_queryset(request=request, queryset=posts)
+        if page is not None:
+            serializer = BaseMyBlockedUsersListSerializer(instance=page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+
+class UnblockUserView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        user_id = request.user
+        user_blocked_id = kwargs.get('user_id')
+        try:
+            BlockedUsers.objects.get(user=user_id, user_blocked=user_blocked_id).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except BlockedUsers.DoesNotExist:
+            # data = {'errors': ['User not found']}
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReportView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user_reported = request.data.get('user_id')
+        report_reason = request.data.get('report_reason')
+        serializer = BaseMyReportPostsSerializer(data={
+            "user": request.user.pk,
+            "user_reported": user_reported,
+            "report_reason": report_reason,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            # TODO check if we'll get notification emails on repported users
+            # check_repport_email_limit = BaseCheckRepportEmailLimit()
+            # check_repport_email_limit.apply_async((post_id,), )
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

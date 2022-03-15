@@ -33993,3 +33993,969 @@ AttributeError: Got AttributeError when attempting to get a value for field `sho
 The serializer field might be named incorrectly and not match any attribute or key on the `CustomUser` instance.
 Original exception text was: 'CustomUser' object has no attribute 'shop'.
 [35;1mHTTP GET /api/chat/conversations/ 500 [0.08, 127.0.0.1:53178][0m
+Not Found: /api/account/get/blocked_list/
+[33mHTTP POST /api/account/get/blocked_list/ 404 [0.02, 127.0.0.1:53558][0m
+Method Not Allowed: /api/account/get/blocked_users/
+[31;1mHTTP POST /api/account/get/blocked_users/ 405 [0.09, 127.0.0.1:53558][0m
+Internal Server Error: /api/account/get/blocked_users/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+psycopg2.errors.UndefinedTable: relation "accounts_blockedusers" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "accounts_blockedusers" WH...
+                                          ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 334, in get
+    page = self.paginate_queryset(request=request, queryset=posts)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/pagination.py", line 204, in paginate_queryset
+    self.page = paginator.page(page_number)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/paginator.py", line 75, in page
+    number = self.validate_number(number)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/paginator.py", line 53, in validate_number
+    if number > self.num_pages:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 49, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/paginator.py", line 102, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/utils/functional.py", line 49, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/paginator.py", line 96, in count
+    return c()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 470, in count
+    return self.query.get_count(using=self.db)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 543, in get_count
+    number = obj.get_aggregation(using, ["__count"])["__count"]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 528, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1361, in execute_sql
+    cursor.execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 103, in execute
+    return super().execute(sql, params)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+django.db.utils.ProgrammingError: relation "accounts_blockedusers" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "accounts_blockedusers" WH...
+                                          ^
+
+[35;1mHTTP GET /api/account/get/blocked_users/ 500 [0.08, 127.0.0.1:53558][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /chat/f1fade00-b42c-454d-a5dd-b94e1166af0c.png
+[33mHTTP GET /chat/f1fade00-b42c-454d-a5dd-b94e1166af0c.png 404 [0.01, 127.0.0.1:50142][0m
+Not Found: /
+[33mHTTP GET / 404 [0.02, 127.0.0.1:50174][0m
+Not Found: /favicon.ico
+Bad Request: /api/account/login/
+[31;1mHTTP POST /api/account/login/ 400 [0.34, 127.0.0.1:50436][0m
+Not Found: /favicon.ico
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 296, in post
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x12ab73250>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.11, 127.0.0.1:50696][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 296, in post
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x12ade3010>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50696][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 293, in post
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50710][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 293, in logout
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50719][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 296, in logout
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x1226c1180>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.06, 127.0.0.1:50728][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 297, in logout
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x1265c7010>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.05, 127.0.0.1:50738][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 297, in logout
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x1266857b0>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50738][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 298, in logout
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x12e98f3a0>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.07, 127.0.0.1:50749][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/dj_rest_auth/views.py", line 149, in post
+    return self.logout(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 298, in logout
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x12ebe64a0>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.05, 127.0.0.1:50749][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.02, 127.0.0.1:50765][0m
+Unauthorized: /api/account/logout/
+[31;1mHTTP POST /api/account/logout/ 401 [0.02, 127.0.0.1:50770][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.02, 127.0.0.1:50770][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.02, 127.0.0.1:50785][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.02, 127.0.0.1:50791][0m
+Unauthorized: /api/account/logout/
+[31;1mHTTP POST /api/account/logout/ 401 [0.10, 127.0.0.1:50799][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.05, 127.0.0.1:50805][0m
+Internal Server Error: /api/account/logout/
+[35;1mHTTP POST /api/account/logout/ 500 [0.05, 127.0.0.1:50805][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 295, in post
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50843][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 298, in post
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50847][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 298, in post
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.03, 127.0.0.1:50847][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 296, in post
+    print(request.user.auth_token)
+AttributeError: 'AnonymousUser' object has no attribute 'auth_token'
+[35;1mHTTP POST /api/account/logout/ 500 [0.04, 127.0.0.1:50880][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` to be returned from the view, but received a `<class 'NoneType'>`
+[35;1mHTTP POST /api/account/logout/ 500 [0.13, 127.0.0.1:50890][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1988, in get_prep_value
+    return int(value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/contrib/auth/models.py", line 434, in __int__
+    raise TypeError(
+TypeError: Cannot cast AnonymousUser to int. Are you trying to use it in place of User?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/account/base/views.py", line 297, in post
+    user_status = Status.objects.get(user=request.user)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/manager.py", line 85, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 482, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1071, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1089, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1096, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1466, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1496, in _add_q
+    child_clause, needed_inner = self.build_filter(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1412, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/sql/query.py", line 1242, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/related_lookups.py", line 154, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/db/models/fields/__init__.py", line 1990, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <django.contrib.auth.models.AnonymousUser object at 0x1207f8d30>.
+[35;1mHTTP POST /api/account/logout/ 500 [0.14, 127.0.0.1:50898][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` to be returned from the view, but received a `<class 'NoneType'>`
+[35;1mHTTP POST /api/account/logout/ 500 [0.11, 127.0.0.1:50905][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` to be returned from the view, but received a `<class 'NoneType'>`
+[35;1mHTTP POST /api/account/logout/ 500 [0.11, 127.0.0.1:50931][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` to be returned from the view, but received a `<class 'NoneType'>`
+[35;1mHTTP POST /api/account/logout/ 500 [0.18, 127.0.0.1:50941][0m
+Internal Server Error: /api/account/logout/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 451, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 414, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 455, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 84, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 511, in dispatch
+    self.response = self.finalize_response(request, response, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 423, in finalize_response
+    assert isinstance(response, HttpResponseBase), (
+AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` to be returned from the view, but received a `<class 'NoneType'>`
+[35;1mHTTP POST /api/account/logout/ 500 [0.07, 127.0.0.1:50955][0m
+Unauthorized: /api/account/logout/
+[31;1mHTTP POST /api/account/logout/ 401 [0.10, 127.0.0.1:50965][0m
+Not Found: /favicon.ico

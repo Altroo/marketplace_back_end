@@ -1,5 +1,5 @@
-from rest_framework import serializers
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from account.models import CustomUser
 from auth_shop.base.models import AuthShop
 from chat.base.models import MessageModel, Status
@@ -7,17 +7,13 @@ from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
                                         CreateOnlyDefault, CurrentUserDefault)
 
+
 # from chat.v2_0_0.tasks import NotifyMessageReceivedTaskV2
 
 
 # Messages list
-from Qaryb_API_new.settings import API_URL
-
-
 class BaseMessageModelSerializer(ModelSerializer):
     initiator = SerializerMethodField()
-    # attachment_link = serializers.CharField(source='get_absolute_attachment_img')
-    # attachment_thumbnail_link = serializers.CharField(source='get_absolute_attachment_thumbnail')
     attachment_link = SerializerMethodField()
     attachment_thumbnail_link = SerializerMethodField()
 
@@ -37,61 +33,97 @@ class BaseMessageModelSerializer(ModelSerializer):
     def get_initiator(instance):
         return instance.user.email
 
-    # def save(self, **kwargs):
-    #     assert hasattr(self, '_errors'), (
-    #         'You must call `.is_valid()` before calling `.save()`.'
-    #     )
-    #
-    #     assert not self.errors, (
-    #         'You cannot call `.save()` on a serializer with invalid data.'
-    #     )
-    #
-    #     # Guard against incorrect use of `serializer.save(commit=False)`
-    #     assert 'commit' not in kwargs, (
-    #         "'commit' is not a valid keyword argument to the 'save()' method. "
-    #         "If you need to access data before committing to the database then "
-    #         "inspect 'serializer.validated_data' instead. "
-    #         "You can also pass additional keyword arguments to 'save()' if you "
-    #         "need to set extra attributes on the saved model instance. "
-    #         "For example: 'serializer.save(owner=request.user)'.'"
-    #     )
-    #
-    #     assert not hasattr(self, '_data'), (
-    #         "You cannot call `.save()` after accessing `serializer.data`."
-    #         "If you need to access data before committing to the database then "
-    #         "inspect 'serializer.validated_data' instead. "
-    #     )
-    #
-    #     validated_data = {**self.validated_data, **kwargs}
-    #
-    #     if self.instance is not None:
-    #         self.instance = self.update(self.instance, validated_data)
-    #         assert self.instance is not None, (
-    #             '`update()` did not return an object instance.'
-    #         )
-    #     else:
-    #         self.instance = self.create(validated_data)
-    #         assert self.instance is not None, (
-    #             '`create()` did not return an object instance.'
-    #         )
-    #         if self.instance.body != 'K8Fe6DoFgl9Xt0':
-    #             attachment_exist = self.instance.attachment.path if self.instance.attachment else None
-    #             notify_message_received = NotifyMessageReceivedTaskV2()
-    #             notify_message_received.apply_async(args=(self.instance.id,
-    #                                                       self.instance.user.pk,
-    #                                                       self.instance.recipient.pk,
-    #                                                       self.instance.body,
-    #                                                       attachment_exist,
-    #                                                       self.instance.user.first_name,
-    #                                                       self.instance.user.last_name))
-    #     return self.instance
+    @staticmethod
+    async def notify_message_received_async(instance):
+        attachment_exist = instance.attachment.path if instance.attachment else None
+        if attachment_exist is not None:
+            body = 'Picture'
+        else:
+            body = instance.body
+        event = {
+            "type": 'recieve_group_message',
+            "message": {
+                "type": "message",
+                "id": instance.id,
+                "initiator": instance.user.pk,
+                "recipient": instance.recipient.pk,
+                "body": body,
+            }
+        }
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send("%s" % instance.recipient.id, event)
+
+    @staticmethod
+    def notify_message_received_sync(instance):
+        attachment_exist = instance.attachment.path if instance.attachment else None
+        if attachment_exist is not None:
+            body = 'Picture'
+        else:
+            body = instance.body
+        event = {
+            "type": 'recieve_group_message',
+            "message": {
+                "type": "message",
+                "id": instance.id,
+                "initiator": instance.user.pk,
+                "recipient": instance.recipient.pk,
+                "body": body,
+            }
+        }
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)("%s" % instance.recipient.pk, event)
+
+    def save(self, **kwargs):
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
+        # Guard against incorrect use of `serializer.save(commit=False)`
+        assert 'commit' not in kwargs, (
+            "'commit' is not a valid keyword argument to the 'save()' method. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if you "
+            "need to set extra attributes on the saved model instance. "
+            "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+
+        validated_data = {**self.validated_data, **kwargs}
+
+        if self.instance is not None:
+            self.instance = self.update(self.instance, validated_data)
+            assert self.instance is not None, (
+                '`update()` did not return an object instance.'
+            )
+        else:
+            self.instance = self.create(validated_data)
+            assert self.instance is not None, (
+                '`create()` did not return an object instance.'
+            )
+            # Send WS message : added here to avoid sending duplicate sockets when attachment is added
+            if self.instance.body or self.instance.attachment.name:
+                try:
+                    self.notify_message_received_sync(instance=self.instance)
+                except RuntimeError:
+                    self.notify_message_received_async(instance=self.instance)
+        return self.instance
 
     class Meta:
         model = MessageModel
         fields = ('pk', 'user', 'initiator',
                   'recipient', 'created',
                   'body', 'attachment', 'attachment_thumbnail', 'attachment_link', 'attachment_thumbnail_link',
-                  'viewed', 'viewed_timestamp')
+                  'viewed')
         extra_kwargs = {
             'user': {
                 'default': CreateOnlyDefault(

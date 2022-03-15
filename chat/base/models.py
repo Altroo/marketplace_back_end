@@ -20,15 +20,15 @@ def chat_img_directory_path(instance, filename):
 
 
 class MessageModel(Model):
-    user = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='user', related_name='sent_messages', db_index=True)
-    recipient = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='recipient', related_name='recevied_messages',
+    user = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='Sender', related_name='sent_messages', db_index=True)
+    recipient = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='Receiver', related_name='recevied_messages',
                            db_index=True)
-    created = DateTimeField('created', auto_now_add=True, editable=False, db_index=True)
-    body = TextField('body', null=True, blank=True)
+    created = DateTimeField('Created date', auto_now_add=True, editable=False, db_index=True)
+    body = TextField('Body', null=True, blank=True)
     attachment = ImageField(null=True, blank=True, upload_to=chat_img_directory_path, default=None)
     attachment_thumbnail = ImageField(null=True, blank=True, upload_to=chat_img_directory_path, default=None)
     viewed = BooleanField(default=False)
-    viewed_timestamp = DateTimeField('viewed_timestamp', auto_now=True, editable=False)
+    viewed_timestamp = DateTimeField('Viewed Timestamp', auto_now=True, editable=False)
 
     def __nonzero__(self):
         return bool(self.attachment)
@@ -36,7 +36,7 @@ class MessageModel(Model):
     def __str__(self):
         return str(self.pk)
 
-    async def notify_viewed_async(self):
+    async def notify_seen_async(self):
         channel_layer = get_channel_layer()
         event = {
             "type": "recieve_group_message",
@@ -49,7 +49,7 @@ class MessageModel(Model):
         }
         await channel_layer.group_send("%s" % self.user.id, event)
 
-    def notify_viewed_sync(self):
+    def notify_seen_sync(self):
         channel_layer = get_channel_layer()
         event = {
             "type": "recieve_group_message",
@@ -69,9 +69,6 @@ class MessageModel(Model):
         getattr(self, field_name).save(f'{str(uuid4())}.jpeg',
                                        ContentFile(image.getvalue()),
                                        save=True)
-
-    def save(self, *args, **kwargs):
-        super(MessageModel, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Message'
@@ -150,17 +147,18 @@ def notify_message(sender, instance, raw, using, update_fields, **kwargs):
         old_instance = MessageModel.objects.get(id=instance.id)
         if old_instance.viewed is False and instance.viewed is True:
             try:
-                instance.notify_viewed_sync()
+                instance.notify_seen_sync()
             except RuntimeError:
-                instance.notify_viewed_async()
+                instance.notify_seen_async()
             old_unseen_messages = MessageModel.objects.filter(user=instance.user,
                                                               recipient=instance.recipient,
                                                               viewed=False)
             for message in old_unseen_messages:
                 try:
-                    message.notify_viewed_sync()
+                    message.notify_seen_sync()
                 except RuntimeError:
-                    message.notify_viewed_async()
+                    message.notify_seen_async()
+            old_unseen_messages.update(viewed=True)
         else:
             pass
     else:

@@ -3,10 +3,9 @@ from chat.base.models import MessageModel, Status
 
 
 class MessageModelAdmin(ModelAdmin):
-    readonly_fields = ('created', 'viewed_timestamp')
+    readonly_fields = ('created', )
     search_fields = ('id', 'body', 'user__email', 'recipient__email')
-    list_display = ('id', 'user', 'viewed', 'recipient', 'body', 'created',
-                    'viewed_timestamp')
+    list_display = ('id', 'user', 'viewed', 'recipient', 'body', 'created')
     list_display_links = ('id',)
     list_filter = ('viewed', )
     date_hierarchy = 'created'
