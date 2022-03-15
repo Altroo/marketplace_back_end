@@ -34959,3 +34959,8 @@ AssertionError: Expected a `Response`, `HttpResponse` or `HttpStreamingResponse`
 Unauthorized: /api/account/logout/
 [31;1mHTTP POST /api/account/logout/ 401 [0.10, 127.0.0.1:50965][0m
 Not Found: /favicon.ico
+Not Found: /
+[33mHTTP GET / 404 [0.02, 127.0.0.1:51829][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico

@@ -30,10 +30,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='', blank=True, null=True)
     birth_date = models.DateField(verbose_name="Date of birth", blank=True, null=True)
-    city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL)
-    country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True, related_name='users',
+    city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL,
+                             related_name='city_custom_user')
+    country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True,
+                                related_name='country_custom_user',
                                 on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
-    phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
+    # phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
     avatar = models.ImageField(verbose_name='User Avatar', upload_to=get_avatar_path, blank=True, null=True,
                                default=None)
     avatar_thumbnail = models.ImageField(verbose_name='User Thumb Avatar', upload_to=get_avatar_path, blank=True,
@@ -93,6 +95,9 @@ class BlockedUsers(Model):
     user_blocked = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
                                      verbose_name='Blocked user', related_name='user_block_receiver')
 
+    def __str__(self):
+        return '{} - {}'.format(self.user.email, self.user_blocked.email)
+
     class Meta:
         unique_together = (('user', 'user_blocked'),)
         verbose_name = 'Blocked User'
@@ -113,7 +118,36 @@ class ReportedUsers(Model):
     )
     report_reason = models.CharField(verbose_name='Reason', choices=REASONS_CHOICES, default='1', max_length=1)
 
+    def __str__(self):
+        return '{} - {} - {}'.format(self.user.email, self.user_reported.email, self.report_reason)
+
     class Meta:
         # TODO check if user can repport user multiple times
         # unique_together = (('user', 'user_reported'),)
-        verbose_name_plural = "Reported items"
+        verbose_name = 'Reported User'
+        verbose_name_plural = "Reported users"
+
+
+class UserAddress(Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             verbose_name='User', related_name='user_user_address')
+    title = models.CharField(verbose_name='Title', max_length=150, blank=False, null=False)
+    first_name = models.CharField(verbose_name='First name', max_length=30, blank=False, null=False)
+    last_name = models.CharField(verbose_name='Last name', max_length=30, blank=False, null=False)
+    address = models.CharField(verbose_name='Address', max_length=300, blank=False, null=False)
+    city = models.ForeignKey(City, verbose_name='City', blank=False, null=True,
+                             related_name='city_user_address',
+                             on_delete=models.SET_NULL)
+    zip_code = models.PositiveIntegerField(verbose_name='Zip code', blank=False, null=False)
+    country = models.ForeignKey(Country, verbose_name='Country', blank=False, null=True,
+                                related_name='country_user_address',
+                                on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
+    phone = models.CharField(verbose_name='Phone number', max_length=15, blank=False, null=False)
+    email = models.EmailField(verbose_name='Email address', blank=False, null=False)
+
+    def __str__(self):
+        return '{} - {}'.format(self.user.email, self.title)
+
+    class Meta:
+        verbose_name = 'User Address'
+        verbose_name_plural = 'User Addresses'

@@ -2,7 +2,7 @@ from django.contrib.admin import ModelAdmin, site
 from chat.base.models import MessageModel, Status
 
 
-class MessageModelAdmin(ModelAdmin):
+class MessagesAdmin(ModelAdmin):
     readonly_fields = ('created', )
     search_fields = ('id', 'body', 'user__email', 'recipient__email')
     list_display = ('id', 'user', 'viewed', 'recipient', 'body', 'created')
@@ -12,7 +12,7 @@ class MessageModelAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
-class CustomStatusAdmin(ModelAdmin):
+class StatusAdmin(ModelAdmin):
     list_display = ('pk', 'user',
                     'last_update', 'online')
     list_filter = ('online',)
@@ -20,5 +20,5 @@ class CustomStatusAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
-site.register(MessageModel, MessageModelAdmin)
-site.register(Status, CustomStatusAdmin)
+site.register(MessageModel, MessagesAdmin)
+site.register(Status, StatusAdmin)

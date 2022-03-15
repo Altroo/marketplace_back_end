@@ -100,6 +100,7 @@ class BaseShopServiceSerializer(serializers.ModelSerializer):
 class BaseShopCitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
+        # Keept for the views output key names
         fields = ['pk', 'city_en', 'city_fr', 'city_ar']
 
 

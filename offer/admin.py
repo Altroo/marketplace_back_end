@@ -90,7 +90,7 @@ class CustomDeliveryAdmin(ModelAdmin):
 
     @staticmethod
     def show_cities(obj):
-        return "\n".join([i.city_en for i in obj.delivery_city.all()])
+        return "\n".join([i.name_fr for i in obj.delivery_city.all()])
 
 
 admin.site.register(Delivery, CustomDeliveryAdmin)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import CustomUser, BlockedUsers, ReportedUsers
+from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress
 from django.contrib.auth.password_validation import validate_password
 
 
@@ -91,8 +91,8 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
 
 class BaseProfileGETSerializer(serializers.ModelSerializer):
     avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
-    city = serializers.CharField(source='city.name_en')
-    country = serializers.CharField(source='country.name_en')
+    city = serializers.CharField(source='city.name_fr')
+    country = serializers.CharField(source='country.name_fr')
 
     class Meta:
         model = CustomUser
@@ -100,7 +100,7 @@ class BaseProfileGETSerializer(serializers.ModelSerializer):
                   'birth_date', 'city', 'country']
 
 
-class BaseMyBlockedUsersListSerializer(serializers.Serializer):
+class BaseBlockedUsersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     # Blocked user
     blocked_user_pk = serializers.IntegerField(source='user_blocked.pk')
@@ -115,13 +115,61 @@ class BaseMyBlockedUsersListSerializer(serializers.Serializer):
         pass
 
 
-class BaseMyBlockUserSerializer(serializers.ModelSerializer):
+class BaseUserAddressesListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    title = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    address = serializers.CharField()
+    city = serializers.CharField(source='city_user_address.name_fr')
+    zip_code = serializers.IntegerField()
+    country = serializers.CharField(source='country_user_address.name_fr')
+    phone = serializers.CharField()
+    email = serializers.EmailField()
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
+class BaseUserAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ['user', 'title', 'first_name',
+                  'last_name', 'address', 'city', 'zip_code',
+                  'country', 'phone', 'email']
+
+
+class BaseUserAddressPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ['title', 'first_name',
+                  'last_name', 'address', 'city', 'zip_code',
+                  'country', 'phone', 'email']
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.address = validated_data.get('address', instance.address)
+        instance.city = validated_data.get('city', instance.city)
+        instance.zip_code = validated_data.get('zip_code', instance.zip_code)
+        instance.country = validated_data.get('country', instance.country)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        return instance
+
+
+class BaseBlockUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlockedUsers
         fields = ['user', 'user_blocked']
 
 
-class BaseMyReportPostsSerializer(serializers.ModelSerializer):
+class BaseReportPostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReportedUsers

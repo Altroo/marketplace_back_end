@@ -3,7 +3,8 @@ from .views import FacebookLoginAccess, GoogleLoginAccess, \
     CheckEmailView, RegistrationView, ActivateAccountView, \
     ResendActivationCodeView, PasswordResetView, SendPasswordResetView, \
     ProfileAvatarPUTView, ProfilePUTView, ProfileGETView, BlockView, \
-    GetBlockedUsersView, UnblockUserView, ReportView, LoginView, LogoutView
+    UnblockUserView, ReportView, LoginView, LogoutView, \
+    AddressView, DeleteAddressView, GetOneAddressView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 from dj_rest_auth.views import PasswordChangeView
@@ -44,12 +45,22 @@ urlpatterns = [
     # GET : Get profil data
     path('get/profil/<int:user_id>/', ProfileGETView.as_view()),
     # Blocked Users
-    # Get : Get blocked users list
-    # Post : Block a user
-    # Delete : Unblock a user
+    # GET : Get blocked users list
+    # POST : Block a user
+    # DELETE : Unblock a user
     path('block/', BlockView.as_view()),
-    path('delete/block/<int:user_id>/', UnblockUserView.as_view()),
-    path('get/blocked_users/', GetBlockedUsersView.as_view()),
+    path('block/delete/<int:user_id>/', UnblockUserView.as_view()),
+    # path('get/blocked_users/', GetBlockedUsersView.as_view()),
     # Repport
+    # POST : Report a user
     path('report/', ReportView.as_view()),
+    # Address
+    # POST : Add new address
+    # PUT : Update an address
+    # GET : Get all addresses
+    path('address/', AddressView.as_view()),
+    # DELETE : Delete an address
+    path('address/delete/<int:address_id>/', DeleteAddressView.as_view()),
+    # GET : Get one address
+    path('address/get/<int:address_id>/', GetOneAddressView.as_view()),
 ]

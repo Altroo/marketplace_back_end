@@ -14,10 +14,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
     BaseUserEmailSerializer, BaseProfileAvatarPutSerializer, BaseProfilePutSerializer, \
-    BaseProfileGETSerializer, BaseMyBlockUserSerializer, \
-    BaseMyBlockedUsersListSerializer, BaseMyReportPostsSerializer
+    BaseProfileGETSerializer, BaseBlockUserSerializer, \
+    BaseBlockedUsersListSerializer, BaseReportPostsSerializer, \
+    BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer
 from account.base.tasks import base_generate_user_thumbnail
-from account.models import CustomUser, BlockedUsers
+from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
 from rest_framework.pagination import PageNumberPagination
@@ -377,8 +378,17 @@ class ProfileGETView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BlockView(APIView):
+class BlockView(APIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
+    page_size = 10
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user
+        posts = BlockedUsers.objects.filter(user=user_id)
+        page = self.paginate_queryset(request=request, queryset=posts)
+        if page is not None:
+            serializer = BaseBlockedUsersListSerializer(instance=page, many=True)
+            return self.get_paginated_response(serializer.data)
 
     @staticmethod
     def post(request, *args, **kwargs):
@@ -387,7 +397,7 @@ class BlockView(APIView):
         if user_id == user_blocked_id:
             data = {'errors': ['You can\'t block yourself!']}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        serializer = BaseMyBlockUserSerializer(data={
+        serializer = BaseBlockUserSerializer(data={
             "user": user_id,
             "user_blocked": user_blocked_id,
         })
@@ -398,19 +408,6 @@ class BlockView(APIView):
             # mark_every_messages_as_read.apply_async(args=(user_blocked_id, user_id,))
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GetBlockedUsersView(APIView, PageNumberPagination):
-    permission_classes = (permissions.IsAuthenticated,)
-    page_size = 10
-
-    def get(self, request, *args, **kwargs):
-        user_id = request.user
-        posts = BlockedUsers.objects.filter(user=user_id)
-        page = self.paginate_queryset(request=request, queryset=posts)
-        if page is not None:
-            serializer = BaseMyBlockedUsersListSerializer(instance=page, many=True)
-            return self.get_paginated_response(serializer.data)
 
 
 class UnblockUserView(APIView):
@@ -424,8 +421,8 @@ class UnblockUserView(APIView):
             BlockedUsers.objects.get(user=user_id, user_blocked=user_blocked_id).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except BlockedUsers.DoesNotExist:
-            # data = {'errors': ['User not found']}
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            data = {'errors': ['User not found']}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReportView(APIView):
@@ -435,7 +432,7 @@ class ReportView(APIView):
     def post(request, *args, **kwargs):
         user_reported = request.data.get('user_id')
         report_reason = request.data.get('report_reason')
-        serializer = BaseMyReportPostsSerializer(data={
+        serializer = BaseReportPostsSerializer(data={
             "user": request.user.pk,
             "user_reported": user_reported,
             "report_reason": report_reason,
@@ -447,3 +444,87 @@ class ReportView(APIView):
             # check_repport_email_limit.apply_async((post_id,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddressView(APIView, PageNumberPagination):
+    permission_classes = (permissions.IsAuthenticated,)
+    page_size = 10
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        posts = UserAddress.objects.filter(user=user)
+        page = self.paginate_queryset(request=request, queryset=posts)
+        if page is not None:
+            serializer = BaseUserAddressesListSerializer(instance=page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user_id = request.user.pk
+        title = request.data.get('title')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        address = request.data.get('address')
+        city = request.data.get('city')
+        zip_code = request.data.get('zip_code')
+        country = request.data.get('country')
+        phone = request.data.get('phone')
+        email = request.data.get('email')
+        serializer = BaseUserAddressSerializer(data={
+            "user": user_id,
+            "title": title,
+            "first_name": first_name,
+            "last_name": last_name,
+            "address": address,
+            "city": city,
+            "zip_code": zip_code,
+            "country": country,
+            "phone": phone,
+            "email": email,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user_id = request.user
+        address_id = request.data.get('address_id')
+        user_address = UserAddress.objects.get(user=user_id, pk=address_id)
+        serializer = BaseUserAddressPutSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.update(user_address, serializer.validated_data)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteAddressView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        user = request.user
+        address_id = kwargs.get('address_id')
+        try:
+            UserAddress.objects.get(user=user, pk=address_id).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserAddress.DoesNotExist:
+            data = {'errors': ['Address not found.']}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetOneAddressView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user_id = request.user
+        address_id = kwargs.get('address_id')
+        try:
+            user_address = UserAddress.objects.get(user=user_id, pk=address_id)
+            user_address_details_serializer = BaseUserAddressesListSerializer(user_address)
+            return Response(user_address_details_serializer.data, status=status.HTTP_200_OK)
+        except UserAddress.DoesNotExist:
+            data = {'errors': ['Address not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
