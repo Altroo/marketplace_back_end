@@ -1,5 +1,5 @@
 from django.db.models import Q
-from account.models import CustomUser  # , BlockedUsers
+from account.models import CustomUser, BlockedUsers
 from rest_framework.viewsets import ModelViewSet
 from chat.base.serializers import BaseMessageModelSerializer, BaseChatUserModelSerializer
 from chat.base.models import MessageModel
@@ -38,6 +38,29 @@ class BaseMessageModelViewSet(ModelViewSet):
             else:
                 return MessageModel.objects.filter(Q(recipient=self.request.user) |
                                                    Q(user=self.request.user))
+        # if target is not None:
+        #     if pk is not None:
+        #         return MessageModel.objects.filter(
+        #             Q(recipient=self.request.user, user__id=target) |
+        #             Q(recipient__id=target, user=self.request.user)).exclude(body='K8Fe6DoFgl9Xt0') \
+        #             .filter(Q(recipient=self.request.user) |
+        #                     Q(user=self.request.user),
+        #                     Q(pk=pk)).exclude(body='K8Fe6DoFgl9Xt0')
+        #     else:
+        #         return MessageModel.objects.filter(
+        #             Q(recipient=self.request.user, user__id=target) |
+        #             Q(recipient__id=target, user=self.request.user)).exclude(body='K8Fe6DoFgl9Xt0')
+        # # Get a specific message by id
+        # else:
+        #     if pk is not None:
+        #         return MessageModel.objects.filter(Q(recipient=self.request.user) |
+        #                                            Q(user=self.request.user)).exclude(body='K8Fe6DoFgl9Xt0') \
+        #             .filter(Q(recipient=self.request.user) |
+        #                     Q(user=self.request.user),
+        #                     Q(pk=pk)).exclude(body='K8Fe6DoFgl9Xt0')
+        #     else:
+        #         return MessageModel.objects.filter(Q(recipient=self.request.user) |
+        #                                            Q(user=self.request.user)).exclude(body='K8Fe6DoFgl9Xt0')
 
 
 class BaseChatUserModelViewSet(ModelViewSet):
@@ -56,24 +79,23 @@ class BaseChatUserModelViewSet(ModelViewSet):
             if i != self.request.user.pk:
                 my_set.add(i.user.pk)
 
-        # def get_blocked_users():
-        #     """
-        #     Blocked users
-        #     """
-        #     blocked_user_sender = BlockedUsers.objects.filter(user=self.request.user).values('user_blocked')
-        #     blocked_user_receiver = BlockedUsers.objects.filter(user_blocked=self.request.user).values('user')
-        #     inactive_users = CustomUser.objects.filter(is_active=False).values('pk')
-        #     my_blocked_list = set()
-        #     for block in blocked_user_sender:
-        #         my_blocked_list.add(block['user_blocked'])
-        #     for block in blocked_user_receiver:
-        #         my_blocked_list.add(block['user'])
-        #     for inactive_user in inactive_users:
-        #         my_blocked_list.add(inactive_user['pk'])
-        #     return tuple(my_blocked_list)
-        # blocked_users = get_blocked_users()
-        # return CustomUser.objects.filter(id__in=my_set).exclude(pk__in=blocked_users)
-        return CustomUser.objects.filter(id__in=my_set)
+        def get_blocked_users():
+            """
+            Blocked users
+            """
+            blocked_user_sender = BlockedUsers.objects.filter(user=self.request.user).values('user_blocked')
+            blocked_user_receiver = BlockedUsers.objects.filter(user_blocked=self.request.user).values('user')
+            inactive_users = CustomUser.objects.filter(is_active=False).values('pk')
+            my_blocked_list = set()
+            for block in blocked_user_sender:
+                my_blocked_list.add(block['user_blocked'])
+            for block in blocked_user_receiver:
+                my_blocked_list.add(block['user'])
+            for inactive_user in inactive_users:
+                my_blocked_list.add(inactive_user['pk'])
+            return tuple(my_blocked_list)
+        blocked_users = get_blocked_users()
+        return CustomUser.objects.filter(id__in=my_set).exclude(pk__in=blocked_users)
 
     def list(self, request, *args, **kwargs):
         """

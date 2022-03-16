@@ -122,8 +122,6 @@ class ReportedUsers(Model):
         return '{} - {} - {}'.format(self.user.email, self.user_reported.email, self.report_reason)
 
     class Meta:
-        # TODO check if user can repport user multiple times
-        # unique_together = (('user', 'user_reported'),)
         verbose_name = 'Reported User'
         verbose_name_plural = "Reported users"
 
