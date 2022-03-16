@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import BaseMessageModelViewSet, BaseChatUserModelViewSet
+from .views import BaseMessageModelViewSet, BaseChatUserModelViewSet, ArchiveConversationView
 
 app_name = 'chat'
 
@@ -13,4 +13,5 @@ router.register(r'conversations', BaseChatUserModelViewSet, basename='conversati
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('archive/', ArchiveConversationView.as_view()),
 ]

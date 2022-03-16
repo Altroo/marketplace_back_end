@@ -1,5 +1,5 @@
 from django.contrib.admin import ModelAdmin, site
-from chat.base.models import MessageModel, Status
+from chat.base.models import MessageModel, Status, ArchivedConversations
 
 
 class MessagesAdmin(ModelAdmin):
@@ -20,5 +20,12 @@ class StatusAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
+class ArchivedConversationsAdmin(ModelAdmin):
+    list_display = ('pk', 'user', 'recipient')
+    search_fields = ('pk', 'user__email', 'recipient__email')
+    ordering = ('-pk',)
+
+
 site.register(MessageModel, MessagesAdmin)
 site.register(Status, StatusAdmin)
+site.register(ArchivedConversations, ArchivedConversationsAdmin)

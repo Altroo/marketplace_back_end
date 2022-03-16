@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from account.models import CustomUser
 from auth_shop.base.models import AuthShop
-from chat.base.models import MessageModel, Status
+from chat.base.models import MessageModel, Status, ArchivedConversations
 from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
                                         CreateOnlyDefault, CurrentUserDefault)
@@ -11,7 +11,7 @@ from rest_framework.serializers import (ModelSerializer,
 # from chat.v2_0_0.tasks import NotifyMessageReceivedTaskV2
 
 
-# Messages list
+# Messages list of a target
 class BaseMessageModelSerializer(ModelSerializer):
     initiator = SerializerMethodField()
     attachment_link = SerializerMethodField()
@@ -111,11 +111,37 @@ class BaseMessageModelSerializer(ModelSerializer):
                 '`create()` did not return an object instance.'
             )
             # Send WS message : added here to avoid sending duplicate sockets when attachment is added
+            #         if self.instance.body != 'K8Fe6DoFgl9Xt0':
+            #             attachment_exist = self.instance.attachment.path if self.instance.attachment else None
+            #             notify_message_received = NotifyMessageReceivedTaskV2()
+            #             notify_message_received.apply_async(args=(self.instance.id,
+            #                                                       self.instance.user.pk,
+            #                                                       self.instance.recipient.pk,
+            #                                                       self.instance.body,
+            #                                                       attachment_exist,
+            #                                                       self.instance.user.first_name,
+            #                                                       self.instance.user.last_name))
+            #     return self.instance
             if self.instance.body or self.instance.attachment.name:
                 try:
                     self.notify_message_received_sync(instance=self.instance)
                 except RuntimeError:
                     self.notify_message_received_async(instance=self.instance)
+                # Remove conversation from archives if exists
+                try:
+                    # instance.user.pk
+                    # instance.recipient.pk
+                    archived_conversations_sender = ArchivedConversations.objects.get(
+                        user=self.instance.user.pk, recipient=self.instance.recipient.pk)
+                    archived_conversations_sender.delete()
+                except ArchivedConversations.DoesNotExist:
+                    pass
+                try:
+                    archived_conversations_receiver = ArchivedConversations.objects.get(
+                        user=self.instance.recipient.pk, recipient=self.instance.user.pk)
+                    archived_conversations_receiver.delete()
+                except ArchivedConversations.DoesNotExist:
+                    pass
         return self.instance
 
     class Meta:
@@ -260,3 +286,9 @@ class BaseChatUserModelSerializer(ModelSerializer):
         fields = ['user_pk', 'user_avatar', 'user_first_name', 'user_last_name',
                   'last_message', 'seen', 'created_date', 'online',
                   'shop_pk', 'shop_name', 'shop_avatar_thumbnail']
+
+
+class BaseArchiveConversationSerializer(ModelSerializer):
+    class Meta:
+        model = ArchivedConversations
+        fields = ['user', 'recipient']

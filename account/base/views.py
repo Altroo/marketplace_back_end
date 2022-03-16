@@ -17,7 +17,7 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer
-from account.base.tasks import base_generate_user_thumbnail
+from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
@@ -403,9 +403,7 @@ class BlockView(APIView, PageNumberPagination):
         })
         if serializer.is_valid():
             serializer.save()
-            # TODO mark every message as read
-            # mark_every_messages_as_read = BaseMarkEveryMessagesAsRead()
-            # mark_every_messages_as_read.apply_async(args=(user_blocked_id, user_id,))
+            base_mark_every_messages_as_read.apply_async((user_blocked_id, user_id), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

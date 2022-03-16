@@ -6,7 +6,7 @@ from Qaryb_API_new.settings import STATIC_PATH
 from io import BytesIO
 from random import shuffle
 from django.core.files import File
-
+from chat.base.models import MessageModel
 
 logger = get_task_logger(__name__)
 
@@ -65,3 +65,11 @@ def base_generate_user_thumbnail(self, user_pk):
     thumbnail_ = from_img_to_io(thumbnail, 'PNG')
     user.save_image('avatar', avatar_)
     user.save_image('avatar_thumbnail', thumbnail_)
+
+
+@app.task(bind=True)
+def base_generate_user_thumbnail(self, user_blocked_id, user_id):
+    msgs_sent = MessageModel.objects.filter(user=user_id, recipient=user_blocked_id)
+    msgs_received = MessageModel.objects.filter(user=user_blocked_id, recipient=user_id)
+    msgs_sent.update(viewed=True)
+    msgs_received.update(viewed=True)

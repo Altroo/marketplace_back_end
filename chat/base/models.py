@@ -128,13 +128,27 @@ def create_thumbnail(sender, instance, created, raw, using, update_fields, **kwa
         instance.save_image('attachment_thumbnail', img_thumbnail)
 
 
+class ArchivedConversations(Model):
+    user = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='Sender',
+                      related_name='user_archived_conversation')
+    recipient = ForeignKey(CustomUser, on_delete=CASCADE, verbose_name='Receiver',
+                           related_name='receiver_archived_conversation')
+
+    def __str__(self):
+        return "{} - {}".format(self.user.email, self.recipient.email)
+
+    class Meta:
+        verbose_name = "Archived conversation"
+        verbose_name_plural = "Archived conversations"
+
+
 class Status(Model):
     user = OneToOneField(CustomUser, on_delete=CASCADE, verbose_name='user', related_name="status")
     last_update = DateTimeField(auto_now=True, null=False, blank=False)
     online = BooleanField(default=False)
 
     def __str__(self):
-        return "%s - %s" % (self.id, self.online)
+        return "{} - {}".format(self.pk, self.online)
 
     class Meta:
         verbose_name = "Status"
