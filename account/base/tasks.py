@@ -68,7 +68,7 @@ def base_generate_user_thumbnail(self, user_pk):
 
 
 @app.task(bind=True)
-def base_generate_user_thumbnail(self, user_blocked_id, user_id):
+def base_mark_every_messages_as_read(self, user_blocked_id, user_id):
     msgs_sent = MessageModel.objects.filter(user=user_id, recipient=user_blocked_id)
     msgs_received = MessageModel.objects.filter(user=user_blocked_id, recipient=user_id)
     msgs_sent.update(viewed=True)
