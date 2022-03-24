@@ -10,7 +10,7 @@ class BaseShopSerializer(serializers.ModelSerializer):
             'shop_name',
             'avatar', 'color_code', 'bg_color_code',
             'font_name',
-            'qaryb_link', 'unique_id']
+            'qaryb_link', 'creator', 'unique_id']
         extra_kwargs = {
             'avatar': {'required': True},
         }
@@ -24,6 +24,8 @@ class BaseShopSerializer(serializers.ModelSerializer):
             bg_color_code=self.validated_data['bg_color_code'],
             font_name=self.validated_data['font_name'],
             qaryb_link=self.validated_data['qaryb_link'],
+            # Read only default to False
+            creator=self.validated_data['creator'],
             unique_id=self.validated_data['unique_id'],
         )
         shop.save()
@@ -52,7 +54,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
                   'phone', 'contact_email',
                   'website_link', 'facebook_link', 'twitter_link', 'instagram_link',
                   'whatsapp', 'zone_by', 'longitude', 'latitude',
-                  'address_name', 'km_radius']
+                  'address_name', 'km_radius', 'creator']
 
 
 class BaseShopAvatarPutSerializer(serializers.ModelSerializer):

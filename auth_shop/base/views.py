@@ -35,6 +35,7 @@ class ShopView(APIView):
             'bg_color_code': request.data.get('bg_color_code'),
             'font_name': request.data.get('font_name'),
             'qaryb_link': 'https://qaryb.com/' + qaryb_url + str(unique_id),
+            'creator': False,
         })
         if serializer.is_valid():
             shop = serializer.save()
@@ -45,7 +46,8 @@ class ShopView(APIView):
                 'avatar': shop.get_absolute_avatar_img,
                 'color_code': shop.color_code,
                 'bg_color_code': shop.bg_color_code,
-                'font_name': shop.font_name
+                'font_name': shop.font_name,
+                'creator': False,
             }
             # Generate thumbnail
             base_generate_avatar_thumbnail.apply_async((shop.pk, 'AuthShop'), )
@@ -264,7 +266,7 @@ class TempShopToAuthShopView(APIView):
                 latitude=temp_shop.latitude,
                 address_name=temp_shop.address_name,
                 km_radius=temp_shop.km_radius,
-                qaryb_link=temp_shop.qaryb_link
+                qaryb_link=temp_shop.qaryb_link,
             )
             auth_shop.save()
             # Auth shop opening days
@@ -294,6 +296,7 @@ class TempShopToAuthShopView(APIView):
                     picture_4_thumbnail=temp_offer.picture_4_thumbnail,
                     description=temp_offer.description,
                     # For whom
+                    # Tags
                     price=temp_offer.price,
                 )
                 offer.save()
@@ -303,6 +306,9 @@ class TempShopToAuthShopView(APIView):
                 for_whoms = temp_offer.for_whom.all()
                 for for_whom in for_whoms:
                     offer.for_whom.add(for_whom.pk)
+                tags = temp_offer.tags.all()
+                for tag in tags:
+                    offer.tags.add(tag.pk)
                 if temp_offer.offer_type == 'V':
                     product = Products.objects.create(
                         offer=offer,

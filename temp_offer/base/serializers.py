@@ -2,6 +2,7 @@ from rest_framework import serializers
 from temp_offer.base.models import TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
 from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
 from places.base.models import City
+from offer.base.serializers import BaseOfferTagsSerializer
 
 
 class BaseTempOfferCategoriesSerializer(serializers.ModelSerializer):
@@ -67,12 +68,13 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
 class BaseTempShopOfferSerializer(serializers.ModelSerializer):
     offer_categories = BaseTempOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
+    tags = BaseOfferTagsSerializer(many=True, read_only=True)
 
     class Meta:
         model = TempOffers
         fields = ['temp_shop', 'offer_type', 'offer_categories', 'title',
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
-                  'description', 'for_whom', 'price']
+                  'description', 'for_whom', 'tags', 'price']
 
 
 # Global Product serializer
@@ -186,6 +188,7 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
     picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
+    tags = BaseOfferTagsSerializer(many=True, read_only=True)
     price = serializers.FloatField()
     # details product or details service
     details_offer = serializers.SerializerMethodField()

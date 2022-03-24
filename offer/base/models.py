@@ -63,6 +63,17 @@ class Categories(Model):
         verbose_name_plural = 'Categories'
 
 
+class OfferTags(Model):
+    name_tag = models.CharField(max_length=255, verbose_name='Category Name', unique=True)
+
+    def __str__(self):
+        return '{}'.format(self.name_tag)
+
+    class Meta:
+        verbose_name = 'Offer Tag'
+        verbose_name_plural = 'Offer Tags'
+
+
 class Colors(Model):
     code_color = models.CharField(max_length=2, blank=True, null=True, default=None, unique=True)
     name_color = models.CharField(max_length=255, verbose_name='Color Name', unique=True)
@@ -138,6 +149,9 @@ class Offers(Model):
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='product_for_whom')
+    creator_label = models.BooleanField(verbose_name='Creator label', default=False)
+    made_in_label = models.CharField(verbose_name='Made in', max_length=150, default=None, blank=True, null=True)
+    tags = models.ManyToManyField(OfferTags, verbose_name='Offer Tags', related_name='offer_tags')
     price = models.FloatField(verbose_name='Price', default=0.0)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
@@ -310,10 +324,10 @@ class Services(Model):
 
 class Delivery(Model):
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
-                                   verbose_name='Offer',
-                                   related_name='offer_delivery')
+                              verbose_name='Offer',
+                              related_name='offer_delivery')
     delivery_city = models.ManyToManyField(City, verbose_name='Delivery City',
-                                                related_name='delivery_city')
+                                           related_name='delivery_city')
     delivery_price = models.FloatField(verbose_name='Delivery Price', default=0.0)
     delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
 

@@ -7,7 +7,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
 from temp_shop.base.models import TempShop
-from offer.base.models import get_shop_products_path, OfferChoices
+from offer.base.models import get_shop_products_path, OfferChoices, OfferTags
 from places.base.models import City
 
 
@@ -37,8 +37,9 @@ class TempOffers(Model):
                                             upload_to=get_shop_products_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
-                                      related_name='temp_product_for_whom')
+                                      related_name='temp_offer_for_whom')
     price = models.FloatField(verbose_name='Price', default=0.0)
+    tags = models.ManyToManyField(OfferTags, verbose_name='Temp Offer Tags', related_name='temp_offer_tags')
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 

@@ -1,22 +1,24 @@
 from collections import defaultdict
-
 from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db import IntegrityError
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
 from offer.base.serializers import BaseShopOfferSerializer, \
     BaseShopDeliverySerializer, BaseOfferDetailsSerializer, \
-    BaseOfferssListSerializer, BaseShopOfferSolderSerializer, \
+    BaseOffersListSerializer, BaseShopOfferSolderSerializer, \
     BaseShopOfferSolderPutSerializer, BaseShopProductSerializer, \
     BaseShopServiceSerializer, BaseProductPutSerializer, \
     BaseServicePutSerializer, BaseOfferPutSerializer, \
-    BaseShopOfferDuplicateSerializer
+    BaseShopOfferDuplicateSerializer, BaseOfferTagsSerializer
+from offer.base.filters import TagsFilterSet
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
-from offer.base.models import AuthShop, Offers, Solder, Products, Services, Delivery
-from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
+from offer.base.models import AuthShop, Offers, Solder, Products, Services, Delivery, OfferTags, \
+    Categories, Colors, Sizes, ForWhom, ServiceDays
 from offer.mixins import PaginationMixinBy5
 from places.base.models import City
 
@@ -37,15 +39,25 @@ class ShopOfferView(APIView):
         title = request.data.get('title')
         description = request.data.get('description')
         price = request.data.get('price')
+        if auth_shop.creator:
+            creator_label = request.data.get('creator_label')
+            made_in_label = request.data.get('made_in_label')
+        else:
+            creator_label = False
+            made_in_label = None
         offer_serializer = BaseShopOfferSerializer(data={
             'auth_shop': auth_shop.pk,
             'offer_type': offer_type,
+            # Categories
             'title': title,
             'picture_1': request.data.get('picture_1', None),
             'picture_2': request.data.get('picture_2', None),
             'picture_3': request.data.get('picture_3', None),
             'picture_4': request.data.get('picture_4', None),
             'description': description,
+            'creator_label': creator_label,
+            'made_in_label': made_in_label,
+            # For whom
             'price': price,
         })
         if offer_serializer.is_valid():
@@ -99,6 +111,24 @@ class ShopOfferView(APIView):
                     }
                 )
             data['for_whom'] = offer_for_whom_list
+            # Offer Tags
+            tags = str(request.data.get('tags')).split(',')
+            for tag in tags:
+                try:
+                    OfferTags.objects.create(name_tag=tag)
+                except IntegrityError:
+                    pass
+            tags = OfferTags.objects.filter(name_tag__in=tags)
+            tags_list = []
+            for tag in tags:
+                offer.tags.add(tag.pk)
+                tags_list.append(
+                    {
+                        "pk": tag.pk,
+                        "name_tag": tag.name_tag,
+                    }
+                )
+            data['tags'] = tags_list
             # IF OFFER TYPE == V (VENTE) ; S (SERVICE)
             if offer_type == 'V':
                 product_quantity = request.data.get('product_quantity')
@@ -519,6 +549,12 @@ class ShopOfferView(APIView):
             title = request.data.get('title', '')
             description = request.data.get('description', '')
             price = request.data.get('price', '')
+            if offer.auth_shop.creator:
+                creator_label = request.data.get('creator_label')
+                made_in_label = request.data.get('made_in_label')
+            else:
+                creator_label = False
+                made_in_label = None
             # Product PUT serializer
             offer_serializer = BaseOfferPutSerializer(data={
                 'title': title,
@@ -527,6 +563,8 @@ class ShopOfferView(APIView):
                 'picture_3': picture_3,
                 'picture_4': picture_4,
                 'description': description,
+                'creator_label': creator_label,
+                'made_in_label': made_in_label,
                 'price': price,
             })
             if offer_serializer.is_valid():
@@ -629,6 +667,26 @@ class ShopOfferView(APIView):
                             }
                         )
                     data['for_whom'] = offer_for_whom_list
+                    # UPDATE OFFER TAGS
+                    offer.tags.clear()
+                    # Offer Tags
+                    tags = str(request.data.get('tags')).split(',')
+                    for tag in tags:
+                        try:
+                            OfferTags.objects.create(name_tag=tag)
+                        except IntegrityError:
+                            pass
+                    tags = OfferTags.objects.filter(name_tag__in=tags)
+                    tags_list = []
+                    for tag in tags:
+                        offer.tags.add(tag.pk)
+                        tags_list.append(
+                            {
+                                "pk": tag.pk,
+                                "name_tag": tag.name_tag,
+                            }
+                        )
+                    data['tags'] = tags_list
                     if product_valid:
                         product = Products.objects.get(offer=offer.pk)
                         # serializer referenced before assignment fixed by the product_valid = True
@@ -986,7 +1044,7 @@ class GetShopOffersListView(APIView, PaginationMixinBy5):
                 .filter(shop=shop).order_by('-created_date')
             page = self.paginate_queryset(queryset=shop_offers)
             if page is not None:
-                serializer = BaseOfferssListSerializer(instance=page, many=True)
+                serializer = BaseOffersListSerializer(instance=page, many=True)
                 return self.get_paginated_response(serializer.data)
             data = {'response': 'Shop has no products.'}
             return Response(data=data, status=status.HTTP_200_OK)
@@ -1141,6 +1199,19 @@ class ShopOfferDuplicateView(APIView):
                     }
                 )
             data['for_whom'] = offer_for_whom_list
+            # Duplicate Offer Tags
+            tags = list(offer.tags.all().values_list('pk', flat=True))
+            tags = OfferTags.objects.filter(pk__in=tags)
+            tags_list = []
+            for tag in tags:
+                offer_serializer.tags.add(tag.pk)
+                tags_list.append(
+                    {
+                        "pk": tag.pk,
+                        "name_tag": tag.name_tag,
+                    }
+                )
+            data['tags'] = tags_list
             # Duplicate Product
             product_valid = False
             product_serializer_errors = None
@@ -1531,3 +1602,11 @@ class GetLastUsedLocalisationView(APIView):
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetTagsView(ListAPIView):
+    permission_classes = (permissions.AllowAny,)
+    queryset = OfferTags.objects.all()
+    serializer_class = BaseOfferTagsSerializer
+    filter_class = TagsFilterSet
+    pagination_class = None

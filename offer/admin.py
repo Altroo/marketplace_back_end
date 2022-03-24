@@ -1,5 +1,5 @@
 from offer.base.models import Categories, Colors, Sizes, ForWhom, \
-    Offers, Solder, Products, Services, ServiceDays, Delivery
+    Offers, Solder, Products, Services, ServiceDays, Delivery, OfferTags
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
@@ -93,6 +93,12 @@ class CustomDeliveryAdmin(ModelAdmin):
         return "\n".join([i.name_fr for i in obj.delivery_city.all()])
 
 
+class CustomOfferTagsAdmin(ModelAdmin):
+    list_display = ('pk', 'name_tag')
+    search_fields = ('pk', 'name_tag')
+    ordering = ('-pk',)
+
+
 admin.site.register(Delivery, CustomDeliveryAdmin)
 admin.site.register(Categories, CustomCategoriesAdmin)
 admin.site.register(Colors, CustomColorsAdmin)
@@ -103,3 +109,4 @@ admin.site.register(Offers, CustomOfferAdmin)
 admin.site.register(Solder, CustomSolderAdmin)
 admin.site.register(Products, CustomProductAdmin)
 admin.site.register(Services, CustomServiceAdmin)
+admin.site.register(OfferTags, CustomOfferTagsAdmin)

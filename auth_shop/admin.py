@@ -4,8 +4,9 @@ from django.contrib.admin import ModelAdmin
 
 
 class CustomAuthShopAdmin(ModelAdmin):
-    list_display = ('pk', 'shop_name', 'user')
+    list_display = ('pk', 'shop_name', 'user', 'creator')
     search_fields = ('pk', 'shop_name', 'user')
+    list_filter = ('creator',)
     ordering = ('-pk',)
 
 

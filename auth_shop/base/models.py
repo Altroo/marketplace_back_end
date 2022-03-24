@@ -91,6 +91,7 @@ class AuthShop(Model):
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     qaryb_link = models.URLField(verbose_name='Qaryb link', max_length=200, blank=False, null=False, unique=True)
+    creator = models.BooleanField(verbose_name='Creator ?', default=False)
     # Dates
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)

@@ -1,5 +1,6 @@
 from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db import IntegrityError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
@@ -14,7 +15,7 @@ from os import path, remove
 from Qaryb_API_new.settings import API_URL
 from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
 from temp_offer.base.models import TempShop, TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
-from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
+from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays, OfferTags
 from offer.mixins import PaginationMixinBy5
 from places.base.models import City
 from collections import defaultdict
@@ -98,6 +99,24 @@ class TempShopOfferView(APIView):
                     }
                 )
             data['for_whom'] = offer_for_whom_list
+            # Offer Tags
+            tags = str(request.data.get('tags')).split(',')
+            for tag in tags:
+                try:
+                    OfferTags.objects.create(name_tag=tag)
+                except IntegrityError:
+                    pass
+            tags = OfferTags.objects.filter(name_tag__in=tags)
+            tags_list = []
+            for tag in tags:
+                temp_offer.tags.add(tag.pk)
+                tags_list.append(
+                    {
+                        "pk": tag.pk,
+                        "name_tag": tag.name_tag,
+                    }
+                )
+            data['tags'] = tags_list
             # IF OFFER TYPE == V (VENTE) ; S (SERVICE)
             if offer_type == 'V':
                 product_quantity = request.data.get('product_quantity')
@@ -629,6 +648,26 @@ class TempShopOfferView(APIView):
                             }
                         )
                     data['for_whom'] = offer_for_whom_list
+                    # UPDATE OFFER TAGS
+                    temp_offer.tags.clear()
+                    # Offer Tags
+                    tags = str(request.data.get('tags')).split(',')
+                    for tag in tags:
+                        try:
+                            OfferTags.objects.create(name_tag=tag)
+                        except IntegrityError:
+                            pass
+                    tags = OfferTags.objects.filter(name_tag__in=tags)
+                    tags_list = []
+                    for tag in tags:
+                        temp_offer.tags.add(tag.pk)
+                        tags_list.append(
+                            {
+                                "pk": tag.pk,
+                                "name_tag": tag.name_tag,
+                            }
+                        )
+                    data['tags'] = tags_list
                     if product_valid:
                         temp_product = TempProducts.objects.get(temp_offer=temp_offer.pk)
                         # serializer referenced before assignment fixed by the product_valid = True
@@ -1138,6 +1177,19 @@ class TempShopOfferDuplicateView(APIView):
                     }
                 )
             data['for_whom'] = offer_for_whom_list
+            # Duplicate Offer Tags
+            tags = list(temp_offer.tags.all().values_list('pk', flat=True))
+            tags = OfferTags.objects.filter(pk__in=tags)
+            tags_list = []
+            for tag in tags:
+                temp_offer_serializer.tags.add(tag.pk)
+                tags_list.append(
+                    {
+                        "pk": tag.pk,
+                        "name_tag": tag.name_tag,
+                    }
+                )
+            data['tags'] = tags_list
             # Duplicate Product
             product_valid = False
             product_serializer_errors = None

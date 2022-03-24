@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from offer.base.models import Offers, Solder, Products, Services, \
-    Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery
+    Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery, OfferTags
 from places.base.models import City
 
 
@@ -8,6 +8,12 @@ class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = ['pk', 'code_category', 'name_category']
+
+
+class BaseOfferTagsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OfferTags
+        fields = ['pk', 'name_tag']
 
 
 class BaseProductColorSerializer(serializers.ModelSerializer):
@@ -67,12 +73,14 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
 class BaseShopOfferSerializer(serializers.ModelSerializer):
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
+    tags = BaseOfferTagsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
-                  'description', 'for_whom', 'price']
+                  'description', 'for_whom', 'creator_label', 'made_in_label',
+                  'tags', 'price']
 
 
 # Global Product serializer
@@ -187,6 +195,9 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
+    tags = BaseOfferTagsSerializer(many=True, read_only=True)
+    creator_label = serializers.BooleanField()
+    made_in_label = serializers.CharField()
     price = serializers.FloatField()
     # details product or details service
     details_offer = serializers.SerializerMethodField()
@@ -208,13 +219,14 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
         pass
 
 
-class BaseOfferssListSerializer(serializers.Serializer):
+class BaseOffersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     thumbnail = serializers.SerializerMethodField()
     product_name = serializers.CharField(source='*')
     price = serializers.FloatField()
     solder_type = serializers.CharField(source='offer_solder.solder_type')
     solder_value = serializers.FloatField(source='offer_solder.solder_value')
+    creator_label = serializers.BooleanField()
     details_offer = serializers.SerializerMethodField()
 
     @staticmethod
@@ -259,7 +271,7 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
-                  'description', 'price']
+                  'description', 'creator_label', 'made_in_label', 'price']
         extra_kwargs = {
             'picture_1': {'required': False},
             'picture_2': {'required': False},
@@ -274,6 +286,8 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
         instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
         instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
+        instance.creator_label = validated_data.get('creator_label', instance.creator_label)
+        instance.made_in_label = validated_data.get('made_in_label', instance.made_in_label)
         instance.price = validated_data.get('price', instance.price)
         instance.save()
         return instance
