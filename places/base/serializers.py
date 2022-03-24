@@ -26,6 +26,16 @@ class BaseCountrySerializer(BasePlaceBaseSerializer):
         fields = BasePlaceBaseSerializer.Meta.fields + ('code',)
 
 
+class BaseCountriesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Country
+        fields = (
+            'pk',
+            'name_fr',
+        )
+
+
 class BaseCitySerializer(BasePlaceBaseSerializer):
     """
     City serializer

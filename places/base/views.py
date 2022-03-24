@@ -2,8 +2,8 @@ from django.db.models.functions import Coalesce
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 
-from places.base.filters import UserLanguageMixin, CountryFilterSet, CityFilterSet
-from places.base.serializers import BaseCountrySerializer, BaseCitySerializer
+from places.base.filters import UserLanguageMixin, CountryFilterSet, CityFilterSet, BaseAllCountryFilter
+from places.base.serializers import BaseCountrySerializer, BaseCitySerializer, BaseCountriesSerializer
 from places.base.choices import PlaceType
 from places.base.models import Country, City
 
@@ -37,6 +37,14 @@ class CountriesListView(PlaceLanguageMixin, ListAPIView):
     serializer_class = BaseCountrySerializer
     filter_class = CountryFilterSet
     pagination_class = None
+
+    def get_queryset(self):
+        if not self.request.GET.get('all'):
+            return super().get_queryset()
+        else:
+            self.filter_class = BaseAllCountryFilter
+            self.serializer_class = BaseCountriesSerializer
+            return Country.objects.all()
 
 
 class CitiesListView(PlaceLanguageMixin, ListAPIView):
