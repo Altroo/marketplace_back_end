@@ -26,3 +26,4 @@ daphne==3.0.2
 channels-redis==3.4.0
 PyJWT==2.3.0
 asgiref==3.5.0
+drf_yasg==1.20.0
