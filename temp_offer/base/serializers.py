@@ -1,38 +1,9 @@
 from rest_framework import serializers
 from temp_offer.base.models import TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
-from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
 from places.base.models import City
-from offer.base.serializers import BaseOfferTagsSerializer
-
-
-class BaseTempOfferCategoriesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Categories
-        fields = ['pk', 'code_category', 'name_category']
-
-
-class BaseTempProductColorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Colors
-        fields = ['pk', 'code_color', 'name_color']
-
-
-class BaseTempProductSizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Sizes
-        fields = ['pk', 'code_size', 'name_size']
-
-
-class BaseTempServiceAvailabilityDaysSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ServiceDays
-        fields = ['pk', 'code_day', 'name_day']
-
-
-class BaseTempOfferForWhomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ForWhom
-        fields = ['pk', 'code_for_whom', 'name_for_whom']
+from offer.base.serializers import BaseOfferTagsSerializer, BaseOfferCategoriesSerializer, \
+    BaseProductColorSerializer, BaseProductSizeSerializer, \
+    BaseOfferForWhomSerializer, BaseServiceAvailabilityDaysSerializer
 
 
 # Offer serializer for Duplicate
@@ -66,8 +37,8 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
 
 # Global Offer serializer
 class BaseTempShopOfferSerializer(serializers.ModelSerializer):
-    offer_categories = BaseTempOfferCategoriesSerializer(many=True, read_only=True)
-    for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
+    offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
+    for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
 
     class Meta:
@@ -88,7 +59,7 @@ class BaseTempShopProductSerializer(serializers.ModelSerializer):
 
 # Global Service serializer
 class BaseTempShopServiceSerializer(serializers.ModelSerializer):
-    service_availability_days = BaseTempServiceAvailabilityDaysSerializer(many=True, read_only=True)
+    service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
 
     class Meta:
         model = TempServices
@@ -141,8 +112,8 @@ class BaseDetailsTempProductSerializer(serializers.Serializer):
     product_longitude = serializers.CharField()
     product_latitude = serializers.CharField()
     product_address = serializers.CharField()
-    product_colors = BaseTempProductColorSerializer(many=True, read_only=True)
-    product_sizes = BaseTempProductSizeSerializer(many=True, read_only=True)
+    product_colors = BaseProductColorSerializer(many=True, read_only=True)
+    product_sizes = BaseProductSizeSerializer(many=True, read_only=True)
 
     def update(self, instance, validated_data):
         pass
@@ -153,7 +124,7 @@ class BaseDetailsTempProductSerializer(serializers.Serializer):
 
 class BaseDetailsTempServiceSerializer(serializers.Serializer):
     # Details Product
-    service_availability_days = BaseTempServiceAvailabilityDaysSerializer(many=True, read_only=True)
+    service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
     service_morning_hour_from = serializers.TimeField()
     service_morning_hour_to = serializers.TimeField()
     service_afternoon_hour_from = serializers.TimeField()
@@ -175,7 +146,7 @@ class BaseDetailsTempServiceSerializer(serializers.Serializer):
 class BaseTempOfferDetailsSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     title = serializers.CharField()
-    categories = BaseTempOfferCategoriesSerializer(many=True, read_only=True)
+    categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     # Store_name
     store_name = serializers.CharField(source='temp_shop.shop_name')
     picture_1 = serializers.CharField(source='get_absolute_picture_1_img')
@@ -187,8 +158,8 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
     picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
     picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
-    for_whom = BaseTempOfferForWhomSerializer(many=True, read_only=True)
-    tags = BaseOfferTagsSerializer(many=True, read_only=True)
+    for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
+    # tags = BaseOfferTagsSerializer(many=True, read_only=True)
     price = serializers.FloatField()
     # details product or details service
     details_offer = serializers.SerializerMethodField()

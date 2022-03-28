@@ -32,7 +32,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
                 "type": "recieve_group_message",
                 "message": {
                     "type": "shop_avatar",
-                    "id": object_.user.pk,
+                    "pk": object_.user.pk,
                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
                 }
             }
@@ -43,7 +43,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
                 "type": "recieve_group_message",
                 "message": {
                     "type": "user_avatar",
-                    "id": object_.pk,
+                    "pk": object_.pk,
                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
                 }
             }

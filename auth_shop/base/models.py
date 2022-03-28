@@ -20,15 +20,21 @@ class ShopChoices:
     Type of shop choices
     """
 
+    # FONT_CHOICES = (
+    #     ('LI', 'Light'),
+    #     ('BO', 'Boldy'),
+    #     ('CL', 'Classic'),
+    #     ('MA', 'Magazine'),
+    #     ('PO', 'Pop'),
+    #     ('SA', 'Sans'),
+    #     ('PA', 'Pacifico'),
+    #     ('FI', 'Fira'),
+    # )
     FONT_CHOICES = (
-        ('LI', 'Light'),
-        ('BO', 'Boldy'),
-        ('CL', 'Classic'),
-        ('MA', 'Magazine'),
-        ('PO', 'Pop'),
-        ('SA', 'Sans'),
-        ('PA', 'Pacifico'),
-        ('FI', 'Fira'),
+        ('L', 'Light'),
+        ('R', 'Regular'),
+        ('S', 'Semi-bold'),
+        ('B', 'Black'),
     )
 
     ZONE_BY_CHOICES = (
@@ -58,7 +64,8 @@ class AuthShopDays(Model):
 
 
 class AuthShop(Model):
-    user = models.OneToOneField(CustomUser, verbose_name='User', on_delete=models.CASCADE, related_name='user_authshop')
+    user = models.OneToOneField(CustomUser, verbose_name='User', on_delete=models.CASCADE,
+                                related_name='user_authshop')
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
     avatar = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=False, null=False,
                                default=None)
@@ -66,7 +73,9 @@ class AuthShop(Model):
                                          default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
-    font_name = models.CharField(verbose_name='Font name', max_length=2,
+    # font_name = models.CharField(verbose_name='Font name', max_length=2,
+    #                              choices=ShopChoices.FONT_CHOICES, default='L')
+    font_name = models.CharField(verbose_name='Font name', max_length=1,
                                  choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
     opening_days = models.ManyToManyField(AuthShopDays, verbose_name='Opening days',

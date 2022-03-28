@@ -28,6 +28,22 @@ class ShopOfferView(APIView):
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
     @staticmethod
+    def get(request, *args, **kwargs):
+        offer_pk = kwargs.get('offer_pk')
+        try:
+            offer = Offers.objects \
+                .select_related('offer_solder') \
+                .select_related('offer_products') \
+                .select_related('offer_services') \
+                .prefetch_related('offer_delivery') \
+                .get(pk=offer_pk)
+            offer_details_serializer = BaseOfferDetailsSerializer(offer)
+            return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
+        except Offers.DoesNotExist:
+            data = {'errors': ['Offer not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
     def post(request, *args, **kwargs):
         user = request.user
         try:
@@ -419,7 +435,7 @@ class ShopOfferView(APIView):
         return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        offer_pk = request.data.get('offer_id')
+        offer_pk = request.data.get('offer_pk')
         try:
             offer = Offers.objects.get(pk=offer_pk)
             offer_pk = offer.pk
@@ -940,7 +956,7 @@ class ShopOfferView(APIView):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        offer_pk = request.data.get('offer_id')
+        offer_pk = request.data.get('offer_pk')
         user = request.user
         try:
             shop = AuthShop.objects.get(user=user)
@@ -1009,28 +1025,10 @@ class ShopOfferView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetOneOfferView(APIView):
+class GetMyShopOffersListView(APIView, PaginationMixinBy5):
     permission_classes = (permissions.IsAuthenticated,)
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        offer_id = kwargs.get('offer_id')
-        try:
-            offer = Offers.objects \
-                .select_related('offer_solder') \
-                .select_related('offer_products') \
-                .select_related('offer_services') \
-                .prefetch_related('offer_delivery') \
-                .get(pk=offer_id)
-            offer_details_serializer = BaseOfferDetailsSerializer(offer)
-            return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
-        except Offers.DoesNotExist:
-            data = {'errors': ['Offer not found.']}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class GetShopOffersListView(APIView, PaginationMixinBy5):
-    permission_classes = (permissions.IsAuthenticated,)
+    # filter_class = BaseOffersListFilter
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -1058,9 +1056,9 @@ class ShopOfferSolderView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        offer_id = kwargs.get('offer_id')
+        offer_pk = kwargs.get('offer_pk')
         try:
-            solder = Solder.objects.get(offer=offer_id)
+            solder = Solder.objects.get(offer=offer_pk)
             offer_details_serializer = BaseShopOfferSolderSerializer(solder)
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
         except Solder.DoesNotExist:
@@ -1069,8 +1067,8 @@ class ShopOfferSolderView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        offer_id = request.data.get('offer_id')
-        offer = Offers.objects.get(pk=offer_id).pk
+        offer_pk = request.data.get('offer_pk')
+        offer = Offers.objects.get(pk=offer_pk).pk
         serializer = BaseShopOfferSolderSerializer(data={
             'offer': offer,
             'solder_type': request.data.get('solder_type'),
@@ -1083,8 +1081,8 @@ class ShopOfferSolderView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        offer_id = request.data.get('offer_id')
-        solder = Solder.objects.get(offer=offer_id)
+        offer_pk = request.data.get('offer_pk')
+        solder = Solder.objects.get(offer=offer_pk)
         serializer = BaseShopOfferSolderPutSerializer(data=request.data)
         if serializer.is_valid():
             serializer.update(solder, serializer.validated_data)
@@ -1094,9 +1092,9 @@ class ShopOfferSolderView(APIView):
     @staticmethod
     def delete(request, *args, **kwargs):
         data = {}
-        offer_id = request.data.get('offer_id')
+        offer_pk = kwargs.get('offer_pk')
         try:
-            Solder.objects.get(offer=offer_id).delete()
+            Solder.objects.get(offer=offer_pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Solder.DoesNotExist:
             data['errors'] = ["Offer solder not found."]
@@ -1604,7 +1602,7 @@ class GetLastUsedLocalisationView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetTagsView(ListAPIView):
+class GetOfferTagsView(ListAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = OfferTags.objects.all()
     serializer_class = BaseOfferTagsSerializer

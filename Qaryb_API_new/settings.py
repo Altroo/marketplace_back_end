@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
+    'drf_yasg',
     'corsheaders',
     'channels',
     'chat.apps.ChatConfig',
@@ -78,7 +79,7 @@ ROOT_URLCONF = 'Qaryb_API_new.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [(os.path.join(BASE_DIR, 'account/templates'))],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -164,7 +165,8 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ("dj_rest_auth.jwt_auth.JWTAuthentication",),
+    'DEFAULT_AUTHENTICATION_CLASSES': ("dj_rest_auth.jwt_auth.JWTAuthentication",
+                                       "rest_framework.authentication.SessionAuthentication"),
     'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
     'DEFAULT_VERSIONING_CLASS': "rest_framework.versioning.NamespaceVersioning",
     'ALLOWED_VERSIONS': ('1.0.0',),
@@ -318,3 +320,18 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = config('ACCOUNT_DEFAULT_HTTP_PROTOCOL')
 # LOGIN_REDIRECT_URL = "/api/account/home/"
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        },
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'LOGIN_URL': '/admin/login/',
+    'LOGOUT_URL': '/admin/logout/',
+}

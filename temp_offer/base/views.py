@@ -26,6 +26,22 @@ class TempShopOfferView(APIView):
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
     @staticmethod
+    def get(request, *args, **kwargs):
+        temp_offer_pk = kwargs.get('temp_offer_pk')
+        try:
+            temp_offer = TempOffers.objects \
+                .select_related('temp_offer_solder') \
+                .select_related('temp_offer_products') \
+                .select_related('temp_offer_services') \
+                .prefetch_related('temp_offer_delivery') \
+                .get(pk=temp_offer_pk)
+            temp_offer_details_serializer = BaseTempOfferDetailsSerializer(temp_offer)
+            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
+        except TempOffers.DoesNotExist:
+            data = {'errors': ['Temp offer not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
     def post(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         try:
@@ -924,7 +940,7 @@ class TempShopOfferView(APIView):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        temp_offer_pk = request.data.get('temp_offer_id')
+        temp_offer_pk = request.data.get('temp_offer_pk')
         unique_id = request.data.get('unique_id')
         try:
             temp_offer = TempOffers.objects.get(pk=temp_offer_pk)
@@ -987,26 +1003,6 @@ class TempShopOfferView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetOneTempOfferView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def get(request, *args, **kwargs):
-        temp_offer_id = kwargs.get('temp_offer_id')
-        try:
-            temp_offer = TempOffers.objects \
-                .select_related('temp_offer_solder') \
-                .select_related('temp_offer_products') \
-                .select_related('temp_offer_services') \
-                .prefetch_related('temp_offer_delivery') \
-                .get(pk=temp_offer_id)
-            temp_offer_details_serializer = BaseTempOfferDetailsSerializer(temp_offer)
-            return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
-        except TempOffers.DoesNotExist:
-            data = {'errors': ['Temp offer not found.']}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
 class GetTempShopOffersListView(APIView, PaginationMixinBy5):
     permission_classes = (permissions.AllowAny,)
 
@@ -1036,9 +1032,9 @@ class TempShopOfferSolderView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        temp_offer_id = kwargs.get('temp_offer_id')
+        temp_offer_pk = kwargs.get('temp_offer_pk')
         try:
-            temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
+            temp_solder = TempSolder.objects.get(temp_offer=temp_offer_pk)
             temp_offer_details_serializer = BaseTempShopOfferSolderSerializer(temp_solder)
             return Response(temp_offer_details_serializer.data, status=status.HTTP_200_OK)
         except TempSolder.DoesNotExist:
@@ -1047,8 +1043,8 @@ class TempShopOfferSolderView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        temp_offer_id = request.data.get('temp_offer_id')
-        temp_offer = TempOffers.objects.get(pk=temp_offer_id).pk
+        temp_offer_pk = request.data.get('temp_offer_pk')
+        temp_offer = TempOffers.objects.get(pk=temp_offer_pk).pk
         serializer = BaseTempShopOfferSolderSerializer(data={
             'temp_offer': temp_offer,
             'temp_solder_type': request.data.get('temp_solder_type'),
@@ -1061,8 +1057,8 @@ class TempShopOfferSolderView(APIView):
 
     @staticmethod
     def put(request, *args, **kwargs):
-        temp_offer_id = request.data.get('temp_offer_id')
-        temp_solder = TempSolder.objects.get(temp_offer=temp_offer_id)
+        temp_offer_pk = request.data.get('temp_offer_pk')
+        temp_solder = TempSolder.objects.get(temp_offer=temp_offer_pk)
         serializer = BaseTempShopOfferSolderPutSerializer(data=request.data)
         if serializer.is_valid():
             serializer.update(temp_solder, serializer.validated_data)
@@ -1072,9 +1068,9 @@ class TempShopOfferSolderView(APIView):
     @staticmethod
     def delete(request, *args, **kwargs):
         data = {}
-        temp_offer_id = request.data.get('temp_offer_id')
+        temp_offer_pk = kwargs.get('temp_offer_pk')
         try:
-            TempSolder.objects.get(temp_offer=temp_offer_id).delete()
+            TempSolder.objects.get(temp_offer=temp_offer_pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except TempSolder.DoesNotExist:
             data['errors'] = ["Temp offer solder not found."]

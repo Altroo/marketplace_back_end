@@ -195,7 +195,7 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
-    tags = BaseOfferTagsSerializer(many=True, read_only=True)
+    # tags = BaseOfferTagsSerializer(many=True, read_only=True)
     creator_label = serializers.BooleanField()
     made_in_label = serializers.CharField()
     price = serializers.FloatField()

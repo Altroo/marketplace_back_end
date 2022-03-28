@@ -42,7 +42,7 @@ class MessageModel(Model):
             "type": "recieve_group_message",
             "message": {
                 "type": "seen",
-                "id": self.id,
+                "pk": self.id,
                 "initiator": self.user.id,
                 "recipient": self.recipient.id,
             }
@@ -55,7 +55,7 @@ class MessageModel(Model):
             "type": "recieve_group_message",
             "message": {
                 "type": "seen",
-                "id": self.id,
+                "pk": self.id,
                 "initiator": self.user.id,
                 "recipient": self.recipient.id,
             }

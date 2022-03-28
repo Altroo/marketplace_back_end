@@ -127,16 +127,16 @@ class BaseChatUserModelViewSet(ModelViewSet):
 
 
 # Archive conversation
-class ArchiveConversationView(APIView):
+class BaseArchiveConversationView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def post(request, *args, **kwargs):
-        user_id = request.user.pk
+        user_pk = request.user.pk
         receiver = request.data.get('recipient')
         # Check if conversation already archived.
         try:
-            ArchivedConversations.objects.get(user=user_id, recipient=receiver)
+            ArchivedConversations.objects.get(user=user_pk, recipient=receiver)
             # data = {
             #     'errors': 'Conversation already archived!'
             # }
@@ -145,7 +145,7 @@ class ArchiveConversationView(APIView):
         # Else add to archive
         except ArchivedConversations.DoesNotExist:
             serializer = BaseArchiveConversationSerializer(data={
-                "user": user_id,
+                "user": user_pk,
                 "recipient": receiver,
             })
             if serializer.is_valid():

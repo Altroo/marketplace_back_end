@@ -44,9 +44,9 @@ class BaseMessageModelSerializer(ModelSerializer):
             "type": 'recieve_group_message',
             "message": {
                 "type": "message",
-                "id": instance.id,
-                "initiator": instance.user.pk,
-                "recipient": instance.recipient.pk,
+                "pk": instance.id,
+                "initiator_pk": instance.user.pk,
+                "recipient_pk": instance.recipient.pk,
                 "body": body,
             }
         }
@@ -64,9 +64,9 @@ class BaseMessageModelSerializer(ModelSerializer):
             "type": 'recieve_group_message',
             "message": {
                 "type": "message",
-                "id": instance.id,
-                "initiator": instance.user.pk,
-                "recipient": instance.recipient.pk,
+                "pk": instance.id,
+                "initiator_pk": instance.user.pk,
+                "recipient_pk": instance.recipient.pk,
                 "body": body,
             }
         }

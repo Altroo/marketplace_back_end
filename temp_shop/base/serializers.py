@@ -81,6 +81,9 @@ class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['avatar']
+        extra_kwargs = {
+            'avatar': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.avatar = validated_data.get('avatar', instance.avatar)
@@ -92,6 +95,9 @@ class BaseTempShopNamePutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['shop_name']
+        extra_kwargs = {
+            'shop_name': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.shop_name = validated_data.get('shop_name', instance.shop_name)
@@ -103,6 +109,9 @@ class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['bio']
+        extra_kwargs = {
+            'bio': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.bio = validated_data.get('bio', instance.bio)
@@ -148,6 +157,9 @@ class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['phone']
+        extra_kwargs = {
+            'phone': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.phone = validated_data.get('phone', instance.phone)
@@ -159,6 +171,9 @@ class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['whatsapp']
+        extra_kwargs = {
+            'whatsapp': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
@@ -167,9 +182,24 @@ class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
+    def validate(self, data):
+        """
+        Check that start is before finish.
+        """
+        data_keys = data.keys()
+        if data['zone_by'] == 'S' and 'km_radius' not in data_keys:
+            raise serializers.ValidationError({'km_radius': ['km_radius is required when zone is by Sector.']})
+        return data
+
     class Meta:
         model = TempShop
         fields = ['zone_by', 'longitude', 'latitude', 'address_name', 'km_radius']
+        extra_kwargs = {
+            'zone_by': {'required': True},
+            'longitude': {'required': True},
+            'latitude': {'required': True},
+            'address_name': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.zone_by = validated_data.get('zone_by', instance.zone_by)
@@ -185,6 +215,10 @@ class BaseTempShopColorPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['color_code', 'bg_color_code']
+        extra_kwargs = {
+            'color_code': {'required': True},
+            'bg_color_code': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.color_code = validated_data.get('color_code', instance.color_code)
@@ -197,6 +231,9 @@ class BaseTempShopFontPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['font_name']
+        extra_kwargs = {
+            'font_name': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.font_name = validated_data.get('font_name', instance.font_name)

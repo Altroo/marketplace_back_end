@@ -58,11 +58,11 @@ def start_generating_thumbnail(img_path, duplicate):
 
 
 @app.task(bind=True)
-def base_generate_offer_thumbnails(self, product_id, which):
+def base_generate_offer_thumbnails(self, product_pk, which):
     if which == 'Offers':
-        offer = Offers.objects.get(pk=product_id)
+        offer = Offers.objects.get(pk=product_pk)
     else:
-        offer = TempOffers.objects.get(pk=product_id)
+        offer = TempOffers.objects.get(pk=product_pk)
     offer_picture_1 = offer.picture_1.url if offer.picture_1 else None
     if offer_picture_1 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_1.url
@@ -73,7 +73,7 @@ def base_generate_offer_thumbnails(self, product_id, which):
             "type": "recieve_group_message",
             "message": {
                 "type": "offer_thumbnail",
-                "id": offer.pk,
+                "pk": offer.pk,
                 "offer_thumbnail": offer.get_absolute_picture_1_thumbnail,
             }
         }
@@ -100,13 +100,13 @@ def base_generate_offer_thumbnails(self, product_id, which):
 
 
 @app.task(bind=True)
-def base_duplicate_offer_images(self, offer_id, new_offer_id, which):
+def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
     if which == 'Offers':
-        offer = Offers.objects.get(pk=offer_id)
-        new_offer = Offers.objects.get(pk=new_offer_id)
+        offer = Offers.objects.get(pk=offer_pk)
+        new_offer = Offers.objects.get(pk=new_offer_pk)
     else:
-        offer = TempOffers.objects.get(pk=offer_id)
-        new_offer = TempOffers.objects.get(pk=new_offer_id)
+        offer = TempOffers.objects.get(pk=offer_pk)
+        new_offer = TempOffers.objects.get(pk=new_offer_pk)
 
     if offer.picture_1:
         picture_1 = start_generating_thumbnail(offer.picture_1.path, True)
@@ -119,7 +119,7 @@ def base_duplicate_offer_images(self, offer_id, new_offer_id, which):
             "type": "recieve_group_message",
             "message": {
                 "type": "offer_thumbnail",
-                "id": new_offer.pk,
+                "pk": new_offer.pk,
                 "offer_thumbnail": new_offer.get_absolute_picture_1_thumbnail,
             }
         }

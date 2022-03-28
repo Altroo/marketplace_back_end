@@ -66,6 +66,9 @@ class BaseProfileAvatarPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['avatar']
+        extra_kwargs = {
+            'avatar': {'required': True},
+        }
 
     def update(self, instance, validated_data):
         instance.avatar = validated_data.get('avatar', instance.avatar)
@@ -121,9 +124,9 @@ class BaseUserAddressesListSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     address = serializers.CharField()
-    city = serializers.CharField(source='city_user_address.name_fr')
+    city = serializers.CharField(source='city.name_fr')
     zip_code = serializers.IntegerField()
-    country = serializers.CharField(source='country_user_address.name_fr')
+    country = serializers.CharField(source='country.name_fr')
     phone = serializers.CharField()
     email = serializers.EmailField()
 
@@ -134,10 +137,14 @@ class BaseUserAddressesListSerializer(serializers.Serializer):
         pass
 
 
+class BaseUserAddresseDetailSerializer(BaseUserAddressesListSerializer):
+    pass
+
+
 class BaseUserAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ['user', 'title', 'first_name',
+        fields = ['pk', 'user', 'title', 'first_name',
                   'last_name', 'address', 'city', 'zip_code',
                   'country', 'phone', 'email']
 

@@ -10,8 +10,8 @@ parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
 
 @app.task(bind=True)
-def base_start_deleting_expired_shops(self, shop_id):
-    temp_shop = TempShop.objects.get(pk=shop_id)
+def base_start_deleting_expired_shops(self, shop_pk):
+    temp_shop = TempShop.objects.get(pk=shop_pk)
     if temp_shop.unique_id is not None:
         # Delete avatar image
         try:

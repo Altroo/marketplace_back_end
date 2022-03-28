@@ -11,17 +11,18 @@ urlpatterns = [
     # POST : Create shop
     # GET : Get shop info
     path('', ShopView.as_view()),
+    path('<int:auth_shop_pk>/', ShopView.as_view()),
+    # POST: Transfer temp shop to auth shop
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
-    path('get/<int:auth_shop_pk>/', ShopView.as_view()),
-    # PUT : Edit  store
-    path('edit/phone/', ShopTelPutView.as_view()),
-    path('edit/whatsapp/', ShopWtspPutView.as_view()),
-    path('edit/avatar/', ShopAvatarPutView.as_view()),
-    path('edit/store_name/', ShopNamePutView.as_view()),
-    path('edit/bio/', ShopBioPutView.as_view()),
-    path('edit/availability/', ShopAvailabilityPutView.as_view()),
-    path('edit/contact/', ShopContactPutView.as_view()),
-    path('edit/address/', ShopAddressPutView.as_view()),
-    path('edit/color/', ShopColorPutView.as_view()),
-    path('edit/font/', ShopFontPutView.as_view()),
+    # PUT : Edit store
+    path('phone/', ShopTelPutView.as_view()),
+    path('whatsapp/', ShopWtspPutView.as_view()),
+    path('avatar/', ShopAvatarPutView.as_view()),
+    path('store_name/', ShopNamePutView.as_view()),
+    path('bio/', ShopBioPutView.as_view()),
+    path('availability/', ShopAvailabilityPutView.as_view()),
+    path('contact/', ShopContactPutView.as_view()),
+    path('address/', ShopAddressPutView.as_view()),
+    path('color/', ShopColorPutView.as_view()),
+    path('font/', ShopFontPutView.as_view()),
 ]
