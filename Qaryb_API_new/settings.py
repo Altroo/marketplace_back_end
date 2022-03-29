@@ -168,9 +168,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         "dj_rest_auth.jwt_auth.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication"
     ),
-    # 'DEFAULT_AUTHENTICATION_CLASSES': ("dj_rest_auth.jwt_auth.JWTAuthentication",),
     'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
     'DEFAULT_VERSIONING_CLASS': "rest_framework.versioning.NamespaceVersioning",
     'ALLOWED_VERSIONS': ('1.0.0',),
