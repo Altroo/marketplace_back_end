@@ -74,24 +74,28 @@ class TempShopAvatarPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopAvatarPutSerializer(data=request.data)
-            if serializer.is_valid():
-                if temp_shop.avatar:
-                    try:
-                        remove(temp_shop.avatar.path)
-                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                        pass
-                if temp_shop.avatar_thumbnail:
-                    try:
-                        remove(temp_shop.avatar_thumbnail.path)
-                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                        pass
-                new_avatar = serializer.update(temp_shop, serializer.validated_data)
-                # Generate new avatar thumbnail
-                base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopAvatarPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    if temp_shop.avatar:
+                        try:
+                            remove(temp_shop.avatar.path)
+                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                            pass
+                    if temp_shop.avatar_thumbnail:
+                        try:
+                            remove(temp_shop.avatar_thumbnail.path)
+                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                            pass
+                    new_avatar = serializer.update(temp_shop, serializer.validated_data)
+                    # Generate new avatar thumbnail
+                    base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -107,12 +111,16 @@ class TempShopNamePutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopNamePutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopNamePutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -128,12 +136,16 @@ class TempShopBioPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopBioPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopBioPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -149,22 +161,26 @@ class TempShopAvailabilityPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopAvailabilityPutSerializer(data={
-                'morning_hour_from': request.data.get('morning_hour_from'),
-                'morning_hour_to': request.data.get('morning_hour_to'),
-                'afternoon_hour_from': request.data.get('afternoon_hour_from'),
-                'afternoon_hour_to': request.data.get('afternoon_hour_to'),
-            })
-            if serializer.is_valid():
-                new_availability = serializer.update(temp_shop, serializer.validated_data)
-                opening_days = str(request.data.get('opening_days')).split(',')
-                opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
-                new_availability.opening_days.clear()
-                for day in opening_days:
-                    new_availability.opening_days.add(day.pk)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopAvailabilityPutSerializer(data={
+                    'morning_hour_from': request.data.get('morning_hour_from'),
+                    'morning_hour_to': request.data.get('morning_hour_to'),
+                    'afternoon_hour_from': request.data.get('afternoon_hour_from'),
+                    'afternoon_hour_to': request.data.get('afternoon_hour_to'),
+                })
+                if serializer.is_valid():
+                    new_availability = serializer.update(temp_shop, serializer.validated_data)
+                    opening_days = str(request.data.get('opening_days')).split(',')
+                    opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
+                    new_availability.opening_days.clear()
+                    for day in opening_days:
+                        new_availability.opening_days.add(day.pk)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -180,12 +196,16 @@ class TempShopContactPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopContactPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopContactPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -201,12 +221,16 @@ class TempShopTelPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopTelPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopTelPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -222,12 +246,16 @@ class TempShopWtspPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopWtspPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopWtspPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -243,12 +271,16 @@ class TempShopAddressPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopAddressPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopAddressPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -264,12 +296,16 @@ class TempShopColorPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopColorPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopColorPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."
@@ -285,12 +321,16 @@ class TempShopFontPutView(APIView):
     def put(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         if unique_id:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            serializer = BaseTempShopFontPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(temp_shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                temp_shop = TempShop.objects.get(unique_id=unique_id)
+                serializer = BaseTempShopFontPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(temp_shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except TempShop.DoesNotExist:
+                data = {'errors': ['Temp shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "unique_id": [
                 "This field is required."

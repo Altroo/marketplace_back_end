@@ -8,10 +8,6 @@ app_name = 'temp_shop'
 
 urlpatterns = [
     # Temp shop
-    # POST : Create temp shop
-    # GET : Get temp shop info
-    path('', TempShopView.as_view()),
-    path('<str:unique_id>/', TempShopView.as_view()),
     # GET : All available phone codes
     path('phone_codes/', TempShopGetPhoneCodesView.as_view()),
     # PUT : Edit temp store
@@ -25,4 +21,8 @@ urlpatterns = [
     path('address/', TempShopAddressPutView.as_view()),
     path('color/', TempShopColorPutView.as_view()),
     path('font/', TempShopFontPutView.as_view()),
+    # POST : Create temp shop
+    path('', TempShopView.as_view()),
+    # GET : Get temp shop info
+    path('<str:unique_id>/', TempShopView.as_view()),
 ]

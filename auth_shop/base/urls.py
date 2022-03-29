@@ -8,10 +8,6 @@ app_name = 'auth_shop'
 
 urlpatterns = [
     # Auth shop
-    # POST : Create shop
-    # GET : Get shop info
-    path('', ShopView.as_view()),
-    path('<int:auth_shop_pk>/', ShopView.as_view()),
     # POST: Transfer temp shop to auth shop
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
     # PUT : Edit store
@@ -25,4 +21,8 @@ urlpatterns = [
     path('address/', ShopAddressPutView.as_view()),
     path('color/', ShopColorPutView.as_view()),
     path('font/', ShopFontPutView.as_view()),
+    # POST : Create shop
+    # GET : Get shop info
+    path('', ShopView.as_view()),
+    path('<int:auth_shop_pk>/', ShopView.as_view()),
 ]

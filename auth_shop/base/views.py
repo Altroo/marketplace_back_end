@@ -75,25 +75,30 @@ class ShopAvatarPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopAvatarPutSerializer(data=request.data)
-            if serializer.is_valid():
-                if shop.avatar:
-                    try:
-                        remove(shop.avatar.path)
-                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                        pass
-                if shop.avatar_thumbnail:
-                    try:
-                        remove(shop.avatar_thumbnail.path)
-                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                        pass
-                new_avatar = serializer.update(shop, serializer.validated_data)
-                # Generate new avatar thumbnail
-                base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopAvatarPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    if shop.avatar:
+                        try:
+                            remove(shop.avatar.path)
+                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                            pass
+                    if shop.avatar_thumbnail:
+                        try:
+                            remove(shop.avatar_thumbnail.path)
+                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                            pass
+                    new_avatar = serializer.update(shop, serializer.validated_data)
+                    # Generate new avatar thumbnail
+                    base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -108,13 +113,18 @@ class ShopNamePutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopNamePutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopNamePutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -129,12 +139,17 @@ class ShopBioPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopBioPutSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.update(shop, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        try:
+            shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+            serializer = BaseShopBioPutSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.update(shop, serializer.validated_data)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopAvailabilityPutView(APIView):
@@ -143,22 +158,27 @@ class ShopAvailabilityPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
-        serializer = BaseShopAvailabilityPutSerializer(data={
-            'morning_hour_from': request.data.get('morning_hour_from'),
-            'morning_hour_to': request.data.get('morning_hour_to'),
-            'afternoon_hour_from': request.data.get('afternoon_hour_from'),
-            'afternoon_hour_to': request.data.get('afternoon_hour_to'),
-        })
-        if serializer.is_valid():
-            new_availability = serializer.update(shop, serializer.validated_data)
-            opening_days = str(request.data.get('opening_days')).split(',')
-            opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
-            new_availability.opening_days.clear()
-            for day in opening_days:
-                new_availability.opening_days.add(day.pk)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user
+        try:
+            shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+            serializer = BaseShopAvailabilityPutSerializer(data={
+                'morning_hour_from': request.data.get('morning_hour_from'),
+                'morning_hour_to': request.data.get('morning_hour_to'),
+                'afternoon_hour_from': request.data.get('afternoon_hour_from'),
+                'afternoon_hour_to': request.data.get('afternoon_hour_to'),
+            })
+            if serializer.is_valid():
+                new_availability = serializer.update(shop, serializer.validated_data)
+                opening_days = str(request.data.get('opening_days')).split(',')
+                opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
+                new_availability.opening_days.clear()
+                for day in opening_days:
+                    new_availability.opening_days.add(day.pk)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopContactPutView(APIView):
@@ -167,13 +187,18 @@ class ShopContactPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopContactPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopContactPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -188,13 +213,18 @@ class ShopTelPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopTelPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopTelPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -209,13 +239,18 @@ class ShopWtspPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
-        shop = AuthShop.objects.get(pk=auth_shop_pk)
+        user = request.user
         if auth_shop_pk:
-            serializer = BaseShopWtspPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(data=serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopWtspPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -230,13 +265,18 @@ class ShopAddressPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopAddressPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopAddressPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -251,13 +291,18 @@ class ShopColorPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopColorPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopColorPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -272,13 +317,18 @@ class ShopFontPutView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         auth_shop_pk = request.data.get('auth_shop_pk')
+        user = request.user
         if auth_shop_pk:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
-            serializer = BaseShopFontPutSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.update(shop, serializer.validated_data)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                shop = AuthShop.objects.get(pk=auth_shop_pk, user=user)
+                serializer = BaseShopFontPutSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(shop, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         errors = {
             "auth_shop_pk": [
                 "This field is required."
@@ -300,6 +350,7 @@ class TempShopToAuthShopView(APIView):
             # revoke 24h periodic task
             current_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
             # transfer temp shop data
+            # TODO Limit store to one user each
             auth_shop = AuthShop.objects.create(
                 user=user,
                 shop_name=temp_shop.shop_name,
