@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='askforcreatorlabel',
             name='asked_counter',
-            field=models.PositiveSmallIntegerField(default=1, verbose_name='Fois demandé'),
+            field=models.PositiveIntegerField(default=1, verbose_name='Fois demandé'),
         ),
     ]
