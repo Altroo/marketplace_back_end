@@ -1,12 +1,13 @@
 from django.urls import path
-from .views import FacebookLoginView, GoogleLoginView, \
-    CheckEmailView, RegistrationView, ActivateAccountView, \
-    ResendActivationCodeView, PasswordResetView, SendPasswordResetView, \
-    ProfileAvatarPUTView, ProfileView, BlockView, \
-    ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView
+from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
+    RegistrationView, ActivateAccountView, ResendActivationCodeView, \
+    PasswordResetView, SendPasswordResetView, ProfileView, BlockView, \
+    ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
+    FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 from dj_rest_auth.views import PasswordChangeView
+from dj_rest_auth.registration.views import SocialAccountDisconnectView
 from rest_framework_simplejwt.views import TokenVerifyView
 from dj_rest_auth.jwt_auth import get_refresh_view
 
@@ -21,6 +22,15 @@ urlpatterns = [
     path('check_email/', CheckEmailView.as_view()),
     # Login with raw email/password
     path('login/', LoginView.as_view()),
+    # GET : linked accounts list
+    path('socials/', GetSocialAccountListView.as_view()),
+    # POST : link facebook social account
+    path('link_facebook/', FacebookLinkingView.as_view()),
+    # POST : link google social account
+    path('link_google/', GoogleLinkingView.as_view()),
+    # POST : unlink social account
+    # <int:pk> from socials api list
+    path('unlink_social/<int:pk>/', SocialAccountDisconnectView.as_view()),
     # Logout
     path('logout/', LogoutView.as_view()),
     # Create account - verification code sent
@@ -38,9 +48,9 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view()),
     path('token/refresh/', get_refresh_view().as_view()),
     # PUT : Edit image
-    path('avatar/', ProfileAvatarPUTView.as_view()),
+    # path('avatar/', ProfileAvatarPUTView.as_view()),
     # PUT : Edit profil
-    # GET : Get profil data
+    # GET : Get profil data include avatar
     path('profil/', ProfileView.as_view()),
     path('profil/<int:user_pk>/', ProfileView.as_view()),
     # Blocked Users

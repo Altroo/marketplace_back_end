@@ -2,19 +2,22 @@ from django.urls import path
 from .views import ShopView, \
     ShopAvatarPutView, ShopNamePutView, ShopBioPutView, \
     ShopAvailabilityPutView, ShopContactPutView, ShopAddressPutView, ShopColorPutView, \
-    ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView
+    ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView, \
+    ShopAskBecomeCreator
 
 app_name = 'auth_shop'
 
 urlpatterns = [
     # Auth shop
+    # POST: Ask to become creator
+    path('creator/', ShopAskBecomeCreator.as_view()),
     # POST: Transfer temp shop to auth shop
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
-    # PUT : Edit store
+    # PUT : Edit shop
     path('phone/', ShopTelPutView.as_view()),
     path('whatsapp/', ShopWtspPutView.as_view()),
     path('avatar/', ShopAvatarPutView.as_view()),
-    path('store_name/', ShopNamePutView.as_view()),
+    path('shop_name/', ShopNamePutView.as_view()),
     path('bio/', ShopBioPutView.as_view()),
     path('availability/', ShopAvailabilityPutView.as_view()),
     path('contact/', ShopContactPutView.as_view()),

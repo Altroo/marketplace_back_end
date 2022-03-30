@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from auth_shop.base.models import AuthShop, AuthShopDays
+from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
@@ -219,3 +219,9 @@ class BaseShopFontPutSerializer(serializers.ModelSerializer):
         instance.font_name = validated_data.get('font_name', instance.font_name)
         instance.save()
         return instance
+
+
+class BaseShopAskForCreatorLabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AskForCreatorLabel
+        fields = ['auth_shop']
