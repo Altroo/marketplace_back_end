@@ -183,8 +183,8 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     title = serializers.CharField()
     categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
-    # Store_name
-    store_name = serializers.CharField(source='auth_shop.shop_name')
+    # shop_name
+    shop_name = serializers.CharField(source='auth_shop.shop_name')
     picture_1 = serializers.CharField(source='get_absolute_picture_1_img')
     picture_1_thumb = serializers.CharField(source='get_absolute_picture_1_thumbnail')
     picture_2 = serializers.CharField(source='get_absolute_picture_2_img')

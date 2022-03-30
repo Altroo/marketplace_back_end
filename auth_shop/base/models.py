@@ -42,6 +42,12 @@ class ShopChoices:
         ('S', 'Sector')
     )
 
+    CREATOR_STATUS_CHOICES = (
+        ('A', 'En attente de confirmation'),
+        ('R', 'Rejeté'),
+        ('C', 'Confirmé'),
+    )
+
 
 class LonLatValidators:
     lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
@@ -111,9 +117,7 @@ class AuthShop(Model):
         return (data[:50] + '..') if len(data) > 50 else data
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.shop_name,
-                                     self.phone,
-                                     self.contact_email)
+        return '{} - {}'.format(self.shop_name, self.user.email)
 
     class Meta:
         verbose_name = 'Auth Shop'
@@ -150,3 +154,22 @@ class PhoneCodes(Model):
     class Meta:
         verbose_name = 'Phone code'
         verbose_name_plural = 'Phone codes'
+
+
+class AskForCreatorLabel(Model):
+    auth_shop = models.OneToOneField(AuthShop, on_delete=models.CASCADE,
+                                     verbose_name='Boutique',
+                                     related_name='auth_shop_creator')
+    status = models.CharField(verbose_name='Status', max_length=1,
+                              choices=ShopChoices.CREATOR_STATUS_CHOICES, default='A')
+    asked_counter = models.PositiveSmallIntegerField(verbose_name='Fois demandé', default=1)
+    # Dates
+    created_date = models.DateTimeField(verbose_name='Date Création', editable=False, auto_now_add=True, db_index=True)
+    updated_date = models.DateTimeField(verbose_name='Date mise à jour', editable=False, auto_now=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.auth_shop.shop_name, self.status)
+
+    class Meta:
+        verbose_name = 'Demande créateur'
+        verbose_name_plural = 'Demandes créateur'

@@ -10,11 +10,11 @@ urlpatterns = [
     # Temp shop
     # GET : All available phone codes
     path('phone_codes/', TempShopGetPhoneCodesView.as_view()),
-    # PUT : Edit temp store
+    # PUT : Edit temp shop
     path('phone/', TempShopTelPutView.as_view()),
     path('whatsapp/', TempShopWtspPutView.as_view()),
     path('avatar/', TempShopAvatarPutView.as_view()),
-    path('store_name/', TempShopNamePutView.as_view()),
+    path('shop_name/', TempShopNamePutView.as_view()),
     path('bio/', TempShopBioPutView.as_view()),
     path('availability/', TempShopAvailabilityPutView.as_view()),
     path('contact/', TempShopContactPutView.as_view()),

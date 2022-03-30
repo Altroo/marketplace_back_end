@@ -13,10 +13,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
-    BaseUserEmailSerializer, BaseProfileAvatarPutSerializer, BaseProfilePutSerializer, \
-    BaseProfileGETSerializer, BaseBlockUserSerializer, \
+    BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
-    BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer
+    BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
+    BaseSocialAccountSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
@@ -25,6 +25,7 @@ from rest_framework.pagination import PageNumberPagination
 from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.base.models import Status, MessageModel
+from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
 
 
 class FacebookLoginView(SocialLoginView):
@@ -33,6 +34,18 @@ class FacebookLoginView(SocialLoginView):
 
 class GoogleLoginView(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
+
+
+class FacebookLinkingView(SocialConnectView):
+    adapter_class = FacebookOAuth2Adapter
+
+
+class GoogleLinkingView(SocialConnectView):
+    adapter_class = GoogleOAuth2Adapter
+
+
+class GetSocialAccountListView(SocialAccountListView):
+    serializer_class = BaseSocialAccountSerializer
 
 
 class RegistrationView(APIView):
@@ -325,29 +338,29 @@ class LogoutView(Dj_rest_logout):
         return super(LogoutView, self).logout(request)
 
 
-class ProfileAvatarPUTView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        user = CustomUser.objects.get(pk=request.user.pk)
-        serializer = BaseProfileAvatarPutSerializer(data=request.data)
-        if serializer.is_valid():
-            if user.avatar:
-                try:
-                    remove(user.avatar.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            if user.avatar_thumbnail:
-                try:
-                    remove(user.avatar_thumbnail.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            new_avatar = serializer.update(user, serializer.validated_data)
-            # Generate new avatar thumbnail
-            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class ProfileAvatarPUTView(APIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     @staticmethod
+#     def put(request, *args, **kwargs):
+#         user = CustomUser.objects.get(pk=request.user.pk)
+#         serializer = BaseProfileAvatarPutSerializer(data=request.data)
+#         if serializer.is_valid():
+#             if user.avatar:
+#                 try:
+#                     remove(user.avatar.path)
+#                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+#                     pass
+#             if user.avatar_thumbnail:
+#                 try:
+#                     remove(user.avatar_thumbnail.path)
+#                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+#                     pass
+#             new_avatar = serializer.update(user, serializer.validated_data)
+#             # Generate new avatar thumbnail
+#             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
+#             return Response(status=status.HTTP_204_NO_CONTENT)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileView(APIView):
@@ -369,7 +382,19 @@ class ProfileView(APIView):
         user = CustomUser.objects.get(pk=request.user.pk)
         serializer = BaseProfilePutSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.update(user, serializer.validated_data)
+            if user.avatar:
+                try:
+                    remove(user.avatar.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            if user.avatar_thumbnail:
+                try:
+                    remove(user.avatar_thumbnail.path)
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            new_avatar = serializer.update(user, serializer.validated_data)
+            # Generate new avatar thumbnail
+            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

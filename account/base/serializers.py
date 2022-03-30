@@ -3,6 +3,21 @@ from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress
 from django.contrib.auth.password_validation import validate_password
 
 
+class BaseSocialAccountSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    provider = serializers.CharField()
+    uid = serializers.CharField()
+    last_login = serializers.DateTimeField()
+    date_joined = serializers.DateTimeField()
+    extra_data = serializers.JSONField()
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
 class BaseRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 
@@ -62,26 +77,27 @@ class BaseUserEmailSerializer(serializers.ModelSerializer):
         }
 
 
-class BaseProfileAvatarPutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['avatar']
-        extra_kwargs = {
-            'avatar': {'required': True},
-        }
-
-    def update(self, instance, validated_data):
-        instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.save()
-        return instance
+# class BaseProfileAvatarPutSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = CustomUser
+#         fields = ['avatar']
+#         extra_kwargs = {
+#             'avatar': {'required': True},
+#         }
+#
+#     def update(self, instance, validated_data):
+#         instance.avatar = validated_data.get('avatar', instance.avatar)
+#         instance.save()
+#         return instance
 
 
 class BaseProfilePutSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
+        fields = ['avatar', 'first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
 
     def update(self, instance, validated_data):
+        instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.gender = validated_data.get('gender', instance.gender)
