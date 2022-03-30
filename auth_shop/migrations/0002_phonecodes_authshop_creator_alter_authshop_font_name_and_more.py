@@ -11,27 +11,27 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='PhoneCodes',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('phone_code', models.CharField(max_length=255, unique=True, verbose_name='Phone code')),
-            ],
-            options={
-                'verbose_name': 'Phone code',
-                'verbose_name_plural': 'Phone codes',
-            },
-        ),
-        migrations.AddField(
-            model_name='authshop',
-            name='creator',
-            field=models.BooleanField(default=False, verbose_name='Creator ?'),
-        ),
-        migrations.AlterField(
-            model_name='authshop',
-            name='font_name',
-            field=models.CharField(choices=[('L', 'Light'), ('R', 'Regular'), ('S', 'Semi-bold'), ('B', 'Black')], default='L', max_length=1, verbose_name='Font name'),
-        ),
+        # migrations.CreateModel(
+        #     name='PhoneCodes',
+        #     fields=[
+        #         ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('phone_code', models.CharField(max_length=255, unique=True, verbose_name='Phone code')),
+        #     ],
+        #     options={
+        #         'verbose_name': 'Phone code',
+        #         'verbose_name_plural': 'Phone codes',
+        #     },
+        # ),
+        # migrations.AddField(
+        #     model_name='authshop',
+        #     name='creator',
+        #     field=models.BooleanField(default=False, verbose_name='Creator ?'),
+        # ),
+        # migrations.AlterField(
+        #     model_name='authshop',
+        #     name='font_name',
+        #     field=models.CharField(choices=[('L', 'Light'), ('R', 'Regular'), ('S', 'Semi-bold'), ('B', 'Black')], default='L', max_length=1, verbose_name='Font name'),
+        # ),
         migrations.CreateModel(
             name='AskForCreatorLabel',
             fields=[
