@@ -162,7 +162,7 @@ class AskForCreatorLabel(Model):
                                      related_name='auth_shop_creator')
     status = models.CharField(verbose_name='Status', max_length=1,
                               choices=ShopChoices.CREATOR_STATUS_CHOICES, default='A')
-    asked_counter = models.PositiveSmallIntegerField(verbose_name='Fois demandé', default=1)
+    asked_counter = models.PositiveIntegerField(verbose_name='Fois demandé', default=1)
     # Dates
     created_date = models.DateTimeField(verbose_name='Date Création', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Date mise à jour', editable=False, auto_now=True)
