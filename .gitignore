@@ -6,3 +6,10 @@ media/
 logs/
 tests/
 logs/debug.log
+account/migrations
+auth_shop/migrations
+chat/migrations
+offer/migrations
+places/migrations
+temp_offer/migrations
+temp_shop/migrations
