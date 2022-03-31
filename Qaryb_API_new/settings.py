@@ -285,8 +285,8 @@ SOCIALACCOUNT_PROVIDERS = {
         #     'secret': '0a7e23977e803570152550112950ac1f',
         # },
         'APP': {
-            'client_id': '701041004404458',
-            'secret': '6892529099e635e5e74a31ea2f8cc00a'
+            'client_id': config('FACEBOOK_CLIENT_ID'),
+            'secret': config('FACEBOOK_SECRET')
         }
     },
     'google': {
@@ -294,12 +294,15 @@ SOCIALACCOUNT_PROVIDERS = {
             'profile',
             'email',
         ],
+        # in order to receive a refresh token on first login and on reauthentication requests
+        # (which is needed to refresh authentication tokens in the background,
+        # without involving the user’s browser)
         'AUTH_PARAMS': {
-            'access_type': 'online',
+            'access_type': 'offline',
         },
         'APP': {
-            'client_id': '258566616875-3tja0a0j92vd5obg3d9i5ku8veqi18rm.apps.googleusercontent.com',
-            'secret': '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',
+            'client_id': config('GOOGLE_CLIENT_ID'),
+            'secret': config('GOOGLE_SECRET'),
         },
     }
 }
