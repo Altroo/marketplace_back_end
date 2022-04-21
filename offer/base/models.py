@@ -136,22 +136,18 @@ class Offers(Model):
                                   default=None, max_length=1000)
     picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_products_path, blank=True, null=True,
                                   default=None, max_length=1000)
-    picture_4 = models.ImageField(verbose_name='Picture 4', upload_to=get_shop_products_path, blank=True, null=True,
-                                  default=None, max_length=1000)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_products_path, max_length=1000)
     picture_2_thumbnail = models.ImageField(verbose_name='Picture 2 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_products_path, max_length=1000)
     picture_3_thumbnail = models.ImageField(verbose_name='Picture 3 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_products_path, max_length=1000)
-    picture_4_thumbnail = models.ImageField(verbose_name='Picture 4 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='product_for_whom')
     creator_label = models.BooleanField(verbose_name='Creator label', default=False)
     made_in_label = models.CharField(verbose_name='Made in', max_length=150, default=None, blank=True, null=True)
-    tags = models.ManyToManyField(OfferTags, verbose_name='Offer Tags', related_name='offer_tags')
+    tags = models.ManyToManyField(OfferTags, verbose_name='Offer Tags', related_name='offer_tags', blank=True)
     price = models.FloatField(verbose_name='Price', default=0.0)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
@@ -205,18 +201,6 @@ class Offers(Model):
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
-        return None
-
-    @property
-    def get_absolute_picture_4_img(self):
-        if self.picture_4:
-            return "{0}/media{1}".format(API_URL, self.picture_4.url)
-        return None
-
-    @property
-    def get_absolute_picture_4_thumbnail(self):
-        if self.picture_4_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
 
     def save_image(self, field_name, image):
@@ -288,39 +272,6 @@ class Services(Model):
         verbose_name_plural = 'Services'
         ordering = ('-pk',)
 
-
-# class Delivery(Model):
-#     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
-#                               verbose_name='Offer',
-#                               related_name='offer_delivery')
-#     delivery_city_1 = models.CharField(verbose_name='Delivery City 1', max_length=300,
-#                                        blank=True, null=True, default=None)
-#     delivery_price_1 = models.FloatField(verbose_name='Delivery Price 1',
-#                                          default=0.0, blank=True, null=True)
-#     delivery_days_1 = models.PositiveIntegerField(verbose_name='Number of Days 1',
-#                                                   default=0, blank=True, null=True)
-#     delivery_city_2 = models.CharField(verbose_name='Delivery City 2', max_length=300,
-#                                        blank=True, null=True, default=None)
-#     delivery_price_2 = models.FloatField(verbose_name='Delivery Price 2',
-#                                          default=0.0, blank=True, null=True)
-#     delivery_days_2 = models.PositiveIntegerField(verbose_name='Number of Days 2',
-#                                                   default=0, blank=True, null=True)
-#     delivery_city_3 = models.CharField(verbose_name='Delivery City 3', max_length=300,
-#                                        blank=True, null=True, default=None)
-#     delivery_price_3 = models.FloatField(verbose_name='Delivery Price 3',
-#                                          default=0.0, null=True, blank=True)
-#     delivery_days_3 = models.PositiveIntegerField(verbose_name='Number of Days 3',
-#                                                   default=0, null=True, blank=True)
-#
-#     def __str__(self):
-#         return '{} - {} - {} - {}'.format(self.offer.title,
-#                                           self.delivery_city_1,
-#                                           self.delivery_price_1,
-#                                           self.delivery_days_1)
-#
-#     class Meta:
-#         verbose_name = 'Delivery'
-#         verbose_name_plural = 'Deliveries'
 
 class Delivery(Model):
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,

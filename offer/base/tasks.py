@@ -92,12 +92,6 @@ def base_generate_offer_thumbnails(self, product_pk, which):
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         offer.save_image('picture_3_thumbnail', img_thumbnail)
 
-    offer_picture_4 = offer.picture_4.path if offer.picture_4 else None
-    if offer_picture_4 is not None:
-        picture_path = parent_file_dir + '/media' + offer.picture_4.url
-        img_thumbnail = start_generating_thumbnail(picture_path, False)
-        offer.save_image('picture_4_thumbnail', img_thumbnail)
-
 
 @app.task(bind=True)
 def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
@@ -137,10 +131,3 @@ def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
     if offer.picture_3_thumbnail:
         picture_3_thumbnail = start_generating_thumbnail(offer.picture_3_thumbnail.path, True)
         new_offer.save_image('picture_3_thumbnail', picture_3_thumbnail)
-    if offer.picture_4:
-        picture_4 = start_generating_thumbnail(offer.picture_4.path, True)
-        new_offer.save_image('picture_4', picture_4)
-    if offer.picture_4_thumbnail:
-        picture_4_thumbnail = start_generating_thumbnail(offer.picture_4_thumbnail.path, True)
-        new_offer.save_image('picture_4_thumbnail', picture_4_thumbnail)
-

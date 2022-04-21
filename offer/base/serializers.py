@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from cart.base.models import Cart
 from offer.base.models import Offers, Solder, Products, Services, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery, OfferTags
 from places.base.models import City
@@ -45,9 +46,9 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'title',
-                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'picture_1', 'picture_2', 'picture_3',
                   'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_3_thumbnail',
-                  'picture_4_thumbnail', 'description', 'price']
+                  'description', 'price']
 
     def save(self):
         offer = Offers(
@@ -57,11 +58,9 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
             picture_1=self.validated_data['picture_1'],
             picture_2=self.validated_data['picture_2'],
             picture_3=self.validated_data['picture_3'],
-            picture_4=self.validated_data['picture_4'],
             picture_1_thumbnail=self.validated_data['picture_1_thumbnail'],
             picture_2_thumbnail=self.validated_data['picture_2_thumbnail'],
             picture_3_thumbnail=self.validated_data['picture_3_thumbnail'],
-            picture_4_thumbnail=self.validated_data['picture_4_thumbnail'],
             description=self.validated_data['description'],
             price=self.validated_data['price'],
         )
@@ -78,7 +77,7 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
-                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'picture_1', 'picture_2', 'picture_3',
                   'description', 'for_whom', 'creator_label', 'made_in_label',
                   'tags', 'price']
 
@@ -112,6 +111,13 @@ class BaseShopCitySerializer(serializers.ModelSerializer):
         fields = ['pk', 'city_en', 'city_fr', 'city_ar']
 
 
+class BaseShopOriginalCitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = City
+        # Keept for the views output key names
+        fields = ['pk', 'name_en', 'name_fr', 'name_ar']
+
+
 class BaseShopDeliverySerializer(serializers.ModelSerializer):
     delivery_city = BaseShopCitySerializer(many=True, read_only=True)
 
@@ -120,25 +126,12 @@ class BaseShopDeliverySerializer(serializers.ModelSerializer):
         fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
 
 
-# class BaseShopDeliveryPUTSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Delivery
-#         fields = ['delivery_city_1', 'delivery_price_1', 'delivery_days_1',
-#                   'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
-#                   'delivery_city_3', 'delivery_price_3', 'delivery_days_3']
-#
-#     def update(self, instance, validated_data):
-#         instance.delivery_city_1 = validated_data.get('delivery_city_1', instance.delivery_city_1)
-#         instance.delivery_price_1 = validated_data.get('delivery_price_1', instance.delivery_price_1)
-#         instance.delivery_days_1 = validated_data.get('delivery_days_1', instance.delivery_days_1)
-#         instance.delivery_city_2 = validated_data.get('delivery_city_2', instance.delivery_city_2)
-#         instance.delivery_price_2 = validated_data.get('delivery_price_2', instance.delivery_price_2)
-#         instance.delivery_days_2 = validated_data.get('delivery_days_2', instance.delivery_days_2)
-#         instance.delivery_city_3 = validated_data.get('delivery_city_3', instance.delivery_city_3)
-#         instance.delivery_price_3 = validated_data.get('delivery_price_3', instance.delivery_price_3)
-#         instance.delivery_days_3 = validated_data.get('delivery_days_3', instance.delivery_days_3)
-#         instance.save()
-#         return instance
+class BaseShopOriginalDeliverySerializer(serializers.ModelSerializer):
+    delivery_city = BaseShopOriginalCitySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Delivery
+        fields = ['pk', 'delivery_city', 'delivery_price', 'delivery_days']
 
 
 class BaseDetailsProductSerializer(serializers.Serializer):
@@ -191,8 +184,6 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     picture_2_thumb = serializers.CharField(source='get_absolute_picture_2_thumbnail')
     picture_3 = serializers.CharField(source='get_absolute_picture_3_img')
     picture_3_thumb = serializers.CharField(source='get_absolute_picture_3_thumbnail')
-    picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
-    picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     # tags = BaseOfferTagsSerializer(many=True, read_only=True)
@@ -201,7 +192,15 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     price = serializers.FloatField()
     # details product or details service
     details_offer = serializers.SerializerMethodField()
-    deliveries = BaseShopDeliverySerializer(many=True, read_only=True)
+    offer_delivery = BaseShopOriginalDeliverySerializer(many=True)
+    exist_in_cart = serializers.SerializerMethodField()
+
+    def get_exist_in_cart(self, instance):
+        try:
+            Cart.objects.get(user=self.context.get("user"), offer=instance.pk)
+            return True
+        except Cart.DoesNotExist:
+            return False
 
     @staticmethod
     def get_details_offer(instance):
@@ -246,8 +245,6 @@ class BaseOffersListSerializer(serializers.Serializer):
             return instance.get_absolute_picture_2_thumbnail
         elif instance.picture_3_thumbnail:
             return instance.get_absolute_picture_3_thumbnail
-        elif instance.picture_4_thumbnail:
-            return instance.get_absolute_picture_4_thumbnail
         else:
             return None
 
@@ -265,18 +262,15 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
                                        default=None, max_length=None, allow_null=True)
     picture_3 = serializers.ImageField(required=False, allow_empty_file=True,
                                        default=None, max_length=None, allow_null=True)
-    picture_4 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
 
     class Meta:
         model = Offers
-        fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
+        fields = ['title', 'picture_1', 'picture_2', 'picture_3',
                   'description', 'creator_label', 'made_in_label', 'price']
         extra_kwargs = {
             'picture_1': {'required': False},
             'picture_2': {'required': False},
             'picture_3': {'required': False},
-            'picture_4': {'required': False},
         }
 
     def update(self, instance, validated_data):
@@ -284,7 +278,6 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
         instance.picture_1 = validated_data.get('picture_1', instance.picture_1)
         instance.picture_2 = validated_data.get('picture_2', instance.picture_2)
         instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
-        instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
         instance.creator_label = validated_data.get('creator_label', instance.creator_label)
         instance.made_in_label = validated_data.get('made_in_label', instance.made_in_label)

@@ -3,7 +3,7 @@ from .views import ShopView, \
     ShopAvatarPutView, ShopNamePutView, ShopBioPutView, \
     ShopAvailabilityPutView, ShopContactPutView, ShopAddressPutView, ShopColorPutView, \
     ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView, \
-    ShopAskBecomeCreator
+    ShopAskBecomeCreator, ShopQrCodeView, ShopVisitCardView
 
 app_name = 'auth_shop'
 
@@ -24,6 +24,8 @@ urlpatterns = [
     path('address/', ShopAddressPutView.as_view()),
     path('color/', ShopColorPutView.as_view()),
     path('font/', ShopFontPutView.as_view()),
+    path('qr_code/', ShopQrCodeView.as_view()),
+    path('visit_card/', ShopVisitCardView.as_view()),
     # POST : Create shop
     # GET : Get shop info
     path('', ShopView.as_view()),

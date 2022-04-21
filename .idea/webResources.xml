@@ -11,6 +11,9 @@
             <path value="file://$PROJECT_DIR$/media/shop_products" />
             <path value="file://$PROJECT_DIR$/media/shop_avatars" />
             <path value="file://$PROJECT_DIR$/media/chat" />
+            <path value="file://$PROJECT_DIR$/media/shop_qrcodes" />
+            <path value="file://$PROJECT_DIR$/csv_data" />
+            <path value="file://$PROJECT_DIR$/logs" />
           </resourceRoots>
         </entryData>
       </entry>

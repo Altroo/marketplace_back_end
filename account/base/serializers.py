@@ -153,6 +153,7 @@ class BaseUserAddressesListSerializer(serializers.Serializer):
         pass
 
 
+# For naming convention
 class BaseUserAddresseDetailSerializer(BaseUserAddressesListSerializer):
     pass
 

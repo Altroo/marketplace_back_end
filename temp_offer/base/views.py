@@ -60,7 +60,6 @@ class TempShopOfferView(APIView):
             'picture_1': request.data.get('picture_1', None),
             'picture_2': request.data.get('picture_2', None),
             'picture_3': request.data.get('picture_3', None),
-            'picture_4': request.data.get('picture_4', None),
             'description': description,
             'price': price,
         })
@@ -82,8 +81,6 @@ class TempShopOfferView(APIView):
                 'picture_2_thumb': temp_offer.get_absolute_picture_2_thumbnail,
                 'picture_3': temp_offer.get_absolute_picture_3_img,
                 'picture_3_thumb': temp_offer.get_absolute_picture_3_thumbnail,
-                'picture_4': temp_offer.get_absolute_picture_4_img,
-                'picture_4_thumb': temp_offer.get_absolute_picture_4_thumbnail,
                 'description': description,
                 'price': price
             }
@@ -435,7 +432,6 @@ class TempShopOfferView(APIView):
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
             picture_3 = request.data.get('picture_3', None)
-            picture_4 = request.data.get('picture_4', None)
 
             previous_images = list()
             previous_images.append(API_URL + temp_offer.picture_1.url
@@ -444,8 +440,6 @@ class TempShopOfferView(APIView):
                                    if temp_offer.picture_2 else False)
             previous_images.append(API_URL + temp_offer.picture_3.url
                                    if temp_offer.picture_3 else False)
-            previous_images.append(API_URL + temp_offer.picture_4.url
-                                   if temp_offer.picture_4 else False)
 
             if isinstance(picture_1, InMemoryUploadedFile):
                 try:
@@ -466,10 +460,8 @@ class TempShopOfferView(APIView):
                             picture_1 = temp_offer.picture_1
                         elif img_1_index == 1:
                             picture_1 = temp_offer.picture_2
-                        elif img_1_index == 2:
-                            picture_1 = temp_offer.picture_3
                         else:
-                            picture_1 = temp_offer.picture_4
+                            picture_1 = temp_offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_1 = None
@@ -490,13 +482,11 @@ class TempShopOfferView(APIView):
                     try:
                         img_2_index = previous_images.index(picture_2)
                         if img_2_index == 0:
-                            picture_2 = temp_offer.picture_2
+                            picture_2 = temp_offer.picture_1
                         elif img_2_index == 1:
                             picture_2 = temp_offer.picture_2
-                        elif img_2_index == 2:
-                            picture_2 = temp_offer.picture_2
                         else:
-                            picture_2 = temp_offer.picture_2
+                            picture_2 = temp_offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_2 = None
@@ -517,43 +507,14 @@ class TempShopOfferView(APIView):
                     try:
                         img_3_index = previous_images.index(picture_3)
                         if img_3_index == 0:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = temp_offer.picture_1
                         elif img_3_index == 1:
-                            picture_3 = temp_offer.picture_3
-                        elif img_3_index == 2:
-                            picture_3 = temp_offer.picture_3
+                            picture_3 = temp_offer.picture_2
                         else:
                             picture_3 = temp_offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_3 = None
-
-            if isinstance(picture_4, InMemoryUploadedFile):
-                try:
-                    picture_4_path = self.parent_file_dir + temp_offer.picture_4.url
-                    picture_4_thumb_path = self.parent_file_dir + temp_offer.picture_4_thumbnail.url
-                    remove(picture_4_path)
-                    remove(picture_4_thumb_path)
-                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
-                    pass
-                temp_offer.picture_4 = None
-                temp_offer.save()
-            else:
-                # src
-                if picture_4 in previous_images:
-                    try:
-                        img_4_index = previous_images.index(picture_4)
-                        if img_4_index == 0:
-                            picture_4 = temp_offer.picture_4
-                        elif img_4_index == 1:
-                            picture_4 = temp_offer.picture_4
-                        elif img_4_index == 2:
-                            picture_4 = temp_offer.picture_4
-                        else:
-                            picture_4 = temp_offer.picture_4
-                    # None wasn't sent
-                    except ValueError:
-                        picture_4 = None
 
             title = request.data.get('title', '')
             description = request.data.get('description', '')
@@ -564,7 +525,6 @@ class TempShopOfferView(APIView):
                 'picture_1': picture_1,
                 'picture_2': picture_2,
                 'picture_3': picture_3,
-                'picture_4': picture_4,
                 'description': description,
                 'price': price,
             })
@@ -634,8 +594,6 @@ class TempShopOfferView(APIView):
                         'picture_2_thumb': temp_updated_offer.get_absolute_picture_2_thumbnail,
                         'picture_3': temp_updated_offer.get_absolute_picture_3_img,
                         'picture_3_thumb': temp_updated_offer.get_absolute_picture_3_thumbnail,
-                        'picture_4': temp_updated_offer.get_absolute_picture_4_img,
-                        'picture_4_thumb': temp_updated_offer.get_absolute_picture_4_thumbnail,
                         'description': temp_updated_offer.description,
                         'price': temp_updated_offer.price
                     }
@@ -730,37 +688,6 @@ class TempShopOfferView(APIView):
                         data['product_longitude'] = temp_updated_product.product_longitude
                         data['product_latitude'] = temp_updated_product.product_latitude
                         data['product_address'] = temp_updated_product.product_address
-                        # # UPDATE DELIVERIES
-                        # temp_delivery_city_1 = request.data.get('delivery_city_1')
-                        # temp_delivery_price_1 = request.data.get('delivery_price_1', None)
-                        # temp_delivery_days_1 = request.data.get('delivery_days_1', None)
-                        #
-                        # temp_delivery_city_2 = request.data.get('delivery_city_2', None)
-                        # temp_delivery_price_2 = request.data.get('delivery_price_2', None)
-                        # temp_delivery_days_2 = request.data.get('delivery_days_2', None)
-                        #
-                        # temp_delivery_city_3 = request.data.get('delivery_city_3', None)
-                        # temp_delivery_price_3 = request.data.get('delivery_price_3', None)
-                        # temp_delivery_days_3 = request.data.get('delivery_days_3', None)
-                        #
-                        # delivery_serializer = BaseTempShopDeliveryPUTSerializer(data={
-                        #     'temp_delivery_city_1': temp_delivery_city_1,
-                        #     'temp_delivery_price_1': temp_delivery_price_1,
-                        #     'temp_delivery_days_1': temp_delivery_days_1,
-                        #     'temp_delivery_city_2': temp_delivery_city_2,
-                        #     'temp_delivery_price_2': temp_delivery_price_2,
-                        #     'temp_delivery_days_2': temp_delivery_days_2,
-                        #     'temp_delivery_city_3': temp_delivery_city_3,
-                        #     'temp_delivery_price_3': temp_delivery_price_3,
-                        #     'temp_delivery_days_3': temp_delivery_days_3,
-                        # })
-                        # if delivery_serializer.is_valid():
-                        #     temp_delivery = TempDelivery.objects.get(temp_offer=temp_offer_pk)
-                        #     delivery_serializer.update(temp_delivery, delivery_serializer.validated_data)
-                        #     data['deliveries'] = delivery_serializer.data
-                        #     return Response(data, status=status.HTTP_200_OK)
-                        # else:
-                        #     return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                         # UPDATE DELIVERIES
                         temp_offer.temp_offer_delivery.all().delete()
                         delivery_price_1 = request.data.get('delivery_price_1', None)
@@ -989,18 +916,6 @@ class TempShopOfferView(APIView):
                 remove(picture_3_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
-            # Picture 4
-            try:
-                picture_4 = temp_offer.picture_4.path
-                remove(picture_4)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 4 thumbnail
-            try:
-                picture_4_thumbnail = temp_offer.picture_4_thumbnail.path
-                remove(picture_4_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
             temp_offer.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except TempOffers.DoesNotExist:
@@ -1025,8 +940,8 @@ class GetTempShopOffersListView(APIView, PaginationMixinBy5):
             if page is not None:
                 serializer = BaseTempOfferssListSerializer(instance=page, many=True)
                 return self.get_paginated_response(serializer.data)
-            data = {'response': 'Temp shop has no products.'}
-            return Response(data=data, status=status.HTTP_200_OK)
+            # data = {'response': 'Temp shop has no products.'}
+            # return Response(data=data, status=status.HTTP_200_OK)
         except TempShop.DoesNotExist:
             data = {'errors': ['Temp shop unique_id not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -1127,11 +1042,9 @@ class TempShopOfferDuplicateView(APIView):
                 'picture_1': temp_offer.picture_1 if temp_offer.picture_1 else None,
                 'picture_2': temp_offer.picture_2 if temp_offer.picture_2 else None,
                 'picture_3': temp_offer.picture_3 if temp_offer.picture_3 else None,
-                'picture_4': temp_offer.picture_4 if temp_offer.picture_4 else None,
                 'picture_1_thumbnail': temp_offer.picture_1_thumbnail if temp_offer.picture_1_thumbnail else None,
                 'picture_2_thumbnail': temp_offer.picture_2_thumbnail if temp_offer.picture_2_thumbnail else None,
                 'picture_3_thumbnail': temp_offer.picture_3_thumbnail if temp_offer.picture_3_thumbnail else None,
-                'picture_4_thumbnail': temp_offer.picture_4_thumbnail if temp_offer.picture_4_thumbnail else None,
                 'description': description,
                 'price': price
             })
@@ -1162,8 +1075,6 @@ class TempShopOfferDuplicateView(APIView):
                     'picture_2_thumb': temp_offer_serializer.get_absolute_picture_2_thumbnail,
                     'picture_3': temp_offer_serializer.get_absolute_picture_3_img,
                     'picture_3_thumb': temp_offer_serializer.get_absolute_picture_3_thumbnail,
-                    'picture_4': temp_offer_serializer.get_absolute_picture_4_img,
-                    'picture_4_thumb': temp_offer_serializer.get_absolute_picture_4_thumbnail,
                     'description': temp_offer_serializer.description,
                     'price': temp_offer_serializer.price
                 }

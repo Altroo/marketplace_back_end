@@ -7,9 +7,12 @@ logs/
 tests/
 logs/debug.log
 account/migrations
-auth_shop/migrations
 chat/migrations
-offer/migrations
-places/migrations
-temp_offer/migrations
 temp_shop/migrations
+auth_shop/migrations
+temp_offer/migrations
+offer/migrations
+cart/migrations
+order/migrations
+ratings/migrations
+places/migrations

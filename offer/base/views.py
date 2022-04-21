@@ -29,6 +29,7 @@ class ShopOfferView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
+        user = request.user
         offer_pk = kwargs.get('offer_pk')
         try:
             offer = Offers.objects \
@@ -37,7 +38,11 @@ class ShopOfferView(APIView):
                 .select_related('offer_services') \
                 .prefetch_related('offer_delivery') \
                 .get(pk=offer_pk)
-            offer_details_serializer = BaseOfferDetailsSerializer(offer)
+            print(offer.offer_delivery.all()[0].offer)
+            print(offer.offer_delivery.all()[0].delivery_city.all())
+            print(offer.offer_delivery.all()[0].delivery_price)
+            print(offer.offer_delivery.all()[0].delivery_days)
+            offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'user': user})
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
         except Offers.DoesNotExist:
             data = {'errors': ['Offer not found.']}
@@ -69,7 +74,6 @@ class ShopOfferView(APIView):
             'picture_1': request.data.get('picture_1', None),
             'picture_2': request.data.get('picture_2', None),
             'picture_3': request.data.get('picture_3', None),
-            'picture_4': request.data.get('picture_4', None),
             'description': description,
             'creator_label': creator_label,
             'made_in_label': made_in_label,
@@ -94,8 +98,6 @@ class ShopOfferView(APIView):
                 'picture_2_thumb': offer.get_absolute_picture_2_thumbnail,
                 'picture_3': offer.get_absolute_picture_3_img,
                 'picture_3_thumb': offer.get_absolute_picture_3_thumbnail,
-                'picture_4': offer.get_absolute_picture_4_img,
-                'picture_4_thumb': offer.get_absolute_picture_4_thumbnail,
                 'description': description,
                 'creator_label': creator_label,
                 'made_in_label': made_in_label,
@@ -263,43 +265,6 @@ class ShopOfferView(APIView):
                     service_serializer_errors = service_serializer.errors
 
             if product_valid:
-                # # deliveries
-                # delivery_city_1 = request.data.get('delivery_city_1')
-                # delivery_price_1 = request.data.get('delivery_price_1', None)
-                # delivery_days_1 = request.data.get('delivery_days_1', None)
-                # delivery_city_2 = request.data.get('delivery_city_2', None)
-                # delivery_price_2 = request.data.get('delivery_price_2', None)
-                # delivery_days_2 = request.data.get('delivery_days_2', None)
-                # delivery_city_3 = request.data.get('delivery_city_3', None)
-                # delivery_price_3 = request.data.get('delivery_price_3', None)
-                # delivery_days_3 = request.data.get('delivery_days_3', None)
-                #
-                # delivery_serializer = BaseShopDeliverySerializer(data={
-                #     'offer': offer_pk,
-                #     'delivery_city_1': delivery_city_1,
-                #     'delivery_price_1': delivery_price_1,
-                #     'delivery_days_1': delivery_days_1,
-                #     'delivery_city_2': delivery_city_2,
-                #     'delivery_price_2': delivery_price_2,
-                #     'delivery_days_2': delivery_days_2,
-                #     'delivery_city_3': delivery_city_3,
-                #     'delivery_price_3': delivery_price_3,
-                #     'delivery_days_3': delivery_days_3,
-                # })
-                # if delivery_serializer.is_valid():
-                #     delivery_serializer.save()
-                #
-                #     def removekey(d, key):
-                #         r = dict(d)
-                #         del r[key]
-                #         return r
-                #
-                #     delivery = removekey(delivery_serializer.data, 'offer')
-                #     data['deliveries'] = delivery
-                #     # For products
-                #     return Response(data=data, status=status.HTTP_200_OK)
-                # else:
-                #     return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 # Deliveries
                 delivery_price_1 = request.data.get('delivery_price_1', None)
                 delivery_days_1 = request.data.get('delivery_days_1', None)
@@ -449,7 +414,6 @@ class ShopOfferView(APIView):
             picture_1 = request.data.get('picture_1', None)
             picture_2 = request.data.get('picture_2', None)
             picture_3 = request.data.get('picture_3', None)
-            picture_4 = request.data.get('picture_4', None)
 
             previous_images = list()
             previous_images.append(API_URL + offer.picture_1.url
@@ -458,8 +422,6 @@ class ShopOfferView(APIView):
                                    if offer.picture_2 else False)
             previous_images.append(API_URL + offer.picture_3.url
                                    if offer.picture_3 else False)
-            previous_images.append(API_URL + offer.picture_4.url
-                                   if offer.picture_4 else False)
 
             if isinstance(picture_1, InMemoryUploadedFile):
                 try:
@@ -480,10 +442,8 @@ class ShopOfferView(APIView):
                             picture_1 = offer.picture_1
                         elif img_1_index == 1:
                             picture_1 = offer.picture_2
-                        elif img_1_index == 2:
-                            picture_1 = offer.picture_3
                         else:
-                            picture_1 = offer.picture_4
+                            picture_1 = offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_1 = None
@@ -504,13 +464,11 @@ class ShopOfferView(APIView):
                     try:
                         img_2_index = previous_images.index(picture_2)
                         if img_2_index == 0:
-                            picture_2 = offer.picture_2
+                            picture_2 = offer.picture_1
                         elif img_2_index == 1:
                             picture_2 = offer.picture_2
-                        elif img_2_index == 2:
-                            picture_2 = offer.picture_2
                         else:
-                            picture_2 = offer.picture_2
+                            picture_2 = offer.picture_3
                     # None wasn't
                     except ValueError:
                         picture_2 = None
@@ -531,43 +489,14 @@ class ShopOfferView(APIView):
                     try:
                         img_3_index = previous_images.index(picture_3)
                         if img_3_index == 0:
-                            picture_3 = offer.picture_3
+                            picture_3 = offer.picture_1
                         elif img_3_index == 1:
-                            picture_3 = offer.picture_3
-                        elif img_3_index == 2:
-                            picture_3 = offer.picture_3
+                            picture_3 = offer.picture_2
                         else:
                             picture_3 = offer.picture_3
                     # None wasn't sent
                     except ValueError:
                         picture_3 = None
-
-            if isinstance(picture_4, InMemoryUploadedFile):
-                try:
-                    picture_4_path = self.parent_file_dir + offer.picture_4.url
-                    picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
-                    remove(picture_4_path)
-                    remove(picture_4_thumb_path)
-                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
-                    pass
-                offer.picture_4 = None
-                offer.save()
-            else:
-                # src
-                if picture_4 in previous_images:
-                    try:
-                        img_4_index = previous_images.index(picture_4)
-                        if img_4_index == 0:
-                            picture_4 = offer.picture_4
-                        elif img_4_index == 1:
-                            picture_4 = offer.picture_4
-                        elif img_4_index == 2:
-                            picture_4 = offer.picture_4
-                        else:
-                            picture_4 = offer.picture_4
-                    # None wasn't sent
-                    except ValueError:
-                        picture_4 = None
 
             title = request.data.get('title', '')
             description = request.data.get('description', '')
@@ -584,7 +513,6 @@ class ShopOfferView(APIView):
                 'picture_1': picture_1,
                 'picture_2': picture_2,
                 'picture_3': picture_3,
-                'picture_4': picture_4,
                 'description': description,
                 'creator_label': creator_label,
                 'made_in_label': made_in_label,
@@ -655,8 +583,6 @@ class ShopOfferView(APIView):
                         'picture_2_thumb': updated_offer.get_absolute_picture_2_thumbnail,
                         'picture_3': updated_offer.get_absolute_picture_3_img,
                         'picture_3_thumb': updated_offer.get_absolute_picture_3_thumbnail,
-                        'picture_4': updated_offer.get_absolute_picture_4_img,
-                        'picture_4_thumb': updated_offer.get_absolute_picture_4_thumbnail,
                         'description': updated_offer.description,
                         'price': updated_offer.price
                     }
@@ -750,36 +676,6 @@ class ShopOfferView(APIView):
                         data['product_longitude'] = updated_product.product_longitude
                         data['product_latitude'] = updated_product.product_latitude
                         data['product_address'] = updated_product.product_address
-                        # # UPDATE DELIVERIES
-                        # delivery_city_1 = request.data.get('delivery_city_1', None)
-                        # delivery_price_1 = request.data.get('delivery_price_1', None)
-                        # delivery_days_1 = request.data.get('delivery_days_1', None)
-                        # delivery_city_2 = request.data.get('delivery_city_2', None)
-                        # delivery_price_2 = request.data.get('delivery_price_2', None)
-                        # delivery_days_2 = request.data.get('delivery_days_2', None)
-                        # delivery_city_3 = request.data.get('delivery_city_3', None)
-                        # delivery_price_3 = request.data.get('delivery_price_3', None)
-                        # delivery_days_3 = request.data.get('delivery_days_3', None)
-                        #
-                        # delivery_serializer = BaseShopDeliveryPUTSerializer(data={
-                        #     'offer': offer_pk,
-                        #     'delivery_city_1': delivery_city_1,
-                        #     'delivery_price_1': delivery_price_1,
-                        #     'delivery_days_1': delivery_days_1,
-                        #     'delivery_city_2': delivery_city_2,
-                        #     'delivery_price_2': delivery_price_2,
-                        #     'delivery_days_2': delivery_days_2,
-                        #     'delivery_city_3': delivery_city_3,
-                        #     'delivery_price_3': delivery_price_3,
-                        #     'delivery_days_3': delivery_days_3,
-                        # })
-                        # if delivery_serializer.is_valid():
-                        #     delivery = Delivery.objects.get(offer=offer_pk)
-                        #     delivery_serializer.update(delivery, delivery_serializer.validated_data)
-                        #     data['deliveries'] = delivery_serializer.data
-                        #     return Response(data, status=status.HTTP_200_OK)
-                        # else:
-                        #     return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                         # UPDATE DELIVERIES
                         offer.offer_delivery.all().delete()
                         delivery_price_1 = request.data.get('delivery_price_1', None)
@@ -1011,18 +907,6 @@ class ShopOfferView(APIView):
                     remove(picture_3_thumbnail)
                 except (FileNotFoundError, ValueError, AttributeError):
                     pass
-                # Picture 4
-                try:
-                    picture_4 = offer.picture_4.path
-                    remove(picture_4)
-                except (FileNotFoundError, ValueError, AttributeError):
-                    pass
-                # Picture 4 thumbnail
-                try:
-                    picture_4_thumbnail = offer.picture_4_thumbnail.path
-                    remove(picture_4_thumbnail)
-                except (FileNotFoundError, ValueError, AttributeError):
-                    pass
                 offer.delete()
                 deleted = True
         if deleted:
@@ -1149,11 +1033,9 @@ class ShopOfferDuplicateView(APIView):
                 'picture_1': offer.picture_1 if offer.picture_1 else None,
                 'picture_2': offer.picture_2 if offer.picture_2 else None,
                 'picture_3': offer.picture_3 if offer.picture_3 else None,
-                'picture_4': offer.picture_4 if offer.picture_4 else None,
                 'picture_1_thumbnail': offer.picture_1_thumbnail if offer.picture_1_thumbnail else None,
                 'picture_2_thumbnail': offer.picture_2_thumbnail if offer.picture_2_thumbnail else None,
                 'picture_3_thumbnail': offer.picture_3_thumbnail if offer.picture_3_thumbnail else None,
-                'picture_4_thumbnail': offer.picture_4_thumbnail if offer.picture_4_thumbnail else None,
                 'description': description,
                 'price': price
             })
@@ -1184,8 +1066,6 @@ class ShopOfferDuplicateView(APIView):
                     'picture_2_thumb': offer_serializer.get_absolute_picture_2_thumbnail,
                     'picture_3': offer_serializer.get_absolute_picture_3_img,
                     'picture_3_thumb': offer_serializer.get_absolute_picture_3_thumbnail,
-                    'picture_4': offer_serializer.get_absolute_picture_4_img,
-                    'picture_4_thumb': offer_serializer.get_absolute_picture_4_thumbnail,
                     'description': offer_serializer.description,
                     'price': offer_serializer.price
                 }
@@ -1324,40 +1204,6 @@ class ShopOfferDuplicateView(APIView):
                     else:
                         service_serializer_errors = service_serializer.errors
                 if product_valid:
-                    # delivery_city_1 = request.data.get('delivery_city_1')
-                    # delivery_price_1 = request.data.get('delivery_price_1', None)
-                    # delivery_days_1 = request.data.get('delivery_days_1', None)
-                    # delivery_city_2 = request.data.get('delivery_city_2', None)
-                    # delivery_price_2 = request.data.get('delivery_price_2', None)
-                    # delivery_days_2 = request.data.get('delivery_days_2', None)
-                    # delivery_city_3 = request.data.get('delivery_city_3', None)
-                    # delivery_price_3 = request.data.get('delivery_price_3', None)
-                    # delivery_days_3 = request.data.get('delivery_days_3', None)
-                    #
-                    # delivery_serializer = BaseShopDeliverySerializer(data={
-                    #     'offer': offer.pk,
-                    #     'delivery_city_1': delivery_city_1,
-                    #     'delivery_price_1': delivery_price_1,
-                    #     'delivery_days_1': delivery_days_1,
-                    #     'delivery_city_2': delivery_city_2,
-                    #     'delivery_price_2': delivery_price_2,
-                    #     'delivery_days_2': delivery_days_2,
-                    #     'delivery_city_3': delivery_city_3,
-                    #     'delivery_price_3': delivery_price_3,
-                    #     'delivery_days_3': delivery_days_3,
-                    # })
-                    # if delivery_serializer.is_valid():
-                    #     delivery_serializer.save()
-                    #
-                    #     def removekey(d, key):
-                    #         r = dict(d)
-                    #         del r[key]
-                    #         return r
-                    #
-                    #     delivery = removekey(delivery_serializer.data, 'offer')
-                    #     data['deliveries'] = delivery
-                    #     # For products
-                    #     return Response(data=data, status=status.HTTP_200_OK)
                     deliveries = offer.offer_delivery.all()
                     delivery_price_1 = None
                     delivery_days_1 = None
@@ -1497,52 +1343,6 @@ class ShopOfferDuplicateView(APIView):
 class GetLastThreeDeliveriesView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    # @staticmethod
-    # def get(request, *args, **kwargs):
-    #     auth_shop_pk = kwargs.get('auth_shop_pk')
-    #     try:
-    #         auth_shop = AuthShop.objects.get(pk=auth_shop_pk)
-    #         offers = Offers.objects \
-    #             .select_related('offer_products') \
-    #             .prefetch_related('offer_delivery') \
-    #             .filter(auth_shop=auth_shop).order_by('-created_date')
-    #         data = {
-    #             'delivery_city_1': None,
-    #             'delivery_price_1': None,
-    #             'delivery_days_1': None,
-    #             'delivery_city_2': None,
-    #             'delivery_price_2': None,
-    #             'delivery_days_2': None,
-    #             'delivery_city_3': None,
-    #             'delivery_price_3': None,
-    #             'delivery_days_3': None
-    #         }
-    #         delivery_1 = False
-    #         delivery_2 = False
-    #         delivery_3 = False
-    #         for offer in offers:
-    #             if not delivery_1:
-    #                 if offer.offer_delivery.delivery_city_1:
-    #                     data['delivery_city_1'] = offer.offer_delivery.delivery_city_1
-    #                     data['delivery_price_1'] = offer.offer_delivery.delivery_price_1
-    #                     data['delivery_days_1'] = offer.offer_delivery.delivery_days_1
-    #                     delivery_1 = True
-    #             if not delivery_2:
-    #                 if offer.offer_delivery.delivery_city_2:
-    #                     data['delivery_city_2'] = offer.offer_delivery.delivery_city_2
-    #                     data['delivery_price_2'] = offer.offer_delivery.delivery_price_2
-    #                     data['delivery_days_2'] = offer.offer_delivery.delivery_days_2
-    #                     delivery_2 = True
-    #             if not delivery_3:
-    #                 if offer.offer_delivery.delivery_city_3:
-    #                     data['delivery_city_3'] = offer.offer_delivery.delivery_city_3
-    #                     data['delivery_price_3'] = offer.offer_delivery.delivery_price_3
-    #                     data['delivery_days_3'] = offer.offer_delivery.delivery_days_3
-    #                     delivery_3 = True
-    #         return Response(data=data, status=status.HTTP_200_OK)
-    #     except AuthShop.DoesNotExist:
-    #         data = {'errors': ['Auth shop not found.']}
-    #         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
     @staticmethod
     def get(request, *args, **kwargs):
         auth_shop_pk = kwargs.get('auth_shop_pk')

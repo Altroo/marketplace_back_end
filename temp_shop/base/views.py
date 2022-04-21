@@ -24,7 +24,7 @@ class TempShopView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         shop_name = request.data.get('shop_name')
-        qaryb_url = quote_plus(shop_name)
+        qaryb_url = quote_plus(str(shop_name))
         unique_id = uuid4()
         serializer = BaseTempShopSerializer(data={
             'shop_name': shop_name,
@@ -32,7 +32,7 @@ class TempShopView(APIView):
             'color_code': request.data.get('color_code'),
             'bg_color_code': request.data.get('bg_color_code'),
             'font_name': request.data.get('font_name'),
-            'qaryb_link': 'https://qaryb.com/' + qaryb_url + str(unique_id),
+            'qaryb_link': 'https://qaryb.com/' + str(qaryb_url) + str(unique_id),
             'unique_id': str(unique_id),
         })
         if serializer.is_valid():

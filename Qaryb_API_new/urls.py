@@ -37,6 +37,12 @@ urlpatterns = [
     path('api/offer/', include('offer.base.urls', namespace='1.0.0')),
     # Temporary offers
     path('api/temp_offer/', include('temp_offer.base.urls', namespace='1.0.0')),
+    # Cart
+    path('api/cart/', include('cart.base.urls', namespace='1.0.0')),
+    # Order
+    path('api/order/', include('order.base.urls', namespace='1.0.0')),
+    # Ratings
+    path('api/ratings/', include('ratings.base.urls', namespace='1.0.0')),
     # Chat
     path('api/chat/', include('chat.base.urls', namespace='1.0.0')),
     # Cities / Geo reverse

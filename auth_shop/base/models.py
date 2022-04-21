@@ -15,6 +15,11 @@ def get_shop_avatar_path(instance, filename):
     return path.join('shop_avatars/', str(uuid4()) + file_extension)
 
 
+def get_shop_qr_code_path(instance, filename):
+    filename, file_extension = path.splitext(filename)
+    return path.join('shop_qrcodes/', str(uuid4()) + file_extension)
+
+
 class ShopChoices:
     """
     Type of shop choices
@@ -75,8 +80,8 @@ class AuthShop(Model):
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
     avatar = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=False, null=False,
                                default=None)
-    avatar_thumbnail = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=True, null=True,
-                                         default=None)
+    avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail', upload_to=get_shop_avatar_path, blank=True,
+                                         null=True, default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     # font_name = models.CharField(verbose_name='Font name', max_length=2,
@@ -106,6 +111,8 @@ class AuthShop(Model):
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     qaryb_link = models.URLField(verbose_name='Qaryb link', max_length=200, blank=False, null=False, unique=True)
+    qr_code_img = models.ImageField(verbose_name='QR code image', upload_to=get_shop_qr_code_path, blank=True,
+                                    null=True, default=None)
     creator = models.BooleanField(verbose_name='Creator ?', default=False)
     # Dates
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
@@ -122,7 +129,7 @@ class AuthShop(Model):
     class Meta:
         verbose_name = 'Auth Shop'
         verbose_name_plural = 'Auth Shops'
-        ordering = ('created_date',)
+        ordering = ('-created_date',)
 
     @property
     def get_absolute_avatar_img(self):
@@ -134,6 +141,12 @@ class AuthShop(Model):
     def get_absolute_avatar_thumbnail(self):
         if self.avatar_thumbnail:
             return "{0}/media{1}".format(API_URL, self.avatar_thumbnail.url)
+        return None
+
+    @property
+    def get_absolute_qr_code_img(self):
+        if self.qr_code_img:
+            return "{0}/media{1}".format(API_URL, self.qr_code_img.url)
         return None
 
     def save_image(self, field_name, image):

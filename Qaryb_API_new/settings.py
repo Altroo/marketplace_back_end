@@ -2,15 +2,11 @@ import os
 from datetime import timedelta
 from decouple import config
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ac@k!7n8s#f(dbbv92(ya_!68%tvi=x&o*k5fp72qt+vkua0=f'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+# Basic config
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', cast=bool)
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
@@ -18,10 +14,9 @@ ALLOWED_HOSTS = [
     config('API_DOMAIN'),
 ]
 
-# ALLOWED_HOSTS = ["*"]
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-# Application definition
+# SSL secure proxy config
+SECURE_PROXY_SSL_HEADER = (config('SECURE_PROXY_SSL_HEADER_1'),
+                           config('SECURE_PROXY_SSL_HEADER_2'))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,6 +48,9 @@ INSTALLED_APPS = [
     'auth_shop.apps.AuthShopConfig',
     'temp_offer.apps.TempOfferConfig',
     'offer.apps.OfferConfig',
+    'cart.apps.CartConfig',
+    'order.apps.OrderConfig',
+    'ratings.apps.RatingsConfig',
     'places.apps.PlacesConfig',
 ]
 
@@ -74,13 +72,17 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
 ]
 
-ROOT_URLCONF = 'Qaryb_API_new.urls'
+# Root url, asgi & wsgi config
+ROOT_URLCONF = config('ROOT_URLCONF')
+ASGI_APPLICATION = config('ASGI_APPLICATION')
+WSGI_APPLICATION = config('WSGI_APPLICATION')
 
+# Templates config
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [(os.path.join(BASE_DIR, 'account/templates'))],
-        'APP_DIRS': True,
+        'BACKEND': config('TEMPLATES_BACKEND'),
+        'DIRS': [(os.path.join(BASE_DIR, config('SWAGGER_ADMIN_LINK_PATH')))],
+        'APP_DIRS': config('TEMPLATES_APP_DIRS', cast=bool),
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -92,126 +94,102 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = "Qaryb_API_new.asgi.application"
-WSGI_APPLICATION = "Qaryb_API_new.wsgi.application"
-
 # Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': "django.db.backends.postgresql_psycopg2",
+        'ENGINE': config('QARYB_DB_BACKEND'),
         'NAME': config('QARYB_DB_NAME'),
         'USER': config('QARYB_DB_USER'),
         'PASSWORD': config('QARYB_DB_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': config('QARYB_DB_HOST'),
         'PORT': '',
     },
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
+# Default password validators config
 AUTH_PASSWORD_VALIDATORS = [
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    # },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': config('AUTH_PASSWORD_VALIDATORS'),
     },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    # },
-    # {
-    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    # },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.1/topics/i18n/
+# Internationalization config
+LANGUAGE_CODE = config('LANGUAGE_CODE')
+TIME_ZONE = config('TIME_ZONE')
+USE_I18N = config('USE_I18N', cast=bool)
+USE_L10N = config('USE_L10N', cast=bool)
+USE_TZ = config('USE_TZ', cast=bool)
 
-LANGUAGE_CODE = 'en-us'
+# Default user model config
+AUTH_USER_MODEL = config('AUTH_USER_MODEL')
+DEFAULT_AUTO_FIELD = config('DEFAULT_AUTO_FIELD')
 
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
-
-AUTH_USER_MODEL = "accounts.CustomUser"
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = "/static/"
+# Static & media files config
+STATIC_URL = config('STATIC_URL')
 # STATIC_ROOT = "static"
-STATIC_PATH = os.path.join(BASE_DIR, 'static')
+STATIC_PATH = os.path.join(BASE_DIR, config('STATIC_PATH'))
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, config('STATIC_PATH')),
 )
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-PRODUCT_IMAGES_BASE_NAME = "/media/shop_products"
-IMAGES_ROOT_NAME = "/"
+MEDIA_ROOT = os.path.join(BASE_DIR, config('MEDIA_PATH'))
 
-# REST_FRAMEWORK
-
+# allauth config
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    config('AUTHENTICATION_BACKENDS_1'),
+    config('AUTHENTICATION_BACKENDS_2'),
 ]
-SITE_ID = 1
+SITE_ID = config('SITE_ID', cast=int)
 
+# Rest framework config
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        "dj_rest_auth.jwt_auth.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
+        config('REST_FRAMEWORK_DEFAULT_AUTHENTICATION_CLASSES_1'),
+        config('REST_FRAMEWORK_DEFAULT_AUTHENTICATION_CLASSES_2'),
     ),
-    'DEFAULT_PERMISSION_CLASSES': ("rest_framework.permissions.IsAuthenticated",),
-    'DEFAULT_VERSIONING_CLASS': "rest_framework.versioning.NamespaceVersioning",
+    'DEFAULT_PERMISSION_CLASSES': (config('REST_FRAMEWORK_DEFAULT_PERMISSION_CLASSES'),),
+    'DEFAULT_VERSIONING_CLASS': config('REST_FRAMEWORK_DEFAULT_VERSIONING_CLASS'),
     'ALLOWED_VERSIONS': ('1.0.0',),
-    'DEFAULT_VERSION': "1.0.0",
-    'DEFAULT_PAGINATION_CLASS': "rest_framework.pagination.PageNumberPagination",
-    'PAGE_SIZE': 10,
-    'DEFAULT_RENDERER_CLASSES': ("rest_framework.renderers.JSONRenderer",),
-    'DEFAULT_SCHEMA_CLASS': "rest_framework.schemas.coreapi.AutoSchema",
-    'DEFAULT_FILTER_BACKENDS': ("django_filters.rest_framework.DjangoFilterBackend",),
+    'DEFAULT_VERSION': config('REST_FRAMEWORK_DEFAULT_VERSION'),
+    'DEFAULT_PAGINATION_CLASS': config('REST_FRAMEWORK_DEFAULT_PAGINATION_CLASS'),
+    'PAGE_SIZE': config('REST_FRAMEWORK_PAGE_SIZE', cast=int),
+    'DEFAULT_RENDERER_CLASSES': (config('REST_FRAMEWORK_DEFAULT_RENDERER_CLASSES'),),
+    'DEFAULT_SCHEMA_CLASS': config('REST_FRAMEWORK_DEFAULT_SCHEMA_CLASS'),
+    'DEFAULT_FILTER_BACKENDS': (config('REST_FRAMEWORK_DEFAULT_FILTER_BACKENDS'),),
 }
 
-REST_USE_JWT = True
-JWT_AUTH_RETURN_EXPIRATION = True
-JWT_AUTH_COOKIE = 'qaryb-jwt-access'
-JWT_AUTH_REFRESH_COOKIE = 'qaryb-jwt-refresh'
+# dj_rest_auth config
+REST_USE_JWT = config('REST_USE_JWT', cast=bool)
+JWT_AUTH_RETURN_EXPIRATION = config('JWT_AUTH_RETURN_EXPIRATION', cast=bool)
+JWT_AUTH_COOKIE = config('JWT_AUTH_COOKIE')
+JWT_AUTH_REFRESH_COOKIE = config('JWT_AUTH_REFRESH_COOKIE')
 REST_AUTH_TOKEN_MODEL = None
 
 # Logging
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
+    'version': config('LOGGING_VERSION', cast=int),
+    'disable_existing_loggers': config('LOGGING_DISABLE_EXISTING_LOGGERS', cast=bool),
     'formatters': {
         'verbose': {
-            'format': "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            'style': "{",
+            'format': config('LOGGING_VERBOSE_FORMAT'),
+            'style': config('LOGGING_VERBOSE_STYLE'),
         },
         'simple': {
-            'format': "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            'style': "{",
+            'format': config('LOGGING_SIMPLE_FORMAT'),
+            'style': config('LOGGING_VERBOSE_STYLE'),
         },
     },
     'handlers': {
         'file': {
-            'level': "WARNING",
-            'class': "logging.FileHandler",
-            'filename': os.path.join(BASE_DIR, "logs/debug.log"),
+            'level': config('LOGGING_FILE_LEVEL'),
+            'class': config('LOGGING_FILE_CLASS'),
+            'filename': os.path.join(BASE_DIR, config('LOGGGING_PATH')),
         },
     },
     'loggers': {
         'django': {
-            'handlers': ["file"],
-            'level': "WARNING",
-            'propagate': True,
+            'handlers': [config('LOGGING_LOGGERS_HANDLERS')],
+            'level': config('LOGGING_FILE_LEVEL'),
+            'propagate': config('LOGGING_LOGGERS_PROPAGATE', cast=bool),
         },
     },
 }
@@ -224,48 +202,49 @@ MAP_DOMAIN = config('MAP_DOMAIN')
 
 # SIMPLE_JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=config('ACCESS_TOKEN_LIFETIME', cast=int)),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=config('REFRESH_TOKEN_LIFETIME', cast=int)),
 }
 
-# Celery, Redis settings
+# Redis config
+REDIS_HOST = config('REDIS_HOST')
+REDIS_PORT = config('REDIS_PORT')
+
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels_redis.core.RedisChannelLayer",
+        'BACKEND': config('REDIS_BACKEND'),
         'CONFIG': {
-            "hosts": [("127.0.0.1", "6379")],
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
     },
 }
-REDIS_HOST = config('REDIS_HOST')
-REDIS_PORT = config('REDIS_PORT')
+# Celery
 CELERY_BROKER_URL = config('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
-# Celery Debug localhost
+# Celery localhost debug enabled :
 # Doesn't call eta shift
 # CELERY_TASK_ALWAYS_EAGER = True
 
 # Email settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = True
-# Gmail
-EMAIL_HOST_USER = "no-reply@qaryb.com"
-EMAIL_HOST_PASSWORD = "24YAqua09"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = "587"
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
 
-# Chat
-# CHAT_BASE_NAME = "media/chat/"
-CONVERSATIONS_TO_LOAD = 10
-MESSAGES_TO_LOAD = 15
+# Chat settings
+CONVERSATIONS_TO_LOAD = config('CONVERSATIONS_TO_LOAD', cast=int)
+MESSAGES_TO_LOAD = config('MESSAGES_TO_LOAD', cast=int)
 
+# SOCIALACCOUNT settings
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
-        'METHOD': 'oauth2',
+        'METHOD': config('FACEBOOK_METHOD'),
         'SCOPE': ['email', 'public_profile'],
-        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-        'LOCALE_FUNC': lambda request: 'en_US',
-        'INIT_PARAMS': {'cookie': False},
+        'AUTH_PARAMS': {'auth_type': config('FACEBOOK_AUTH_TYPE')},
+        'LOCALE_FUNC': lambda request: config('FACEBOOK_LOCALE_FUNC'),
+        'INIT_PARAMS': {'cookie': config('FACEBOOK_COOKIE', cast=bool)},
         'FIELDS': [
             'id',
             'email',
@@ -277,13 +256,9 @@ SOCIALACCOUNT_PROVIDERS = {
             'picture',
             'short_name',
         ],
-        'EXCHANGE_TOKEN': True,
-        'VERIFIED_EMAIL': True,
-        'VERSION': 'v13.0',
-        # 'APP': {
-        #     'client_id': '326143142278628',
-        #     'secret': '0a7e23977e803570152550112950ac1f',
-        # },
+        'EXCHANGE_TOKEN': config('FACEBOOK_EXCHANGE_TOKEN', cast=bool),
+        'VERIFIED_EMAIL': config('FACEBOOK_VERIFIED_EMAIL', cast=bool),
+        'VERSION': config('FACEBOOK_VERSION'),
         'APP': {
             'client_id': config('FACEBOOK_CLIENT_ID'),
             'secret': config('FACEBOOK_SECRET')
@@ -298,7 +273,7 @@ SOCIALACCOUNT_PROVIDERS = {
         # (which is needed to refresh authentication tokens in the background,
         # without involving the user’s browser)
         'AUTH_PARAMS': {
-            'access_type': 'offline',
+            'access_type': config('GOOGLE_ACCESS_TYPE'),
         },
         'APP': {
             'client_id': config('GOOGLE_CLIENT_ID'),
@@ -306,37 +281,32 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     }
 }
-# FB TEST
-# 326143142278628
-# 0a7e23977e803570152550112950ac1f
-# FB REAL
-# 426465588803536
-# ce3005c5ae846c6487b82e441b548597
-SOCIALACCOUNT_ADAPTER = "account.adapters.BaseSocialAccountAdapter"
-SOCIALACCOUNT_STORE_TOKENS = True
-SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_EMAIL_VERIFICATION = False
-SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_ADAPTER = config('SOCIALACCOUNT_ADAPTER')
+SOCIALACCOUNT_STORE_TOKENS = config('SOCIALACCOUNT_STORE_TOKENS', cast=bool)
+SOCIALACCOUNT_QUERY_EMAIL = config('SOCIALACCOUNT_QUERY_EMAIL', cast=bool)
+SOCIALACCOUNT_EMAIL_VERIFICATION = config('SOCIALACCOUNT_EMAIL_VERIFICATION', cast=bool)
+SOCIALACCOUNT_AUTO_SIGNUP = config('SOCIALACCOUNT_AUTO_SIGNUP', cast=bool)
 
+# ACCOUNT settings (dj_rest_auth & allauth)
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_USERNAME_REQUIRED = config('ACCOUNT_USERNAME_REQUIRED', cast=bool)
+ACCOUNT_AUTHENTICATION_METHOD = config('ACCOUNT_AUTHENTICATION_METHOD')
+ACCOUNT_EMAIL_REQUIRED = config('ACCOUNT_EMAIL_REQUIRED', cast=bool)
+ACCOUNT_EMAIL_VERIFICATION = config('ACCOUNT_EMAIL_VERIFICATION')
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = config('ACCOUNT_DEFAULT_HTTP_PROTOCOL')
-# LOGIN_REDIRECT_URL = "/api/account/home/"
 
+# SWAGGER_SETTINGS settings
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
         'basic': {
-            'type': 'basic'
+            'type': config('SECURITY_DEFINITIONS_BASIC_TYPE')
         },
         'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
+            'type': config('SECURITY_DEFINITIONS_BEARER_TYPE'),
+            'name': config('SECURITY_DEFINITIONS_BEARER_NAME'),
+            'in': config('SECURITY_DEFINITIONS_BEARER_IN')
         }
     },
-    'LOGIN_URL': '/admin/login/',
-    'LOGOUT_URL': '/admin/logout/',
+    'LOGIN_URL': config('SWAGGER_LOGIN_URL'),
+    'LOGOUT_URL': config('SWAGGER_LOGOUT_URL'),
 }
