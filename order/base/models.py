@@ -44,6 +44,7 @@ class OrderDetails(Model):
                               verbose_name='Order', related_name='order_details_order')
     offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
                               verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
+    # TODO add offer title case offer was removed by the seller
     # Seller offer details
     picked_click_and_collect = models.BooleanField(verbose_name='Click and collect', default=False)
     product_longitude = models.FloatField(verbose_name='Product longitude', max_length=10,

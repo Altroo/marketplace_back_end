@@ -23,6 +23,7 @@ class BaseTempOrdersListSerializer(serializers.Serializer):
 
     @staticmethod
     def get_offer_name(instance):
+        # TODO get offer title if offer was removed
         order_detail = OrderDetails.objects.filter(order=instance.pk)
         if len(order_detail) == 1:
             try:

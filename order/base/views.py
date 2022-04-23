@@ -10,6 +10,7 @@ from order.base.serializers import BaseTempOrdersListSerializer
 class GetMyOrdersListView(APIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
 
+    # TODO include double list orders for buyers & sellers
     def get(self, request, *args, **kwargs):
         user_pk = request.user
         try:
