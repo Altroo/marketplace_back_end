@@ -70,7 +70,7 @@ MIDDLEWARE = [
 # CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
-    'http//:localhost:3000',
+    'http//localhost:3000',
 )
 
 # Root url, asgi & wsgi config
