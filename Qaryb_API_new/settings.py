@@ -12,6 +12,7 @@ ALLOWED_HOSTS = [
     'localhost',
     config('API_IP'),
     config('API_DOMAIN'),
+    'http://localhost:3000',
 ]
 
 # SSL secure proxy config
@@ -68,9 +69,9 @@ MIDDLEWARE = [
 # CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-]
+CORS_ORIGIN_WHITELIST = (
+    'http//:localhost:3000',
+)
 
 # Root url, asgi & wsgi config
 ROOT_URLCONF = config('ROOT_URLCONF')

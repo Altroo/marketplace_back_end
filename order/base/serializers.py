@@ -6,17 +6,15 @@ from order.base.models import Order, OrderDetails
 class BaseNewOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['buyer', 'seller', 'order_number', 'order_date', 'order_status', 'unique_id']
+        fields = ['buyer', 'seller', 'order_number', 'order_date', 'order_status']
 
 
 # For naming convention
 # TODO include services
 class BaseTempOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
-    # TODO Avatar needs to be dynamic between buyer and seller
-    avatar = serializers.CharField(source='buyer.get_absolute_avatar_thumbnail')
-    first_name = serializers.CharField(source='buyer.first_name')
-    last_name = serializers.CharField(source='buyer.last_name')
+    avatar = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
     title = serializers.CharField()
     total_price = serializers.SerializerMethodField()
     order_status = serializers.CharField()
@@ -32,6 +30,16 @@ class BaseTempOrdersListSerializer(serializers.Serializer):
     #         except AttributeError:
     #             return "Supprimer par le vendeur"
     #     return "{} articles".format(len(order_detail))
+
+    def get_avatar(self, instance):
+        if self.context.get('order_type') == 'buy':
+            return instance.buyer.get_absolute_avatar_thumbnail
+        return instance.seller.get_absolute_avatar_thumbnail
+
+    def get_name(self, instance):
+        if self.context.get('order_type') == 'buy':
+            return instance.buyer.first_name + ' ' + instance.buyer.last_name
+        return instance.seller.shop_name
 
     @staticmethod
     def get_total_price(instance):
@@ -125,10 +133,9 @@ class BaseDetailsOrderServiceSerializer(serializers.Serializer):
         except Solder.DoesNotExist:
             return instance.offer.price * instance.picked_quantity
 
-    # TODO include thumbnail offer may gets null
     @staticmethod
     def get_thumbnail(instance):
-        return instance.offer.get_absolute_picture_1_img
+        return instance.get_absolute_offer_thumbnail
 
     def update(self, instance, validated_data):
         pass

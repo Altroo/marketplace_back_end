@@ -2,7 +2,8 @@ from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
 from auth_shop.base.models import AuthShop, LonLatValidators
-from offer.base.models import Offers
+from offer.base.models import Offers, OfferChoices, get_shop_products_path
+from Qaryb_API_new.settings import API_URL
 
 
 class Order(Model):
@@ -27,9 +28,8 @@ class Order(Model):
     )
     order_status = models.CharField(verbose_name='Order Status', max_length=2,
                                     choices=ORDER_STATUS_CHOICES, default='TC')
-    unique_id = models.CharField(max_length=15, default=0)
     viewed = models.BooleanField(default=False)
-    # viewed_seller = models.BooleanField(default=False)
+    viewed_seller = models.BooleanField(default=False)
 
     def __str__(self):
         return 'Buyer : {} - Seller : {}'.format(self.buyer.email, self.seller.shop_name)
@@ -40,16 +40,16 @@ class Order(Model):
         ordering = ('-order_date',)
 
 
-# TODO needs order details status in case one details order is canceled
-# TODO include thumbnail offer may gets null
-# TODO needs to include zone by sector or address
-# TODO include offer type in case offer is null
 class OrderDetails(Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE,
-                              verbose_name='Order', related_name='order_details_order')
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL,
+                              verbose_name='Order', related_name='order_details_order', null=True, blank=True)
     offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
                               verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
+    offer_thumbnail = models.ImageField(verbose_name='Offer thumbnail', blank=True, null=True,
+                                            upload_to=get_shop_products_path, max_length=1000)
+    offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
+                                  choices=OfferChoices.OFFER_TYPE_CHOICES)
     # Seller offer details
     picked_click_and_collect = models.BooleanField(verbose_name='Click and collect', default=False)
     product_longitude = models.FloatField(verbose_name='Product longitude', max_length=10,
@@ -78,11 +78,38 @@ class OrderDetails(Model):
     # Service
     picked_date = models.DateField(verbose_name='Picked Date', default=None, null=True, blank=True)
     picked_hour = models.TimeField(verbose_name='Picked Hour', default=None, null=True, blank=True)
+    # Original service location
+    service_zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=OfferChoices.ZONE_BY_CHOICES,
+                                       default='A')
+    service_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.SERVICE_PRICE_BY_CHOICES,
+                                        max_length=1)
+    service_longitude = models.FloatField(verbose_name='Service Longitude', blank=True,
+                                          null=True, max_length=10, validators=[LonLatValidators.long_validator],
+                                          default=None)
+    service_latitude = models.FloatField(verbose_name='Service Latitude', blank=True,
+                                         null=True, max_length=10,
+                                         validators=[LonLatValidators.lat_validator], default=None)
+    service_address = models.CharField(verbose_name='Service Address', max_length=255,
+                                       blank=True, null=True, default=None)
+    service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     total_self_price = models.FloatField(verbose_name='Total self price', default=0.0)
+    OFFER_CANCELED_STATUS_CHOICES = (
+        ('CB', 'Canceled by buyer'),
+        ('CS', 'Canceled by seller'),
+    )
+    offer_canceled = models.CharField(verbose_name='Offer Canceled', max_length=2,
+                                      choices=OFFER_CANCELED_STATUS_CHOICES, default=None,
+                                      null=True, blank=True)
 
     def __str__(self):
         return 'Pk : {} Order : {} - Seller : {}'.format(self.order.pk, self.order.buyer.email,
                                                          self.order.seller.shop_name)
+
+    @property
+    def get_absolute_offer_thumbnail(self):
+        if self.offer_thumbnail:
+            return "{0}/media{1}".format(API_URL, self.offer_thumbnail.url)
+        return None
 
     class Meta:
         verbose_name = 'Order details'

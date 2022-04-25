@@ -7,24 +7,6 @@ from order.base.models import Order, OrderDetails
 from order.base.serializers import BaseTempOrdersListSerializer, BaseOrderDetailsListSerializer
 
 
-# class GetMyOrdersListView(APIView, PageNumberPagination):
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     # TODO include double list orders for buyers & sellers
-#     def get(self, request, *args, **kwargs):
-#         user_pk = request.user
-#         try:
-#             auth_shop = AuthShop.objects.get(user=user_pk)
-#             temp_shop = Order.objects.filter(seller=auth_shop)
-#             page = self.paginate_queryset(request=request, queryset=temp_shop)
-#             if page is not None:
-#                 serializer = BaseTempOrdersListSerializer(instance=page, many=True)
-#                 return self.get_paginated_response(serializer.data)
-#         except AuthShop.DoesNotExist:
-#             data = {'errors': ['Auth shop not found.']}
-#             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
 class GetMySellingOrdersListView(APIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -35,8 +17,7 @@ class GetMySellingOrdersListView(APIView, PageNumberPagination):
             temp_shop = Order.objects.filter(seller=auth_shop)
             page = self.paginate_queryset(request=request, queryset=temp_shop)
             if page is not None:
-                # TODO pass sell context
-                serializer = BaseTempOrdersListSerializer(instance=page, many=True)
+                serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
                 return self.get_paginated_response(serializer.data)
         except AuthShop.DoesNotExist:
             data = {'errors': ["User doesn't own a store yet."]}
@@ -51,15 +32,15 @@ class GetMyBuyingsOrdersListView(APIView, PageNumberPagination):
         temp_shop = Order.objects.filter(buyer=user_pk)
         page = self.paginate_queryset(request=request, queryset=temp_shop)
         if page is not None:
-            # TODO pass buy context
-            serializer = BaseTempOrdersListSerializer(instance=page, many=True)
+            serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'buy'})
             return self.get_paginated_response(serializer.data)
 
 
 class GetMyOrderDetailsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         user = request.user
         order_pk = kwargs.get('order_pk')
         order_type = kwargs.get('order_type')
@@ -75,4 +56,18 @@ class GetMyOrderDetailsView(APIView):
         except Order.DoesNotExist:
             data = {'errors': ['Order not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CancelSellingOfferView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        pass
+
+
+class CancelBuyingOfferView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        pass
 
