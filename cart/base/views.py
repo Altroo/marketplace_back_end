@@ -13,6 +13,8 @@ from order.base.serializers import BaseNewOrderSerializer, BaseOferDetailsProduc
 from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from random import choice
+from string import ascii_letters, digits
 
 
 class GetCartOffersView(APIView):
@@ -153,6 +155,12 @@ class ValidateCartOffersView(APIView):
         except Solder.DoesNotExist:
             return (instance.price * picked_quantity) + delivery_price
 
+    @staticmethod
+    def random_unique_id(length=15):
+        letters_digits = ascii_letters + digits
+        return ''.join(choice(letters_digits) for i in range(length))
+
+    # TODO on double insert order number needs to be keept the same
     def post(self, request, *args, **kwargs):
         user_pk = request.user
         shop_pk = request.data.get('shop_pk')
@@ -173,18 +181,23 @@ class ValidateCartOffersView(APIView):
                 uid = urlsafe_base64_encode(force_bytes(request.user.pk))
                 # order_date = default auto now
                 # order_status = default to confirm
+                my_unique_id = self.random_unique_id()
                 order_serializer = BaseNewOrderSerializer(data={
                     'buyer': cart_offer.user.pk,
                     'seller': cart_offer.offer.auth_shop.pk,
-                    'order_number': '{}-{}'.format(timestamp_rnd, uid)
+                    'order_number': '{}-{}'.format(timestamp_rnd, uid),
+                    'unique_id': my_unique_id
                 })
                 if order_serializer.is_valid():
                     order_serializer = order_serializer.save()
+                    # Products
                     if cart_offer.offer.offer_type == 'V':
                         product_details = Products.objects.get(offer=cart_offer.offer.pk)
+
                         order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                             'order': order_serializer.pk,
                             'offer': cart_offer.offer.pk,
+                            'title': cart_offer.offer.title,
                             'picked_click_and_collect': request.data.get('picked_click_and_collect', False),
                             'product_longitude': product_details.product_longitude,
                             'product_latitude': product_details.product_latitude,
@@ -213,11 +226,13 @@ class ValidateCartOffersView(APIView):
                             order_details_product_serializer.save()
                             return Response(data=order_details_product_serializer.data, status=status.HTTP_200_OK)
                         return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    # Services
                     elif cart_offer.offer.offer_type == 'S':
                         service_details = Services.objects.get(offer=cart_offer.offer.pk)
                         order_details_service_serializer = BaseOfferDetailsServiceSerializer(data={
                             'order': order_serializer.pk,
                             'offer': cart_offer.offer.pk,
+                            'title': cart_offer.offer.title,
                             'service_zone_by': service_details.service_zone_by,
                             'service_longitude': service_details.service_longitude,
                             'service_latitude': service_details.service_latitude,
@@ -252,10 +267,12 @@ class ValidateCartOffersView(APIView):
                 uid = urlsafe_base64_encode(force_bytes(request.user.pk))
                 # order_date = default auto now
                 # order_status = default to confirm
+                my_unique_id = self.random_unique_id()
                 order_serializer = BaseNewOrderSerializer(data={
                     'buer': cart_offer.user,
                     'seller': cart_offer.offer.auth_shop,
-                    'order_number': '{}-{}'.format(timestamp_rnd, uid)
+                    'order_number': '{}-{}'.format(timestamp_rnd, uid),
+                    'unique_id': my_unique_id
                 })
                 if order_serializer.is_valid():
                     order_serializer = order_serializer.save()
@@ -264,6 +281,7 @@ class ValidateCartOffersView(APIView):
                         order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                             'order': order_serializer.pk,
                             'offer': cart_offer.offer.pk,
+                            'title': cart_offer.offer.title,
                             'picked_click_and_collect': request.data.get('picked_click_and_collect'),
                             'product_longitude': product_details.product_longitude,
                             'product_latitude': product_details.product_latitude,
@@ -294,6 +312,7 @@ class ValidateCartOffersView(APIView):
                         order_details_service_serializer = BaseOfferDetailsServiceSerializer(data={
                             'order': order_serializer.pk,
                             'offer': cart_offer.offer.pk,
+                            'title': cart_offer.offer.title,
                             'service_zone_by': service_details.service_zone_by,
                             'service_longitude': service_details.service_longitude,
                             'service_latitude': service_details.service_latitude,

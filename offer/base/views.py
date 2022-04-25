@@ -38,10 +38,6 @@ class ShopOfferView(APIView):
                 .select_related('offer_services') \
                 .prefetch_related('offer_delivery') \
                 .get(pk=offer_pk)
-            print(offer.offer_delivery.all()[0].offer)
-            print(offer.offer_delivery.all()[0].delivery_city.all())
-            print(offer.offer_delivery.all()[0].delivery_price)
-            print(offer.offer_delivery.all()[0].delivery_days)
             offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'user': user})
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
         except Offers.DoesNotExist:

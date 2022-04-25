@@ -1,12 +1,17 @@
 from django.urls import path
-from .views import GetMyOrdersListView
+from .views import GetMySellingOrdersListView, GetMyBuyingsOrdersListView, \
+    GetMyOrderDetailsView
 
 app_name = 'order'
 
 urlpatterns = [
     # GET : My orders list.
-    path('', GetMyOrdersListView.as_view()),
+    # GET : My buying orders
+    path('buyings/', GetMyBuyingsOrdersListView.as_view()),
+    # GET : My selling orders
+    path('sellings/', GetMySellingOrdersListView.as_view()),
     # GET : One order details. (may include several products) + mark viewed_buyer as True
+    path('<str:order_type>/<int:order_pk>/', GetMyOrderDetailsView.as_view()),
     # POST : Cancel a product from an order (Seller)
     # POST : Cancel a product from an order (Buyer)
     # POST : Cancel everything (Seller)

@@ -10,7 +10,7 @@ class Order(Model):
                               verbose_name='Buyer', related_name='order_buyer')
     seller = models.ForeignKey(AuthShop, on_delete=models.CASCADE,
                                verbose_name='Seller', related_name='order_seller')
-    # TIMESTAMP-UID
+    # TIMESTAMP[0:4]-UID
     # 4566-MQ
     order_number = models.CharField(verbose_name='Order number', max_length=255, unique=True)
     order_date = models.DateTimeField(verbose_name='Order date', editable=False,
@@ -27,8 +27,9 @@ class Order(Model):
     )
     order_status = models.CharField(verbose_name='Order Status', max_length=2,
                                     choices=ORDER_STATUS_CHOICES, default='TC')
-    viewed_buyer = models.BooleanField(default=False)
-    viewed_seller = models.BooleanField(default=False)
+    unique_id = models.CharField(max_length=15, default=0)
+    viewed = models.BooleanField(default=False)
+    # viewed_seller = models.BooleanField(default=False)
 
     def __str__(self):
         return 'Buyer : {} - Seller : {}'.format(self.buyer.email, self.seller.shop_name)
@@ -39,18 +40,22 @@ class Order(Model):
         ordering = ('-order_date',)
 
 
+# TODO needs order details status in case one details order is canceled
+# TODO include thumbnail offer may gets null
+# TODO needs to include zone by sector or address
+# TODO include offer type in case offer is null
 class OrderDetails(Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               verbose_name='Order', related_name='order_details_order')
     offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
                               verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
-    # TODO add offer title case offer was removed by the seller
+    title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
     # Seller offer details
     picked_click_and_collect = models.BooleanField(verbose_name='Click and collect', default=False)
     product_longitude = models.FloatField(verbose_name='Product longitude', max_length=10,
-                                                    validators=[LonLatValidators.long_validator], default=False)
+                                          validators=[LonLatValidators.long_validator], default=False)
     product_latitude = models.FloatField(verbose_name='Product latitude', max_length=10,
-                                                   validators=[LonLatValidators.lat_validator], default=False)
+                                         validators=[LonLatValidators.lat_validator], default=False)
     product_address = models.CharField(verbose_name='product_address', max_length=255, default=False)
     picked_delivery = models.BooleanField(verbose_name='Delivery', default=False)
     delivery_city = models.CharField(verbose_name='Delivery city', max_length=255)

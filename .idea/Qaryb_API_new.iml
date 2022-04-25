@@ -44,8 +44,9 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/tests" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/venv_brew" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (Qaryb_API_new)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (Qaryb_API_new) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
