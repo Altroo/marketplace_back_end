@@ -65,13 +65,13 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-# CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
-CORS_ORIGIN_WHITELIST = (
-    'https://localhost:3000',
-    'http://localhost:3000',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'https://localhost:3000',
+#     'http://localhost:3000',
+# )
 
 # Root url, asgi & wsgi config
 ROOT_URLCONF = config('ROOT_URLCONF')
