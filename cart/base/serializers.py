@@ -3,6 +3,58 @@ from cart.base.models import Cart
 from cart.base.utils import GetCartPrices
 from places.base.models import City
 from offer.base.models import Delivery, Products
+from order.base.models import Order, OrderDetails
+
+
+class BaseNewOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['buyer', 'seller', 'order_number', 'order_date', 'order_status']
+
+
+class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderDetails
+        fields = [
+            'order', 'offer', 'title',
+            # Seller offer details
+            # Picked click and collect
+            'picked_click_and_collect',
+            'product_longitude', 'product_latitude', 'product_address',
+            # Picked delivery
+            'picked_delivery',
+            'delivery_city', 'delivery_price', 'delivery_days',
+            # Buyer coordinates
+            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
+            # Both product & service
+            'note',
+            # Product
+            'picked_color', 'picked_size', 'picked_quantity',
+            # Service
+            'picked_date', 'picked_hour',
+            'total_self_price'
+        ]
+
+
+class BaseOfferDetailsServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderDetails
+        fields = [
+            'order',
+            'offer',
+            'title',
+            'service_zone_by',
+            'service_longitude',
+            'service_latitude',
+            'service_address',
+            'service_km_radius',
+            # Buyer coordinates
+            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
+            # Srvices
+            'note',
+            'picked_date', 'picked_hour',
+            'total_self_price'
+        ]
 
 
 class BaseCartClickAndCollectSerializer(serializers.ModelSerializer):

@@ -23,37 +23,41 @@ class TempShopView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        shop_name = request.data.get('shop_name')
-        qaryb_url = quote_plus(str(shop_name))
-        unique_id = uuid4()
-        serializer = BaseTempShopSerializer(data={
-            'shop_name': shop_name,
-            'avatar': request.data.get('avatar'),
-            'color_code': request.data.get('color_code'),
-            'bg_color_code': request.data.get('bg_color_code'),
-            'font_name': request.data.get('font_name'),
-            'qaryb_link': 'https://qaryb.com/' + str(qaryb_url) + str(unique_id),
-            'unique_id': str(unique_id),
-        })
-        if serializer.is_valid():
-            temp_shop = serializer.save()
-            temp_shop.save()
-            data = {
-                'unique_id': unique_id,
-                'shop_name': temp_shop.shop_name,
-                'avatar': temp_shop.get_absolute_avatar_img,
-                'color_code': temp_shop.color_code,
-                'bg_color_code': temp_shop.bg_color_code,
-                'font_name': temp_shop.font_name
-            }
-            # Generate thumbnail
-            base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
-            shift = datetime.utcnow() + timedelta(hours=24)
-            task_id = base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
-            temp_shop.task_id = str(task_id)
-            temp_shop.save()
-            return Response(data=data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            shop_name = request.data.get('shop_name')
+            qaryb_url = quote_plus(str(shop_name))
+            unique_id = uuid4()
+            serializer = BaseTempShopSerializer(data={
+                'shop_name': shop_name,
+                'avatar': request.data.get('avatar'),
+                'color_code': request.data.get('color_code'),
+                'bg_color_code': request.data.get('bg_color_code'),
+                'font_name': request.data.get('font_name'),
+                'qaryb_link': 'https://qaryb.com/' + str(qaryb_url) + str(unique_id),
+                'unique_id': str(unique_id),
+            })
+            if serializer.is_valid():
+                temp_shop = serializer.save()
+                temp_shop.save()
+                data = {
+                    'unique_id': unique_id,
+                    'shop_name': temp_shop.shop_name,
+                    'avatar': temp_shop.get_absolute_avatar_img,
+                    'color_code': temp_shop.color_code,
+                    'bg_color_code': temp_shop.bg_color_code,
+                    'font_name': temp_shop.font_name
+                }
+                # Generate thumbnail
+                base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
+                shift = datetime.utcnow() + timedelta(hours=24)
+                task_id = base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
+                temp_shop.task_id = str(task_id)
+                temp_shop.save()
+                return Response(data=data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            errors = {'errors': e}
+            return Response(data=errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def get(request, *args, **kwargs):

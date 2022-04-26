@@ -43,13 +43,33 @@ class Order(Model):
 class OrderDetails(Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL,
                               verbose_name='Order', related_name='order_details_order', null=True, blank=True)
+    # Order fallback if deleted
+    order_number = models.CharField(verbose_name='Order number', max_length=255, unique=True)
+    order_date = models.DateTimeField(verbose_name='Order date', editable=False,
+                                      auto_now_add=True, db_index=True)
+    ORDER_STATUS_CHOICES = (
+        ('TC', 'To confirm'),
+        ('OG', 'On-going'),
+        ('SH', 'Shipped'),
+        ('RD', 'Ready'),
+        ('TE', 'To evaluate'),
+        ('CM', 'Completed'),
+        ('CB', 'Canceled by buyer'),
+        ('CS', 'Canceled by seller'),
+    )
+    order_status = models.CharField(verbose_name='Order Status', max_length=2,
+                                    choices=ORDER_STATUS_CHOICES, default='TC')
+    viewed = models.BooleanField(default=False)
+    viewed_seller = models.BooleanField(default=False)
     offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
                               verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
+    # Offer fallback if deleted
+    offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
+                                  choices=OfferChoices.OFFER_TYPE_CHOICES)
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
     offer_thumbnail = models.ImageField(verbose_name='Offer thumbnail', blank=True, null=True,
                                             upload_to=get_shop_products_path, max_length=1000)
-    offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
-                                  choices=OfferChoices.OFFER_TYPE_CHOICES)
+    price = models.FloatField(verbose_name='Price', default=0.0)
     # Seller offer details
     picked_click_and_collect = models.BooleanField(verbose_name='Click and collect', default=False)
     product_longitude = models.FloatField(verbose_name='Product longitude', max_length=10,
@@ -69,6 +89,7 @@ class OrderDetails(Model):
     zip_code = models.PositiveIntegerField(verbose_name='Zip code')
     country = models.CharField(verbose_name='Country', max_length=30)
     phone = models.CharField(verbose_name='Phone number', max_length=15)
+    email = models.EmailField(verbose_name='email address')
     # Both product & service
     note = models.CharField(verbose_name='Note', max_length=300, default=None, null=True, blank=True)
     # Product

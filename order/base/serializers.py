@@ -1,106 +1,6 @@
 from rest_framework import serializers
 from offer.base.models import Solder
-from order.base.models import Order, OrderDetails
-
-
-class BaseNewOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ['buyer', 'seller', 'order_number', 'order_date', 'order_status']
-
-
-# For naming convention
-# TODO include services
-class BaseTempOrdersListSerializer(serializers.Serializer):
-    pk = serializers.IntegerField()
-    avatar = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-    title = serializers.CharField()
-    total_price = serializers.SerializerMethodField()
-    order_status = serializers.CharField()
-    order_date = serializers.DateTimeField()
-    viewed_buyer = serializers.BooleanField()
-
-    # @staticmethod
-    # def get_offer_name(instance):
-    #     order_detail = OrderDetails.objects.filter(order=instance.pk)
-    #     if len(order_detail) == 1:
-    #         try:
-    #             return order_detail[0].offer.title
-    #         except AttributeError:
-    #             return "Supprimer par le vendeur"
-    #     return "{} articles".format(len(order_detail))
-
-    def get_avatar(self, instance):
-        if self.context.get('order_type') == 'buy':
-            return instance.buyer.get_absolute_avatar_thumbnail
-        return instance.seller.get_absolute_avatar_thumbnail
-
-    def get_name(self, instance):
-        if self.context.get('order_type') == 'buy':
-            return instance.buyer.first_name + ' ' + instance.buyer.last_name
-        return instance.seller.shop_name
-
-    @staticmethod
-    def get_total_price(instance):
-        order_detail = OrderDetails.objects.filter(order=instance.pk)
-        if len(order_detail) == 1:
-            return order_detail[0].total_self_price
-        price = 0
-        for i in order_detail:
-            price += i.total_self_price
-        return price
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetails
-        fields = [
-            'order', 'offer', 'title',
-            # Seller offer details
-            # Picked click and collect
-            'picked_click_and_collect',
-            'product_longitude', 'product_latitude', 'product_address',
-            # Picked delivery
-            'picked_delivery',
-            'delivery_city', 'delivery_price', 'delivery_days',
-            # Buyer coordinates
-            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
-            # Both product & service
-            'note',
-            # Product
-            'picked_color', 'picked_size', 'picked_quantity',
-            # Service
-            'picked_date', 'picked_hour',
-            'total_self_price'
-        ]
-
-
-class BaseOfferDetailsServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetails
-        fields = [
-            'order',
-            'offer',
-            'title',
-            'service_zone_by',
-            'service_longitude',
-            'service_latitude',
-            'service_address',
-            'service_km_radius',
-            # Buyer coordinates
-            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
-            # Srvices
-            'note',
-            'picked_date', 'picked_hour',
-            'total_self_price'
-        ]
+from order.base.models import OrderDetails
 
 
 class BaseDetailsOrderProductSerializer(serializers.Serializer):
@@ -144,19 +44,57 @@ class BaseDetailsOrderServiceSerializer(serializers.Serializer):
         pass
 
 
+# For naming convention
+# TODO include services
+class BaseTempOrdersListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    avatar = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    title = serializers.CharField()
+    total_price = serializers.SerializerMethodField()
+    order_status = serializers.CharField()
+    order_date = serializers.DateTimeField()
+    viewed_buyer = serializers.BooleanField()
+
+    def get_avatar(self, instance):
+        if self.context.get('order_type') == 'buy':
+            return instance.buyer.get_absolute_avatar_thumbnail
+        return instance.seller.get_absolute_avatar_thumbnail
+
+    def get_name(self, instance):
+        if self.context.get('order_type') == 'buy':
+            return instance.buyer.first_name + ' ' + instance.buyer.last_name
+        return instance.seller.shop_name
+
+    @staticmethod
+    def get_total_price(instance):
+        order_detail = OrderDetails.objects.filter(order=instance.pk)
+        if len(order_detail) == 1:
+            return order_detail[0].total_self_price
+        price = 0
+        for i in order_detail:
+            price += i.total_self_price
+        return price
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
 class BaseOrderDetailsTypeListSerializer(serializers.Serializer):
     # Can include multiple products / multiple services / mixed products + services
     order_details = serializers.SerializerMethodField()
 
-    # TODO offer might get null and won't return offer_type
     @staticmethod
     def get_order_details(instance):
         # order product details
-        if instance.offer.offer_type == 'V':
+        if instance.offer_type == 'V':
             details_product = BaseDetailsOrderProductSerializer(instance)
             return details_product.data
         # order service details
-        if instance.offer.offer_type == 'S':
+        if instance.offer_type == 'S':
             details_service = BaseDetailsOrderServiceSerializer(instance)
             return details_service.data
 
