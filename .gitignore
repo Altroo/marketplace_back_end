@@ -5,7 +5,6 @@ venv/
 media/
 logs/
 tests/
-logs/debug.log
 account/migrations
 chat/migrations
 temp_shop/migrations
