@@ -15,8 +15,6 @@ class InsertAll:
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../../.."))
 
     def insert_all(self):
-        # This will ensure example.com is deleted so SITE_ID will be = 2
-        Site.objects.all().delete()
         with open(self.parent_file_dir + '/csv_data/categories.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
