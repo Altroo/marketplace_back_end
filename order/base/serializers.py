@@ -46,6 +46,7 @@ class BaseDetailsOrderServiceSerializer(serializers.Serializer):
 
 # For naming convention
 # TODO include services
+# TODO add exception AttributeError (as a fallback foreignkey)
 class BaseTempOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     avatar = serializers.SerializerMethodField()
