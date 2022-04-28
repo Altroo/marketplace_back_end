@@ -1,13 +1,13 @@
 .DS_Store
 .idea/
 __pycache__/
+*.pyc
 venv/
 media/
 logs/
 logs/debug.log
 logs/ws_debug.log
 tests/
-**/__pycache__/
 account/migrations
 auth_shop/migrations
 cart/migrations
