@@ -9,29 +9,38 @@ from order.base.models import Order, OrderDetails
 class BaseNewOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['buyer', 'seller', 'order_number', 'order_date', 'order_status']
+        fields = ['buyer', 'seller',
+                  # Buyer fallback if deleted
+                  'first_name', 'last_name', 'buyer_avatar_thumbnail',
+                  # Seller fallback if deleted
+                  'shop_name', 'seller_avatar_thumbnail',
+                  'order_number', 'order_date', 'order_status']
 
 
 class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderDetails
         fields = [
-            'order', 'offer', 'title',
+            'order',
+            # Order Fallback if deleted
+            # 'order_number', 'order_date', 'order_status', 'viewed_buyer', 'viewed_seller',
+            # 'offer',
+            # Offer Fallback if deleted
+            'offer_type', 'title', 'offer_thumbnail',
             # Seller offer details
             # Picked click and collect
             'picked_click_and_collect',
             'product_longitude', 'product_latitude', 'product_address',
             # Picked delivery
             'picked_delivery',
-            'delivery_city', 'delivery_price', 'delivery_days',
+            # 'delivery_city', 'delivery_price', 'delivery_days',
+            'delivery_price',
             # Buyer coordinates
-            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
+            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone', 'email',
             # Both product & service
             'note',
             # Product
             'picked_color', 'picked_size', 'picked_quantity',
-            # Service
-            'picked_date', 'picked_hour',
             'total_self_price'
         ]
 
@@ -41,15 +50,18 @@ class BaseOfferDetailsServiceSerializer(serializers.ModelSerializer):
         model = OrderDetails
         fields = [
             'order',
-            'offer',
-            'title',
+            # Order Fallback if deleted
+            # 'order_number', 'order_date', 'order_status', 'viewed_buyer', 'viewed_seller',
+            # 'offer',
+            # Offer Fallback if deleted
+            'offer_type', 'title', 'offer_thumbnail',
             'service_zone_by',
             'service_longitude',
             'service_latitude',
             'service_address',
             'service_km_radius',
             # Buyer coordinates
-            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone',
+            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone', 'email',
             # Srvices
             'note',
             'picked_date', 'picked_hour',
@@ -79,37 +91,37 @@ class BaseCartDeliverySerializer(serializers.ModelSerializer):
         fields = ['delivery_city', 'delivery_price', 'delivery_days']
 
 
-class BaseShopAndOffersDetailsListSerializer(serializers.Serializer):
-    shop_pk = serializers.IntegerField(source='offer.auth_shop.pk')
-    shop_picture = serializers.CharField(source='offer.auth_shop.get_absolute_avatar_thumbnail')
-    shop_name = serializers.CharField(source='offer.auth_shop.shop_name')
-    offer_title = serializers.CharField(source='offer.title')
-    offer_price = serializers.SerializerMethodField()
+# class BaseShopAndOffersDetailsListSerializer(serializers.Serializer):
+#     shop_pk = serializers.IntegerField(source='offer.auth_shop.pk')
+#     shop_picture = serializers.CharField(source='offer.auth_shop.get_absolute_avatar_thumbnail')
+#     shop_name = serializers.CharField(source='offer.auth_shop.shop_name')
+#     offer_title = serializers.CharField(source='offer.title')
+#     offer_price = serializers.SerializerMethodField()
+#
+#     @staticmethod
+#     def get_offer_price(instance):
+#         return GetCartPrices().get_offer_price(instance)
+#
+#     def update(self, instance, validated_data):
+#         pass
+#
+#     def create(self, validated_data):
+#         pass
 
-    @staticmethod
-    def get_offer_price(instance):
-        return GetCartPrices().get_offer_price(instance)
 
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
-class BaseMultiOffersOneStoreSerializer(serializers.Serializer):
-    cart_details = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_cart_details(instance):
-        cart_details = BaseShopAndOffersDetailsListSerializer(instance)
-        return cart_details.data
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
+# class BaseMultiOffersOneStoreSerializer(serializers.Serializer):
+#     cart_details = serializers.SerializerMethodField()
+#
+#     @staticmethod
+#     def get_cart_details(instance):
+#         cart_details = BaseShopAndOffersDetailsListSerializer(instance)
+#         return cart_details.data
+#
+#     def update(self, instance, validated_data):
+#         pass
+#
+#     def create(self, validated_data):
+#         pass
 
 
 class BaseCartDetailsProductSerializer(serializers.Serializer):

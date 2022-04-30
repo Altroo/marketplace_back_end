@@ -15,6 +15,7 @@ app.autodiscover_tasks(
         'temp_shop.base.tasks',
         'offer.base.tasks',
         'chat.base.tasks',
+        'order.base.tasks',
     )
 )
 

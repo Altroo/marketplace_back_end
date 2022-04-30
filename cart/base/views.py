@@ -12,6 +12,7 @@ from cart.base.utils import GetCartPrices
 from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from order.base.tasks import base_duplicate_order_images
 # from random import choice
 # from string import ascii_letters, digits
 
@@ -106,6 +107,7 @@ class CartOffersView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Return new total price
     @staticmethod
     def delete(request, *args, **kwargs):
         user = request.user
@@ -115,7 +117,7 @@ class CartOffersView(APIView):
             reduced_price = GetCartPrices().get_offer_price(cart_offer)
             cart_offer.delete()
             data = {
-                'minus_price': reduced_price
+                'total_price': reduced_price
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except Cart.DoesNotExist:
@@ -141,9 +143,8 @@ class ValidateCartOffersView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
-    def get_offer_price(instance, picked_quantity=1, delivery_price=0):
-        try:
-            solder = Solder.objects.get(offer=instance.pk)
+    def get_offer_price(instance, picked_quantity=1, delivery_price=0, solder=None):
+        if solder is not None:
             # Réduction fix
             if solder.solder_type == 'F':
                 offer_price = instance.price - solder.solder_value
@@ -151,8 +152,7 @@ class ValidateCartOffersView(APIView):
             else:
                 offer_price = instance.price - (instance.price * solder.solder_value / 100)
             return (offer_price * picked_quantity) + delivery_price
-        except Solder.DoesNotExist:
-            return (instance.price * picked_quantity) + delivery_price
+        return (instance.price * picked_quantity) + delivery_price
 
     # @staticmethod
     # def random_unique_id(length=15):
@@ -180,30 +180,50 @@ class ValidateCartOffersView(APIView):
                 # order_date = default auto now
                 # order_status = default to confirm
                 # my_unique_id = self.random_unique_id()
+                buyer_pk = cart_offer.user.pk
+                seller_pk = cart_offer.offer.auth_shop.pk
+                offer_pk = cart_offer.offer.pk
                 order_serializer = BaseNewOrderSerializer(data={
-                    'buyer': cart_offer.user.pk,
-                    'seller': cart_offer.offer.auth_shop.pk,
+                    'buyer': buyer_pk,
+                    'seller': seller_pk,
+                    'first_name': cart_offer.user.first_name,
+                    'last_name': cart_offer.user.last_name,
+                    'buyer_avatar_thumbnail': None,
+                    'shop_name': cart_offer.offer.auth_shop.shop_name,
+                    'seller_avatar_thumbnail': None,
                     'order_number': '{}-{}'.format(timestamp_rnd, uid),
                     # 'unique_id': my_unique_id
                 })
                 if order_serializer.is_valid():
                     order_serializer = order_serializer.save()
+                    try:
+                        solder = Solder.objects.get(offer=cart_offer.offer.pk)
+                    except Solder.DoesNotExist:
+                        solder = None
                     # Products
                     if cart_offer.offer.offer_type == 'V':
                         product_details = Products.objects.get(offer=cart_offer.offer.pk)
-
                         order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                             'order': order_serializer.pk,
-                            'offer': cart_offer.offer.pk,
+                            # Order Fallback if deleted
+                            # 'order_number': order_serializer.order_number,
+                            # 'order_date': order_serializer.order_date,
+                            # 'order_status': order_serializer.order_status,
+                            # 'viewed_buyer': order_serializer.viewed_buyer,
+                            # 'viewed_seller': order_serializer.viewed_seller,
+                            # 'offer': cart_offer.offer.pk,
+                            # Offer Fallback if deleted
+                            'offer_type': cart_offer.offer.offer_type,
                             'title': cart_offer.offer.title,
+                            'offer_thumbnail': None,
                             'picked_click_and_collect': request.data.get('picked_click_and_collect', False),
                             'product_longitude': product_details.product_longitude,
                             'product_latitude': product_details.product_latitude,
                             'product_address': product_details.product_address,
                             'picked_delivery': request.data.get('picked_delivery', False),
-                            'delivery_city': ", ".join([i.name_fr for i in delivery.delivery_city.all()]),
+                            # 'delivery_city': ", ".join([i.name_fr for i in delivery.delivery_city.all()]),
                             'delivery_price': delivery.delivery_price,
-                            'delivery_days': delivery.delivery_days,
+                            # 'delivery_days': delivery.delivery_days,
                             'first_name': user_address.first_name,
                             'last_name': user_address.last_name,
                             'address': user_address.address,
@@ -211,17 +231,23 @@ class ValidateCartOffersView(APIView):
                             'zip_code': user_address.zip_code,
                             'country': user_address.country.name_fr,
                             'phone': user_address.phone,
+                            'email': user_address.email,
                             'note': cart_offer.note,
                             'picked_color': cart_offer.picked_color,
                             'picked_size': cart_offer.picked_size,
                             'picked_quantity': cart_offer.picked_quantity,
-                            'picked_date': cart_offer.picked_date,
-                            'picked_hour': cart_offer.picked_hour,
                             'total_self_price': self.get_offer_price(cart_offer.offer, cart_offer.picked_quantity,
-                                                                     delivery.delivery_price),
+                                                                     delivery.delivery_price, solder),
                         })
                         if order_details_product_serializer.is_valid():
                             order_details_product_serializer.save()
+                            # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'buyer_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'seller_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'offer_thumbnail'), )
                             return Response(data=order_details_product_serializer.data, status=status.HTTP_200_OK)
                         return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     # Services
@@ -229,8 +255,17 @@ class ValidateCartOffersView(APIView):
                         service_details = Services.objects.get(offer=cart_offer.offer.pk)
                         order_details_service_serializer = BaseOfferDetailsServiceSerializer(data={
                             'order': order_serializer.pk,
-                            'offer': cart_offer.offer.pk,
+                            # Order Fallback if deleted
+                            # 'order_number': order_serializer.order_number,
+                            # 'order_date': order_serializer.order_date,
+                            # 'order_status': order_serializer.order_status,
+                            # 'viewed_buyer': order_serializer.viewed_buyer,
+                            # 'viewed_seller': order_serializer.viewed_seller,
+                            # 'offer': cart_offer.offer.pk,
+                            # Offer Fallback if deleted
+                            'offer_type': cart_offer.offer.offer_type,
                             'title': cart_offer.offer.title,
+                            'offer_thumbnail': None,
                             'service_zone_by': service_details.service_zone_by,
                             'service_longitude': service_details.service_longitude,
                             'service_latitude': service_details.service_latitude,
@@ -243,19 +278,29 @@ class ValidateCartOffersView(APIView):
                             'zip_code': user_address.zip_code,
                             'country': user_address.country.name_fr,
                             'phone': user_address.phone,
+                            'email': user_address.email,
                             'note': cart_offer.note,
                             'picked_date': cart_offer.picked_date,
                             'picked_hour': cart_offer.picked_hour,
-                            'total_self_price': self.get_offer_price(cart_offer.offer),
+                            # Service doesn't have quantity or delivery price, but it can have solder
+                            'total_self_price': self.get_offer_price(instance=cart_offer.offer, solder=solder),
                         })
                         if order_details_service_serializer.is_valid():
                             order_details_service_serializer.save()
+                            # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'buyer_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'seller_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
+                                                                          'offer_thumbnail'), )
                             return Response(data=order_details_service_serializer.data, status=status.HTTP_200_OK)
                         return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Multiple offers / from one store or multiple stores / may include products & services
         else:
-            # TODO needs to calculate each one separatly
+            # TODO needs to calculate each one separatly + add solder
+            # TODO needs recheck
             for cart_offer in cart_offers:
                 date_time = datetime.now()
                 time_stamp = datetime.timestamp(date_time)
@@ -267,8 +312,13 @@ class ValidateCartOffersView(APIView):
                 # order_status = default to confirm
                 # my_unique_id = self.random_unique_id()
                 order_serializer = BaseNewOrderSerializer(data={
-                    'buer': cart_offer.user,
-                    'seller': cart_offer.offer.auth_shop,
+                    'buyer': cart_offer.user.pk,
+                    'seller': cart_offer.offer.auth_shop.pk,
+                    'first_name': cart_offer.user.first_name,
+                    'last_name': cart_offer.user.last_name,
+                    'buyer_avatar_thumbnail': None,
+                    'shop_name': cart_offer.offer.auth_shop.shop_name,
+                    'seller_avatar_thumbnail': None,
                     'order_number': '{}-{}'.format(timestamp_rnd, uid),
                     # 'unique_id': my_unique_id
                 })
@@ -285,9 +335,9 @@ class ValidateCartOffersView(APIView):
                             'product_latitude': product_details.product_latitude,
                             'product_address': product_details.product_address,
                             'picked_delivery': request.data.get('picked_delivery'),
-                            'delivery_city': ", ".join([i.name_fr for i in delivery.delivery_city.all()]),
+                            # 'delivery_city': ", ".join([i.name_fr for i in delivery.delivery_city.all()]),
                             'delivery_price': delivery.delivery_price,
-                            'delivery_days': delivery.delivery_days,
+                            # 'delivery_days': delivery.delivery_days,
                             'first_name': user_address.first_name,
                             'last_name': user_address.last_name,
                             'address': user_address.address,
@@ -295,12 +345,12 @@ class ValidateCartOffersView(APIView):
                             'zip_code': user_address.zip_code,
                             'country': user_address.country.name_fr,
                             'phone': user_address.phone,
+                            'email': user_address.email,
                             'note': cart_offer.note,
                             'picked_color': cart_offer.picked_color,
                             'picked_size': cart_offer.picked_size,
                             'picked_quantity': cart_offer.picked_quantity,
-                            'picked_date': cart_offer.picked_date,
-                            'picked_hour': cart_offer.picked_hour,
+                            # Todo missing quantity & delivery price
                             'total_self_price': self.get_offer_price(cart_offer.offer),
                         }, many=True)
                         if order_details_product_serializer.is_valid():
@@ -323,6 +373,7 @@ class ValidateCartOffersView(APIView):
                             'zip_code': user_address.zip_code,
                             'country': user_address.country.name_fr,
                             'phone': user_address.phone,
+                            'email': user_address.email,
                             'note': cart_offer.note,
                             'picked_date': cart_offer.picked_date,
                             'picked_hour': cart_offer.picked_hour,

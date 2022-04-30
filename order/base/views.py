@@ -14,8 +14,8 @@ class GetMySellingOrdersListView(APIView, PageNumberPagination):
         user_pk = request.user
         try:
             auth_shop = AuthShop.objects.get(user=user_pk)
-            temp_shop = Order.objects.filter(seller=auth_shop)
-            page = self.paginate_queryset(request=request, queryset=temp_shop)
+            order = Order.objects.filter(seller=auth_shop)
+            page = self.paginate_queryset(request=request, queryset=order)
             if page is not None:
                 serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
                 return self.get_paginated_response(serializer.data)
@@ -29,8 +29,8 @@ class GetMyBuyingsOrdersListView(APIView, PageNumberPagination):
 
     def get(self, request, *args, **kwargs):
         user_pk = request.user
-        temp_shop = Order.objects.filter(buyer=user_pk)
-        page = self.paginate_queryset(request=request, queryset=temp_shop)
+        order = Order.objects.filter(buyer=user_pk)
+        page = self.paginate_queryset(request=request, queryset=order)
         if page is not None:
             serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'buy'})
             return self.get_paginated_response(serializer.data)
@@ -52,6 +52,13 @@ class GetMyOrderDetailsView(APIView):
             order_details = OrderDetails.objects.filter(order=order)
             offer_details_serializer = BaseOrderDetailsListSerializer(order_details, context={'order_type': order_type},
                                                                       many=True)
+            # Mark Order as viewed True (buyer or seller)
+            if order_type == 'buy':
+                order.viewed_buyer = True
+                order.save()
+            else:
+                order.viewed_seller = True
+                order.save()
             return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             data = {'errors': ['Order not found.']}

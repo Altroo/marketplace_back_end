@@ -14,6 +14,9 @@
             <path value="file://$PROJECT_DIR$/media/shop_qrcodes" />
             <path value="file://$PROJECT_DIR$/csv_data" />
             <path value="file://$PROJECT_DIR$/logs" />
+            <path value="file://$PROJECT_DIR$/media/fallback_shop_avatars" />
+            <path value="file://$PROJECT_DIR$/media/fallback_user_avatars" />
+            <path value="file://$PROJECT_DIR$/media/fallback_shop_products" />
           </resourceRoots>
         </entryData>
       </entry>
