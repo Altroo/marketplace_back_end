@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% if user.is_active and user.is_staff %}
+    {% block userlinks %}
+        <a href="{% url 'schema-swagger-ui' %}">API's</a> /
+        {{ block.super }}
+    {% endblock %}
+{% endif %}

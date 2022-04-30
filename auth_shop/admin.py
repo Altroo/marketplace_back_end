@@ -1,30 +1,14 @@
 from django.contrib import admin
-from .models import Categories, Colors, Sizes, ForWhom, Days
+from auth_shop.base.models import AuthShopDays, AuthShop, \
+    PhoneCodes, AskForCreatorLabel
 from django.contrib.admin import ModelAdmin
 
 
-class CustomCategoriesAdmin(ModelAdmin):
-    list_display = ('pk', 'code_category', 'name_category',)
-    search_fields = ('pk', 'code_category', 'name_category',)
-    ordering = ('pk',)
-
-
-class CustomColorsAdmin(ModelAdmin):
-    list_display = ('pk', 'code_color', 'name_color',)
-    search_fields = ('pk', 'code_color', 'name_color',)
-    ordering = ('pk',)
-
-
-class CustomSizesAdmin(ModelAdmin):
-    list_display = ('pk', 'code_size', 'name_size',)
-    search_fields = ('pk', 'code_size', 'name_size',)
-    ordering = ('pk',)
-
-
-class CustomForWhomAdmin(ModelAdmin):
-    list_display = ('pk', 'code_for_whom', 'name_for_whom',)
-    search_fields = ('pk', 'code_for_whom', 'name_for_whom',)
-    ordering = ('pk',)
+class CustomAuthShopAdmin(ModelAdmin):
+    list_display = ('pk', 'shop_name', 'user', 'creator')
+    search_fields = ('pk', 'shop_name', 'user')
+    list_filter = ('creator',)
+    ordering = ('-pk',)
 
 
 class CustomDaysAdmin(ModelAdmin):
@@ -33,9 +17,56 @@ class CustomDaysAdmin(ModelAdmin):
     ordering = ('pk',)
 
 
-# admin.site.register(AuthShop, CustomAuthShopAdmin)
-admin.site.register(Categories, CustomCategoriesAdmin)
-admin.site.register(Colors, CustomColorsAdmin)
-admin.site.register(Sizes, CustomSizesAdmin)
-admin.site.register(ForWhom, CustomForWhomAdmin)
-admin.site.register(Days, CustomDaysAdmin)
+class CustomPhoneCodesAdmin(ModelAdmin):
+    list_display = ('pk', 'phone_code')
+    search_fields = ('pk', 'phone_code')
+    ordering = ('-pk',)
+
+
+class CustomAskForCreatorLabelAdmin(ModelAdmin):
+    list_display = ('pk', 'auth_shop', 'status', 'asked_counter', 'created_date', 'updated_date')
+    list_editable = ('status',)
+    search_fields = ('pk', 'auth_shop__shop_name')
+    list_filter = ('status',)
+    ordering = ('-pk',)
+    date_hierarchy = 'created_date'
+
+    def save_model(self, request, obj, form, change):
+        auth_shop = AuthShop.objects.get(pk=obj.auth_shop.pk)
+        # Confirmed
+        if obj.status == 'C':
+            auth_shop.creator = True
+        # Rejected
+        elif obj.status == 'R':
+            auth_shop.creator = False
+        # Default : Awaiting confirmation
+        else:
+            auth_shop.creator = False
+        auth_shop.save()
+        super(CustomAskForCreatorLabelAdmin, self).save_model(request, obj, form, change)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+# class CustomDeliveryAdmin(ModelAdmin):
+#     list_display = ('pk', 'offer',
+#                     'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
+#                     'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
+#                     'delivery_city_3', 'delivery_price_3', 'delivery_days_3',
+#                     )
+#     search_fields = ('pk',
+#                      'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
+#                      'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
+#                      'delivery_city_3', 'delivery_price_3', 'delivery_days_3',
+#                      )
+#     ordering = ('-pk',)
+
+
+admin.site.register(AuthShop, CustomAuthShopAdmin)
+admin.site.register(AuthShopDays, CustomDaysAdmin)
+admin.site.register(PhoneCodes, CustomPhoneCodesAdmin)
+admin.site.register(AskForCreatorLabel, CustomAskForCreatorLabelAdmin)

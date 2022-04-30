@@ -1,5 +1,5 @@
 from django.contrib import admin
-from temp_offer.base.models import TempOffers, TempDelivery, TempSolder, TempProducts, TempServices
+from temp_offer.base.models import TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
 from django.contrib.admin import ModelAdmin
 
 
@@ -11,16 +11,6 @@ class CustomTempOfferAdmin(ModelAdmin):
     @staticmethod
     def show_categories(obj):
         return "\n".join([i.name_category for i in obj.offer_categories.all()])
-
-
-class CustomTempDeliveryAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_offer', 'show_cities', 'temp_delivery_price', 'temp_delivery_days')
-    search_fields = ('pk', 'temp_delivery_price', 'temp_delivery_days')
-    ordering = ('-pk',)
-
-    @staticmethod
-    def show_cities(obj):
-        return "\n".join([i.city_en for i in obj.temp_delivery_city.all()])
 
 
 class CustomTempSolderAdmin(ModelAdmin):
@@ -62,8 +52,18 @@ class CustomTempServiceAdmin(ModelAdmin):
         return "\n".join([i.name_day for i in obj.service_availability_days.all()])
 
 
-admin.site.register(TempOffers, CustomTempOfferAdmin)
+class CustomTempDeliveryAdmin(ModelAdmin):
+    list_display = ('pk', 'temp_offer', 'show_cities', 'temp_delivery_price', 'temp_delivery_days')
+    search_fields = ('pk', 'temp_delivery_price', 'temp_delivery_days')
+    ordering = ('-pk',)
+
+    @staticmethod
+    def show_cities(obj):
+        return "\n".join([i.name_fr for i in obj.temp_delivery_city.all()])
+
+
 admin.site.register(TempDelivery, CustomTempDeliveryAdmin)
+admin.site.register(TempOffers, CustomTempOfferAdmin)
 admin.site.register(TempSolder, CustomTempSolderAdmin)
 admin.site.register(TempProducts, CustomTempProductAdmin)
 admin.site.register(TempServices, CustomTempServiceAdmin)

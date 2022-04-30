@@ -10,9 +10,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.timezone = settings.TIME_ZONE
 app.autodiscover_tasks(
     packages=(
+        'account.base.tasks',
         'auth_shop.base.tasks',
         'temp_shop.base.tasks',
-        'temp_offer.base.tasks',
+        'offer.base.tasks',
+        'chat.base.tasks',
+        'order.base.tasks',
     )
 )
 

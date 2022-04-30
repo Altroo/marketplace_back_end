@@ -22,12 +22,39 @@
       <sourceFolder url="file://$MODULE_DIR$/account" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/places/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/places/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/places" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/auth_shop/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/chat" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cart" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/order" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/account/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/account/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/auth_shop/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cart/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/chat/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offer/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offer/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/order/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/places/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/places/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/temp_offer/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/temp_shop/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ratings" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/tests" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/venv_brew" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (Qaryb_API_new)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/account/templates" />
+      </list>
+    </option>
   </component>
 </module>

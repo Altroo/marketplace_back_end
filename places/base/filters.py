@@ -1,7 +1,7 @@
 from django.utils.functional import cached_property
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter
-from places.base.models import City
+from places.base.models import City, Country
 
 
 class UserLanguageMixin:
@@ -52,6 +52,14 @@ class CountryFilterSet(BasePlaceFilterSet):
     """
 
     pass
+
+
+class BaseAllCountryFilter(FilterSet):
+    name_fr = CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Country
+        fields = ['name_fr']
 
 
 class CityFilterSet(BasePlaceFilterSet):
