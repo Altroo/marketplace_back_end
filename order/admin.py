@@ -13,7 +13,7 @@ class OrderAdmin(ModelAdmin):
 
 
 class OrderDetailsAdmin(ModelAdmin):
-    list_display = ('pk', 'order', 'offer', 'total_self_price')
+    list_display = ('pk', 'order', 'total_self_price')
     search_fields = ('pk', 'order__buyer__email', 'order__seller__shop_name', 'order__order_number')
     list_filter = ('order__order_status',)
     ordering = ('-order__order_date',)
