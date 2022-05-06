@@ -1,9 +1,7 @@
 from os import remove
 from urllib.parse import quote_plus
 from uuid import uuid4
-from io import BytesIO
 from celery import current_app
-from qrcode import make
 from django.core.exceptions import SuspiciousFileOperation
 from django.db import IntegrityError
 from rest_framework import status, permissions
@@ -19,6 +17,13 @@ from auth_shop.base.tasks import base_generate_avatar_thumbnail
 from offer.base.models import Offers, Products, Services, Solder, Delivery
 from temp_offer.base.models import TempOffers, TempSolder, TempDelivery
 from temp_shop.base.models import TempShop
+from os import path
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
+import qrcode.image.svg
+from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
+from io import BytesIO
+import textwrap
 
 
 class ShopView(APIView):
@@ -273,14 +278,15 @@ class ShopFontPutView(APIView):
 class TempShopToAuthShopView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    @staticmethod
-    def from_img_to_io(image, format_):
-        bytes_io = BytesIO()
-        image.save(bytes_io, format=format_)
-        bytes_io.seek(0)
-        return bytes_io
+    # @staticmethod
+    # def from_img_to_io(image, format_):
+    #     bytes_io = BytesIO()
+    #     image.save(bytes_io, format=format_)
+    #     bytes_io.seek(0)
+    #     return bytes_io
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         unique_id = request.data.get('unique_id')
         user = request.user
         try:
@@ -420,9 +426,9 @@ class TempShopToAuthShopView(APIView):
                         temp_delivery_cities = temp_delivery.temp_delivery_city.all()
                         for temp_delivery_city in temp_delivery_cities:
                             delivery.delivery_city.add(temp_delivery_city.pk)
-                qr_code = make(str(temp_shop.qaryb_link))
-                qr_code_img = self.from_img_to_io(qr_code, 'PNG')
-                auth_shop.save_image('qr_code_img', qr_code_img)
+                # qr_code = make(str(temp_shop.qaryb_link))
+                # qr_code_img = self.from_img_to_io(qr_code, 'PNG')
+                # auth_shop.save_image('qr_code_img', qr_code_img)
                 temp_shop.delete()
                 data = {
                     'response': 'Temp shop data transfered into Auth shop!'
@@ -464,6 +470,108 @@ class ShopAskBecomeCreator(APIView):
 
 class ShopQrCodeView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+    parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
+
+    @staticmethod
+    def load_image(img_path):
+        loaded_img = cvtColor(imread(img_path), COLOR_BGR2RGB)
+        return loaded_img
+
+    @staticmethod
+    def image_resize(image, width=None, height=None, inter=INTER_AREA):
+        (h, w) = image.shape[:2]
+
+        if width is None and height is None:
+            return image
+
+        if width is None:
+            r = height / float(h)
+            dim = (int(w * r), height)
+
+        else:
+            r = width / float(w)
+            dim = (width, int(h * r))
+
+        resized = resize(image, dim, interpolation=inter)
+        return resized
+
+    @staticmethod
+    def from_img_to_io(image, format_):
+        image = Image.fromarray(image)
+        bytes_io = BytesIO()
+        image.save(bytes_io, format=format_)
+        bytes_io.seek(0)
+        return bytes_io
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        # TODO
+        # from user access shop to get qaryb store link
+        # Get color code
+        # Get text
+        img_path = '/Users/youness/Desktop/Qaryb_API_new/static/icons/qaryb_icon_300_300.png'
+        loaded_img = self.load_image(img_path)
+        resized_img = self.image_resize(loaded_img, width=1000, height=1000)
+        img_thumbnail = self.from_img_to_io(resized_img, 'PNG')
+        logo = Image.open(img_thumbnail)
+        basewidth = 100
+        wpercent = (basewidth / float(logo.size[0]))
+        hsize = int((float(logo.size[1]) * float(wpercent)))
+        logo = logo.resize((basewidth, hsize), Image.Resampling.LANCZOS)
+        qr_code = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=10,
+        )
+        # taking url or text
+        url = 'https://www.qaryb.com'
+        # adding URL or text to QRcode
+        qr_code.add_data(url)
+        # generating QR code
+        qr_code.make(fit=True)
+        # taking color name from user
+        qr_color = 'Black'
+        # adding color to QR code
+        qr_img = qr_code.make_image(fill_color=qr_color, back_color="white").convert('RGBA')
+        # set size of QR code
+        pos = ((qr_img.size[0] - logo.size[0]) // 2,
+               (qr_img.size[1] - logo.size[1]) // 2)
+        qr_img.paste(logo, pos)
+        colors = random_color_picker()
+        shuffle(colors)
+        color = colors.pop()
+        max_w, max_h = 300, 50
+        color_box = Image.new("RGB", (max_w, max_h), color='white')
+        # check the length of the text
+        # if more than some characters
+        # fit the drawn_text_img pixels
+        drawn_text_img = ImageDraw.Draw(color_box)
+        drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
+        # Wrap the text if it's long
+        # Limit 40 chars
+        astr = "123456 ABCDEF ABCDEF ABCDEF ABCDEF ABCDE"
+        para = textwrap.wrap(astr, width=20)
+        para = '\n'.join(para)
+        font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16)
+        # draw the wraped text box with the font
+        text_width, text_height = drawn_text_img.textsize(para, font=font)
+        current_h = 3
+        drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+                            fill=(255, 255, 255), align='center')
+        qr_img.paste(drawn_text_img._image, (100, 420))
+        # qr_img.save('gfg_QR.png')
+        # qr_img.show()
+        # Translate img to IO
+        qr_code_img = self.from_img_to_io(qr_code, 'PNG')
+        # Save the QR image
+        auth_shop.save_image('qr_code_img', qr_code_img)
+        # Return the absolute path
+        # qr_code_img = AuthShop.objects.get(user=user).get_absolute_qr_code_img
+        data = {
+            'qr_code': qr_code_img
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
 
     @staticmethod
     def get(request, *args, **kwargs):

@@ -8,6 +8,7 @@ media/
 logs/
 logs/debug.log
 logs/ws_debug.log
+tests/__pycache__
 Qaryb_API_new/__pycache__
 account/base/__pycache__
 account/migrations

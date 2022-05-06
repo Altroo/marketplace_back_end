@@ -67,6 +67,7 @@ def generate_qr_code():
     resized_img = image_resize(loaded_img, width=1000, height=1000)
     img_thumbnail = from_img_to_io(resized_img, 'PNG')
     logo = Image.open(img_thumbnail)
+    # logo.show()
     basewidth = 100
     # adjust image size
     wpercent = (basewidth / float(logo.size[0]))
@@ -84,22 +85,37 @@ def generate_qr_code():
     qr_code.add_data(url)
     # generating QR code
     qr_code.make(fit=True)
+    # taking color name from user
+    qr_color = 'Black'
     # adding color to QR code
-    qr_img = qr_code.make_image(fill_color='Black', back_color="white").convert('RGBA')
+    qr_img = qr_code.make_image(fill_color=qr_color, back_color="white").convert('RGBA')
     # set size of QR code
     pos = ((qr_img.size[0] - logo.size[0]) // 2,
            (qr_img.size[1] - logo.size[1]) // 2)
     qr_img.paste(logo, pos)
-    qr_img.save('gfg_QR.png')
     colors = random_color_picker()
     shuffle(colors)
     color = colors.pop()
-    color_box = Image.new("RGB", (300, 50), color='white')
+    max_w, max_h = 300, 50
+    color_box = Image.new("RGB", (max_w, max_h), color='white')
+    # check the length of the text
+    # if more than some characters
+    # fit the drawn_text_img pixels
     drawn_text_img = ImageDraw.Draw(color_box)
-    drawn_text_img.rounded_rectangle(((0, 0), (300, 50)), 20, fill=color)
-    font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/Poppins-Bold.ttf", 16)
-    drawn_text_img.text((90, 12), "Scannez-moi !", font=font, fill=(255, 255, 255))
+    drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
+    # Wrap the text if it's long
+    # Limit 40 chars
+    astr = "مرحبا"
+    para = textwrap.wrap(astr, width=20)
+    para = '\n'.join(para)
+    font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16)
+    # draw the wraped text box with the font
+    text_width, text_height = drawn_text_img.textsize(para, font=font)
+    current_h = 3
+    drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+                        fill=(255, 255, 255), align='center', language='ar', direction='ltr')
     qr_img.paste(drawn_text_img._image, (100, 420))
+    qr_img.save('gfg_QR.png')
     qr_img.show()
 
 
@@ -115,10 +131,11 @@ def generate_qr_code_v2():
     im = Image.new('RGB', (max_w, max_h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(im)
     # Load font
-    font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/Poppins-Bold.ttf", 18)
+    font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 18)
     # pick a random color
     _idx = random.randint(0, len(color_list) - 1)
     color = color_list[_idx]
+    # draw the wraped text box with the font
     text_width, text_height = draw.textsize(para, font=font)
     current_h = 100
     draw.text(((max_w - text_width) / 2, current_h), para, font=font, fill=color, align='center')
@@ -128,4 +145,4 @@ def generate_qr_code_v2():
 
 
 if __name__ == '__main__':
-    generate_qr_code_v2()
+    generate_qr_code()
