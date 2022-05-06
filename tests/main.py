@@ -105,15 +105,24 @@ def generate_qr_code():
     drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
     # Wrap the text if it's long
     # Limit 40 chars
-    astr = "مرحبا"
+    astr = "ﻡﺮﺤﺑﺍ"
+    # astr = "Hello"
+    # astr = astr.decode('utf-8')
     para = textwrap.wrap(astr, width=20)
     para = '\n'.join(para)
-    font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16)
+    # font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16, encoding="utf-8")
+    # font = ImageFont.truetype("/Users/youness/Library/fonts/Tajawal-Bold.ttf", 16, encoding="unic")
+    font = ImageFont.truetype("/Users/youness/Library/fonts/NiveauGrotesk-Medium.otf", 16, encoding="unic")
+    # font = ImageFont.load("arial.pil")
     # draw the wraped text box with the font
     text_width, text_height = drawn_text_img.textsize(para, font=font)
     current_h = 3
+    # drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+    #                    fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
+    #                    layout_engine=ImageFont.Layout.RAQM)
     drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-                        fill=(255, 255, 255), align='center', language='ar', direction='ltr')
+                        fill=(255, 255, 255), features='aalt', align='center', language='en', direction='ltr',
+                        layout_engine=ImageFont.Layout.BASIC)
     qr_img.paste(drawn_text_img._image, (100, 420))
     qr_img.save('gfg_QR.png')
     qr_img.show()
