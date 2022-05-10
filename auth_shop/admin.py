@@ -1,6 +1,6 @@
 from django.contrib import admin
 from auth_shop.base.models import AuthShopDays, AuthShop, \
-    PhoneCodes, AskForCreatorLabel
+    PhoneCodes, AskForCreatorLabel, ModeVacance
 from django.contrib.admin import ModelAdmin
 
 
@@ -52,21 +52,16 @@ class CustomAskForCreatorLabelAdmin(ModelAdmin):
     # Delete permission removed
     def has_delete_permission(self, *args, **kwargs):
         return False
-# class CustomDeliveryAdmin(ModelAdmin):
-#     list_display = ('pk', 'offer',
-#                     'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
-#                     'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
-#                     'delivery_city_3', 'delivery_price_3', 'delivery_days_3',
-#                     )
-#     search_fields = ('pk',
-#                      'delivery_city_1', 'delivery_price_1', 'delivery_days_1',
-#                      'delivery_city_2', 'delivery_price_2', 'delivery_days_2',
-#                      'delivery_city_3', 'delivery_price_3', 'delivery_days_3',
-#                      )
-#     ordering = ('-pk',)
+
+
+class CustomModeVacanceAdmin(ModelAdmin):
+    list_display = ('pk', 'auth_shop', 'date_from', 'date_to')
+    search_fields = ('pk', 'auth_shop', 'date_from', 'date_to')
+    ordering = ('-pk',)
 
 
 admin.site.register(AuthShop, CustomAuthShopAdmin)
 admin.site.register(AuthShopDays, CustomDaysAdmin)
 admin.site.register(PhoneCodes, CustomPhoneCodesAdmin)
 admin.site.register(AskForCreatorLabel, CustomAskForCreatorLabelAdmin)
+admin.site.register(ModeVacance, CustomModeVacanceAdmin)

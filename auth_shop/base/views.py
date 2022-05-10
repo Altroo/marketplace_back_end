@@ -7,23 +7,25 @@ from django.db import IntegrityError
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel
+from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel, ModeVacance
 from auth_shop.base.serializers import BaseShopSerializer, BaseShopAvatarPutSerializer, \
     BaseShopNamePutSerializer, BaseShopBioPutSerializer, BaseShopAvailabilityPutSerializer, \
     BaseShopContactPutSerializer, BaseShopAddressPutSerializer, BaseShopColorPutSerializer, \
     BaseShopFontPutSerializer, BaseGETShopInfoSerializer, BaseShopTelPutSerializer, \
-    BaseShopWtspPutSerializer, BaseShopAskForCreatorLabelSerializer
+    BaseShopWtspPutSerializer, BaseShopAskForCreatorLabelSerializer, \
+    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer
 from auth_shop.base.tasks import base_generate_avatar_thumbnail
 from offer.base.models import Offers, Products, Services, Solder, Delivery
 from temp_offer.base.models import TempOffers, TempSolder, TempDelivery
 from temp_shop.base.models import TempShop
 from os import path
-import qrcode
-from PIL import Image, ImageDraw, ImageFont
-import qrcode.image.svg
+from datetime import datetime
+# import qrcode
+from PIL import Image  # , ImageDraw, ImageFont
+# import qrcode.image.svg
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from io import BytesIO
-import textwrap
+# import textwrap
 
 
 class ShopView(APIView):
@@ -608,6 +610,80 @@ class ShopVisitCardView(APIView):
                 'whatsapp': auth_shop.whatsapp,
             }
             return Response(data=data, status=status.HTTP_200_OK)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopModeVacanceView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user = request.user
+        try:
+            auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
+            try:
+                mode_vacance_serializer = BaseShopModeVacanceSerializer(auth_shop.auth_shop_mode_vacance)
+                return Response(data=mode_vacance_serializer.data, status=status.HTTP_200_OK)
+            except ModeVacance.DoesNotExist:
+                data = {'errors': ['Auth shop has no mode vacance.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user = request.user
+        try:
+            auth_shop = AuthShop.objects.get(user=user)
+            date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
+            date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
+            if date_from > date_to:
+                data = {'errors': ['Date from is > than date to.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = BaseShopModeVacanceSerializer(data={
+                    'auth_shop': auth_shop.pk,
+                    'date_from': request.data.get('date_from'),
+                    'date_to': request.data.get('date_to'),
+                })
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found.']}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        user = request.user
+        try:
+            auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
+            auth_shop.auth_shop_mode_vacance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ['Auth shop not found']}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = request.user
+        try:
+            auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
+            date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
+            date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
+            if date_from > date_to:
+                data = {'errors': ['Date from is > than date to.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = BaseShopModeVacancePUTSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.update(auth_shop.auth_shop_mode_vacance, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

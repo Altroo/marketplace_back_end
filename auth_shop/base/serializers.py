@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel
+from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel, ModeVacance
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
@@ -225,3 +225,22 @@ class BaseShopAskForCreatorLabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = AskForCreatorLabel
         fields = ['auth_shop']
+
+
+class BaseShopModeVacanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModeVacance
+        fields = ['auth_shop', 'date_from', 'date_to']
+
+
+class BaseShopModeVacancePUTSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ModeVacance
+        fields = ['date_from', 'date_to']
+
+    def update(self, instance, validated_data):
+        instance.date_from = validated_data.get('date_from', instance.date_from)
+        instance.date_to = validated_data.get('date_to', instance.date_to)
+        instance.save()
+        return instance

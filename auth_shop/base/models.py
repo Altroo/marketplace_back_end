@@ -186,3 +186,18 @@ class AskForCreatorLabel(Model):
     class Meta:
         verbose_name = 'Demande créateur'
         verbose_name_plural = 'Demandes créateur'
+
+
+class ModeVacance(Model):
+    auth_shop = models.OneToOneField(AuthShop, on_delete=models.CASCADE,
+                                     verbose_name='Auth shop',
+                                     related_name='auth_shop_mode_vacance')
+    date_from = models.DateField(verbose_name="Date from", blank=True, null=True)
+    date_to = models.DateField(verbose_name="Date to", blank=True, null=True)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.auth_shop.shop_name, self.date_from, self.date_to)
+
+    class Meta:
+        verbose_name = 'Mode vacance'
+        verbose_name_plural = 'Mode vacances'
