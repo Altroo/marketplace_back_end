@@ -4,10 +4,10 @@ from offer.base.models import Categories, Colors, ServiceDays, ForWhom, Sizes
 from auth_shop.base.models import AuthShopDays
 from auth_shop.base.models import PhoneCodes
 from csv import reader
-from os import path
+from os import path, mkdir
 from django.db.utils import IntegrityError
 from allauth.socialaccount.models import SocialApp
-from django.contrib.sites.models import Site
+# from django.contrib.sites.models import Site
 from decouple import config
 
 
@@ -58,34 +58,47 @@ class InsertAll:
                     PhoneCodes.objects.create(phone_code=row[0])
                 except IntegrityError:
                     continue
-        with open(self.parent_file_dir + '/csv_data/sites.csv', 'r+', encoding='UTF8') as site_file:
-            sites_reader = reader(site_file, delimiter=',')
-            with open(self.parent_file_dir + '/csv_data/socials.csv', 'r+', encoding='UTF8') as social_file:
-                socials_reader = reader(social_file, delimiter=',')
-                for row in socials_reader:
-                    try:
-                        check_exist = SocialApp.objects.get(provider=row[0])
-                        print("Provider {} already exists.".format(check_exist))
+        # with open(self.parent_file_dir + '/csv_data/sites.csv', 'r+', encoding='UTF8') as site_file:
+        #    sites_reader = reader(site_file, delimiter=',')
+        with open(self.parent_file_dir + '/csv_data/socials.csv', 'r+', encoding='UTF8') as social_file:
+            socials_reader = reader(social_file, delimiter=',')
+            for row in socials_reader:
+                try:
+                    check_exist = SocialApp.objects.get(provider=row[0])
+                    print("Provider {} already exists.".format(check_exist))
+                    continue
+                except SocialApp.DoesNotExist:
+                    if row[0] == "facebook":
+                        social = SocialApp.objects.create(provider=row[0], name=row[1],
+                                                          client_id=config('FACEBOOK_CLIENT_ID'),
+                                                          secret=config('FACEBOOK_SECRET'),
+                                                          key=row[4])
+                    else:
+                        social = SocialApp.objects.create(provider=row[0], name=row[1],
+                                                          client_id=config('GOOGLE_CLIENT_ID'),
+                                                          secret=config('GOOGLE_SECRET'),
+                                                          key=row[4])
+                    social.save()
+                    # site_file.seek(0)
+                    # for site_row in sites_reader:
+                    #     try:
+                    #         site = Site.objects.create(domain=site_row[0], name=site_row[0])
+                    #     except IntegrityError:
+                    #         site = Site.objects.get(domain=site_row[0])
+                    #     social.sites.add(site.pk)
+        with open(self.parent_file_dir + '/csv_data/missing_folders.csv', 'r+', encoding='UTF8') as f:
+            csv_reader = reader(f, delimiter=',')
+            for row in csv_reader:
+                if not path.exists(self.parent_file_dir + '/' + row[0] + '/' + row[1]):
+                    if row[0] == 'media':
+                        # create folder
+                        mkdir(self.parent_file_dir + '/' + row[0] + '/' + row[1])
                         continue
-                    except SocialApp.DoesNotExist:
-                        if row[0] == "facebook":
-                            social = SocialApp.objects.create(provider=row[0], name=row[1],
-                                                              client_id=config('FACEBOOK_CLIENT_ID'),
-                                                              secret=config('FACEBOOK_SECRET'),
-                                                              key=row[4])
-                        else:
-                            social = SocialApp.objects.create(provider=row[0], name=row[1],
-                                                              client_id=config('GOOGLE_CLIENT_ID'),
-                                                              secret=config('GOOGLE_SECRET'),
-                                                              key=row[4])
-                        social.save()
-                        site_file.seek(0)
-                        for site_row in sites_reader:
-                            try:
-                                site = Site.objects.create(domain=site_row[0], name=site_row[0])
-                            except IntegrityError:
-                                site = Site.objects.get(domain=site_row[0])
-                            social.sites.add(site.pk)
+                    if row[0] == 'logs':
+                        # create file
+                        f = open(self.parent_file_dir + '/' + row[0] + '/' + row[1], "x")
+                        f.close()
+                        continue
 
 
 class Command(BaseCommand):

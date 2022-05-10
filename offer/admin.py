@@ -1,5 +1,5 @@
 from offer.base.models import Categories, Colors, Sizes, ForWhom, \
-    Offers, Solder, Products, Services, ServiceDays, Delivery, OfferTags
+    Offers, Solder, Products, Services, ServiceDays, Delivery, OfferTags, OfferVue, OffersTotalVues
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
@@ -99,6 +99,18 @@ class CustomOfferTagsAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
+class CustomOfferVueAdmin(ModelAdmin):
+    list_display = ('pk', 'offer', 'nbr_total_vue')
+    search_fields = ('pk', 'offer', 'nbr_total_vue')
+    ordering = ('-pk',)
+
+
+class CustomOffersTotalVuesAdmin(ModelAdmin):
+    list_display = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
+    search_fields = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
+    ordering = ('-pk',)
+
+
 admin.site.register(Delivery, CustomDeliveryAdmin)
 admin.site.register(Categories, CustomCategoriesAdmin)
 admin.site.register(Colors, CustomColorsAdmin)
@@ -110,3 +122,5 @@ admin.site.register(Solder, CustomSolderAdmin)
 admin.site.register(Products, CustomProductAdmin)
 admin.site.register(Services, CustomServiceAdmin)
 admin.site.register(OfferTags, CustomOfferTagsAdmin)
+admin.site.register(OfferVue, CustomOfferVueAdmin)
+admin.site.register(OffersTotalVues, CustomOffersTotalVuesAdmin)

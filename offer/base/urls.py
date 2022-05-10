@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ShopOfferView, \
     GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
-    GetLastThreeDeliveriesView, GetLastUsedLocalisationView, GetOfferTagsView
+    GetLastThreeDeliveriesView, GetLastUsedLocalisationView, GetOfferTagsView, GetOffersVuesListView
 
 app_name = 'offer'
 
@@ -20,8 +20,10 @@ urlpatterns = [
     # GET : Get solder,
     # DELETE : Delete solder
     path('solder/<int:offer_pk>/', ShopOfferSolderView.as_view()),
+    # GET : Get vues list
+    path('vues/', GetOffersVuesListView.as_view()),
     # POST : Duplicate
-    path('duplicate/', ShopOfferDuplicateView.as_view()),
+    # path('duplicate/', ShopOfferDuplicateView.as_view()),
     # POST : Create product
     # PUT : Edit product
     # DELETE : Delete product

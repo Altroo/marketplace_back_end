@@ -8,7 +8,7 @@
             <path value="file://$PROJECT_DIR$/media" />
             <path value="file://$PROJECT_DIR$/static" />
             <path value="file://$PROJECT_DIR$/media/user_avatars" />
-            <path value="file://$PROJECT_DIR$/media/shop_products" />
+            <path value="file://$PROJECT_DIR$/media/shop_offers" />
             <path value="file://$PROJECT_DIR$/media/shop_avatars" />
             <path value="file://$PROJECT_DIR$/media/chat" />
             <path value="file://$PROJECT_DIR$/media/shop_qrcodes" />
@@ -16,7 +16,7 @@
             <path value="file://$PROJECT_DIR$/logs" />
             <path value="file://$PROJECT_DIR$/media/fallback_shop_avatars" />
             <path value="file://$PROJECT_DIR$/media/fallback_user_avatars" />
-            <path value="file://$PROJECT_DIR$/media/fallback_shop_products" />
+            <path value="file://$PROJECT_DIR$/media/fallback_shop_offers" />
           </resourceRoots>
         </entryData>
       </entry>

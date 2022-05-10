@@ -7,7 +7,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
 from temp_shop.base.models import TempShop
-from offer.base.models import get_shop_products_path, OfferChoices, OfferTags
+from offer.base.models import get_shop_offers_path, OfferChoices, OfferTags
 from places.base.models import City
 
 
@@ -19,18 +19,18 @@ class TempOffers(Model):
     offer_categories = models.ManyToManyField(Categories, verbose_name='Offer Categories',
                                               related_name='temp_offer_categories')
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
-    picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
-    picture_2 = models.ImageField(verbose_name='Picture 2', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_2 = models.ImageField(verbose_name='Picture 2', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
-    picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     picture_2_thumbnail = models.ImageField(verbose_name='Picture 2 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     picture_3_thumbnail = models.ImageField(verbose_name='Picture 3 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='temp_offer_for_whom')

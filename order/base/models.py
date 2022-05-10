@@ -16,9 +16,9 @@ def get_fallback_shop_avatar_path(instance, filename):
     return path.join('fallback_shop_avatars/', str(uuid4()) + file_extension)
 
 
-def get_fallback_shop_products_path(instance, filename):
+def get_fallback_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('fallback_shop_products/', str(uuid4()) + file_extension)
+    return path.join('fallback_shop_offers/', str(uuid4()) + file_extension)
 
 
 def get_fallback_avatar_path(instance, filename):
@@ -33,12 +33,12 @@ class Order(Model):
                                verbose_name='Seller', related_name='order_seller', null=True, blank=True)
     # Fallback needed + add avatar thumbnail
     # Buyer
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
     buyer_avatar_thumbnail = models.ImageField(verbose_name='Buyer Thumb Avatar', upload_to=get_fallback_avatar_path,
                                                blank=True, null=True, default=None)
     # Seller
-    shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
+    shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=True, null=True)
     seller_avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail',
                                                 upload_to=get_fallback_shop_avatar_path, blank=True, null=True,
                                                 default=None)
@@ -114,10 +114,10 @@ class OrderDetails(Model):
     #                          verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
     # Offer fallback if deleted
     offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
-                                  choices=OfferChoices.OFFER_TYPE_CHOICES)
-    title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
+                                  choices=OfferChoices.OFFER_TYPE_CHOICES, blank=True, null=True)
+    title = models.CharField(verbose_name='title', max_length=150, blank=True, null=True)
     offer_thumbnail = models.ImageField(verbose_name='Offer thumbnail', blank=True, null=True,
-                                        upload_to=get_fallback_shop_products_path, max_length=1000)
+                                        upload_to=get_fallback_shop_offers_path, max_length=1000)
     # Seller offer details
     picked_click_and_collect = models.BooleanField(verbose_name='Click and collect', default=False)
     product_longitude = models.FloatField(verbose_name='Product longitude', max_length=10,
@@ -127,17 +127,17 @@ class OrderDetails(Model):
     product_address = models.CharField(verbose_name='product_address', max_length=255, default=False)
     picked_delivery = models.BooleanField(verbose_name='Delivery', default=False)
     # delivery_city = models.CharField(verbose_name='Delivery city', max_length=255)
-    delivery_price = models.FloatField(verbose_name='Delivery price')
+    delivery_price = models.FloatField(verbose_name='Delivery price', blank=True, null=True)
     # delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
     # Buyer coordinates
-    first_name = models.CharField(verbose_name='First name', max_length=30)
-    last_name = models.CharField(verbose_name='Last name', max_length=30)
-    address = models.CharField(verbose_name='Address', max_length=300)
-    city = models.CharField(verbose_name='City', max_length=30)
-    zip_code = models.PositiveIntegerField(verbose_name='Zip code')
-    country = models.CharField(verbose_name='Country', max_length=30)
-    phone = models.CharField(verbose_name='Phone number', max_length=15)
-    email = models.EmailField(verbose_name='email address')
+    first_name = models.CharField(verbose_name='First name', max_length=30, blank=True, null=True)
+    last_name = models.CharField(verbose_name='Last name', max_length=30, blank=True, null=True)
+    address = models.CharField(verbose_name='Address', max_length=300, blank=True, null=True)
+    city = models.CharField(verbose_name='City', max_length=30, blank=True, null=True)
+    zip_code = models.PositiveIntegerField(verbose_name='Zip code', blank=True, null=True)
+    country = models.CharField(verbose_name='Country', max_length=30, blank=True, null=True)
+    phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True)
+    email = models.EmailField(verbose_name='email address', blank=True, null=True)
     # Both product & service
     note = models.CharField(verbose_name='Note', max_length=300, default=None, null=True, blank=True)
     # Product

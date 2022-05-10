@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
-from offer.base.models import Offers, get_shop_products_path
+from offer.base.models import Offers, get_shop_offers_path
 
 
 class Cart(Model):
@@ -16,7 +16,7 @@ class Cart(Model):
     picked_size = models.CharField(verbose_name='Picked Size', max_length=255, default=None, null=True, blank=True)
     picked_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=1)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     # Service
     picked_date = models.DateField(verbose_name='Picked Date', default=None, null=True, blank=True)
     picked_hour = models.TimeField(verbose_name='Picked Hour', default=None, null=True, blank=True)

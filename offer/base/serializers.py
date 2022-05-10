@@ -196,8 +196,11 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     exist_in_cart = serializers.SerializerMethodField()
 
     def get_exist_in_cart(self, instance):
+        user = self.context.get("user")
         try:
-            Cart.objects.get(user=self.context.get("user"), offer=instance.pk)
+            if user.is_anonymous:
+                return False
+            Cart.objects.get(user=user, offer=instance.pk)
             return True
         except Cart.DoesNotExist:
             return False
@@ -236,6 +239,31 @@ class BaseOffersListSerializer(serializers.Serializer):
         if instance.offer_type == 'S':
             details_service = BaseDetailsServiceSerializer(instance.offer_services)
             return details_service.data
+
+    @staticmethod
+    def get_thumbnail(instance):
+        if instance.picture_1_thumbnail:
+            return instance.get_absolute_picture_1_thumbnail
+        elif instance.picture_2_thumbnail:
+            return instance.get_absolute_picture_2_thumbnail
+        elif instance.picture_3_thumbnail:
+            return instance.get_absolute_picture_3_thumbnail
+        else:
+            return None
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
+class BaseOffersVuesListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    thumbnail = serializers.SerializerMethodField()
+    title = serializers.CharField()
+    nbr_total_vue = serializers.IntegerField(source='offer_vues.nbr_total_vue')
+    # date = serializers.DateField()
 
     @staticmethod
     def get_thumbnail(instance):

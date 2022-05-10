@@ -19,7 +19,7 @@ urlpatterns = [
     # DELETE : Delete solder
     path('solder/<str:unique_id>/<int:temp_offer_pk>/', TempShopOfferSolderView.as_view()),
     # POST : Duplicate
-    path('duplicate/', TempShopOfferDuplicateView.as_view()),
+    # path('duplicate/', TempShopOfferDuplicateView.as_view()),
     # POST : Create temp product
     # PUT : Edit temp product
     # DELETE : Delete temp product

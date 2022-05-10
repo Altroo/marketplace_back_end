@@ -10,9 +10,9 @@ from django.core.files.base import ContentFile
 from places.base.models import City
 
 
-def get_shop_products_path(instance, filename):
+def get_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('shop_products/', str(uuid4()) + file_extension)
+    return path.join('shop_offers/', str(uuid4()) + file_extension)
 
 
 class OfferChoices:
@@ -130,18 +130,18 @@ class Offers(Model):
     offer_categories = models.ManyToManyField(Categories, verbose_name='Offer Categories',
                                               related_name='offer_categories')
     title = models.CharField(verbose_name='title', max_length=150, blank=False, null=False)
-    picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_1 = models.ImageField(verbose_name='Picture 1', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
-    picture_2 = models.ImageField(verbose_name='Picture 2', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_2 = models.ImageField(verbose_name='Picture 2', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
-    picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_products_path, blank=True, null=True,
+    picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     picture_2_thumbnail = models.ImageField(verbose_name='Picture 2 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     picture_3_thumbnail = models.ImageField(verbose_name='Picture 3 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_products_path, max_length=1000)
+                                            upload_to=get_shop_offers_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='product_for_whom')
@@ -308,3 +308,49 @@ class Solder(Model):
     class Meta:
         verbose_name = 'Solder'
         verbose_name_plural = 'Solders'
+
+
+class OfferVue(Model):
+    offer = models.OneToOneField(Offers, on_delete=models.SET_NULL,
+                                 verbose_name='Offer',
+                                 related_name='offer_vues', null=True)
+    nbr_total_vue = models.PositiveIntegerField(verbose_name='Nbr Total Vue', default=0)
+
+    def __str__(self):
+        return "{} - {}".format(self.offer.pk, self.nbr_total_vue)
+
+    class Meta:
+        verbose_name = 'Offer Vue'
+        verbose_name_plural = 'Offers Vues'
+
+
+class OffersTotalVues(Model):
+    auth_shop = models.ForeignKey(AuthShop, on_delete=models.CASCADE,
+                                  verbose_name='AuthShop',
+                                  related_name='authshop_total_vues')
+    MONTH_CHOICES = (
+        ('1', 'Janvier'),
+        ('2', 'Février'),
+        ('3', 'Mars'),
+        ('4', 'Avril'),
+        ('5', 'Mai'),
+        ('6', 'Juin'),
+        ('7', 'Juillet'),
+        ('8', 'Août'),
+        ('9', 'Septembre'),
+        ('10', 'Octobre'),
+        ('11', 'Novembre'),
+        ('12', 'Décembre')
+    )
+    date = models.CharField(verbose_name='Date', max_length=2, choices=MONTH_CHOICES,
+                            null=True, blank=True, default=None)
+    nbr_total_vue = models.PositiveIntegerField(verbose_name='Nbr Total Vue', default=0)
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.auth_shop.pk, self.nbr_total_vue,
+                                     self.date)
+
+    class Meta:
+        verbose_name = 'Offer Total Vue'
+        verbose_name_plural = 'Offers Total Vues'
+        unique_together = (('auth_shop', 'date'),)
