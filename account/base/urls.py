@@ -3,7 +3,8 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
     RegistrationView, ActivateAccountView, ResendActivationCodeView, \
     PasswordResetView, SendPasswordResetView, ProfileView, BlockView, \
     ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
-    FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView
+    FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView, \
+    EncloseAccountView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 from dj_rest_auth.views import PasswordChangeView
@@ -71,4 +72,6 @@ urlpatterns = [
     path('address/<int:address_pk>/', AddressView.as_view()),
     # GET : Get All user addresses
     path('addresses/', GetAllAddressesView.as_view()),
+    # POST : Cloturer mon compte
+    path('enclose/', EncloseAccountView.as_view()),
 ]

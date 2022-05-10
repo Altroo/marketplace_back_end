@@ -50,6 +50,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                         'Designates whether this user should be treated as active. '
                                         'Unselect this instead of deleting accounts.'
                                     ), )
+    is_enclosed = models.BooleanField(verbose_name='Compte clôturer ?', default=False)
     # DATES
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     # Codes
@@ -149,3 +150,22 @@ class UserAddress(Model):
     class Meta:
         verbose_name = 'User Address'
         verbose_name_plural = 'User Addresses'
+
+
+class EnclosedAccounts(Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,
+                                verbose_name='User', related_name='user_enclosed_account')
+    REASON_CHOICES = (
+        ('', 'Unset'),
+        ('A', 'Je cesse mon activité'),
+        ('B', 'Je cesse mon activité 2'),
+    )
+    reason_choice = models.CharField(max_length=1, choices=REASON_CHOICES, default='', blank=True, null=True)
+    typed_reason = models.CharField(max_length=140, null=True, blank=True, default='')
+
+    def __str__(self):
+        return '{} - {}'.format(self.user.email, self.reason_choice)
+
+    class Meta:
+        verbose_name = 'Enclosed Account'
+        verbose_name_plural = 'Enclosed Accounts'

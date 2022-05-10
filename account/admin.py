@@ -1,7 +1,7 @@
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import ModelAdmin
 from .forms import CustomAuthShopCreationForm, CustomAuthShopChangeForm
-from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress
+from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts
 from django.contrib import admin
 from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
@@ -13,14 +13,14 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = ('pk', 'email', 'first_name', 'last_name', 'gender',
                     'birth_date', 'city', 'country',
-                    'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active', 'gender')
+                    'is_staff', 'is_active', 'is_enclosed')
+    list_filter = ('is_staff', 'is_active', 'gender', 'is_enclosed')
     date_hierarchy = 'date_joined'
     fieldsets = (
         ('Profile', {'fields': ('email', 'password', 'first_name', 'last_name', 'gender',
                                 'birth_date', 'city', 'country',
                                 'avatar', 'avatar_thumbnail',
-                                'activation_code', 'password_reset_code',)}),
+                                'activation_code', 'password_reset_code', 'is_enclosed')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         ("Date d'activité", {'fields': ('date_joined', 'last_login')}),
     )
@@ -29,7 +29,7 @@ class CustomUserAdmin(UserAdmin):
         ('Profile', {'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'gender',
                                 'birth_date', 'city', 'country',
                                 'avatar', 'avatar_thumbnail',
-                                'activation_code', 'password_reset_code',)}),
+                                'activation_code', 'password_reset_code', 'is_enclosed')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
     )
     search_fields = ('email',)
@@ -41,20 +41,20 @@ class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
         return True
 
 
-class BlockedUsersAdmin(ModelAdmin):
+class CustomBlockedUsersAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'user_blocked')
     search_fields = ('pk', 'user__email', 'user_blocked__email')
     ordering = ('-pk',)
 
 
-class ReportedUsersAdmin(ModelAdmin):
+class CustomReportedUsersAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'user_reported', 'report_reason')
     list_filter = ('report_reason',)
     search_fields = ('pk', 'user__email', 'user_reported__email')
     ordering = ('-pk',)
 
 
-class UserAddressAdmin(ModelAdmin):
+class CustomUserAddressAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'title', 'first_name',
                     'last_name', 'address', 'city',
                     'zip_code', 'country', 'phone', 'email')
@@ -63,9 +63,17 @@ class UserAddressAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
+class CustomEnclosedAccountsAdmin(ModelAdmin):
+    list_display = ('pk', 'user', 'reason_choice', 'typed_reason')
+    list_filter = ('reason_choice',)
+    search_fields = ('pk', 'user__email', 'reason_choice', 'typed_reason')
+    ordering = ('-pk',)
+
+
 admin.site.unregister(OutstandingToken)
 admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(BlockedUsers, BlockedUsersAdmin)
-admin.site.register(ReportedUsers, ReportedUsersAdmin)
-admin.site.register(UserAddress, UserAddressAdmin)
+admin.site.register(BlockedUsers, CustomBlockedUsersAdmin)
+admin.site.register(ReportedUsers, CustomReportedUsersAdmin)
+admin.site.register(UserAddress, CustomUserAddressAdmin)
+admin.site.register(EnclosedAccounts, CustomEnclosedAccountsAdmin)

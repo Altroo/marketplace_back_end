@@ -16,7 +16,7 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
-    BaseSocialAccountSerializer
+    BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
@@ -35,9 +35,81 @@ class FacebookLoginView(SocialLoginView):
 class GoogleLoginView(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
+    def login(self):
+        super(GoogleLoginView, self).login()
+        user = CustomUser.objects.get(pk=self.user.pk)
+        user.is_enclosed = False
+        user.save()
+        try:
+            user_status = Status.objects.get(user=self.user)
+            user_status.online = True
+            user_status.save()
+        except Status.DoesNotExist:
+            Status.objects.create(user=self.user, online=True)
+        channel_layer = get_channel_layer()
+        my_set = set()
+        result_msg_user = MessageModel.objects.filter(user=self.user.pk)
+        result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
+        for i in result_msg_user:
+            if i != self.user.pk:
+                my_set.add(i.recipient.pk)
+        for i in result_msg_recipient:
+            if i != self.user.pk:
+                my_set.add(i.user.pk)
+        for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
+                .exclude(is_active=False).values_list('id', flat=True):
+            if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
+                    user__id=user_pk).online:
+                event = {
+                    'type': 'recieve_group_message',
+                    'message': {
+                        'type': 'status',
+                        'user_pk': self.user.pk,
+                        'online': True,
+                        'recipient_pk': user_pk,
+                    }
+                }
+                async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
+
 
 class FacebookLinkingView(SocialConnectView):
     adapter_class = FacebookOAuth2Adapter
+
+    def login(self):
+        super(FacebookLinkingView, self).login()
+        user = CustomUser.objects.get(pk=self.user.pk)
+        user.is_enclosed = False
+        user.save()
+        try:
+            user_status = Status.objects.get(user=self.user)
+            user_status.online = True
+            user_status.save()
+        except Status.DoesNotExist:
+            Status.objects.create(user=self.user, online=True)
+        channel_layer = get_channel_layer()
+        my_set = set()
+        result_msg_user = MessageModel.objects.filter(user=self.user.pk)
+        result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
+        for i in result_msg_user:
+            if i != self.user.pk:
+                my_set.add(i.recipient.pk)
+        for i in result_msg_recipient:
+            if i != self.user.pk:
+                my_set.add(i.user.pk)
+        for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
+                .exclude(is_active=False).values_list('id', flat=True):
+            if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
+                    user__id=user_pk).online:
+                event = {
+                    'type': 'recieve_group_message',
+                    'message': {
+                        'type': 'status',
+                        'user_pk': self.user.pk,
+                        'online': True,
+                        'recipient_pk': user_pk,
+                    }
+                }
+                async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
 
 
 class GoogleLinkingView(SocialConnectView):
@@ -270,6 +342,9 @@ class CheckEmailView(APIView):
 class LoginView(Dj_rest_login):
     def login(self):
         super(LoginView, self).login()
+        user = CustomUser.objects.get(pk=self.user.pk)
+        user.is_enclosed = False
+        user.save()
         try:
             user_status = Status.objects.get(user=self.user)
             user_status.online = True
@@ -539,3 +614,25 @@ class GetAllAddressesView(APIView, PageNumberPagination):
         if page is not None:
             serializer = BaseUserAddressesListSerializer(instance=page, many=True)
             return self.get_paginated_response(serializer.data)
+
+
+class EncloseAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user_pk = request.user
+        reason_choice = request.data.get('reason_choice')
+        typed_reason = request.data.get('typed_reason')
+        serializer = BaseEnclosedAccountsSerializer(data={
+            "user": user_pk.pk,
+            "reason_choice": reason_choice,
+            "typed_reason": typed_reason,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            user = CustomUser.objects.get(pk=user_pk.pk)
+            user.is_enclosed = True
+            user.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
