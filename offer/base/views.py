@@ -1000,12 +1000,22 @@ class ShopOfferSolderView(APIView):
     def post(request, *args, **kwargs):
         offer_pk = request.data.get('offer_pk')
         user = request.user
+        solder_type = request.data.get('solder_type')
+        solder_value = request.data.get('solder_value')
         try:
             offer = Offers.objects.get(pk=offer_pk, auth_shop__user=user).pk
+            if solder_type == 'F':
+                if solder_value >= offer.price:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            if solder_type == 'P':
+                if solder_value >= 100:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             serializer = BaseShopOfferSolderSerializer(data={
                 'offer': offer,
-                'solder_type': request.data.get('solder_type'),
-                'solder_value': request.data.get('solder_value'),
+                'solder_type': solder_type,
+                'solder_value': solder_value,
             })
             if serializer.is_valid():
                 serializer.save()
@@ -1021,6 +1031,14 @@ class ShopOfferSolderView(APIView):
         user = request.user
         try:
             solder = Solder.objects.get(offer=offer_pk, offer__auth_shop__user=user)
+            if solder.solder_type == 'F':
+                if solder.solder_value >= solder.offer.price:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            if solder.solder_type == 'P':
+                if solder.solder_value >= 100:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             serializer = BaseShopOfferSolderPutSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.update(solder, serializer.validated_data)

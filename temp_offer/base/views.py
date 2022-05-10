@@ -967,13 +967,23 @@ class TempShopOfferSolderView(APIView):
     def post(request, *args, **kwargs):
         temp_offer_pk = request.data.get('temp_offer_pk')
         unique_id = kwargs.get('unique_id')
+        temp_solder_type = request.data.get('temp_solder_type')
+        temp_solder_value = request.data.get('temp_solder_value')
         try:
             temp_offer = TempOffers.objects.get(pk=temp_offer_pk,
                                                 temp_shop__unique_id=unique_id).pk
+            if temp_solder_type == 'F':
+                if temp_solder_value >= temp_offer.price:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            if temp_solder_type == 'P':
+                if temp_solder_value >= 100:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             serializer = BaseTempShopOfferSolderSerializer(data={
                 'temp_offer': temp_offer,
-                'temp_solder_type': request.data.get('temp_solder_type'),
-                'temp_solder_value': request.data.get('temp_solder_value'),
+                'temp_solder_type': temp_solder_type,
+                'temp_solder_value': temp_solder_value,
             })
             if serializer.is_valid():
                 serializer.save()
@@ -990,6 +1000,14 @@ class TempShopOfferSolderView(APIView):
         try:
             temp_solder = TempSolder.objects.get(temp_offer=temp_offer_pk,
                                                  temp_offer__temp_shop__unique_id=unique_id)
+            if temp_solder.solder_type == 'F':
+                if temp_solder.solder_value >= temp_solder.offer.price:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            if temp_solder.solder_type == 'P':
+                if temp_solder.solder_value >= 100:
+                    data = {'errors': ["Solder can't be applied up to 100%."]}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             serializer = BaseTempShopOfferSolderPutSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.update(temp_solder, serializer.validated_data)
