@@ -35,6 +35,7 @@ class GetMyVuesPagination(PageNumberPagination):
             ('next', self.get_next_link()),
             ('previous', self.get_previous_link()),
             ('total_vues', total_vues),
+            ('this_month', this_month),
             ('pourcentage', pourcentage),
             ('results', datas)
         ]))

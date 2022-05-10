@@ -17,7 +17,8 @@ from offer.base.serializers import BaseShopOfferSerializer, \
 from offer.base.filters import TagsFilterSet
 from os import path, remove
 from Qaryb_API_new.settings import API_URL
-from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images
+from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images, \
+    base_duplicate_offervue_images
 from offer.base.models import AuthShop, Offers, Solder, Products, Services, Delivery, OfferTags, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, OfferVue, OffersTotalVues
 from offer.mixins import PaginationMixinBy5
@@ -45,11 +46,14 @@ class ShopOfferView(APIView):
             # Increase vue by one get or create
             month = datetime.now().month
             try:
-                offer_vues = OfferVue.objects.get(offer=offer)
+                offer_vues = OfferVue.objects.get(offer=offer_pk)
                 offer_vues.nbr_total_vue += 1
                 offer_vues.save()
             except OfferVue.DoesNotExist:
-                OfferVue.objects.create(offer=offer, nbr_total_vue=1).save()
+                OfferVue.objects.create(offer=offer, title=offer.title, nbr_total_vue=1).save()
+                # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
+                base_duplicate_offervue_images.apply_async(args=(offer_pk,),)
+                # base_duplicate_offervue_images(offer_pk)
             try:
                 offers_total_vues = OffersTotalVues.objects.get(auth_shop=offer.auth_shop, date=month)
                 offers_total_vues.nbr_total_vue += 1
@@ -958,22 +962,6 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
 class GetOffersVuesListView(APIView, GetMyVuesPagination):
     permission_classes = (permissions.IsAuthenticated,)
     page_size = 10
-
-    # def get(self, request, *args, **kwargs):
-    #     user = request.user
-    #     try:
-    #         auth_shop = AuthShop.objects.get(user=user)
-    #         shop_offers = Offers.objects.filter(auth_shop=auth_shop).prefetch_related('offer_vues')
-    #         total_vues = shop_offers.values('offer_vues').count()
-    #         page = self.paginate_queryset(request=request, queryset=shop_offers)
-    #         if page is not None:
-    #             serializer = BaseOffersVuesListSerializer(instance=page, many=True)
-    #             return self.get_paginated_response_custom(serializer.data, total_vues)
-    #         data = {'response': 'Shop has no offers.'}
-    #         return Response(data=data, status=status.HTTP_200_OK)
-    #     except AuthShop.DoesNotExist:
-    #         data = {'errors': ['User shop not found.']}
-    #         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
         user = request.user

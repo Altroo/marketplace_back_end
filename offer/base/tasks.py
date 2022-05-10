@@ -1,11 +1,9 @@
 from os import path
-
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-
 from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
-from offer.base.models import Offers
+from offer.base.models import Offers, OfferVue
 from temp_offer.base.models import TempOffers
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from PIL import Image
@@ -131,3 +129,30 @@ def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
     if offer.picture_3_thumbnail:
         picture_3_thumbnail = start_generating_thumbnail(offer.picture_3_thumbnail.path, True)
         new_offer.save_image('picture_3_thumbnail', picture_3_thumbnail)
+
+
+@app.task(bind=True)
+def base_duplicate_offervue_images(self, offer_pk):
+    offer = Offers.objects.get(pk=offer_pk)
+    offer_vue = OfferVue.objects.get(offer=offer_pk)
+    while True:
+        if offer.picture_1:
+            picture_1 = start_generating_thumbnail(offer.picture_1.path, True)
+            offer_vue.save_image('thumbnail', picture_1)
+            break
+        if offer.picture_2:
+            picture_2 = start_generating_thumbnail(offer.picture_2.path, True)
+            offer_vue.save_image('thumbnail', picture_2)
+            break
+        if offer.picture_2_thumbnail:
+            picture_2_thumbnail = start_generating_thumbnail(offer.picture_2_thumbnail.path, True)
+            offer_vue.save_image('thumbnail', picture_2_thumbnail)
+            break
+        if offer.picture_3:
+            picture_3 = start_generating_thumbnail(offer.picture_3.path, True)
+            offer_vue.save_image('thumbnail', picture_3)
+            break
+        if offer.picture_3_thumbnail:
+            picture_3_thumbnail = start_generating_thumbnail(offer.picture_3_thumbnail.path, True)
+            offer_vue.save_image('thumbnail', picture_3_thumbnail)
+            break

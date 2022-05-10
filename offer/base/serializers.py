@@ -258,31 +258,6 @@ class BaseOffersListSerializer(serializers.Serializer):
         pass
 
 
-class BaseOffersVuesListSerializer(serializers.Serializer):
-    pk = serializers.IntegerField()
-    thumbnail = serializers.SerializerMethodField()
-    title = serializers.CharField()
-    nbr_total_vue = serializers.IntegerField(source='offer_vues.nbr_total_vue')
-    # date = serializers.DateField()
-
-    @staticmethod
-    def get_thumbnail(instance):
-        if instance.picture_1_thumbnail:
-            return instance.get_absolute_picture_1_thumbnail
-        elif instance.picture_2_thumbnail:
-            return instance.get_absolute_picture_2_thumbnail
-        elif instance.picture_3_thumbnail:
-            return instance.get_absolute_picture_3_thumbnail
-        else:
-            return None
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
 class BaseOfferPutSerializer(serializers.ModelSerializer):
     picture_1 = serializers.ImageField(required=False, allow_empty_file=True,
                                        default=None, max_length=None, allow_null=True)
@@ -380,3 +355,34 @@ class BaseShopOfferSolderPutSerializer(serializers.ModelSerializer):
         instance.solder_value = validated_data.get('solder_value', instance.solder_value)
         instance.save()
         return instance
+
+
+class BaseOffersVuesListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    thumbnail = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    nbr_total_vue = serializers.IntegerField(source='offer_vues.nbr_total_vue')
+
+    @staticmethod
+    def get_thumbnail(instance):
+        if instance.picture_1_thumbnail:
+            return instance.get_absolute_picture_1_thumbnail
+        elif instance.picture_2_thumbnail:
+            return instance.get_absolute_picture_2_thumbnail
+        elif instance.picture_3_thumbnail:
+            return instance.get_absolute_picture_3_thumbnail
+        else:
+            return instance.offer_vues.get_absolute_thumbnail
+
+    @staticmethod
+    def get_title(instance):
+        if instance.title:
+            return instance.title
+        else:
+            return instance.offer_vues.title
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass

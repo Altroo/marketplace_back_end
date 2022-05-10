@@ -15,6 +15,11 @@ def get_shop_offers_path(instance, filename):
     return path.join('shop_offers/', str(uuid4()) + file_extension)
 
 
+def get_fallback_shop_offers_path(instance, filename):
+    filename, file_extension = path.splitext(filename)
+    return path.join('fallback_shop_offers/', str(uuid4()) + file_extension)
+
+
 class OfferChoices:
     """
     Type of shop choices
@@ -314,10 +319,27 @@ class OfferVue(Model):
     offer = models.OneToOneField(Offers, on_delete=models.SET_NULL,
                                  verbose_name='Offer',
                                  related_name='offer_vues', null=True)
+    thumbnail = models.ImageField(verbose_name='Thumbnail', blank=True, null=True,
+                                  upload_to=get_fallback_shop_offers_path, max_length=1000)
+    title = models.CharField(verbose_name='title', max_length=150, blank=True, null=True, default=None)
     nbr_total_vue = models.PositiveIntegerField(verbose_name='Nbr Total Vue', default=0)
 
     def __str__(self):
-        return "{} - {}".format(self.offer.pk, self.nbr_total_vue)
+        return "{} - {} - {}".format(self.offer.pk, self.title, self.nbr_total_vue)
+
+    @property
+    def get_absolute_thumbnail(self):
+        if self.thumbnail:
+            return "{0}/media{1}".format(API_URL, self.thumbnail.url)
+        return None
+
+    def save_image(self, field_name, image):
+        if not isinstance(image, BytesIO):
+            return
+
+        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+                                       ContentFile(image.getvalue()),
+                                       save=True)
 
     class Meta:
         verbose_name = 'Offer Vue'
