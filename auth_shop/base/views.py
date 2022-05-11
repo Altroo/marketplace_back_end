@@ -298,7 +298,7 @@ class TempShopToAuthShopView(APIView):
                 auth_shop = AuthShop.objects.create(
                     user=user,
                     shop_name=temp_shop.shop_name,
-                    avatar=temp_shop.avatar,
+                    avatar=temp_shop.avatar,    
                     avatar_thumbnail=temp_shop.avatar_thumbnail,
                     color_code=temp_shop.color_code,
                     bg_color_code=temp_shop.bg_color_code,
@@ -507,7 +507,7 @@ class ShopQrCodeView(APIView):
 
     # def post(self, request, *args, **kwargs):
     #     user = request.user
-    #     # TODO
+    #     # TODO fix arabic qr code
     #     # from user access shop to get qaryb store link
     #     # Get color code
     #     # Get text

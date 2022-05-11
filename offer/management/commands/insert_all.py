@@ -7,14 +7,29 @@ from csv import reader
 from os import path, mkdir
 from django.db.utils import IntegrityError
 from allauth.socialaccount.models import SocialApp
-# from django.contrib.sites.models import Site
 from decouple import config
+from django.contrib.sites.models import Site
 
 
 class InsertAll:
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../../.."))
 
     def insert_all(self):
+        with open(self.parent_file_dir + '/csv_data/sites.csv', 'r+', encoding='UTF8') as site_file:
+            sites_reader = reader(site_file, delimiter=',')
+            for site_row in sites_reader:
+                try:
+                    check_example = Site.objects.get(domain='example.com')
+                    check_example.domain = site_row[0]
+                    check_example.name = site_row[0]
+                    check_example.save()
+                    print("example.com Site updated to {}".format(site_row[0]))
+                    continue
+                except Site.DoesNotExist:
+                    try:
+                        Site.objects.create(domain=site_row[0], name=site_row[0])
+                    except IntegrityError:
+                        print("Site {} already exists.".format(site_row[0]))
         with open(self.parent_file_dir + '/csv_data/categories.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
@@ -58,10 +73,9 @@ class InsertAll:
                     PhoneCodes.objects.create(phone_code=row[0])
                 except IntegrityError:
                     continue
-        # with open(self.parent_file_dir + '/csv_data/sites.csv', 'r+', encoding='UTF8') as site_file:
-        #    sites_reader = reader(site_file, delimiter=',')
         with open(self.parent_file_dir + '/csv_data/socials.csv', 'r+', encoding='UTF8') as social_file:
             socials_reader = reader(social_file, delimiter=',')
+            sites = Site.objects.all()
             for row in socials_reader:
                 try:
                     check_exist = SocialApp.objects.get(provider=row[0])
@@ -79,13 +93,9 @@ class InsertAll:
                                                           secret=config('GOOGLE_SECRET'),
                                                           key=row[4])
                     social.save()
-                    # site_file.seek(0)
-                    # for site_row in sites_reader:
-                    #     try:
-                    #         site = Site.objects.create(domain=site_row[0], name=site_row[0])
-                    #     except IntegrityError:
-                    #         site = Site.objects.get(domain=site_row[0])
-                    #     social.sites.add(site.pk)
+                    for site in sites:
+                        social.sites.add(site.pk)
+                        social.save()
         with open(self.parent_file_dir + '/csv_data/missing_folders.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
