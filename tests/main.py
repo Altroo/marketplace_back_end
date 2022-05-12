@@ -65,6 +65,15 @@ def from_img_to_io(image, format_):
     return bytes_io
 
 
+def latin_or_arabic(word):
+    arabic = 'ar'
+    latin = 'la'
+    arabic_unicode_range = r'[\u0600-\u06ff]'
+    if re.search(arabic_unicode_range, word):
+        return arabic
+    return latin
+
+
 def generate_qr_code():
     img_path = '/Users/youness/Desktop/Qaryb_API_new/static/icons/qaryb_icon_300_300.png'
     loaded_img = load_image(img_path)
@@ -110,43 +119,33 @@ def generate_qr_code():
     # Wrap the text if it's long
     # Limit 40 chars
     astr = "أسرع وأجدد hello"
-    # astr = "Hello"
-    # astr = astr.decode('utf-8')
-    # print(cld3.get_language(astr))
-    para = textwrap.wrap(astr, width=20)
-    para = '\n'.join(para)
-    # font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16, encoding="utf-8")
-    # font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/Changa-Regular.ttf", 16)
-    font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/NotoSans-Medium.otf", 16,
-                              encoding='utf-8')
-    # font = ImageFont.truetype("/Users/youness/Library/fonts/Tajawal-Bold.ttf", 16, encoding="unic")
-    # font = ImageFont.truetype("/Users/youness/Library/fonts/NiveauGrotesk-Medium.otf", 16, encoding="unic")
-    # truetype_url = requests.get("https://github.com/googlefonts/changa-vf/blob/master/fonts/ttf/Changa-Regular.ttf")
-    # font = ImageFont.truetype(BytesIO(truetype_url.content), 16)
-    # font = ImageFont.load("arial.pil")
-    # draw the wraped text box with the font
-    text_width, text_height = drawn_text_img.textsize(para, font=font)
-    current_h = 3
-    drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-                        fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
-                        layout_engine=ImageFont.Layout.RAQM)
-    # drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-    #                    fill=(255, 255, 255), align='center')
-    qr_img.paste(drawn_text_img._image, (100, 420))
+    words = astr.split()
+    my_dict = {}
+    for word in words:
+        result = latin_or_arabic(word)
+        my_dict[word] = result
+    for k, v in my_dict.items():
+        if v == 'ar':
+            font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/NotoSans-Medium.otf", 16,
+                                      encoding='utf-8')
+        else:
+            font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16,
+                                      encoding="utf-8")
+        para = textwrap.wrap(k, width=20)
+        para = '\n'.join(para)
+        # draw the wraped text box with the font
+        text_width, text_height = drawn_text_img.textsize(para, font=font)
+        current_h = 3
+        if v == 'ar':
+            drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+                                fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
+                                layout_engine=ImageFont.Layout.RAQM)
+        else:
+            drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+                                fill=(255, 255, 255), align='center')
+        qr_img.paste(drawn_text_img._image, (100, 420))
     qr_img.save('gfg_QR.png')
     qr_img.show()
-
-
-def latin_from_arabic(word):
-    arabic = 'arabic'
-    latin = 'latin'
-    arabic_unicode_range = r'[\u0600-\u06ff]'
-    words = word.split()
-    for word_ in words:
-        if re.search(arabic_unicode_range, word_):
-            print("{} is {}".format(word_, arabic))
-            continue
-        print("{} is {}".format(word_, latin))
 
 
 if __name__ == '__main__':
