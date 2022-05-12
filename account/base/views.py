@@ -16,7 +16,7 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
-    BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer
+    BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
@@ -636,3 +636,34 @@ class EncloseAccountView(APIView):
             user.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeEmailAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user = request.user
+        # TODO get from social application where
+        pass
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user = request.user
+        new_email = request.data.get('new_email')
+        password = request.data.get('password')
+        data = {}
+        try:
+            CustomUser.objects.get(email=new_email)
+            data['email'] = ['This email address already exists.']
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            if not user.check_password(password):
+                return Response({"password": ["Sorry, but this is a wrong password."]},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = BaseEmailPutSerializer(data={'email': new_email})
+                if serializer.is_valid():
+                    serializer.update(request.user, serializer.validated_data)
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_200_OK)

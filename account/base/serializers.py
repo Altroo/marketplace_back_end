@@ -187,6 +187,17 @@ class BaseUserAddressPutSerializer(serializers.ModelSerializer):
         return instance
 
 
+class BaseEmailPutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email']
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        return instance
+
+
 class BaseBlockUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlockedUsers

@@ -27,3 +27,4 @@ PyJWT==2.3.0
 asgiref==3.5.1
 drf_yasg==1.20.0
 qrcode==7.3.1
+pycld3==0.22

@@ -6,6 +6,7 @@ from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from io import BytesIO
 import textwrap
 import random
+import re
 
 
 # import requests
@@ -108,9 +109,10 @@ def generate_qr_code():
     drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
     # Wrap the text if it's long
     # Limit 40 chars
-    # astr = "ﻡﺮﺤﺑﺍ"
-    astr = "Hello"
+    astr = "أسرع وأجدد hello"
+    # astr = "Hello"
     # astr = astr.decode('utf-8')
+    # print(cld3.get_language(astr))
     para = textwrap.wrap(astr, width=20)
     para = '\n'.join(para)
     # font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16, encoding="utf-8")
@@ -125,40 +127,29 @@ def generate_qr_code():
     # draw the wraped text box with the font
     text_width, text_height = drawn_text_img.textsize(para, font=font)
     current_h = 3
-    # drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-    #                    fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
-    #                    layout_engine=ImageFont.Layout.RAQM)
     drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-                        fill=(255, 255, 255), align='center')
+                        fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
+                        layout_engine=ImageFont.Layout.RAQM)
+    # drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
+    #                    fill=(255, 255, 255), align='center')
     qr_img.paste(drawn_text_img._image, (100, 420))
     qr_img.save('gfg_QR.png')
     qr_img.show()
 
 
-def generate_qr_code_v2():
-    color_list = ['red', 'blue']
-    astr = 'NRB Bearing Limited has informed the Exchange regarding Pursuant to ' \
-           'Regulation 44(3) of the Listing Regulations ...'
-    # Wrap the text if it's long
-    para = textwrap.wrap(astr, width=100)
-    para = '\n'.join(para)
-    # Draw black background with width and height
-    max_w, max_h = 1200, 600
-    im = Image.new('RGB', (max_w, max_h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(im)
-    # Load font
-    font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 18)
-    # pick a random color
-    _idx = random.randint(0, len(color_list) - 1)
-    color = color_list[_idx]
-    # draw the wraped text box with the font
-    text_width, text_height = draw.textsize(para, font=font)
-    current_h = 100
-    draw.text(((max_w - text_width) / 2, current_h), para, font=font, fill=color, align='center')
-    # Save image
-    # im.save('/Users/youness/Desktop/Qaryb_API_new/greeting_card.png')
-    im.show()
+def latin_from_arabic(word):
+    arabic = 'arabic'
+    latin = 'latin'
+    arabic_unicode_range = r'[\u0600-\u06ff]'
+    words = word.split()
+    for word_ in words:
+        if re.search(arabic_unicode_range, word_):
+            print("{} is {}".format(word_, arabic))
+            continue
+        print("{} is {}".format(word_, latin))
 
 
 if __name__ == '__main__':
+    text = "أسرع وأجدد hello"
+    # latin_from_arabic(text)
     generate_qr_code()
