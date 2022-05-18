@@ -20,12 +20,14 @@ from temp_offer.base.models import TempOffers, TempSolder, TempDelivery
 from temp_shop.base.models import TempShop
 from os import path
 from datetime import datetime
-# import qrcode
-from PIL import Image  # , ImageDraw, ImageFont
-# import qrcode.image.svg
+import qrcode
+from PIL import Image, ImageDraw, ImageFont
+import qrcode.image.svg
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from io import BytesIO
-# import textwrap
+import textwrap
+import arabic_reshaper
+from bidi.algorithm import get_display
 
 
 class ShopView(APIView):
@@ -298,7 +300,7 @@ class TempShopToAuthShopView(APIView):
                 auth_shop = AuthShop.objects.create(
                     user=user,
                     shop_name=temp_shop.shop_name,
-                    avatar=temp_shop.avatar,    
+                    avatar=temp_shop.avatar,
                     avatar_thumbnail=temp_shop.avatar_thumbnail,
                     color_code=temp_shop.color_code,
                     bg_color_code=temp_shop.bg_color_code,
@@ -498,82 +500,156 @@ class ShopQrCodeView(APIView):
         return resized
 
     @staticmethod
-    def from_img_to_io(image, format_):
-        image = Image.fromarray(image)
+    def from_img_to_io(image, format_, type_):
+        if type_ == 'input':
+            image = Image.fromarray(image)
+            bytes_io = BytesIO()
+            image.save(bytes_io, format=format_)
+            bytes_io.seek(0)
+            return bytes_io
+        if type_ == 'output':
+            bytes_io = BytesIO()
+            image.save(bytes_io, format=format_)
+            bytes_io.seek(0)
+            return bytes_io
+
+    @staticmethod
+    def from_img_to_io_test(image, format_):
         bytes_io = BytesIO()
         image.save(bytes_io, format=format_)
         bytes_io.seek(0)
         return bytes_io
 
-    # def post(self, request, *args, **kwargs):
-    #     user = request.user
-    #     # TODO fix arabic qr code
-    #     # from user access shop to get qaryb store link
-    #     # Get color code
-    #     # Get text
-    #     img_path = '/Users/youness/Desktop/Qaryb_API_new/static/icons/qaryb_icon_300_300.png'
-    #     loaded_img = self.load_image(img_path)
-    #     resized_img = self.image_resize(loaded_img, width=1000, height=1000)
-    #     img_thumbnail = self.from_img_to_io(resized_img, 'PNG')
-    #     logo = Image.open(img_thumbnail)
-    #     basewidth = 100
-    #     wpercent = (basewidth / float(logo.size[0]))
-    #     hsize = int((float(logo.size[1]) * float(wpercent)))
-    #     logo = logo.resize((basewidth, hsize), Image.Resampling.LANCZOS)
-    #     qr_code = qrcode.QRCode(
-    #         version=1,
-    #         error_correction=qrcode.constants.ERROR_CORRECT_H,
-    #         box_size=10,
-    #         border=10,
-    #     )
-    #     # taking url or text
-    #     url = 'https://www.qaryb.com'
-    #     # adding URL or text to QRcode
-    #     qr_code.add_data(url)
-    #     # generating QR code
-    #     qr_code.make(fit=True)
-    #     # taking color name from user
-    #     qr_color = 'Black'
-    #     # adding color to QR code
-    #     qr_img = qr_code.make_image(fill_color=qr_color, back_color="white").convert('RGBA')
-    #     # set size of QR code
-    #     pos = ((qr_img.size[0] - logo.size[0]) // 2,
-    #            (qr_img.size[1] - logo.size[1]) // 2)
-    #     qr_img.paste(logo, pos)
-    #     colors = random_color_picker()
-    #     shuffle(colors)
-    #     color = colors.pop()
-    #     max_w, max_h = 300, 50
-    #     color_box = Image.new("RGB", (max_w, max_h), color='white')
-    #     # check the length of the text
-    #     # if more than some characters
-    #     # fit the drawn_text_img pixels
-    #     drawn_text_img = ImageDraw.Draw(color_box)
-    #     drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
-    #     # Wrap the text if it's long
-    #     # Limit 40 chars
-    #     astr = "123456 ABCDEF ABCDEF ABCDEF ABCDEF ABCDE"
-    #     para = textwrap.wrap(astr, width=20)
-    #     para = '\n'.join(para)
-    #     font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16)
-    #     # draw the wraped text box with the font
-    #     text_width, text_height = drawn_text_img.textsize(para, font=font)
-    #     current_h = 3
-    #     drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-    #                         fill=(255, 255, 255), align='center')
-    #     qr_img.paste(drawn_text_img._image, (100, 420))
-    #     # qr_img.save('gfg_QR.png')
-    #     # qr_img.show()
-    #     # Translate img to IO
-    #     qr_code_img = self.from_img_to_io(qr_code, 'PNG')
-    #     # Save the QR image
-    #     auth_shop.save_image('qr_code_img', qr_code_img)
-    #     # Return the absolute path
-    #     # qr_code_img = AuthShop.objects.get(user=user).get_absolute_qr_code_img
-    #     data = {
-    #         'qr_code': qr_code_img
-    #     }
-    #     return Response(data=data, status=status.HTTP_200_OK)
+    @staticmethod
+    def get_text_fill_color(bg_color):
+        # white 255, 255, 255
+        # black 0, 0, 0
+        match bg_color:
+            # light pink
+            case ("#F3DCDC" | "#FFD9A2"):
+                return 0, 0, 0
+            # light orange
+            case "#FFD9A2":
+                return 0, 0, 0
+            # light yellow
+            case "#F8F2DA":
+                return 0, 0, 0
+            # light green
+            case "#DBF4EA":
+                return 0, 0, 0
+            # light blue
+            case "#DBE8F4":
+                return 0, 0, 0
+            # light purple
+            case "#D5CEEE":
+                return 0, 0, 0
+            # light pink
+            case "#F3D8E1":
+                return 0, 0, 0
+            # light brown
+            case "#EBD2AD":
+                return 0, 0, 0
+            # light gray
+            case "#E2E4E2":
+                return 0, 0, 0
+            # White
+            case "#FFFFFF":
+                return 0, 0, 0
+            # Red
+            case "#FF5D6B":
+                return 255, 255, 255
+            # Orange
+            case "#FFA826":
+                return 0, 0, 0
+            # Yellow
+            case "#FED301":
+                return 0, 0, 0
+            # Green
+            case "#07CBAD":
+                return 0, 0, 0
+            # Blue
+            case "#0274D7":
+                return 255, 255, 255
+            # Purple
+            case "#8669FB":
+                return 255, 255, 255
+            # Pink
+            case "#FF9DBF":
+                return 0, 0, 0
+            # Brown
+            case "#CEB186":
+                return 0, 0, 0
+            # Gray
+            case "#878E88":
+                return 255, 255, 255
+            # Black
+            case "#0D070B":
+                return 255, 255, 255
+            case _:
+                # Return black color as default
+                return 0, 0, 0
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        bg_color = request.data.get('bg_color')
+        qr_text = request.data.get('qr_text')
+        if len(str(qr_text)) > 60:
+            data = {'errors': ["Text should be less than 60 characters."]}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            auth_shop = AuthShop.objects.get(user=user)
+            qaryb_link = auth_shop.qaryb_link
+            icon_path = self.parent_file_dir + '/static/icons/qaryb_icon_300_300.png'
+            loaded_img = self.load_image(icon_path)
+            resized_img = self.image_resize(loaded_img, width=1000, height=1000)
+            img_thumbnail = self.from_img_to_io(resized_img, 'PNG', 'input')
+            logo = Image.open(img_thumbnail)
+            basewidth = 100
+            wpercent = (basewidth / float(logo.size[0]))
+            hsize = int((float(logo.size[1]) * float(wpercent)))
+            logo = logo.resize((basewidth, hsize), Image.Resampling.LANCZOS)
+            qr_code = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                box_size=10,
+                border=10,
+            )
+            qr_code.add_data(qaryb_link)
+            qr_code.make(fit=True)
+            qr_img = qr_code.make_image(fill_color='Black', back_color='white').convert('RGBA')
+            pos = ((qr_img.size[0] - logo.size[0]) // 2,
+                   (qr_img.size[1] - logo.size[1]) // 2)
+            qr_img.paste(logo, pos)
+            max_w, max_h = qr_img.size[0] - qr_code.box_size ** 2 - qr_code.border ** 2, 60
+            color_box = Image.new("RGB", (max_w, max_h), color='white')
+            drawn_text_img = ImageDraw.Draw(color_box)
+            drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=bg_color)
+            unicode_text_reshaped = arabic_reshaper.reshape(qr_text)
+            para = textwrap.wrap(unicode_text_reshaped, width=35)
+            para = '\n'.join(para)
+            unicode_text_reshaped_rtl = get_display(para, base_dir='R')
+            unicode_font = ImageFont.truetype(self.parent_file_dir + '/static/fonts/Changa-Regular.ttf', 20)
+            fill = self.get_text_fill_color(bg_color)
+            text_width, text_height = drawn_text_img.textsize(unicode_text_reshaped_rtl, font=unicode_font)
+            drawn_text_img.text(((max_w - text_width) / 2, (max_h - text_height - 10) / 2), unicode_text_reshaped_rtl,
+                                align='center', font=unicode_font,
+                                fill=fill)
+            # Change those values
+            pos_for_text = ((qr_img.size[0] - drawn_text_img._image.width) // 2,
+                            (qr_img.size[1] - drawn_text_img._image.height - 20))
+            qr_img.paste(drawn_text_img._image, pos_for_text)
+            # qr_img.paste(drawn_text_img._image, (100, 610))
+            qr_img.show()
+            qr_code_img = self.from_img_to_io(qr_img, 'PNG', 'output')
+            auth_shop.save_image('qr_code_img', qr_code_img)
+            qr_code_img = AuthShop.objects.get(user=user).get_absolute_qr_code_img
+            data = {
+                'qr_code': qr_code_img
+            }
+            return Response(data=data, status=status.HTTP_200_OK)
+        except AuthShop.DoesNotExist:
+            data = {'errors': ["User doesn't own a store yet."]}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def get(request, *args, **kwargs):

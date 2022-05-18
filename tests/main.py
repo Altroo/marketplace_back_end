@@ -7,6 +7,8 @@ from io import BytesIO
 import textwrap
 import random
 import re
+import arabic_reshaper
+from bidi.algorithm import get_display
 
 
 # import requests
@@ -109,46 +111,53 @@ def generate_qr_code():
     colors = random_color_picker()
     shuffle(colors)
     color = colors.pop()
-    max_w, max_h = 300, 50
+    max_w, max_h = 300, 60
     color_box = Image.new("RGB", (max_w, max_h), color='white')
-    # check the length of the text
-    # if more than some characters
-    # fit the drawn_text_img pixels
     drawn_text_img = ImageDraw.Draw(color_box)
     drawn_text_img.rounded_rectangle(((0, 0), (max_w, max_h)), 20, fill=color)
-    # Wrap the text if it's long
     # Limit 40 chars
-    astr = "أسرع وأجدد hello"
-    words = astr.split()
-    my_dict = {}
-    for word in words:
-        result = latin_or_arabic(word)
-        my_dict[word] = result
-    for k, v in my_dict.items():
-        if v == 'ar':
-            font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/NotoSans-Medium.otf", 16,
-                                      encoding='utf-8')
-        else:
-            font = ImageFont.truetype("/Users/youness/Desktop/test_qr_code/fonts/Poppins-Bold.ttf", 16,
-                                      encoding="utf-8")
-        para = textwrap.wrap(k, width=20)
-        para = '\n'.join(para)
-        # draw the wraped text box with the font
-        text_width, text_height = drawn_text_img.textsize(para, font=font)
-        current_h = 3
-        if v == 'ar':
-            drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-                                fill=(255, 255, 255), features='aalt', align='center', language='ar', direction='rtl',
-                                layout_engine=ImageFont.Layout.RAQM)
-        else:
-            drawn_text_img.text(((max_w - text_width) / 2, current_h), para, font=font,
-                                fill=(255, 255, 255), align='center')
-        qr_img.paste(drawn_text_img._image, (100, 420))
+    unicode_text = "بِسم اللَه I'm currently (test) on Windows UVWXYZ UVWXYZ UVWXYZ"
+    # unicode_text = "اللَه بِسم اللَه بِسم اللَه بِسم اللَه"
+    # unicode_text = "ABCD EFGH IJKL MNOPT QRST UVWXYZ IJKLMNO IJKLMNO IJKLMNO IJKLMNO"
+    unicode_text_reshaped = arabic_reshaper.reshape(unicode_text)
+    para = textwrap.wrap(unicode_text_reshaped, width=35)
+    para = '\n'.join(para)
+    unicode_text_reshaped_rtl = get_display(para, base_dir='R')
+    unicode_font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/Changa-Regular.ttf", 16)
+    current_h = 3
+    text_width, text_height = drawn_text_img.textsize(unicode_text_reshaped_rtl, font=unicode_font)
+    drawn_text_img.text(((max_w - text_width) / 2, current_h), unicode_text_reshaped_rtl, align='center', font=unicode_font,
+                        fill=(0, 0, 0))
+    qr_img.paste(drawn_text_img._image, (100, 420))
+    # print(str(qr_img))
     qr_img.save('gfg_QR.png')
     qr_img.show()
+
+
+def test():
+    # configuration
+    width = 200
+    height = 100
+    back_ground_color = (255, 255, 255)
+    font_size = 36
+    font_color = (0, 0, 0)
+
+    unicode_text = u"Hello بِسم اللَه ABCDEFGHIJK"
+    # unicode_text = u"Hello"
+    unicode_text_reshaped = arabic_reshaper.reshape(unicode_text)
+    unicode_text_reshaped_rtl = get_display(unicode_text_reshaped, base_dir='R')
+    im = Image.new("RGB", (width, height), back_ground_color)
+    draw = ImageDraw.Draw(im)
+    unicode_font = ImageFont.truetype("/Users/youness/Desktop/Qaryb_API_new/static/fonts/Changa-Regular.ttf",
+                                      font_size)
+    draw.text((10, 10), unicode_text_reshaped_rtl, font=unicode_font, fill=font_color)
+
+    im.save("text.png")
+    im.show()
 
 
 if __name__ == '__main__':
     text = "أسرع وأجدد hello"
     # latin_from_arabic(text)
     generate_qr_code()
+    # test()

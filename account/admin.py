@@ -37,6 +37,8 @@ class CustomUserAdmin(UserAdmin):
 
 
 class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
+    actions = []
+
     def has_delete_permission(self, *args, **kwargs):
         return True
 
