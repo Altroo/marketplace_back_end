@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from account.models import CustomUser
 from auth_shop.base.models import AuthShop
 from chat.base.models import Status
+from datetime import date
 
 
 class BaseMessagePagination(PageNumberPagination):
@@ -20,11 +21,30 @@ class BaseMessagePagination(PageNumberPagination):
                 online_timestamp = None
                 online_status = False
             try:
-                auth_shop = AuthShop.objects.get(user=target)
+                # auth_shop = AuthShop.objects.get(user=target)
+                auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=target)
+                try:
+                    today_date = date.today()
+                    mode_vacance_obj = auth_shop.auth_shop_mode_vacance
+                    mode_vacance_to = mode_vacance_obj.date_to
+                    if mode_vacance_to > today_date:
+                        mode_vacance = {
+                            'mode_vacance': True,
+                            'date_to': mode_vacance_to
+                        }
+                    else:
+                        mode_vacance = {
+                            'mode_vacance': False,
+                        }
+                except auth_shop.auth_shop_mode_vacance.DoesNotExist:
+                    mode_vacance = {
+                        'mode_vacance': False,
+                    }
                 shop = {
                     'shop_pk': auth_shop.pk,
                     'shop_name': auth_shop.shop_name,
                     'shop_avatar': auth_shop.get_absolute_avatar_thumbnail,
+                    'mode_vacance': mode_vacance
                 }
             except AuthShop.DoesNotExist:
                 shop = {

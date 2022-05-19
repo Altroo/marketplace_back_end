@@ -17,14 +17,14 @@ def base_start_deleting_expired_shops(self, shop_pk):
         try:
             avatar_img = temp_shop.avatar.path
             remove(avatar_img)
-        except (FileNotFoundError, ValueError, AttributeError) as err:
-            print(err)
+        except (FileNotFoundError, ValueError, AttributeError):
+            pass
         # Delete avatar thumbnail
         try:
             avatar_thumbnail_img = temp_shop.avatar_thumbnail.path
             remove(avatar_thumbnail_img)
-        except (FileNotFoundError, ValueError, AttributeError) as err:
-            print(err)
+        except (FileNotFoundError, ValueError, AttributeError):
+            pass
         # Delete temp product images
         temp_products = TempOffers.objects.filter(temp_shop=temp_shop.pk)
         for temp_product in temp_products:

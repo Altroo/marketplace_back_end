@@ -40,3 +40,5 @@ temp_offer/__pycache__
 temp_shop/base/__pycache__
 temp_shop/migrations
 temp_shop/__pycache__
+version/__pycache__
+version/migrations

@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from allauth.socialaccount.models import SocialApp
 from decouple import config
 from django.contrib.sites.models import Site
+from version.models import Version
 
 
 class InsertAll:
@@ -96,6 +97,7 @@ class InsertAll:
                     for site in sites:
                         social.sites.add(site.pk)
                         social.save()
+
         with open(self.parent_file_dir + '/csv_data/missing_folders.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
             for row in csv_reader:
@@ -109,6 +111,12 @@ class InsertAll:
                         f = open(self.parent_file_dir + '/' + row[0] + '/' + row[1], "x")
                         f.close()
                         continue
+
+        version = Version.objects.all().first()
+        if not version:
+            Version.objects.create(current_version='1.0.0')
+        else:
+            print('Version object already exists !')
 
 
 class Command(BaseCommand):

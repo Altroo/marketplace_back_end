@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts
 from django.contrib.auth.password_validation import validate_password
+from allauth.account.models import EmailAddress
 
 
 class BaseSocialAccountSerializer(serializers.Serializer):
@@ -48,6 +49,12 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+
+
+class BaseRegistrationEmailAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailAddress
+        fields = ['user', 'email', 'primary']
 
 
 class BasePasswordResetSerializer(serializers.Serializer):

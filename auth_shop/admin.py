@@ -1,6 +1,6 @@
 from django.contrib import admin
 from auth_shop.base.models import AuthShopDays, AuthShop, \
-    PhoneCodes, AskForCreatorLabel, ModeVacance
+    PhoneCodes, AskForCreatorLabel, ModeVacance, DeletedAuthShops
 from django.contrib.admin import ModelAdmin
 
 
@@ -60,8 +60,16 @@ class CustomModeVacanceAdmin(ModelAdmin):
     ordering = ('-pk',)
 
 
+class CustomDeletedAuthShopsAdmin(ModelAdmin):
+    list_display = ('pk', 'user', 'reason_choice', 'typed_reason')
+    list_filter = ('reason_choice',)
+    search_fields = ('pk', 'user__email', 'reason_choice', 'typed_reason')
+    ordering = ('-pk',)
+
+
 admin.site.register(AuthShop, CustomAuthShopAdmin)
 admin.site.register(AuthShopDays, CustomDaysAdmin)
 admin.site.register(PhoneCodes, CustomPhoneCodesAdmin)
 admin.site.register(AskForCreatorLabel, CustomAskForCreatorLabelAdmin)
 admin.site.register(ModeVacance, CustomModeVacanceAdmin)
+admin.site.register(DeletedAuthShops, CustomDeletedAuthShopsAdmin)

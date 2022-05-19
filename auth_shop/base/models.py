@@ -114,6 +114,8 @@ class AuthShop(Model):
     qr_code_img = models.ImageField(verbose_name='QR code image', upload_to=get_shop_qr_code_path, blank=True,
                                     null=True, default=None)
     creator = models.BooleanField(verbose_name='Creator ?', default=False)
+    mode_vacance_task_id = models.CharField(verbose_name='Mode Vacance Task ID', max_length=40, default=None,
+                                            null=True, blank=True)
     # Dates
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
@@ -154,6 +156,13 @@ class AuthShop(Model):
             return
 
         getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+                                       ContentFile(image.getvalue()),
+                                       save=True)
+
+    def save_qr_code(self, field_name, image, uid):
+        if not isinstance(image, BytesIO):
+            return
+        getattr(self, field_name).save(f'{str(uid)}.jpg',
                                        ContentFile(image.getvalue()),
                                        save=True)
 
@@ -201,3 +210,22 @@ class ModeVacance(Model):
     class Meta:
         verbose_name = 'Mode vacance'
         verbose_name_plural = 'Mode vacances'
+
+
+class DeletedAuthShops(Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             verbose_name='User', related_name='user_deleted_auth_shops')
+    REASON_CHOICES = (
+        ('', 'Unset'),
+        ('A', 'Je cesse mon activité'),
+        ('B', 'Je cesse mon activité 2'),
+    )
+    reason_choice = models.CharField(max_length=1, choices=REASON_CHOICES, default='', blank=True, null=True)
+    typed_reason = models.CharField(max_length=140, null=True, blank=True, default='')
+
+    def __str__(self):
+        return '{} - {}'.format(self.user.email, self.reason_choice)
+
+    class Meta:
+        verbose_name = 'Deleted Store'
+        verbose_name_plural = 'Deleted Stores'

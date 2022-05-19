@@ -11,6 +11,7 @@ from chat.base.models import MessageModel
 logger = get_task_logger(__name__)
 
 
+# For generating Avatar
 def random_color_picker():
     colors = [
         # Red

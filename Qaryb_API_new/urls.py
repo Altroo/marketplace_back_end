@@ -47,9 +47,11 @@ urlpatterns = [
     path('api/chat/', include('chat.base.urls', namespace='1.0.0')),
     # Cities / Geo reverse
     path('api/places/', include('places.base.urls', namespace='1.0.0')),
-    # path('api/version/', include('version.urls', namespace='1.0.0')),
+    # Version
+    path('api/version/', include('version.urls', namespace='1.0.0')),
     # Admin
     path('admin/', admin.site.urls),
+    # Static & media files
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': STATICFILES_DIRS}),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
 ]

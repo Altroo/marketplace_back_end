@@ -2,24 +2,29 @@ from os import remove
 from urllib.parse import quote_plus
 from uuid import uuid4
 from celery import current_app
+from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
 from django.db import IntegrityError
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel, ModeVacance
+from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel
 from auth_shop.base.serializers import BaseShopSerializer, BaseShopAvatarPutSerializer, \
     BaseShopNamePutSerializer, BaseShopBioPutSerializer, BaseShopAvailabilityPutSerializer, \
     BaseShopContactPutSerializer, BaseShopAddressPutSerializer, BaseShopColorPutSerializer, \
     BaseShopFontPutSerializer, BaseGETShopInfoSerializer, BaseShopTelPutSerializer, \
     BaseShopWtspPutSerializer, BaseShopAskForCreatorLabelSerializer, \
-    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer
-from auth_shop.base.tasks import base_generate_avatar_thumbnail
+    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer, BaseDeletedAuthShopsSerializer
+from auth_shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mode_vacance_obj, \
+    base_delete_shop_media_files
 from offer.base.models import Offers, Products, Services, Solder, Delivery
 from temp_offer.base.models import TempOffers, TempSolder, TempDelivery
 from temp_shop.base.models import TempShop
+from chat.base.models import MessageModel
 from os import path
-from datetime import datetime
+from datetime import datetime, date
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import qrcode.image.svg
@@ -75,6 +80,67 @@ class ShopView(APIView):
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        user_pk = request.user.pk
+        reason_choice = request.data.get('reason_choice')
+        typed_reason = request.data.get('typed_reason')
+        serializer = BaseDeletedAuthShopsSerializer(data={
+            "user": user_pk,
+            "reason_choice": reason_choice,
+            "typed_reason": typed_reason,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            try:
+                media_paths_list = []
+                auth_shop = AuthShop.objects.get(user__pk=user_pk)
+                # Media Shop avatars
+                if auth_shop.avatar:
+                    media_paths_list.append(auth_shop.avatar.path)
+                if auth_shop.avatar_thumbnail:
+                    media_paths_list.append(auth_shop.avatar_thumbnail.path)
+                # Media Shop qrcodes
+                if auth_shop.qr_code_img:
+                    media_paths_list.append(auth_shop.qr_code_img.path)
+                # Media Shop offers
+                offers = Offers.objects.filter(auth_shop=auth_shop)
+                for offer in offers:
+                    if offer.picture_1:
+                        media_paths_list.append(offer.picture_1.path)
+                    if offer.picture_1_thumbnail:
+                        media_paths_list.append(offer.picture_1_thumbnail.path)
+                    if offer.picture_2:
+                        media_paths_list.append(offer.picture_2.path)
+                    if offer.picture_2_thumbnail:
+                        media_paths_list.append(offer.picture_2_thumbnail.path)
+                    if offer.picture_3:
+                        media_paths_list.append(offer.picture_3.path)
+                    if offer.picture_3_thumbnail:
+                        media_paths_list.append(offer.picture_3_thumbnail.path)
+                # Media chat
+                chat_msgs_sent = MessageModel.objects.filter(user__pk=user_pk)
+                for msg_sent in chat_msgs_sent:
+                    if msg_sent.attachment:
+                        media_paths_list.append(msg_sent.attachment.path)
+                    if msg_sent.attachment_thumbnail:
+                        media_paths_list.append(msg_sent.attachment_thumbnail.path)
+                chat_msgs_received = MessageModel.objects.filter(recipient__pk=user_pk)
+                for msg_received in chat_msgs_received:
+                    if msg_received.attachment:
+                        media_paths_list.append(msg_received.attachment.path)
+                    if msg_received.attachment_thumbnail:
+                        media_paths_list.append(msg_received.attachment_thumbnail.path)
+                auth_shop.delete()
+                # delete all shop media files
+                base_delete_shop_media_files.apply_async((user_pk,), )
+                logout(request)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopAvatarPutView(APIView):
@@ -328,6 +394,8 @@ class TempShopToAuthShopView(APIView):
                 # revoke 24h periodic task
                 task_id = temp_shop.task_id
                 current_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
+                temp_shop.task_id = None
+                temp_shop.save()
                 # Auth shop opening days
                 opening_days = temp_shop.opening_days.all()
                 for opening_day in opening_days:
@@ -430,9 +498,6 @@ class TempShopToAuthShopView(APIView):
                         temp_delivery_cities = temp_delivery.temp_delivery_city.all()
                         for temp_delivery_city in temp_delivery_cities:
                             delivery.delivery_city.add(temp_delivery_city.pk)
-                # qr_code = make(str(temp_shop.qaryb_link))
-                # qr_code_img = self.from_img_to_io(qr_code, 'PNG')
-                # auth_shop.save_image('qr_code_img', qr_code_img)
                 temp_shop.delete()
                 data = {
                     'response': 'Temp shop data transfered into Auth shop!'
@@ -525,65 +590,10 @@ class ShopQrCodeView(APIView):
         # white 255, 255, 255
         # black 0, 0, 0
         match bg_color:
-            # light pink
-            case ("#F3DCDC" | "#FFD9A2"):
+            case ("#F3DCDC" | "#FFD9A2" | "#F8F2DA" | "#DBF4EA" | "#DBE8F4" | "#D5CEEE" | "#F3D8E1" | "#EBD2AD"
+                  | "#E2E4E2" | "#FFFFFF" | "#FFA826" | "#FED301" | "#07CBAD" | "#FF9DBF" | "#CEB186"):
                 return 0, 0, 0
-            # light orange
-            case "#FFD9A2":
-                return 0, 0, 0
-            # light yellow
-            case "#F8F2DA":
-                return 0, 0, 0
-            # light green
-            case "#DBF4EA":
-                return 0, 0, 0
-            # light blue
-            case "#DBE8F4":
-                return 0, 0, 0
-            # light purple
-            case "#D5CEEE":
-                return 0, 0, 0
-            # light pink
-            case "#F3D8E1":
-                return 0, 0, 0
-            # light brown
-            case "#EBD2AD":
-                return 0, 0, 0
-            # light gray
-            case "#E2E4E2":
-                return 0, 0, 0
-            # White
-            case "#FFFFFF":
-                return 0, 0, 0
-            # Red
-            case "#FF5D6B":
-                return 255, 255, 255
-            # Orange
-            case "#FFA826":
-                return 0, 0, 0
-            # Yellow
-            case "#FED301":
-                return 0, 0, 0
-            # Green
-            case "#07CBAD":
-                return 0, 0, 0
-            # Blue
-            case "#0274D7":
-                return 255, 255, 255
-            # Purple
-            case "#8669FB":
-                return 255, 255, 255
-            # Pink
-            case "#FF9DBF":
-                return 0, 0, 0
-            # Brown
-            case "#CEB186":
-                return 0, 0, 0
-            # Gray
-            case "#878E88":
-                return 255, 255, 255
-            # Black
-            case "#0D070B":
+            case ("#FF5D6B" | "#0274D7" | "#8669FB" | "#878E88" | "#0D070B"):
                 return 255, 255, 255
             case _:
                 # Return black color as default
@@ -634,14 +644,18 @@ class ShopQrCodeView(APIView):
             drawn_text_img.text(((max_w - text_width) / 2, (max_h - text_height - 10) / 2), unicode_text_reshaped_rtl,
                                 align='center', font=unicode_font,
                                 fill=fill)
-            # Change those values
             pos_for_text = ((qr_img.size[0] - drawn_text_img._image.width) // 2,
                             (qr_img.size[1] - drawn_text_img._image.height - 20))
             qr_img.paste(drawn_text_img._image, pos_for_text)
-            # qr_img.paste(drawn_text_img._image, (100, 610))
-            qr_img.show()
             qr_code_img = self.from_img_to_io(qr_img, 'PNG', 'output')
-            auth_shop.save_image('qr_code_img', qr_code_img)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            # Delete old qr code before generating new one
+            try:
+                old_qr_code_img = auth_shop.qr_code_img.path
+                remove(old_qr_code_img)
+            except (FileNotFoundError, ValueError, AttributeError):
+                pass
+            auth_shop.save_qr_code('qr_code_img', qr_code_img, uid)
             qr_code_img = AuthShop.objects.get(user=user).get_absolute_qr_code_img
             data = {
                 'qr_code': qr_code_img
@@ -702,9 +716,8 @@ class ShopModeVacanceView(APIView):
             try:
                 mode_vacance_serializer = BaseShopModeVacanceSerializer(auth_shop.auth_shop_mode_vacance)
                 return Response(data=mode_vacance_serializer.data, status=status.HTTP_200_OK)
-            except ModeVacance.DoesNotExist:
-                data = {'errors': ['Auth shop has no mode vacance.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            except auth_shop.auth_shop_mode_vacance.DoesNotExist:
+                return Response(data={}, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -726,7 +739,16 @@ class ShopModeVacanceView(APIView):
                     'date_to': request.data.get('date_to'),
                 })
                 if serializer.is_valid():
-                    serializer.save()
+                    mode_vacance = serializer.save()
+                    mode_vacance.save()
+                    # Generate new periodic task
+                    today_date = date.today()
+                    mode_vacance_to = mode_vacance.date_to
+                    days_left = mode_vacance_to - today_date
+                    shift = datetime.utcnow() + days_left
+                    mode_vacance_task_id = base_delete_mode_vacance_obj.apply_async((mode_vacance.pk,), eta=shift)
+                    auth_shop.mode_vacance_task_id = str(mode_vacance_task_id)
+                    auth_shop.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except AuthShop.DoesNotExist:
@@ -738,8 +760,17 @@ class ShopModeVacanceView(APIView):
         user = request.user
         try:
             auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
-            auth_shop.auth_shop_mode_vacance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            try:
+                auth_shop.auth_shop_mode_vacance.delete()
+                # revoke mode vacance periodic task
+                mode_vacance_task_id = auth_shop.mode_vacance_task_id
+                current_app.control.revoke(mode_vacance_task_id, terminate=True, signal='SIGKILL')
+                auth_shop.mode_vacance_task_id = None
+                auth_shop.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except auth_shop.auth_shop_mode_vacance.DoesNotExist:
+                data = {'errors': ['Mode vacance not found']}
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found']}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
@@ -749,17 +780,35 @@ class ShopModeVacanceView(APIView):
         user = request.user
         try:
             auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
-            date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
-            date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
-            if date_from > date_to:
-                data = {'errors': ['Date from is > than date to.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                serializer = BaseShopModeVacancePUTSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.update(auth_shop.auth_shop_mode_vacance, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
+                date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
+                if date_from > date_to:
+                    data = {'errors': ['Date from is > than date to.']}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    serializer = BaseShopModeVacancePUTSerializer(data=request.data)
+                    if serializer.is_valid():
+                        serializer.update(auth_shop.auth_shop_mode_vacance, serializer.validated_data)
+                        # revoke previous mode vacance periodic task
+                        mode_vacance_task_id = auth_shop.mode_vacance_task_id
+                        current_app.control.revoke(mode_vacance_task_id, terminate=True, signal='SIGKILL')
+                        auth_shop.mode_vacance_task_id = None
+                        auth_shop.save()
+                        # Generate new periodic task
+                        today_date = date.today()
+                        mode_vacance_to = serializer.validated_data.get('date_to')
+                        days_left = mode_vacance_to - today_date
+                        shift = datetime.utcnow() + days_left
+                        mode_vacance_task_id = base_delete_mode_vacance_obj.apply_async(
+                            (serializer.validated_data.get('pk'),), eta=shift)
+                        auth_shop.mode_vacance_task_id = str(mode_vacance_task_id)
+                        auth_shop.save()
+                        return Response(status=status.HTTP_204_NO_CONTENT)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except auth_shop.auth_shop_mode_vacance.DoesNotExist:
+                data = {'errors': ['Mode vacance not found']}
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
         except AuthShop.DoesNotExist:
             data = {'errors': ['Auth shop not found.']}
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)

@@ -2,6 +2,7 @@ from random import choice
 from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.account.models import EmailAddress
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
@@ -16,7 +17,8 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
-    BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer
+    BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer, \
+    BaseRegistrationEmailAddressSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
@@ -30,6 +32,42 @@ from dj_rest_auth.registration.views import SocialConnectView, SocialAccountList
 
 class FacebookLoginView(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+
+    def login(self):
+        super(FacebookLoginView, self).login()
+        user = CustomUser.objects.get(pk=self.user.pk)
+        user.is_enclosed = False
+        user.save()
+        try:
+            user_status = Status.objects.get(user=self.user)
+            user_status.online = True
+            user_status.save()
+        except Status.DoesNotExist:
+            Status.objects.create(user=self.user, online=True)
+        channel_layer = get_channel_layer()
+        my_set = set()
+        result_msg_user = MessageModel.objects.filter(user=self.user.pk)
+        result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
+        for i in result_msg_user:
+            if i != self.user.pk:
+                my_set.add(i.recipient.pk)
+        for i in result_msg_recipient:
+            if i != self.user.pk:
+                my_set.add(i.user.pk)
+        for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
+                .exclude(is_active=False).values_list('id', flat=True):
+            if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
+                    user__id=user_pk).online:
+                event = {
+                    'type': 'recieve_group_message',
+                    'message': {
+                        'type': 'status',
+                        'user_pk': self.user.pk,
+                        'online': True,
+                        'recipient_pk': user_pk,
+                    }
+                }
+                async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
 
 
 class GoogleLoginView(SocialLoginView):
@@ -75,42 +113,6 @@ class GoogleLoginView(SocialLoginView):
 class FacebookLinkingView(SocialConnectView):
     adapter_class = FacebookOAuth2Adapter
 
-    def login(self):
-        super(FacebookLinkingView, self).login()
-        user = CustomUser.objects.get(pk=self.user.pk)
-        user.is_enclosed = False
-        user.save()
-        try:
-            user_status = Status.objects.get(user=self.user)
-            user_status.online = True
-            user_status.save()
-        except Status.DoesNotExist:
-            Status.objects.create(user=self.user, online=True)
-        channel_layer = get_channel_layer()
-        my_set = set()
-        result_msg_user = MessageModel.objects.filter(user=self.user.pk)
-        result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
-        for i in result_msg_user:
-            if i != self.user.pk:
-                my_set.add(i.recipient.pk)
-        for i in result_msg_recipient:
-            if i != self.user.pk:
-                my_set.add(i.user.pk)
-        for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
-                .exclude(is_active=False).values_list('id', flat=True):
-            if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
-                    user__id=user_pk).online:
-                event = {
-                    'type': 'recieve_group_message',
-                    'message': {
-                        'type': 'status',
-                        'user_pk': self.user.pk,
-                        'online': True,
-                        'recipient_pk': user_pk,
-                    }
-                }
-                async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
-
 
 class GoogleLinkingView(SocialConnectView):
     adapter_class = GoogleOAuth2Adapter
@@ -145,37 +147,45 @@ class RegistrationView(APIView):
             'password': password,
             'password2': password2,
             'first_name': first_name,
-            'last_name': last_name,
+            'last_name': last_name
         })
         if serializer.is_valid():
             user = serializer.save()
-            mail_subject = 'Activez votre compte'
-            mail_template = 'activate_account.html'
-            code = self.generate_random_code()
-            message = render_to_string(mail_template, {
-                'first_name': user.first_name,
-                'code': code,
+            email_address_serializer = BaseRegistrationEmailAddressSerializer(data={
+                'user': user.pk,
+                'email': email,
+                'primary': True
             })
-            email = EmailMessage(
-                mail_subject, message, to=(user.email,)
-            )
-            email.content_subtype = "html"
-            email.send(fail_silently=False)
-            user.activation_code = code
-            refresh = RefreshToken.for_user(user)
-            data = {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": {
-                    "pk": user.pk,
-                    "email": user.email,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name
+            if email_address_serializer.is_valid():
+                email_address_serializer.save()
+                mail_subject = 'Activez votre compte'
+                mail_template = 'activate_account.html'
+                code = self.generate_random_code()
+                message = render_to_string(mail_template, {
+                    'first_name': user.first_name,
+                    'code': code
+                })
+                email = EmailMessage(
+                    mail_subject, message, to=(user.email,)
+                )
+                email.content_subtype = "html"
+                email.send(fail_silently=False)
+                user.activation_code = code
+                refresh = RefreshToken.for_user(user)
+                data = {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                    "user": {
+                        "pk": user.pk,
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name
+                    }
                 }
-            }
-            # Generate user avatar and thumbnail
-            base_generate_user_thumbnail.apply_async((user.pk,), )
-            return Response(data=data, status=status.HTTP_200_OK)
+                # Generate user avatar and thumbnail
+                base_generate_user_thumbnail.apply_async((user.pk,), )
+                return Response(data=data, status=status.HTTP_200_OK)
+            return Response(email_address_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -621,17 +631,17 @@ class EncloseAccountView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        user_pk = request.user
+        user_pk = request.user.pk
         reason_choice = request.data.get('reason_choice')
         typed_reason = request.data.get('typed_reason')
         serializer = BaseEnclosedAccountsSerializer(data={
-            "user": user_pk.pk,
+            "user": user_pk,
             "reason_choice": reason_choice,
             "typed_reason": typed_reason,
         })
         if serializer.is_valid():
             serializer.save()
-            user = CustomUser.objects.get(pk=user_pk.pk)
+            user = CustomUser.objects.get(pk=user_pk)
             user.is_enclosed = True
             user.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -644,26 +654,64 @@ class ChangeEmailAccountView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
         user = request.user
-        # TODO get from social application where
-        pass
+        has_password = user.has_usable_password()
+        try:
+            check_verified = EmailAddress.objects.get(user=user).verified
+            data = {
+                'email': user.email,
+                "verified": check_verified,
+                "has_password": has_password,
+            }
+            return Response(data=data, status=status.HTTP_200_OK)
+        except EmailAddress.DoesNotExist:
+            data = {'errors': ['Email not found.']}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def post(request, *args, **kwargs):
         user = request.user
+        has_password = user.has_usable_password()
         new_email = request.data.get('new_email')
-        password = request.data.get('password')
         data = {}
         try:
             CustomUser.objects.get(email=new_email)
             data['email'] = ['This email address already exists.']
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            if not user.check_password(password):
-                return Response({"password": ["Sorry, but this is a wrong password."]},
-                                status=status.HTTP_400_BAD_REQUEST)
+            # Require email & password
+            if has_password:
+                password = request.data.get('password')
+                if not user.check_password(password):
+                    return Response({"password": ["Sorry, but this is a wrong password."]},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    serializer = BaseEmailPutSerializer(data={'email': new_email})
+                    if serializer.is_valid():
+                        serializer.update(request.user, serializer.validated_data)
+                        email_address = EmailAddress.objects.get(user=user)
+                        email_address.email = new_email
+                        email_address.verified = False
+                        email_address.save()
+                        return Response(status=status.HTTP_204_NO_CONTENT)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
+                # Require email & to set a new password
+                new_password = request.data.get("new_password")
+                new_password2 = request.data.get("new_password2")
+                if new_password != new_password2:
+                    return Response({"new_password": ["Sorry, the passwords do not match."]},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                elif len(new_password) < 8 or len(new_password2) < 8:
+                    data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
                 serializer = BaseEmailPutSerializer(data={'email': new_email})
                 if serializer.is_valid():
                     serializer.update(request.user, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(status=status.HTTP_200_OK)
+                    user.set_password(new_password)
+                    user.save()
+                    email_address = EmailAddress.objects.get(user=user)
+                    email_address.email = new_email
+                    email_address.verified = False
+                    email_address.save()
+                    return Response(status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
