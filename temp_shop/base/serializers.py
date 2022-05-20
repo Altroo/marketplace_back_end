@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from temp_shop.base.models import TempShop, AuthShopDays
+from temp_shop.base.models import TempShop
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):

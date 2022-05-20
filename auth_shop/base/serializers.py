@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from auth_shop.base.models import AuthShop, AuthShopDays, AskForCreatorLabel, ModeVacance, \
+from auth_shop.base.models import AuthShop, AskForCreatorLabel, ModeVacance, \
     DeletedAuthShops
 
 
