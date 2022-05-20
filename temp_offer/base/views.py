@@ -1070,7 +1070,7 @@ class TempShopOfferDuplicateView(APIView):
                 # Duplicate offer
                 temp_offer_serializer = temp_offer_serializer.save()
                 # Duplicate pictures
-                base_duplicate_offer_images.apply_async(args=(temp_offer.pk, temp_offer_serializer.pk, 'TempOffers'), )
+                base_duplicate_offer_images.apply_async((temp_offer.pk, temp_offer_serializer.pk, 'TempOffers'), )
                 # Solder
                 try:
                     product_solder = temp_offer.temp_offer_solder

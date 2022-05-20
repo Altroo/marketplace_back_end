@@ -52,7 +52,7 @@ class ShopOfferView(APIView):
             except OfferVue.DoesNotExist:
                 OfferVue.objects.create(offer=offer, title=offer.title, nbr_total_vue=1).save()
                 # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
-                base_duplicate_offervue_images.apply_async(args=(offer_pk,),)
+                base_duplicate_offervue_images.apply_async((offer_pk,),)
                 # base_duplicate_offervue_images(offer_pk)
             try:
                 offers_total_vues = OffersTotalVues.objects.get(auth_shop=offer.auth_shop, date=month)
@@ -1100,7 +1100,7 @@ class ShopOfferDuplicateView(APIView):
                 # Duplicate offer
                 offer_serializer = offer_serializer.save()
                 # Duplicate pictures
-                base_duplicate_offer_images.apply_async(args=(offer.pk, offer_serializer.pk, 'Offers'), )
+                base_duplicate_offer_images.apply_async((offer.pk, offer_serializer.pk, 'Offers'), )
                 # Solder
                 try:
                     product_solder = offer.offer_solder

@@ -13,6 +13,8 @@ from datetime import datetime
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from order.base.tasks import base_duplicate_order_images
+
+
 # from random import choice
 # from string import ascii_letters, digits
 
@@ -242,12 +244,12 @@ class ValidateCartOffersView(APIView):
                         if order_details_product_serializer.is_valid():
                             order_details_product_serializer.save()
                             # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'buyer_avatar_thumbnail'), )
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'seller_avatar_thumbnail'), )
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'offer_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'buyer_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'seller_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'offer_thumbnail'), )
                             return Response(data=order_details_product_serializer.data, status=status.HTTP_200_OK)
                         return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     # Services
@@ -288,12 +290,12 @@ class ValidateCartOffersView(APIView):
                         if order_details_service_serializer.is_valid():
                             order_details_service_serializer.save()
                             # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'buyer_avatar_thumbnail'), )
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'seller_avatar_thumbnail'), )
-                            base_duplicate_order_images.apply_async(args=(buyer_pk, seller_pk, offer_pk,
-                                                                          'offer_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'buyer_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'seller_avatar_thumbnail'), )
+                            base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
+                                                                     'offer_thumbnail'), )
                             return Response(data=order_details_service_serializer.data, status=status.HTTP_200_OK)
                         return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
