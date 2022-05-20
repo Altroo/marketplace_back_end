@@ -181,8 +181,8 @@ class OrderDetails(Model):
         return None
 
     class Meta:
-        verbose_name = 'Order details'
-        verbose_name_plural = 'Orders details'
+        verbose_name = 'Order Details'
+        verbose_name_plural = 'Orders Details'
         ordering = ('-order__order_date',)
 
     def save_image(self, field_name, image):

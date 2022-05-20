@@ -74,7 +74,11 @@ class ShopView(APIView):
     def get(request, *args, **kwargs):
         auth_shop_pk = kwargs.get('auth_shop_pk')
         try:
-            shop = AuthShop.objects.get(pk=auth_shop_pk)
+            if not auth_shop_pk:
+                user = request.user
+                shop = AuthShop.objects.get(user=user)
+            else:
+                shop = AuthShop.objects.get(pk=auth_shop_pk)
             shop_details_serializer = BaseGETShopInfoSerializer(shop)
             return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:

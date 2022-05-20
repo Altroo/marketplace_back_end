@@ -206,6 +206,8 @@ MAP_DOMAIN = config('MAP_DOMAIN')
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=config('ACCESS_TOKEN_LIFETIME', cast=int)),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=config('REFRESH_TOKEN_LIFETIME', cast=int)),
+    'BLACKLIST_AFTER_ROTATION': config('BLACKLIST_AFTER_ROTATION', cast=bool),
+    'ROTATE_REFRESH_TOKENS': config('ROTATE_REFRESH_TOKENS', cast=bool),
 }
 
 # Redis config

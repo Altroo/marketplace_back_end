@@ -193,8 +193,8 @@ class AskForCreatorLabel(Model):
         return '{} - {}'.format(self.auth_shop.shop_name, self.status)
 
     class Meta:
-        verbose_name = 'Demande créateur'
-        verbose_name_plural = 'Demandes créateur'
+        verbose_name = 'Demande Créateur'
+        verbose_name_plural = 'Demandes Créateur'
 
 
 class ModeVacance(Model):
@@ -208,8 +208,8 @@ class ModeVacance(Model):
         return '{} - {} - {}'.format(self.auth_shop.shop_name, self.date_from, self.date_to)
 
     class Meta:
-        verbose_name = 'Mode vacance'
-        verbose_name_plural = 'Mode vacances'
+        verbose_name = 'Mode Vacance'
+        verbose_name_plural = 'Mode Vacances'
 
 
 class DeletedAuthShops(Model):

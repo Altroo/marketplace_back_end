@@ -138,8 +138,8 @@ class ArchivedConversations(Model):
         return "{} - {}".format(self.user.email, self.recipient.email)
 
     class Meta:
-        verbose_name = "Archived conversation"
-        verbose_name_plural = "Archived conversations"
+        verbose_name = "Archived Conversation"
+        verbose_name_plural = "Archived Conversations"
 
 
 class Status(Model):

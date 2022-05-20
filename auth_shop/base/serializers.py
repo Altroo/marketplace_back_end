@@ -33,19 +33,24 @@ class BaseShopSerializer(serializers.ModelSerializer):
         return shop
 
 
-class BaseShopOpeningDaysSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuthShopDays
-        fields = ['code_day']
+# class BaseShopOpeningDaysSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AuthShopDays
+#         fields = ['code_day']
 
 
 class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
-    opening_days = BaseShopOpeningDaysSerializer(many=True, read_only=True)
+    # opening_days = BaseShopOpeningDaysSerializer(many=True, read_only=True)
+    opening_days = serializers.SerializerMethodField()
     morning_hour_from = serializers.TimeField(format='%H:%M')
     morning_hour_to = serializers.TimeField(format='%H:%M')
     afternoon_hour_from = serializers.TimeField(format='%H:%M')
     afternoon_hour_to = serializers.TimeField(format='%H:%M')
+
+    @staticmethod
+    def get_opening_days(instance):
+        return instance.opening_days.values_list('code_day', flat=True)
 
     class Meta:
         model = AuthShop

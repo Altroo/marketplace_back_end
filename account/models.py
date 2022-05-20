@@ -124,7 +124,7 @@ class ReportedUsers(Model):
 
     class Meta:
         verbose_name = 'Reported User'
-        verbose_name_plural = "Reported users"
+        verbose_name_plural = "Reported Users"
 
 
 class UserAddress(Model):
