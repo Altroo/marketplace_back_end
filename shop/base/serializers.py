@@ -11,7 +11,7 @@ class BaseShopSerializer(serializers.ModelSerializer):
             'shop_name',
             'avatar', 'color_code', 'bg_color_code',
             'font_name',
-            'creator', 'unique_id']
+            'creator']
         extra_kwargs = {
             'avatar': {'required': True},
         }
@@ -26,7 +26,6 @@ class BaseShopSerializer(serializers.ModelSerializer):
             font_name=self.validated_data['font_name'],
             # Read only default to False
             creator=self.validated_data['creator'],
-            unique_id=self.validated_data['unique_id'],
         )
         shop.save()
         return shop
