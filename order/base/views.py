@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from auth_shop.base.models import AuthShop
+from shop.base.models import AuthShop
 from order.base.models import Order, OrderDetails
 from order.base.serializers import BaseTempOrdersListSerializer, BaseOrderDetailsListSerializer
 

@@ -30,13 +30,15 @@ urlpatterns = [
     # Has authorized callbacks from Google console cloud & facebook developers
     path('api/socials/', include('allauth.urls')),
     # Auth Shop
-    path('api/shop/', include('auth_shop.base.urls', namespace='1.0.0')),
+    # path('api/shop/', include('auth_shop.base.urls', namespace='1.0.0')),
+    path('api/shop/', include('shop.base.urls', namespace='1.0.0')),
     # Temporary shops
-    path('api/temp_shop/', include('temp_shop.base.urls', namespace='1.0.0')),
+    # path('api/temp_shop/', include('temp_shop.base.urls', namespace='1.0.0')),
     # Offers
-    path('api/offer/', include('offer.base.urls', namespace='1.0.0')),
+    # path('api/offer/', include('offer.base.urls', namespace='1.0.0')),
+    path('api/offer/', include('offers.base.urls', namespace='1.0.0')),
     # Temporary offers
-    path('api/temp_offer/', include('temp_offer.base.urls', namespace='1.0.0')),
+    # path('api/temp_offer/', include('temp_offer.base.urls', namespace='1.0.0')),
     # Cart
     path('api/cart/', include('cart.base.urls', namespace='1.0.0')),
     # Order

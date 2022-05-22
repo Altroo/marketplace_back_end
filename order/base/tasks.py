@@ -2,9 +2,9 @@ from os import path
 from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
 from account.models import CustomUser
-from auth_shop.base.models import AuthShop
+from shop.base.models import AuthShop
 from order.base.models import Order, OrderDetails
-from offer.base.models import Offers
+from offers.base.models import Offers
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from PIL import Image
 from io import BytesIO

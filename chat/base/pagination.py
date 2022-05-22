@@ -2,7 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from Qaryb_API_new.settings import MESSAGES_TO_LOAD, CONVERSATIONS_TO_LOAD
 from rest_framework.response import Response
 from account.models import CustomUser
-from auth_shop.base.models import AuthShop
+from shop.base.models import AuthShop
 from chat.base.models import Status
 from datetime import date
 

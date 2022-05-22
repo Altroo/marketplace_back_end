@@ -1,4 +1,4 @@
-from offer.base.models import Solder
+from offers.base.models import Solder
 
 
 class GetCartPrices:

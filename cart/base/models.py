@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
-from offer.base.models import Offers, get_shop_offers_path
+from offers.base.models import Offers, get_shop_offers_path
 
 
 class Cart(Model):

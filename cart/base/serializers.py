@@ -2,7 +2,7 @@ from rest_framework import serializers
 from cart.base.models import Cart
 from cart.base.utils import GetCartPrices
 from places.base.models import City
-from offer.base.models import Delivery, Products
+from offers.base.models import Delivery, Products
 from order.base.models import Order, OrderDetails
 
 

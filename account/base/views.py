@@ -22,7 +22,7 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
-from auth_shop.base.tasks import base_generate_avatar_thumbnail
+from shop.base.tasks import base_generate_avatar_thumbnail
 from rest_framework.pagination import PageNumberPagination
 from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout

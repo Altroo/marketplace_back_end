@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from account.models import UserAddress
-from offer.base.models import Offers, Delivery, Products, Services, Solder
+from offers.base.models import Offers, Delivery, Products, Services, Solder
 from cart.base.serializers import BaseCartOfferDetailsSerializer, BaseCartOfferSerializer, \
     BaseCartOfferPutSerializer, BaseCartOfferDeliveriesDetailsSerializer, \
     BaseNewOrderSerializer, BaseOferDetailsProductSerializer, BaseOfferDetailsServiceSerializer

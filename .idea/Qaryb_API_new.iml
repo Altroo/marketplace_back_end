@@ -16,31 +16,40 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Qaryb_API_new" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/auth_shop" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/temp_offer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/temp_product" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/account" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/places/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/places/management/commands" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/offer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/places" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/auth_shop/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/chat" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/cart" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/order" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/account/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/account/management" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/auth_shop/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/cart/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/chat/base" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/offer/base" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/offer/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/order/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/places/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/places/management" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/temp_offer/base" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/temp_shop/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ratings" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/temp_shop" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/temp_shop/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/version" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/version/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/version/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offers" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offers/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offers/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/offer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/offer/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/offer/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/temp_offer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/tests/temp_offer/base" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/tests" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />

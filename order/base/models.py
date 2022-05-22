@@ -2,8 +2,8 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
-from auth_shop.base.models import AuthShop, LonLatValidators
-from offer.base.models import OfferChoices
+from shop.base.models import AuthShop, LonLatValidators
+from offers.base.models import OfferChoices
 from Qaryb_API_new.settings import API_URL
 from django.utils.translation import gettext_lazy as _
 from os import path

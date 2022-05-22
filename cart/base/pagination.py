@@ -2,7 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
 from cart.base.models import Cart
-from offer.base.models import Solder
+from offers.base.models import Solder
 from cart.base.serializers import BaseSingleCartOneOrMultiOffersSerializer
 
 
