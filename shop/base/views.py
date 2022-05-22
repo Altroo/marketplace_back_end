@@ -86,7 +86,7 @@ class ShopView(APIView):
         # Auth shop
         else:
             serializer = BaseShopSerializer(data={
-                'user': user,
+                'user': user.pk,
                 'shop_name': shop_name,
                 'avatar': avatar,
                 'color_code': color_code,
