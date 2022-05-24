@@ -2401,7 +2401,7 @@ class GetLastThreeDeliveriesView(APIView):
                     if len(data['deliveries']) == 3:
                         break
                 return Response(data, status=status.HTTP_200_OK)
-            except TempOffers.DoesNotExist:
+            except TempShop.DoesNotExist:
                 data = {'errors': ['Temp shop unique_id not found.']}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         # Real offers
