@@ -68,7 +68,7 @@ class Categories(Model):
 
 
 class OfferTags(Model):
-    name_tag = models.CharField(max_length=255, verbose_name='Category Name', unique=True)
+    name_tag = models.CharField(max_length=255, verbose_name='Tag name', unique=True)
 
     def __str__(self):
         return '{}'.format(self.name_tag)
