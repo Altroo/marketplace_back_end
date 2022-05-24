@@ -131,7 +131,10 @@ class ShopView(APIView):
         else:
             shop_link = kwargs.get('shop_link')
             try:
-                shop = AuthShop.objects.get(qaryb_link=shop_link)
+                if shop_link:
+                    shop = AuthShop.objects.get(qaryb_link=shop_link)
+                else:
+                    shop = AuthShop.objects.get(user=user)
                 shop_details_serializer = BaseGETShopInfoSerializer(shop)
                 return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
             except AuthShop.DoesNotExist:

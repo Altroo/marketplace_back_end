@@ -45,7 +45,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AuthShop
-        fields = ['shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
+        fields = ['pk', 'shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
                   'phone', 'contact_email',
