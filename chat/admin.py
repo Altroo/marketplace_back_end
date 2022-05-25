@@ -11,6 +11,14 @@ class MessagesAdmin(ModelAdmin):
     date_hierarchy = 'created'
     ordering = ('-pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class StatusAdmin(ModelAdmin):
     list_display = ('pk', 'user',
@@ -24,6 +32,14 @@ class ArchivedConversationsAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'recipient')
     search_fields = ('pk', 'user__email', 'recipient__email')
     ordering = ('-pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 site.register(MessageModel, MessagesAdmin)

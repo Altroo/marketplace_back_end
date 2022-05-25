@@ -16,11 +16,27 @@ class CustomDaysAdmin(ModelAdmin):
     search_fields = ('pk', 'code_day', 'name_day',)
     ordering = ('pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomPhoneCodesAdmin(ModelAdmin):
     list_display = ('pk', 'phone_code')
     search_fields = ('pk', 'phone_code')
     ordering = ('-pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomAskForCreatorLabelAdmin(ModelAdmin):
@@ -58,6 +74,14 @@ class CustomModeVacanceAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'date_from', 'date_to')
     search_fields = ('pk', 'auth_shop', 'date_from', 'date_to')
     ordering = ('-pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomDeletedAuthShopsAdmin(ModelAdmin):

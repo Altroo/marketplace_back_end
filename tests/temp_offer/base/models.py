@@ -227,4 +227,4 @@ class TempSolder(Model):
 
     class Meta:
         verbose_name = 'Temp Solder'
-        verbose_name_plural = 'Temp Solders'
+        verbose_name_plural = 'Temp Solder'

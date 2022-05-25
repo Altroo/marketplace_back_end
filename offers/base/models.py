@@ -327,7 +327,7 @@ class Solder(Model):
 
     class Meta:
         verbose_name = 'Solder'
-        verbose_name_plural = 'Solders'
+        verbose_name_plural = 'Solder'
 
 
 class OfferVue(Model):

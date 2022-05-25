@@ -2086,3 +2086,10 @@ Traceback (most recent call last):
     creator=self.validated_data['creator'],
 KeyError: 'creator'
 [35;1mHTTP POST /api/shop/ 500 [0.08, 127.0.0.1:50111][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico

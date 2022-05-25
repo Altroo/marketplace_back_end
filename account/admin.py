@@ -3,8 +3,11 @@ from django.contrib.admin import ModelAdmin
 from .forms import CustomAuthShopCreationForm, CustomAuthShopChangeForm
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts
 from django.contrib import admin
-from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
+from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+from allauth.socialaccount.admin import SocialAccountAdmin, SocialAppAdmin, SocialTokenAdmin
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
+from allauth.account.models import EmailAddress
 
 
 class CustomUserAdmin(UserAdmin):
@@ -48,12 +51,28 @@ class CustomBlockedUsersAdmin(ModelAdmin):
     search_fields = ('pk', 'user__email', 'user_blocked__email')
     ordering = ('-pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomReportedUsersAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'user_reported', 'report_reason')
     list_filter = ('report_reason',)
     search_fields = ('pk', 'user__email', 'user_reported__email')
     ordering = ('-pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomUserAddressAdmin(ModelAdmin):
@@ -71,9 +90,72 @@ class CustomEnclosedAccountsAdmin(ModelAdmin):
     search_fields = ('pk', 'user__email', 'reason_choice', 'typed_reason')
     ordering = ('-pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
 
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+class CustomBlacklistedTokenAdmin(BlacklistedTokenAdmin):
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+class CustomSocialAccountAdmin(SocialAccountAdmin):
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+class CustomSocialAppAdmin(SocialAppAdmin):
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+class CustomSocialTokenAdmin(SocialTokenAdmin):
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
+# Token Blacklist
 admin.site.unregister(OutstandingToken)
+admin.site.unregister(BlacklistedToken)
 admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
+admin.site.register(BlacklistedToken, CustomBlacklistedTokenAdmin)
+# Social accounts
+admin.site.unregister(SocialAccount)
+admin.site.unregister(SocialApp)
+admin.site.unregister(SocialToken)
+admin.site.register(SocialAccount, CustomSocialAccountAdmin)
+admin.site.register(SocialApp, CustomSocialAppAdmin)
+admin.site.register(SocialToken, CustomSocialTokenAdmin)
+# Account
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(BlockedUsers, CustomBlockedUsersAdmin)
 admin.site.register(ReportedUsers, CustomReportedUsersAdmin)

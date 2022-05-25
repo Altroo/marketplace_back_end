@@ -59,11 +59,27 @@ class CustomCategoriesAdmin(ModelAdmin):
     search_fields = ('pk', 'code_category', 'name_category',)
     ordering = ('pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomColorsAdmin(ModelAdmin):
     list_display = ('pk', 'code_color', 'name_color',)
     search_fields = ('pk', 'code_color', 'name_color',)
     ordering = ('pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomSizesAdmin(ModelAdmin):
@@ -71,17 +87,41 @@ class CustomSizesAdmin(ModelAdmin):
     search_fields = ('pk', 'code_size', 'name_size',)
     ordering = ('pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomForWhomAdmin(ModelAdmin):
     list_display = ('pk', 'code_for_whom', 'name_for_whom',)
     search_fields = ('pk', 'code_for_whom', 'name_for_whom',)
     ordering = ('pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomServiceDaysAdmin(ModelAdmin):
     list_display = ('pk', 'code_day', 'name_day',)
     search_fields = ('pk', 'code_day', 'name_day',)
     ordering = ('pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomDeliveryAdmin(ModelAdmin):
@@ -105,11 +145,27 @@ class CustomOfferVueAdmin(ModelAdmin):
     search_fields = ('pk', 'offer', 'nbr_total_vue')
     ordering = ('-pk',)
 
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
 
 class CustomOffersTotalVuesAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
     search_fields = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
     ordering = ('-pk',)
+
+    # Add permission removed
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    # Delete permission removed
+    def has_delete_permission(self, *args, **kwargs):
+        return False
 
 
 class CustomTempOfferAdmin(ModelAdmin):
