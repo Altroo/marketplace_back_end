@@ -311,6 +311,7 @@ class ShopOfferView(APIView):
                     # Delivery 1 cities
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
+                    delivery_cities_1 = []
                     if delivery_city_1:
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
@@ -318,14 +319,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_1 = []
                         for city in cities:
                             delivery_cities_1.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_1_pk.append(
@@ -335,6 +335,7 @@ class ShopOfferView(APIView):
                     # Delivery 2 cities
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
+                    delivery_cities_2 = []
                     if delivery_city_2:
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
@@ -342,14 +343,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_2 = []
                         for city in cities:
                             delivery_cities_2.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_2_pk.append(
@@ -359,6 +359,7 @@ class ShopOfferView(APIView):
                     # Delivery 3 cities
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
+                    delivery_cities_3 = []
                     if delivery_city_3:
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
@@ -366,14 +367,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_3 = []
                         for city in cities:
                             delivery_cities_3.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_3_pk.append(
@@ -388,7 +388,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_1_pk,
+                                'temp_delivery_city': delivery_cities_1,
                                 'temp_delivery_price': float(delivery_price_1),
                                 'temp_delivery_days': int(delivery_days_1)
                             }
@@ -398,7 +398,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_2_pk,
+                                'temp_delivery_city': delivery_cities_2,
                                 'temp_delivery_price': float(delivery_price_2),
                                 'temp_delivery_days': int(delivery_days_2)
                             }
@@ -408,7 +408,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'temp_offer': temp_offer_pk,
-                                'temp_delivery_city': delivery_cities_3_pk,
+                                'temp_delivery_city': delivery_cities_3,
                                 'temp_delivery_price': float(delivery_price_3),
                                 'temp_delivery_days': int(delivery_days_3)
                             }
@@ -670,6 +670,7 @@ class ShopOfferView(APIView):
                     # Delivery 1 cities
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
+                    delivery_cities_1 = []
                     if delivery_city_1:
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
@@ -677,14 +678,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_1 = []
                         for city in cities:
                             delivery_cities_1.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_1_pk.append(
@@ -694,6 +694,7 @@ class ShopOfferView(APIView):
                     # Delivery 2 cities
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
+                    delivery_cities_2 = []
                     if delivery_city_2:
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
@@ -701,14 +702,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_2 = []
                         for city in cities:
                             delivery_cities_2.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_2_pk.append(
@@ -718,6 +718,7 @@ class ShopOfferView(APIView):
                     # Delivery 3 cities
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
+                    delivery_cities_3 = []
                     if delivery_city_3:
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
@@ -725,14 +726,13 @@ class ShopOfferView(APIView):
                             cities.append(int(city))
 
                         cities = City.objects.filter(pk__in=cities)
-                        delivery_cities_3 = []
                         for city in cities:
                             delivery_cities_3.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
+                                    # "city_en": city.name_en,
                                     "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    # "city_ar": city.name_ar
                                 }
                             )
                             delivery_cities_3_pk.append(
@@ -747,7 +747,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
-                                'delivery_city': delivery_cities_1_pk,
+                                'delivery_city': delivery_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
                             }
@@ -757,7 +757,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
-                                'delivery_city': delivery_cities_2_pk,
+                                'delivery_city': delivery_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
                             }
@@ -767,7 +767,7 @@ class ShopOfferView(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
-                                'delivery_city': delivery_cities_3_pk,
+                                'delivery_city': delivery_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
                             }

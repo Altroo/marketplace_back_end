@@ -2093,3 +2093,5 @@ Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
+Bad Request: /api/account/login/
+[31;1mHTTP POST /api/account/login/ 400 [0.33, 127.0.0.1:50073][0m
