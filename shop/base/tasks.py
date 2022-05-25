@@ -128,5 +128,17 @@ def base_start_deleting_expired_shops(self, shop_pk):
                 remove(picture_3_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
+            # Picture 4
+            try:
+                picture_4 = temp_product.picture_4.path
+                remove(picture_4)
+            except (FileNotFoundError, ValueError, AttributeError):
+                pass
+            # Picture 4 thumbnail
+            try:
+                picture_4_thumbnail = temp_product.picture_4_thumbnail.path
+                remove(picture_4_thumbnail)
+            except (FileNotFoundError, ValueError, AttributeError):
+                pass
         # Delete object
         temp_shop.delete()

@@ -92,6 +92,12 @@ def base_generate_offer_thumbnails(self, product_pk, which):
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         offer.save_image('picture_3_thumbnail', img_thumbnail)
 
+    offer_picture_4 = offer.picture_4.path if offer.picture_4 else None
+    if offer_picture_4 is not None:
+        picture_path = parent_file_dir + '/media' + offer.picture_4.url
+        img_thumbnail = start_generating_thumbnail(picture_path, False)
+        offer.save_image('picture_4_thumbnail', img_thumbnail)
+
 
 @app.task(bind=True)
 def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
@@ -131,6 +137,9 @@ def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
     if offer.picture_3_thumbnail:
         picture_3_thumbnail = start_generating_thumbnail(offer.picture_3_thumbnail.path, True)
         new_offer.save_image('picture_3_thumbnail', picture_3_thumbnail)
+    if offer.picture_4_thumbnail:
+        picture_4_thumbnail = start_generating_thumbnail(offer.picture_4_thumbnail.path, True)
+        new_offer.save_image('picture_4_thumbnail', picture_4_thumbnail)
 
 
 @app.task(bind=True)
@@ -157,6 +166,10 @@ def base_duplicate_offervue_images(self, offer_pk):
         if offer.picture_3_thumbnail:
             picture_3_thumbnail = start_generating_thumbnail(offer.picture_3_thumbnail.path, True)
             offer_vue.save_image('thumbnail', picture_3_thumbnail)
+            break
+        if offer.picture_4_thumbnail:
+            picture_4_thumbnail = start_generating_thumbnail(offer.picture_4_thumbnail.path, True)
+            offer_vue.save_image('thumbnail', picture_4_thumbnail)
             break
 
 
@@ -271,6 +284,18 @@ def base_start_deleting_expired_shops(self, shop_pk):
             try:
                 picture_3_thumbnail = temp_product.picture_3_thumbnail.path
                 remove(picture_3_thumbnail)
+            except (FileNotFoundError, ValueError, AttributeError):
+                pass
+            # Picture 4
+            try:
+                picture_4 = temp_product.picture_4.path
+                remove(picture_4)
+            except (FileNotFoundError, ValueError, AttributeError):
+                pass
+            # Picture 4 thumbnail
+            try:
+                picture_4_thumbnail = temp_product.picture_4_thumbnail.path
+                remove(picture_4_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
         # Delete object

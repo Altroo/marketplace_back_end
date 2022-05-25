@@ -714,9 +714,11 @@ class TempShopToAuthShopView(APIView):
                         picture_1=temp_offer.picture_1,
                         picture_2=temp_offer.picture_2,
                         picture_3=temp_offer.picture_3,
+                        picture_4=temp_offer.picture_4,
                         picture_1_thumbnail=temp_offer.picture_1_thumbnail,
                         picture_2_thumbnail=temp_offer.picture_2_thumbnail,
                         picture_3_thumbnail=temp_offer.picture_3_thumbnail,
+                        picture_4_thumbnail=temp_offer.picture_4_thumbnail,
                         description=temp_offer.description,
                         # For whom
                         # Tags
