@@ -22,7 +22,7 @@ from auth_shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mod
 from offer.base.models import Offers, Products, Services, Solder, Delivery
 from temp_offer.base.models import TempOffers, TempSolder, TempDelivery
 from temp_shop.base.models import TempShop
-from chat.base.models import MessageModel
+from models import MessageModel
 from os import path
 from datetime import datetime, date
 import qrcode

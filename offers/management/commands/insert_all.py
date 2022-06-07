@@ -1,7 +1,7 @@
 import sys
 from django.core.management import BaseCommand
-from offers.base.models import Categories, Colors, ServiceDays, ForWhom, Sizes
-from shop.base.models import AuthShopDays, PhoneCodes
+from offers.models import Categories, Colors, ServiceDays, ForWhom, Sizes
+from shop.models import AuthShopDays, PhoneCodes
 from csv import reader
 from os import path, mkdir
 from django.db.utils import IntegrityError

@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from cart.base.models import Cart
+from models import Cart
 from offer.base.models import Offers, Solder, Products, Services, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery, OfferTags
-from places.base.models import City
+from models import City
 
 
 class BaseOfferCategoriesSerializer(serializers.ModelSerializer):

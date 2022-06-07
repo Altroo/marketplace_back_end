@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from places.base.filters import UserLanguageMixin, CountryFilterSet, CityFilterSet, BaseAllCountryFilter
 from places.base.serializers import BaseCountrySerializer, BaseCitySerializer, BaseCountriesSerializer
 from places.base.choices import PlaceType
-from places.base.models import Country, City
+from places.models import Country, City
 
 from rest_framework.response import Response
 from rest_framework.views import APIView

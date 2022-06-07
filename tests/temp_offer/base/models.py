@@ -1,13 +1,13 @@
 from django.db import models
 from django.db.models import Model
 from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays
-from shop.base.models import LonLatValidators, TempShop
+from models import LonLatValidators, TempShop
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
 from Qaryb_API_new.settings import API_URL
 from offer.base.models import get_shop_offers_path, OfferChoices, OfferTags
-from places.base.models import City
+from models import City
 
 
 class TempOffers(Model):

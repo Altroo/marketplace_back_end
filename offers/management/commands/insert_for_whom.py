@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from offers.base.models import ForWhom
+from offers.models import ForWhom
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError

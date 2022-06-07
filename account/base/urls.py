@@ -4,7 +4,7 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
     PasswordResetView, SendPasswordResetView, ProfileView, BlockView, \
     ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
     FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView, \
-    EncloseAccountView, ChangeEmailAccountView
+    EncloseAccountView, ChangeEmailAccountView, DeleteAccountView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 from dj_rest_auth.views import PasswordChangeView
@@ -76,4 +76,6 @@ urlpatterns = [
     path('enclose/', EncloseAccountView.as_view()),
     # POST : Change email
     path('email/', ChangeEmailAccountView.as_view()),
+    # Delete Account
+    path('delete_account', DeleteAccountView.as_view()),
 ]

@@ -2,8 +2,8 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
-from shop.base.models import AuthShop, LonLatValidators
-from offers.base.models import OfferChoices
+from shop.models import AuthShop, LonLatValidators
+from offers.models import OfferChoices
 from Qaryb_API_new.settings import API_URL
 from django.utils.translation import gettext_lazy as _
 from os import path
@@ -13,17 +13,17 @@ from io import BytesIO
 
 def get_fallback_shop_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('fallback_shop_avatars/', str(uuid4()) + file_extension)
+    return path.join('media/fallback_shop_avatars/', str(uuid4()) + file_extension)
 
 
 def get_fallback_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('fallback_shop_offers/', str(uuid4()) + file_extension)
+    return path.join('media/fallback_shop_offers/', str(uuid4()) + file_extension)
 
 
 def get_fallback_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('fallback_user_avatars/', str(uuid4()) + file_extension)
+    return path.join('media/fallback_user_avatars/', str(uuid4()) + file_extension)
 
 
 class Order(Model):
@@ -42,6 +42,8 @@ class Order(Model):
     seller_avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail',
                                                 upload_to=get_fallback_shop_avatar_path, blank=True, null=True,
                                                 default=None)
+    note = models.CharField(verbose_name='Note', max_length=300, default=None, null=True, blank=True)
+    # TODO 1 Add highest delivery price
     # TIMESTAMP[0:4]-UID
     # 4566-MQ
     order_number = models.CharField(verbose_name='Order number', max_length=255, unique=True)
@@ -59,6 +61,7 @@ class Order(Model):
     )
     order_status = models.CharField(verbose_name='Order Status', max_length=2,
                                     choices=ORDER_STATUS_CHOICES, default='TC')
+    highest_delivery_price = models.FloatField(verbose_name='Highest delivery price', blank=True, null=True)
     viewed_buyer = models.BooleanField(default=False)
     viewed_seller = models.BooleanField(default=False)
 
@@ -130,16 +133,16 @@ class OrderDetails(Model):
     delivery_price = models.FloatField(verbose_name='Delivery price', blank=True, null=True)
     # delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
     # Buyer coordinates
-    first_name = models.CharField(verbose_name='First name', max_length=30, blank=True, null=True)
-    last_name = models.CharField(verbose_name='Last name', max_length=30, blank=True, null=True)
+    # Products only
     address = models.CharField(verbose_name='Address', max_length=300, blank=True, null=True)
     city = models.CharField(verbose_name='City', max_length=30, blank=True, null=True)
     zip_code = models.PositiveIntegerField(verbose_name='Zip code', blank=True, null=True)
     country = models.CharField(verbose_name='Country', max_length=30, blank=True, null=True)
+    # Global both Products and services
+    first_name = models.CharField(verbose_name='First name', max_length=30, blank=True, null=True)
+    last_name = models.CharField(verbose_name='Last name', max_length=30, blank=True, null=True)
     phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True)
     email = models.EmailField(verbose_name='email address', blank=True, null=True)
-    # Both product & service
-    note = models.CharField(verbose_name='Note', max_length=300, default=None, null=True, blank=True)
     # Product
     picked_color = models.CharField(verbose_name='Picked Color', max_length=255, default=None, null=True, blank=True)
     picked_size = models.CharField(verbose_name='Picked Size', max_length=255, default=None, null=True, blank=True)
@@ -171,8 +174,20 @@ class OrderDetails(Model):
                                       null=True, blank=True)
 
     def __str__(self):
-        return 'Pk : {} Order : {} - Seller : {}'.format(self.order.pk, self.order.buyer.email,
-                                                         self.order.seller.shop_name)
+        try:
+            buyer_first_name = self.order.buyer.first_name
+        except AttributeError:
+            buyer_first_name = self.order.first_name
+        try:
+            buyer_last_name = self.order.buyer.last_name
+        except AttributeError:
+            buyer_last_name = self.order.last_name
+        try:
+            seller_shop_name = self.order.seller.shop_name
+        except AttributeError:
+            seller_shop_name = self.order.shop_name
+        return 'Pk : {} Buyer : {} {} - Seller : {}'.format(self.order.pk, buyer_first_name, buyer_last_name,
+                                                            seller_shop_name)
 
     @property
     def get_absolute_offer_thumbnail(self):

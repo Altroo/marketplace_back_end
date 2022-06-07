@@ -1,5 +1,5 @@
 from django_filters.rest_framework import FilterSet, CharFilter
-from offers.base.models import OfferTags
+from offers.models import OfferTags
 
 
 class TagsFilterSet(FilterSet):

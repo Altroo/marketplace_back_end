@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from places.base.models import Cities
+from models import Cities
 
 
 class BaseCitiesListSerializer(serializers.ModelSerializer):

@@ -12,12 +12,12 @@ from account.models import CustomUser
 
 def get_shop_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('shop_avatars/', str(uuid4()) + file_extension)
+    return path.join('media/shop_avatars/', str(uuid4()) + file_extension)
 
 
 def get_shop_qr_code_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('shop_qrcodes/', str(uuid4()) + file_extension)
+    return path.join('media/shop_qrcodes/', str(uuid4()) + file_extension)
 
 
 class ShopChoices:
@@ -286,22 +286,3 @@ class ModeVacance(Model):
     class Meta:
         verbose_name = 'Mode Vacance'
         verbose_name_plural = 'Mode Vacances'
-
-
-class DeletedAuthShops(Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
-                             verbose_name='User', related_name='user_deleted_auth_shops')
-    REASON_CHOICES = (
-        ('', 'Unset'),
-        ('A', 'Je cesse mon activité'),
-        ('B', 'Je cesse mon activité 2'),
-    )
-    reason_choice = models.CharField(max_length=1, choices=REASON_CHOICES, default='', blank=True, null=True)
-    typed_reason = models.CharField(max_length=140, null=True, blank=True, default='')
-
-    def __str__(self):
-        return '{} - {}'.format(self.user.email, self.reason_choice)
-
-    class Meta:
-        verbose_name = 'Deleted Store'
-        verbose_name_plural = 'Deleted Stores'

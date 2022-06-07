@@ -1,6 +1,6 @@
 from django.contrib import admin
-from shop.base.models import AuthShopDays, AuthShop, \
-    PhoneCodes, AskForCreatorLabel, ModeVacance, DeletedAuthShops, TempShop
+from shop.models import AuthShopDays, AuthShop, \
+    PhoneCodes, AskForCreatorLabel, ModeVacance, TempShop
 from django.contrib.admin import ModelAdmin
 
 
@@ -60,35 +60,28 @@ class CustomAskForCreatorLabelAdmin(ModelAdmin):
             auth_shop.creator = False
         auth_shop.save()
         super(CustomAskForCreatorLabelAdmin, self).save_model(request, obj, form, change)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomModeVacanceAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'date_from', 'date_to')
     search_fields = ('pk', 'auth_shop', 'date_from', 'date_to')
     ordering = ('-pk',)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
-
-
-class CustomDeletedAuthShopsAdmin(ModelAdmin):
-    list_display = ('pk', 'user', 'reason_choice', 'typed_reason')
-    list_filter = ('reason_choice',)
-    search_fields = ('pk', 'user__email', 'reason_choice', 'typed_reason')
-    ordering = ('-pk',)
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomTempShopAdmin(ModelAdmin):
@@ -102,5 +95,4 @@ admin.site.register(AuthShopDays, CustomDaysAdmin)
 admin.site.register(PhoneCodes, CustomPhoneCodesAdmin)
 admin.site.register(AskForCreatorLabel, CustomAskForCreatorLabelAdmin)
 admin.site.register(ModeVacance, CustomModeVacanceAdmin)
-admin.site.register(DeletedAuthShops, CustomDeletedAuthShopsAdmin)
 admin.site.register(TempShop, CustomTempShopAdmin)

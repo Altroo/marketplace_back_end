@@ -5,7 +5,7 @@ from channels.layers import get_channel_layer
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from account.models import CustomUser
-from chat.base.models import Status
+from chat.models import Status
 
 
 class Version(Model):

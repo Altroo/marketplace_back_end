@@ -3,7 +3,7 @@ from account.models import CustomUser, BlockedUsers
 from rest_framework.viewsets import ModelViewSet
 from chat.base.serializers import BaseMessageModelSerializer, BaseChatUserModelSerializer, \
     BaseArchiveConversationSerializer
-from chat.base.models import MessageModel, ArchivedConversations
+from chat.models import MessageModel, ArchivedConversations
 from .pagination import BaseMessagePagination, BaseConversationPagination
 from rest_framework import permissions, status
 from rest_framework.response import Response

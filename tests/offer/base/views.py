@@ -22,7 +22,7 @@ from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offe
 from offer.base.models import AuthShop, Offers, Solder, Products, Services, Delivery, OfferTags, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, OfferVue, OffersTotalVues
 from offer.mixins import PaginationMixinBy5
-from places.base.models import City
+from models import City
 from offer.base.pagination import GetMyVuesPagination
 from datetime import datetime
 

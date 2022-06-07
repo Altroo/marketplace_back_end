@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from order.base.models import OrderDetails
+from order.models import OrderDetails
 
 
 # Model = Order
-class BaseTempOrdersListSerializer(serializers.Serializer):
+class BaseOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     avatar = serializers.SerializerMethodField()
     initiator_name = serializers.SerializerMethodField()
@@ -96,7 +96,6 @@ class BaseDetailsOrderProductSerializer(serializers.Serializer):
     picked_color = serializers.CharField()
     picked_size = serializers.CharField()
     picked_quantity = serializers.IntegerField()
-    note = serializers.CharField()
     click_and_collect = serializers.SerializerMethodField()
     delivery = serializers.SerializerMethodField()
 
@@ -190,6 +189,7 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
     order_number = serializers.SerializerMethodField()
     order_date = serializers.SerializerMethodField()
     order_status = serializers.SerializerMethodField()
+    note = serializers.SerializerMethodField()
     # From Order details model :
     order_details = BaseOrderDetailsTypeListSerializer(many=True)
     buyer_coordinates = serializers.SerializerMethodField()
@@ -220,6 +220,10 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
         return instance.order.order_status
 
     @staticmethod
+    def get_note(instance):
+        return instance.order.note
+
+    @staticmethod
     def get_total_price(instance):
         order_detail = OrderDetails.objects.filter(order=instance.order.pk)
         price = 0
@@ -237,4 +241,3 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
-

@@ -1,11 +1,10 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.core.exceptions import SuspiciousFileOperation
 from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
-from shop.base.models import AuthShop, TempShop, ModeVacance
+from shop.models import AuthShop, TempShop, ModeVacance
 from offers.base.tasks import start_generating_thumbnail
-from offers.base.models import TempOffers
+from offers.models import TempOffers
 from os import path
 from account.models import CustomUser
 from os import remove
@@ -62,15 +61,6 @@ def base_delete_mode_vacance_obj(self, auth_shop_pk):
         ModeVacance.objects.get(auth_shop=auth_shop_pk).delete()
     except ModeVacance.DoesNotExist:
         pass
-
-
-@app.task(bind=True)
-def base_delete_shop_media_files(self, media_paths_list):
-    for media_path in media_paths_list:
-        try:
-            remove(media_path)
-        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-            pass
 
 
 @app.task(bind=True)

@@ -2,9 +2,9 @@ from rest_framework import permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from shop.base.models import AuthShop
-from order.base.models import Order, OrderDetails
-from order.base.serializers import BaseTempOrdersListSerializer, BaseOrderDetailsListSerializer
+from shop.models import AuthShop
+from order.models import Order, OrderDetails
+from order.base.serializers import BaseOrdersListSerializer, BaseOrderDetailsListSerializer
 
 
 class GetMySellingOrdersListView(APIView, PageNumberPagination):
@@ -17,7 +17,7 @@ class GetMySellingOrdersListView(APIView, PageNumberPagination):
             order = Order.objects.filter(seller=auth_shop)
             page = self.paginate_queryset(request=request, queryset=order)
             if page is not None:
-                serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
+                serializer = BaseOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
                 return self.get_paginated_response(serializer.data)
         except AuthShop.DoesNotExist:
             data = {'errors': ["User doesn't own a store yet."]}
@@ -32,7 +32,7 @@ class GetMyBuyingsOrdersListView(APIView, PageNumberPagination):
         order = Order.objects.filter(buyer=user_pk)
         page = self.paginate_queryset(request=request, queryset=order)
         if page is not None:
-            serializer = BaseTempOrdersListSerializer(instance=page, many=True, context={'order_type': 'buy'})
+            serializer = BaseOrdersListSerializer(instance=page, many=True, context={'order_type': 'buy'})
             return self.get_paginated_response(serializer.data)
 
 

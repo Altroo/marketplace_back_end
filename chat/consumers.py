@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from json import dumps, loads
-from chat.base.models import Status
+from chat.models import Status
 from channels.db import database_sync_to_async
 from account.models import CustomUser
 

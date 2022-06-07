@@ -6,8 +6,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
-from shop.base.models import TempShop
-from offers.base.models import TempOffers, TempSolder, TempServices, TempDelivery, TempProducts, \
+from shop.models import TempShop
+from offers.models import TempOffers, TempSolder, TempServices, TempDelivery, TempProducts, \
     AuthShop, Offers, Solder, Products, Services, Delivery, OfferTags, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, OfferVue, OffersTotalVues
 from offers.base.serializers import BaseShopOfferSerializer, \
@@ -28,7 +28,7 @@ from Qaryb_API_new.settings import API_URL
 from offers.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images, \
     base_duplicate_offervue_images
 from offers.mixins import PaginationMixinBy5
-from places.base.models import City
+from places.models import City
 from offers.base.pagination import GetMyVuesPagination
 from datetime import datetime
 
@@ -2502,7 +2502,7 @@ class GetLastThreeDeliveriesView(APIView):
                         dict_title = "deliveries"
                         deliveries_list['pk'] = temp_delivery.pk
                         deliveries_list['temp_delivery_city'] = temp_delivery.temp_delivery_city.all() \
-                            .values_list('name_en', flat=True)
+                            .values_list('name_fr', flat=True)
                         deliveries_list['temp_delivery_price'] = temp_delivery.temp_delivery_price
                         deliveries_list['temp_delivery_days'] = temp_delivery.temp_delivery_days
                         data[dict_title].append(deliveries_list)
@@ -2535,7 +2535,7 @@ class GetLastThreeDeliveriesView(APIView):
                         dict_title = "deliveries"
                         deliveries_list['pk'] = delivery.pk
                         deliveries_list['delivery_city'] = delivery.delivery_city.all() \
-                            .values_list('name_en', flat=True)
+                            .values_list('name_fr', flat=True)
                         deliveries_list['delivery_price'] = delivery.delivery_price
                         deliveries_list['delivery_days'] = delivery.delivery_days
                         data[dict_title].append(deliveries_list)

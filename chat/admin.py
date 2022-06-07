@@ -1,5 +1,5 @@
 from django.contrib.admin import ModelAdmin, site
-from chat.base.models import MessageModel, Status, ArchivedConversations
+from chat.models import MessageModel, Status, ArchivedConversations
 
 
 class MessagesAdmin(ModelAdmin):
@@ -10,14 +10,14 @@ class MessagesAdmin(ModelAdmin):
     list_filter = ('viewed', )
     date_hierarchy = 'created'
     ordering = ('-pk',)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class StatusAdmin(ModelAdmin):
@@ -32,14 +32,14 @@ class ArchivedConversationsAdmin(ModelAdmin):
     list_display = ('pk', 'user', 'recipient')
     search_fields = ('pk', 'user__email', 'recipient__email')
     ordering = ('-pk',)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 site.register(MessageModel, MessagesAdmin)

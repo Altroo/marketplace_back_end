@@ -1,5 +1,5 @@
 from django.contrib import admin
-from places.base.models import City
+from models import City
 from django.contrib.admin import ModelAdmin
 
 

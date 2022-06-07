@@ -1,7 +1,7 @@
 import sys
 from django.core.management import BaseCommand
-from offers.base.models import ServiceDays
-from shop.base.models import AuthShopDays
+from offers.models import ServiceDays
+from shop.models import AuthShopDays
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError

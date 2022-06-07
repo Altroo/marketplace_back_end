@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from places.base.models import Cities
+from models import Cities
 from rest_framework import status, permissions
 from places.base.serializers import BaseCitiesListSerializer
 from places.base.language_cleaner import LanguageCleaner

@@ -1,7 +1,6 @@
 from os import remove
 from uuid import uuid4
 from celery import current_app
-from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
 from django.db import IntegrityError
 from django.utils.http import urlsafe_base64_encode
@@ -15,14 +14,13 @@ from shop.base.serializers import BaseShopSerializer, BaseShopAvatarPutSerialize
     BaseShopContactPutSerializer, BaseShopAddressPutSerializer, BaseShopColorPutSerializer, \
     BaseShopFontPutSerializer, BaseGETShopInfoSerializer, BaseShopTelPutSerializer, \
     BaseShopWtspPutSerializer, BaseShopAskForCreatorLabelSerializer, \
-    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer, BaseDeletedAuthShopsSerializer, \
+    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer, \
     BaseTempShopAvatarPutSerializer, BaseTempShopNamePutSerializer, \
     BaseTempShopBioPutSerializer, BaseTempShopAvailabilityPutSerializer, BaseTempShopContactPutSerializer, \
     BaseTempShopTelPutSerializer, BaseTempShopWtspPutSerializer, BaseTempShopAddressPutSerializer, \
     BaseTempShopColorPutSerializer, BaseTempShopFontPutSerializer, BaseGETTempShopInfoSerializer, \
     BaseTempShopSerializer
-from shop.base.models import TempShop, AuthShop, AuthShopDays, AskForCreatorLabel, PhoneCodes
-from chat.base.models import MessageModel
+from shop.models import TempShop, AuthShop, AuthShopDays, AskForCreatorLabel, PhoneCodes
 from os import path
 from datetime import datetime, date, timedelta
 import qrcode
@@ -34,8 +32,8 @@ import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
 from shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mode_vacance_obj, \
-    base_delete_shop_media_files, base_start_deleting_expired_shops
-from offers.base.models import Offers, Products, Services, Solder, \
+    base_start_deleting_expired_shops
+from offers.models import Offers, Products, Services, Solder, \
     Delivery, TempOffers, TempSolder, TempDelivery
 
 
@@ -140,68 +138,6 @@ class ShopView(APIView):
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-    # Altroo delete store endpoint disactivated
-    # @staticmethod
-    # def delete(request, *args, **kwargs):
-    #     user_pk = request.user.pk
-    #     reason_choice = request.data.get('reason_choice')
-    #     typed_reason = request.data.get('typed_reason')
-    #     serializer = BaseDeletedAuthShopsSerializer(data={
-    #         "user": user_pk,
-    #         "reason_choice": reason_choice,
-    #         "typed_reason": typed_reason,
-    #     })
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         try:
-    #             media_paths_list = []
-    #             auth_shop = AuthShop.objects.get(user__pk=user_pk)
-    #             # Media Shop avatars
-    #             if auth_shop.avatar:
-    #                 media_paths_list.append(auth_shop.avatar.path)
-    #             if auth_shop.avatar_thumbnail:
-    #                 media_paths_list.append(auth_shop.avatar_thumbnail.path)
-    #             # Media Shop qrcodes
-    #             if auth_shop.qr_code_img:
-    #                 media_paths_list.append(auth_shop.qr_code_img.path)
-    #             # Media Shop offers
-    #             offers = Offers.objects.filter(auth_shop=auth_shop)
-    #             for offer in offers:
-    #                 if offer.picture_1:
-    #                     media_paths_list.append(offer.picture_1.path)
-    #                 if offer.picture_1_thumbnail:
-    #                     media_paths_list.append(offer.picture_1_thumbnail.path)
-    #                 if offer.picture_2:
-    #                     media_paths_list.append(offer.picture_2.path)
-    #                 if offer.picture_2_thumbnail:
-    #                     media_paths_list.append(offer.picture_2_thumbnail.path)
-    #                 if offer.picture_3:
-    #                     media_paths_list.append(offer.picture_3.path)
-    #                 if offer.picture_3_thumbnail:
-    #                     media_paths_list.append(offer.picture_3_thumbnail.path)
-    #             # Media chat
-    #             chat_msgs_sent = MessageModel.objects.filter(user__pk=user_pk)
-    #             for msg_sent in chat_msgs_sent:
-    #                 if msg_sent.attachment:
-    #                     media_paths_list.append(msg_sent.attachment.path)
-    #                 if msg_sent.attachment_thumbnail:
-    #                     media_paths_list.append(msg_sent.attachment_thumbnail.path)
-    #             chat_msgs_received = MessageModel.objects.filter(recipient__pk=user_pk)
-    #             for msg_received in chat_msgs_received:
-    #                 if msg_received.attachment:
-    #                     media_paths_list.append(msg_received.attachment.path)
-    #                 if msg_received.attachment_thumbnail:
-    #                     media_paths_list.append(msg_received.attachment_thumbnail.path)
-    #             auth_shop.delete()
-    #             # delete all shop media files
-    #             base_delete_shop_media_files.apply_async((user_pk,), )
-    #             logout(request)
-    #             return Response(status=status.HTTP_204_NO_CONTENT)
-    #         except AuthShop.DoesNotExist:
-    #             data = {'errors': ['Auth shop not found.']}
-    #             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ShopAvatarPutView(APIView):

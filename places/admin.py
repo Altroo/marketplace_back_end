@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.forms import ModelForm
-from places.base.models import Country, City
+from places.models import Country, City
 
 
 class PlacesBaseAdminMixin:
@@ -46,13 +46,13 @@ class CountryAdmin(PlacesBaseAdminMixin, admin.ModelAdmin):
     search_fields = PlacesBaseAdminMixin.search_fields + ('code',)
     form = CountryAdminForm
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 @admin.register(City)
@@ -62,10 +62,10 @@ class CityAdmin(PlacesBaseAdminMixin, admin.ModelAdmin):
                                                           'country__name_fr',
                                                           'country__name_ar',)
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False

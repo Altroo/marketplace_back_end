@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
-from cart.base.models import Cart
+from cart.models import Cart
 
 
 class CartAdmin(ModelAdmin):

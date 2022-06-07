@@ -2,7 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
 from datetime import datetime
-from offers.base.models import OffersTotalVues
+from offers.models import OffersTotalVues
 
 
 class GetMyVuesPagination(PageNumberPagination):

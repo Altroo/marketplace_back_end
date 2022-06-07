@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from offers.base.models import Sizes
+from offers.models import Sizes
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError

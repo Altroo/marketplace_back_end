@@ -1,8 +1,8 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from account.models import CustomUser
-from shop.base.models import AuthShop
-from chat.base.models import MessageModel, Status, ArchivedConversations
+from shop.models import AuthShop
+from chat.models import MessageModel, Status, ArchivedConversations
 from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
                                         CreateOnlyDefault, CurrentUserDefault)

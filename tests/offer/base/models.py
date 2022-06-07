@@ -1,12 +1,12 @@
 from os import path
 from django.db import models
 from django.db.models import Model
-from shop.base.models import AuthShop, LonLatValidators
+from models import AuthShop, LonLatValidators
 from Qaryb_API_new.settings import API_URL
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
-from places.base.models import City
+from models import City
 
 
 def get_shop_offers_path(instance, filename):

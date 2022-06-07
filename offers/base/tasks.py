@@ -4,8 +4,8 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from Qaryb_API_new.celery_conf import app
 from celery.utils.log import get_task_logger
-from offers.base.models import Offers, OfferVue, TempOffers
-from shop.base.models import AuthShop, TempShop, ModeVacance
+from offers.models import Offers, OfferVue, TempOffers
+from shop.models import AuthShop, TempShop, ModeVacance
 from account.models import CustomUser
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from PIL import Image

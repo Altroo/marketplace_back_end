@@ -5,7 +5,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from .managers import CustomUserManager
-from places.base.models import City, Country, PlaceType
+from places.models import City, Country, PlaceType
 from os import path
 from uuid import uuid4
 from Qaryb_API_new.settings import API_URL
@@ -35,7 +35,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True,
                                 related_name='country_custom_user',
                                 on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
-    # phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
+    phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
     avatar = models.ImageField(verbose_name='User Avatar', upload_to=get_avatar_path, blank=True, null=True,
                                default=None)
     avatar_thumbnail = models.ImageField(verbose_name='User Thumb Avatar', upload_to=get_avatar_path, blank=True,
@@ -169,3 +169,21 @@ class EnclosedAccounts(Model):
     class Meta:
         verbose_name = 'Enclosed Account'
         verbose_name_plural = 'Enclosed Accounts'
+
+
+class DeletedAccounts(Model):
+    email = models.EmailField(_('email address'))
+    REASON_CHOICES = (
+        ('', 'Unset'),
+        ('A', 'Je cesse mon activité'),
+        ('B', 'Je cesse mon activité 2'),
+    )
+    reason_choice = models.CharField(max_length=1, choices=REASON_CHOICES, default='', blank=True, null=True)
+    typed_reason = models.CharField(max_length=140, null=True, blank=True, default='')
+
+    def __str__(self):
+        return '{} - {}'.format(self.email, self.reason_choice)
+
+    class Meta:
+        verbose_name = 'Deleted Accounts'
+        verbose_name_plural = 'Deleted Accounts'

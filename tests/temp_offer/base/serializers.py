@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from temp_offer.base.models import TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
-from places.base.models import City
+from models import City
 from offer.base.serializers import BaseOfferTagsSerializer, BaseOfferCategoriesSerializer, \
     BaseProductColorSerializer, BaseProductSizeSerializer, \
     BaseOfferForWhomSerializer, BaseServiceAvailabilityDaysSerializer

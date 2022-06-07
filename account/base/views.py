@@ -6,8 +6,8 @@ from allauth.account.models import EmailAddress
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
+from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
-from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
 from rest_framework.response import Response
@@ -18,15 +18,18 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
     BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer, \
-    BaseRegistrationEmailAddressSerializer
-from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read
+    BaseRegistrationEmailAddressSerializer, BaseDeletedAccountsSerializer
+from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read, \
+    base_delete_user_media_files, base_send_email
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
+from shop.models import AuthShop
 from shop.base.tasks import base_generate_avatar_thumbnail
+from offers.models import Offers
 from rest_framework.pagination import PageNumberPagination
 from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
-from chat.base.models import Status, MessageModel
+from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
 
 
@@ -158,19 +161,15 @@ class RegistrationView(APIView):
             })
             if email_address_serializer.is_valid():
                 email_address_serializer.save()
-                mail_subject = 'Activez votre compte'
+                mail_subject = 'Vérifiez votre compte'
                 mail_template = 'activate_account.html'
                 code = self.generate_random_code()
                 message = render_to_string(mail_template, {
                     'first_name': user.first_name,
                     'code': code
                 })
-                email = EmailMessage(
-                    mail_subject, message, to=(user.email,)
-                )
-                email.content_subtype = "html"
-                email.send(fail_silently=False)
-                user.activation_code = code
+                base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
+                # Generate refresh token
                 refresh = RefreshToken.for_user(user)
                 data = {
                     "refresh": str(refresh),
@@ -199,15 +198,17 @@ class ActivateAccountView(APIView):
         data = {}
         try:
             user = CustomUser.objects.get(email=email)
-            if user.is_active:
-                data['errors'] = ["Account already activated!"]
+            user_email = EmailAddress.objects.get(email=email)
+            if user_email.verified:
+                data['errors'] = ["Account already verified!"]
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             if code is not None and email is not None:
-                user.is_active = True
                 user.activation_code = ''
                 user.save()
+                user_email.verified = True
+                user_email.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            data['errors'] = ["Activation code invalid!"]
+            data['errors'] = ["Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
             data['errors'] = ["User Doesn't exist!"]
@@ -226,23 +227,17 @@ class ResendActivationCodeView(APIView):
         data = {}
         try:
             user = CustomUser.objects.get(email=email)
-            mail_subject = 'Activez votre compte'
+            mail_subject = 'Vérifiez votre compte'
             mail_template = 'activate_account.html'
             # if user.activation_code:
             #    code = user.activation_code
             # else:
             code = self.generate_random_code()
-            user.activation_token = code
-            user.save()
             message = render_to_string(mail_template, {
                 'first_name': user.first_name,
                 'code': code,
             })
-            email = EmailMessage(
-                mail_subject, message, to=(user.email,)
-            )
-            email.content_subtype = "html"
-            email.send(fail_silently=False)
+            base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
             data['email'] = ["User Doesn't exist!"]
@@ -257,30 +252,25 @@ class SendPasswordResetView(APIView):
         return ''.join(choice(digits) for i in range(length))
 
     def post(self, request):
-        email_get = str(request.data.get('email')).lower()
+        email = str(request.data.get('email')).lower()
         data = {}
         try:
-            user = CustomUser.objects.get(email=email_get)
+            user = CustomUser.objects.get(email=email)
             if user.email is not None:
                 serializer = BaseUserEmailSerializer(data=request.data)
                 if serializer.is_valid():
                     # if user.password_reset_code:
                     #    code = user.password_reset_code
                     # else:
-                    code = self.generate_random_code()
-                    user.password_reset_code = code
-                    user.save()
                     mail_subject = 'Renouvellement du mot de passe'
                     mail_template = 'password_reset.html'
+                    code = self.generate_random_code()
                     message = render_to_string(mail_template, {
                         'first_name': user.first_name,
                         'code': code,
                     })
-                    email = EmailMessage(
-                        mail_subject, message, to=(user.email,)
-                    )
-                    email.content_subtype = "html"
-                    email.send(fail_silently=False)
+                    base_send_email.apply_async((user.pk, user.email, mail_subject, message, code,
+                                                 'password_reset_code'), )
                     return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
             data['email'] = ["User Doesn't exist!"]
@@ -297,7 +287,7 @@ class PasswordResetView(APIView):
         data = {}
         try:
             user = CustomUser.objects.get(email=email)
-            if code is not None and code == user.confirm_password_reset_token:
+            if code is not None and code == user.password_reset_code:
                 return Response(status=status.HTTP_204_NO_CONTENT)
             data['errors'] = ['Code invalid!']
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -715,3 +705,73 @@ class ChangeEmailAccountView(APIView):
                     email_address.save()
                     return Response(status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteAccountView(APIView):
+
+    @staticmethod
+    def delete(request, *args, **kwargs):
+        user = request.user
+        reason_choice = request.data.get('reason_choice')
+        typed_reason = request.data.get('typed_reason')
+        serializer = BaseDeletedAccountsSerializer(data={
+            "email": user.email,
+            "reason_choice": reason_choice,
+            "typed_reason": typed_reason,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            media_paths_list = []
+            # Delete user avatars
+            if user.avatar:
+                media_paths_list.append(user.avatar.path)
+            if user.avatar_thumbnail:
+                media_paths_list.append(user.avatar_thumbnail.path)
+            # Media chat
+            chat_msgs_sent = MessageModel.objects.filter(user__pk=user.pk)
+            for msg_sent in chat_msgs_sent:
+                if msg_sent.attachment:
+                    media_paths_list.append(msg_sent.attachment.path)
+                if msg_sent.attachment_thumbnail:
+                    media_paths_list.append(msg_sent.attachment_thumbnail.path)
+            chat_msgs_received = MessageModel.objects.filter(recipient__pk=user.pk)
+            for msg_received in chat_msgs_received:
+                if msg_received.attachment:
+                    media_paths_list.append(msg_received.attachment.path)
+                if msg_received.attachment_thumbnail:
+                    media_paths_list.append(msg_received.attachment_thumbnail.path)
+            try:
+                auth_shop = AuthShop.objects.get(user__pk=user.pk)
+                # Media Shop avatars
+                if auth_shop.avatar:
+                    media_paths_list.append(auth_shop.avatar.path)
+                if auth_shop.avatar_thumbnail:
+                    media_paths_list.append(auth_shop.avatar_thumbnail.path)
+                # Media Shop qrcodes
+                if auth_shop.qr_code_img:
+                    media_paths_list.append(auth_shop.qr_code_img.path)
+                # Media Shop offers
+                offers = Offers.objects.filter(auth_shop=auth_shop)
+                for offer in offers:
+                    if offer.picture_1:
+                        media_paths_list.append(offer.picture_1.path)
+                    if offer.picture_1_thumbnail:
+                        media_paths_list.append(offer.picture_1_thumbnail.path)
+                    if offer.picture_2:
+                        media_paths_list.append(offer.picture_2.path)
+                    if offer.picture_2_thumbnail:
+                        media_paths_list.append(offer.picture_2_thumbnail.path)
+                    if offer.picture_3:
+                        media_paths_list.append(offer.picture_3.path)
+                    if offer.picture_3_thumbnail:
+                        media_paths_list.append(offer.picture_3_thumbnail.path)
+                auth_shop.delete()
+            except AuthShop.DoesNotExist:
+                pass
+            # delete here
+            base_delete_user_media_files.apply_async((media_paths_list,), )
+            # base_delete_user_account.apply_async((user.pk,), )
+            user.delete()
+            logout(request)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

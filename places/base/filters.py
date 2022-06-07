@@ -1,7 +1,7 @@
 from django.utils.functional import cached_property
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter
-from places.base.models import City, Country
+from places.models import City, Country
 
 
 class UserLanguageMixin:

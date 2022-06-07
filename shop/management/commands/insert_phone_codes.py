@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from auth_shop.base.models import PhoneCodes
+from shop.models import PhoneCodes
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError

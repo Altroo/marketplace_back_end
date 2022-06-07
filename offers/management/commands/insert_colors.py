@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from offers.base.models import Colors
+from offers.models import Colors
 from csv import reader
 from os import path
 from django.db.utils import IntegrityError

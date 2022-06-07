@@ -1,0 +1,102 @@
+{
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "total_price": 500.0,
+  "results": [
+    {
+      "Lot N°1": [
+        {
+          "offres": [
+            {
+              "cart_pk": 7,
+              "offer_pk": 5,
+              "offer_picture": null,
+              "offer_title": "Test 3",
+              "offer_price": 200.0,
+              "offer_details": {
+                "offer_max_quantity": 10,
+                "picked_color": "White",
+                "picked_size": "XL",
+                "picked_quantity": 2
+              }
+            },
+            {
+              "cart_pk": 7,
+              "offer_pk": 5,
+              "offer_picture": null,
+              "offer_title": "Test 3",
+              "offer_price": 200.0,
+              "offer_details": {
+                "offer_max_quantity": 10,
+                "picked_color": "White",
+                "picked_size": "XL",
+                "picked_quantity": 2
+              }
+            }
+          ],
+          "click_and_collect": {
+            "product_longitude": -6.870613,
+            "product_latitude": 33.958697,
+            "product_address": "Mahaj riad"
+          }
+        }
+      ],
+      "Lot N°2": [
+        {
+          "offres": [
+            {
+              "cart_pk": 7,
+              "offer_pk": 5,
+              "offer_picture": null,
+              "offer_title": "Test 3",
+              "offer_price": 200.0,
+              "offer_details": {
+                "offer_max_quantity": 10,
+                "picked_color": "White",
+                "picked_size": "XL",
+                "picked_quantity": 2
+              }
+            },
+            {
+              "cart_pk": 7,
+              "offer_pk": 5,
+              "offer_picture": null,
+              "offer_title": "Test 3",
+              "offer_price": 200.0,
+              "offer_details": {
+                "offer_max_quantity": 10,
+                "picked_color": "White",
+                "picked_size": "XL",
+                "picked_quantity": 2
+              }
+            }
+          ],
+          "click_and_collect": {
+            "product_longitude": -6.870613,
+            "product_latitude": 33.958697,
+            "product_address": "Mahaj riad"
+          },
+          "deliveries": [
+            {
+              "delivery_city": [
+                "Casablanca",
+                "Oujda",
+                "Meknès"
+              ],
+              "delivery_price": 10.0,
+              "delivery_days": 5
+            },
+            {
+              "delivery_city": [
+                "Rabat"
+              ],
+              "delivery_price": 5.0,
+              "delivery_days": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

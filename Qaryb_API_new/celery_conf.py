@@ -15,7 +15,6 @@ app.autodiscover_tasks(
         'offers.base.tasks',
         'chat.base.tasks',
         'order.base.tasks',
-
     )
 )
 

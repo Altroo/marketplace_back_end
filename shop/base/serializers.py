@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from shop.base.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance, \
-    DeletedAuthShops
+from shop.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
@@ -241,13 +240,6 @@ class BaseShopModeVacancePUTSerializer(serializers.ModelSerializer):
         instance.date_to = validated_data.get('date_to', instance.date_to)
         instance.save()
         return instance
-
-
-class BaseDeletedAuthShopsSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = DeletedAuthShops
-        fields = ['user', 'reason_choice', 'typed_reason']
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):

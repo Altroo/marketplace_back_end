@@ -1,13 +1,12 @@
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.admin import ModelAdmin
 from .forms import CustomAuthShopCreationForm, CustomAuthShopChangeForm
-from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts
+from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib import admin
 from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from allauth.socialaccount.admin import SocialAccountAdmin, SocialAppAdmin, SocialTokenAdmin
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
-from allauth.account.models import EmailAddress
 
 
 class CustomUserAdmin(UserAdmin):
@@ -21,7 +20,7 @@ class CustomUserAdmin(UserAdmin):
     date_hierarchy = 'date_joined'
     fieldsets = (
         ('Profile', {'fields': ('email', 'password', 'first_name', 'last_name', 'gender',
-                                'birth_date', 'city', 'country',
+                                'birth_date', 'city', 'country', 'phone',
                                 'avatar', 'avatar_thumbnail',
                                 'activation_code', 'password_reset_code', 'is_enclosed')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
@@ -30,7 +29,7 @@ class CustomUserAdmin(UserAdmin):
     # add fields to the admin panel creation model
     add_fieldsets = (
         ('Profile', {'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'gender',
-                                'birth_date', 'city', 'country',
+                                'birth_date', 'city', 'country', 'phone',
                                 'avatar', 'avatar_thumbnail',
                                 'activation_code', 'password_reset_code', 'is_enclosed')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
@@ -51,13 +50,13 @@ class CustomBlockedUsersAdmin(ModelAdmin):
     search_fields = ('pk', 'user__email', 'user_blocked__email')
     ordering = ('-pk',)
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomReportedUsersAdmin(ModelAdmin):
@@ -66,13 +65,13 @@ class CustomReportedUsersAdmin(ModelAdmin):
     search_fields = ('pk', 'user__email', 'user_reported__email')
     ordering = ('-pk',)
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomUserAddressAdmin(ModelAdmin):
@@ -90,57 +89,72 @@ class CustomEnclosedAccountsAdmin(ModelAdmin):
     search_fields = ('pk', 'user__email', 'reason_choice', 'typed_reason')
     ordering = ('-pk',)
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomBlacklistedTokenAdmin(BlacklistedTokenAdmin):
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    pass
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomSocialAccountAdmin(SocialAccountAdmin):
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    pass
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomSocialAppAdmin(SocialAppAdmin):
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    pass
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomSocialTokenAdmin(SocialTokenAdmin):
+    pass
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
 
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+class CustomDeletedAccountsAdmin(ModelAdmin):
+    list_display = ('pk', 'email', 'reason_choice', 'typed_reason')
+    list_filter = ('reason_choice',)
+    search_fields = ('pk', 'email', 'reason_choice', 'typed_reason')
+    ordering = ('-pk',)
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 # Token Blacklist
@@ -161,3 +175,4 @@ admin.site.register(BlockedUsers, CustomBlockedUsersAdmin)
 admin.site.register(ReportedUsers, CustomReportedUsersAdmin)
 admin.site.register(UserAddress, CustomUserAddressAdmin)
 admin.site.register(EnclosedAccounts, CustomEnclosedAccountsAdmin)
+admin.site.register(DeletedAccounts, CustomDeletedAccountsAdmin)

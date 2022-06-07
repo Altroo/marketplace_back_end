@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts
+from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib.auth.password_validation import validate_password
 from allauth.account.models import EmailAddress
 
@@ -223,3 +223,10 @@ class BaseEnclosedAccountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnclosedAccounts
         fields = ['user', 'reason_choice', 'typed_reason']
+
+
+class BaseDeletedAccountsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DeletedAccounts
+        fields = ['email', 'reason_choice', 'typed_reason']

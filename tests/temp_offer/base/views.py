@@ -17,7 +17,7 @@ from offer.base.tasks import base_generate_offer_thumbnails, base_duplicate_offe
 from temp_offer.base.models import TempShop, TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
 from offer.base.models import Categories, Colors, Sizes, ForWhom, ServiceDays, OfferTags
 from offer.mixins import PaginationMixinBy5
-from places.base.models import City
+from models import City
 from collections import defaultdict
 
 

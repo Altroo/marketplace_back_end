@@ -1,6 +1,6 @@
 import sys
 from django.core.management import BaseCommand
-from places.base.models import City
+from models import City
 from csv import reader
 from os import path
 

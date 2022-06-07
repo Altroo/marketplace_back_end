@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from django.core.management import BaseCommand
 import re
 from places.base.choices import PlaceType
-from places.base.models import Country
+from places.models import Country
 from .updater import OverpassTurboUpdater
 
 

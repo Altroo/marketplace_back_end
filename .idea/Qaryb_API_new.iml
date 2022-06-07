@@ -34,10 +34,8 @@
       <sourceFolder url="file://$MODULE_DIR$/ratings" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/management" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/auth_shop/management" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/temp_shop" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/temp_shop/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/version" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/version/management" isTestSource="false" />
@@ -45,15 +43,17 @@
       <sourceFolder url="file://$MODULE_DIR$/offers" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/offers/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/offers/management/commands" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/offer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/offer/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/offer/management" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests/temp_offer" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/temp_offer/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/management/commands" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/tests" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/venv_brew" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/auth_shop" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/offer" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/temp_offer" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/temp_shop" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (Qaryb_API_new)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

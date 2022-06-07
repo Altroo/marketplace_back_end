@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
-from offers.base.models import Offers, get_shop_offers_path
+from offers.models import Offers
 
 
 class Cart(Model):
@@ -9,14 +9,10 @@ class Cart(Model):
                              verbose_name='User', related_name='cart_user')
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
                               verbose_name='Offer', related_name='cart_offer')
-    # Global
-    note = models.CharField(verbose_name='Note', max_length=300, default=None, null=True, blank=True)
     # Product
     picked_color = models.CharField(verbose_name='Picked Color', max_length=255, default=None, null=True, blank=True)
     picked_size = models.CharField(verbose_name='Picked Size', max_length=255, default=None, null=True, blank=True)
     picked_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=1)
-    picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
-                                            upload_to=get_shop_offers_path, max_length=1000)
     # Service
     picked_date = models.DateField(verbose_name='Picked Date', default=None, null=True, blank=True)
     picked_hour = models.TimeField(verbose_name='Picked Hour', default=None, null=True, blank=True)
@@ -25,7 +21,7 @@ class Cart(Model):
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
     def __str__(self):
-        return '{} - {}'.format(self.user.email, self.offer.title)
+        return '{} - {} - {}'.format(self.user.email, self.offer.auth_shop.shop_name, self.offer.title)
 
     class Meta:
         unique_together = (('user', 'offer'),)

@@ -2,7 +2,7 @@ import sys
 import time
 from django.core.management import BaseCommand
 from django.db.models import Q, F, OuterRef, Exists
-from places.base.models import City, Country
+from places.models import City, Country
 from .updater import OverpassTurboUpdater
 
 

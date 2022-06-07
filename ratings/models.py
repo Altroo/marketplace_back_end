@@ -4,10 +4,12 @@ from account.models import CustomUser
 
 
 class Ratings(Model):
-    user_sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
-                                    verbose_name='User sender', related_name='rating_user_sender')
-    user_receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
-                                      verbose_name='User receiver', related_name='rating_user_receiver')
+    user_sender = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,
+                                    verbose_name='User sender',
+                                    related_name='rating_user_sender', null=True)
+    user_receiver = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,
+                                      verbose_name='User receiver',
+                                      related_name='rating_user_receiver', null=True)
     RATING_FOR_CHOICES = (
         ('B', 'Buyer'),
         ('S', 'Seller'),
@@ -20,7 +22,15 @@ class Ratings(Model):
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
 
     def __str__(self):
-        return 'Sender : {} - Recevier : {} - {}'.format(self.user_sender.email, self.user_receiver.email,
+        try:
+            user_sender = self.user_sender.email
+        except AttributeError:
+            user_sender = 'ACCOUNT DELETED'
+        try:
+            user_receiver = self.user_receiver.email
+        except AttributeError:
+            user_receiver = 'ACCOUNT DELETED'
+        return 'Sender : {} - Recevier : {} - {}'.format(user_sender, user_receiver,
                                                          self.rating_note)
 
     class Meta:

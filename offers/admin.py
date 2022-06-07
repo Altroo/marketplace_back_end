@@ -1,4 +1,4 @@
-from offers.base.models import Categories, Colors, Sizes, ForWhom, \
+from offers.models import Categories, Colors, Sizes, ForWhom, \
     Offers, Solder, Products, Services, ServiceDays, Delivery, OfferTags, \
     OfferVue, OffersTotalVues, TempOffers, TempSolder, TempProducts, TempServices, TempDelivery
 from django.contrib import admin
@@ -144,28 +144,28 @@ class CustomOfferVueAdmin(ModelAdmin):
     list_display = ('pk', 'offer', 'nbr_total_vue')
     search_fields = ('pk', 'offer', 'nbr_total_vue')
     ordering = ('-pk',)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomOffersTotalVuesAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
     search_fields = ('pk', 'auth_shop', 'date', 'nbr_total_vue')
     ordering = ('-pk',)
-
-    # Add permission removed
-    def has_add_permission(self, *args, **kwargs):
-        return False
-
-    # Delete permission removed
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    #
+    # # Add permission removed
+    # def has_add_permission(self, *args, **kwargs):
+    #     return False
+    #
+    # # Delete permission removed
+    # def has_delete_permission(self, *args, **kwargs):
+    #     return False
 
 
 class CustomTempOfferAdmin(ModelAdmin):
