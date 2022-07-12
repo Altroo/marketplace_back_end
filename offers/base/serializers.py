@@ -351,11 +351,11 @@ class BaseShopOfferSolderPutSerializer(serializers.ModelSerializer):
         model = Solder
         fields = ['solder_type', 'solder_value']
 
-    def update(self, instance, validated_data):
-        instance.solder_type = validated_data.get('solder_type', instance.solder_type)
-        instance.solder_value = validated_data.get('solder_value', instance.solder_value)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.solder_type = validated_data.get('solder_type', instance.solder_type)
+    #     instance.solder_value = validated_data.get('solder_value', instance.solder_value)
+    #     instance.save()
+    #     return instance
 
 
 class BaseOffersVuesListSerializer(serializers.Serializer):
@@ -686,8 +686,8 @@ class BaseTempShopOfferSolderPutSerializer(serializers.ModelSerializer):
         model = TempSolder
         fields = ['temp_solder_type', 'temp_solder_value']
 
-    def update(self, instance, validated_data):
-        instance.temp_solder_type = validated_data.get('temp_solder_type', instance.temp_solder_type)
-        instance.temp_solder_value = validated_data.get('temp_solder_value', instance.temp_solder_value)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.temp_solder_type = validated_data.get('temp_solder_type', instance.temp_solder_type)
+    #     instance.temp_solder_value = validated_data.get('temp_solder_value', instance.temp_solder_value)
+    #     instance.save()
+    #     return instance

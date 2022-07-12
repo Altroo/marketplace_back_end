@@ -265,14 +265,14 @@ class BaseCartOfferPutSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ['picked_color', 'picked_size', 'picked_quantity', 'picked_date', 'picked_hour']
 
-    def update(self, instance, validated_data):
-        instance.picked_color = validated_data.get('picked_color', instance.picked_color)
-        instance.picked_size = validated_data.get('picked_size', instance.picked_size)
-        instance.picked_quantity = validated_data.get('picked_quantity', instance.picked_quantity)
-        instance.picked_date = validated_data.get('picked_date', instance.picked_date)
-        instance.picked_hour = validated_data.get('picked_hour', instance.picked_hour)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.picked_color = validated_data.get('picked_color', instance.picked_color)
+    #     instance.picked_size = validated_data.get('picked_size', instance.picked_size)
+    #     instance.picked_quantity = validated_data.get('picked_quantity', instance.picked_quantity)
+    #     instance.picked_date = validated_data.get('picked_date', instance.picked_date)
+    #     instance.picked_hour = validated_data.get('picked_hour', instance.picked_hour)
+    #     instance.save()
+    #     return instance
 
 
 class BaseGetServicesCoordinatesSerializer(serializers.ModelSerializer):

@@ -47,6 +47,9 @@
       <sourceFolder url="file://$MODULE_DIR$/tests/offer/management" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/tests/temp_offer/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/offers/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ratings/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/shop/base" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/venv_brew" />
@@ -54,6 +57,17 @@
       <excludeFolder url="file://$MODULE_DIR$/tests/offer" />
       <excludeFolder url="file://$MODULE_DIR$/tests/temp_offer" />
       <excludeFolder url="file://$MODULE_DIR$/tests/temp_shop" />
+      <excludeFolder url="file://$MODULE_DIR$/account/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/cart/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/chat/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/offers/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/order/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/places/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/ratings/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/shop/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/version/migrations" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/places" />
+      <excludeFolder url="file://$MODULE_DIR$/tests" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (Qaryb_API_new)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

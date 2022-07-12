@@ -25,30 +25,30 @@ urlpatterns = [
     # re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     # Account
     # Socials included (facebook, google)
-    path('api/account/', include('account.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/account/', include('account.base.urls', namespace='1.0.0')),
     # Needs to be activated to avoid socials connect reverse for user not active
     # Has authorized callbacks from Google console cloud & facebook developers
-    path('api/socials/', include('allauth.urls')),
+    path('api/1.0.0/socials/', include('allauth.urls')),
     # Auth Shop
     # path('api/shop/', include('auth_shop.base.urls', namespace='1.0.0')),
-    path('api/shop/', include('shop.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/shop/', include('shop.base.urls', namespace='1.0.0')),
     # Temporary shops
     # path('api/temp_shop/', include('temp_shop.base.urls', namespace='1.0.0')),
     # Offers
     # path('api/offer/', include('offer.base.urls', namespace='1.0.0')),
-    path('api/offer/', include('offers.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/offer/', include('offers.base.urls', namespace='1.0.0')),
     # Temporary offers
     # path('api/temp_offer/', include('temp_offer.base.urls', namespace='1.0.0')),
     # Cart
-    path('api/cart/', include('cart.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/cart/', include('cart.base.urls', namespace='1.0.0')),
     # Order
-    path('api/order/', include('order.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/order/', include('order.base.urls', namespace='1.0.0')),
     # Ratings
-    path('api/ratings/', include('ratings.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/ratings/', include('ratings.base.urls', namespace='1.0.0')),
     # Chat
-    path('api/chat/', include('chat.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/chat/', include('chat.base.urls', namespace='1.0.0')),
     # Cities / Geo reverse
-    path('api/places/', include('places.base.urls', namespace='1.0.0')),
+    path('api/1.0.0/places/', include('places.base.urls', namespace='1.0.0')),
     # Version
     path('api/version/', include('version.urls', namespace='1.0.0')),
     # Admin

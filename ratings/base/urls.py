@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import RatingsView
 
-app_name = 'ratings'
+app_name = 'rating'
 
 urlpatterns = [
     # GET : Return all ratings details for a user.

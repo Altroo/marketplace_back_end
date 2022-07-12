@@ -105,22 +105,23 @@ class CartOffersView(APIView):
                 return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user_pk = request.user
         cart_pk = request.data.get('cart_pk')
         cart_offer = Cart.objects.get(user=user_pk, pk=cart_pk)
-        serializer = BaseCartOfferPutSerializer(data=request.data)
+        serializer = BaseCartOfferPutSerializer(cart_offer, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.update(cart_offer, serializer.validated_data)
-            data = {
-                "picked_color": serializer.validated_data.get('picked_color'),
-                "picked_size": serializer.validated_data.get('picked_size'),
-                "picked_quantity": serializer.validated_data.get('picked_quantity'),
-                "picked_date": serializer.validated_data.get('picked_date'),
-                "picked_hour": serializer.validated_data.get('picked_hour'),
-                "total_price": GetCartPrices().get_offer_price(cart_offer)
-            }
-            return Response(data=data, status=status.HTTP_200_OK)
+            # serializer.update(cart_offer, serializer.validated_data)
+            serializer.save()
+            # data = {
+            #     "picked_color": serializer.validated_data.get('picked_color'),
+            #     "picked_size": serializer.validated_data.get('picked_size'),
+            #     "picked_quantity": serializer.validated_data.get('picked_quantity'),
+            #     "picked_date": serializer.validated_data.get('picked_date'),
+            #     "picked_hour": serializer.validated_data.get('picked_hour'),
+            #     "total_price": GetCartPrices().get_offer_price(cart_offer)
+            # }
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Return new total price

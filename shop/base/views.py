@@ -26,8 +26,8 @@ from datetime import datetime, date, timedelta
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import qrcode.image.svg
-from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from io import BytesIO
+from shop.base.utils import ImageProcessor
 import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -64,6 +64,7 @@ class ShopView(APIView):
                 qaryb_link = unique_slugify(instance=temp_shop, value=temp_shop.shop_name, slug_field_name='qaryb_link')
                 temp_shop.qaryb_link = qaryb_link
                 temp_shop.save()
+                shift = datetime.utcnow() + timedelta(hours=24)
                 data = {
                     'unique_id': unique_id,
                     'shop_name': temp_shop.shop_name,
@@ -71,11 +72,11 @@ class ShopView(APIView):
                     'color_code': temp_shop.color_code,
                     'bg_color_code': temp_shop.bg_color_code,
                     'font_name': temp_shop.font_name,
-                    'qaryb_link': qaryb_link
+                    'qaryb_link': qaryb_link,
+                    'expiration_date': shift
                 }
                 # Generate thumbnail
                 base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
-                shift = datetime.utcnow() + timedelta(hours=24)
                 task_id = base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
                 temp_shop.task_id = str(task_id)
                 temp_shop.save()
@@ -144,7 +145,7 @@ class ShopAvatarPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -152,7 +153,7 @@ class ShopAvatarPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvatarPutSerializer(data=request.data)
+                    serializer = BaseTempShopAvatarPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         if temp_shop.avatar:
                             try:
@@ -164,10 +165,11 @@ class ShopAvatarPutView(APIView):
                                 remove(temp_shop.avatar_thumbnail.path)
                             except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                                 pass
-                        new_avatar = serializer.update(temp_shop, serializer.validated_data)
+                        # new_avatar = serializer.update(temp_shop, serializer.validated_data)
+                        new_avatar = serializer.save()
                         # Generate new avatar thumbnail
                         base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -182,7 +184,7 @@ class ShopAvatarPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAvatarPutSerializer(data=request.data)
+                serializer = BaseShopAvatarPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
                     if shop.avatar:
                         try:
@@ -194,10 +196,11 @@ class ShopAvatarPutView(APIView):
                             remove(shop.avatar_thumbnail.path)
                         except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                             pass
-                    new_avatar = serializer.update(shop, serializer.validated_data)
+                    # new_avatar = serializer.update(shop, serializer.validated_data)
+                    new_avatar = serializer.save()
                     # Generate new avatar thumbnail
                     base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -208,7 +211,7 @@ class ShopNamePutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -216,10 +219,11 @@ class ShopNamePutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopNamePutSerializer(data=request.data)
+                    serializer = BaseTempShopNamePutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -234,10 +238,11 @@ class ShopNamePutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopNamePutSerializer(data=request.data)
+                serializer = BaseShopNamePutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -248,7 +253,7 @@ class ShopBioPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -256,10 +261,11 @@ class ShopBioPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopBioPutSerializer(data=request.data)
+                    serializer = BaseTempShopBioPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -274,10 +280,11 @@ class ShopBioPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopBioPutSerializer(data=request.data)
+                serializer = BaseShopBioPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -288,7 +295,7 @@ class ShopAvailabilityPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         morning_hour_from = request.data.get('morning_hour_from', '')
         morning_hour_to = request.data.get('morning_hour_to', '')
@@ -302,105 +309,18 @@ class ShopAvailabilityPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvailabilityPutSerializer(data={
+                    serializer = BaseTempShopAvailabilityPutSerializer(temp_shop, data={
                         'morning_hour_from': morning_hour_from,
                         'morning_hour_to': morning_hour_to,
                         'afternoon_hour_from': afternoon_hour_from,
                         'afternoon_hour_to': afternoon_hour_to,
-                    })
+                    }, partial=True)
                     if serializer.is_valid():
-                        new_availability = serializer.update(temp_shop, serializer.validated_data)
+                        # new_availability = serializer.update(temp_shop, serializer.validated_data)
+                        new_availability = serializer.save()
                         new_availability.opening_days.clear()
                         for day in opening_days:
                             new_availability.opening_days.add(day.pk)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                except TempShop.DoesNotExist:
-                    data = {'errors': ['Temp shop not found.']}
-                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            errors = {
-                "unique_id": [
-                    "This field is required."
-                ]
-            }
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAvailabilityPutSerializer(data={
-                    'morning_hour_from': morning_hour_from,
-                    'morning_hour_to': morning_hour_to,
-                    'afternoon_hour_from': afternoon_hour_from,
-                    'afternoon_hour_to': afternoon_hour_to,
-                })
-                if serializer.is_valid():
-                    new_availability = serializer.update(shop, serializer.validated_data)
-                    new_availability.opening_days.clear()
-                    for day in opening_days:
-                        new_availability.opening_days.add(day.pk)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except AuthShop.DoesNotExist:
-                data = {'errors': ['Auth shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopContactPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopContactPutSerializer(data=request.data)
-                    if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                except TempShop.DoesNotExist:
-                    data = {'errors': ['Temp shop not found.']}
-                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            errors = {
-                "unique_id": [
-                    "This field is required."
-                ]
-            }
-            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopContactPutSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except AuthShop.DoesNotExist:
-                data = {'errors': ['Auth shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ShopTelPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopTelPutSerializer(data=request.data)
-                    if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
                         return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
@@ -416,9 +336,102 @@ class ShopTelPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopTelPutSerializer(data=request.data)
+                serializer = BaseShopAvailabilityPutSerializer(shop, data={
+                    'morning_hour_from': morning_hour_from,
+                    'morning_hour_to': morning_hour_to,
+                    'afternoon_hour_from': afternoon_hour_from,
+                    'afternoon_hour_to': afternoon_hour_to,
+                }, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
+                    # new_availability = serializer.update(shop, serializer.validated_data)
+                    new_availability = serializer.save()
+                    new_availability.opening_days.clear()
+                    for day in opening_days:
+                        new_availability.opening_days.add(day.pk)
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopContactPutView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # Temp shop
+        if user.is_anonymous:
+            unique_id = request.data.get('unique_id')
+            if unique_id:
+                try:
+                    temp_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopContactPutSerializer(temp_shop, data=request.data, partial=True)
+                    if serializer.is_valid():
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                except TempShop.DoesNotExist:
+                    data = {'errors': ['Temp shop not found.']}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {
+                "unique_id": [
+                    "This field is required."
+                ]
+            }
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        # Auth shop
+        else:
+            try:
+                shop = AuthShop.objects.get(user=user)
+                serializer = BaseShopContactPutSerializer(shop, data=request.data, partial=True)
+                if serializer.is_valid():
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except AuthShop.DoesNotExist:
+                data = {'errors': ['Auth shop not found.']}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShopTelPutView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # Temp shop
+        if user.is_anonymous:
+            unique_id = request.data.get('unique_id')
+            if unique_id:
+                try:
+                    temp_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopTelPutSerializer(temp_shop, data=request.data, partial=True)
+                    if serializer.is_valid():
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                except TempShop.DoesNotExist:
+                    data = {'errors': ['Temp shop not found.']}
+                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {
+                "unique_id": [
+                    "This field is required."
+                ]
+            }
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        # Auth shop
+        else:
+            try:
+                shop = AuthShop.objects.get(user=user)
+                serializer = BaseShopTelPutSerializer(shop, data=request.data, partial=True)
+                if serializer.is_valid():
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
@@ -430,7 +443,7 @@ class ShopWtspPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -438,9 +451,10 @@ class ShopWtspPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopWtspPutSerializer(data=request.data)
+                    serializer = BaseTempShopWtspPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        # serializer.update(temp_shop, serializer.validated_data)
                         return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
@@ -456,9 +470,10 @@ class ShopWtspPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopWtspPutSerializer(data=request.data)
+                serializer = BaseShopWtspPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
@@ -470,7 +485,7 @@ class ShopAddressPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -478,10 +493,11 @@ class ShopAddressPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAddressPutSerializer(data=request.data)
+                    serializer = BaseTempShopAddressPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -496,10 +512,11 @@ class ShopAddressPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAddressPutSerializer(data=request.data)
+                serializer = BaseShopAddressPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -510,7 +527,7 @@ class ShopColorPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -518,10 +535,11 @@ class ShopColorPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopColorPutSerializer(data=request.data)
+                    serializer = BaseTempShopColorPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -536,10 +554,11 @@ class ShopColorPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopColorPutSerializer(data=request.data)
+                serializer = BaseShopColorPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -550,7 +569,7 @@ class ShopFontPutView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # Temp shop
         if user.is_anonymous:
@@ -558,10 +577,11 @@ class ShopFontPutView(APIView):
             if unique_id:
                 try:
                     temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopFontPutSerializer(data=request.data)
+                    serializer = BaseTempShopFontPutSerializer(temp_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(temp_shop, serializer.validated_data)
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        # serializer.update(temp_shop, serializer.validated_data)
+                        serializer.save()
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -576,10 +596,11 @@ class ShopFontPutView(APIView):
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopFontPutSerializer(data=request.data)
+                serializer = BaseShopFontPutSerializer(shop, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(shop, serializer.validated_data)
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    # serializer.update(shop, serializer.validated_data)
+                    serializer.save()
+                    return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -775,45 +796,25 @@ class ShopQrCodeView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
-    @staticmethod
-    def load_image(img_path):
-        loaded_img = cvtColor(imread(img_path), COLOR_BGR2RGB)
-        return loaded_img
-
-    @staticmethod
-    def image_resize(image, width=None, height=None, inter=INTER_AREA):
-        (h, w) = image.shape[:2]
-
-        if width is None and height is None:
-            return image
-
-        if width is None:
-            r = height / float(h)
-            dim = (int(w * r), height)
-
-        else:
-            r = width / float(w)
-            dim = (width, int(h * r))
-
-        resized = resize(image, dim, interpolation=inter)
-        return resized
+    # @staticmethod
+    # def from_img_to_io(image, format_, type_):
+    #     if type_ == 'input':
+    #         image = Image.fromarray(image)
+    #         bytes_io = BytesIO()
+    #         image.save(bytes_io, format=format_)
+    #         bytes_io.seek(0)
+    #         return bytes_io
+    #     if type_ == 'output':
+    #         bytes_io = BytesIO()
+    #         image.save(bytes_io, format=format_)
+    #         bytes_io.seek(0)
+    #         return bytes_io
 
     @staticmethod
     def from_img_to_io(image, format_, type_):
         if type_ == 'input':
             image = Image.fromarray(image)
-            bytes_io = BytesIO()
-            image.save(bytes_io, format=format_)
-            bytes_io.seek(0)
-            return bytes_io
-        if type_ == 'output':
-            bytes_io = BytesIO()
-            image.save(bytes_io, format=format_)
-            bytes_io.seek(0)
-            return bytes_io
-
-    @staticmethod
-    def from_img_to_io_test(image, format_):
+        # type == 'output'
         bytes_io = BytesIO()
         image.save(bytes_io, format=format_)
         bytes_io.seek(0)
@@ -844,8 +845,9 @@ class ShopQrCodeView(APIView):
             auth_shop = AuthShop.objects.get(user=user)
             qaryb_link = auth_shop.qaryb_link
             icon_path = self.parent_file_dir + '/static/icons/qaryb_icon_300_300.png'
-            loaded_img = self.load_image(icon_path)
-            resized_img = self.image_resize(loaded_img, width=1000, height=1000)
+            image_processor = ImageProcessor()
+            loaded_img = image_processor.load_image(icon_path)
+            resized_img = image_processor.image_resize(loaded_img, width=1000, height=1000)
             img_thumbnail = self.from_img_to_io(resized_img, 'PNG', 'input')
             logo = Image.open(img_thumbnail)
             basewidth = 100
@@ -922,7 +924,7 @@ class ShopVisitCardView(APIView):
         try:
             auth_shop = AuthShop.objects.get(user=user)
             data = {
-                'avatar': auth_shop.avatar,
+                'avatar': auth_shop.get_absolute_avatar_thumbnail,
                 'shop_name': auth_shop.shop_name,
                 'user_first_name': auth_shop.user.first_name,
                 'user_last_name': auth_shop.user.last_name,
@@ -1010,7 +1012,7 @@ class ShopModeVacanceView(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         try:
             auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=user)
@@ -1021,9 +1023,11 @@ class ShopModeVacanceView(APIView):
                     data = {'errors': ['Date from is > than date to.']}
                     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    serializer = BaseShopModeVacancePUTSerializer(data=request.data)
+                    serializer = BaseShopModeVacancePUTSerializer(auth_shop.auth_shop_mode_vacance,
+                                                                  data=request.data, partial=True)
                     if serializer.is_valid():
-                        serializer.update(auth_shop.auth_shop_mode_vacance, serializer.validated_data)
+                        # serializer.update(auth_shop.auth_shop_mode_vacance, serializer.validated_data)
+                        serializer.save()
                         # revoke previous mode vacance periodic task
                         mode_vacance_task_id = auth_shop.mode_vacance_task_id
                         current_app.control.revoke(mode_vacance_task_id, terminate=True, signal='SIGKILL')
@@ -1038,7 +1042,7 @@ class ShopModeVacanceView(APIView):
                             (serializer.validated_data.get('pk'),), eta=shift)
                         auth_shop.mode_vacance_task_id = str(mode_vacance_task_id)
                         auth_shop.save()
-                        return Response(status=status.HTTP_204_NO_CONTENT)
+                        return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except auth_shop.auth_shop_mode_vacance.DoesNotExist:
                 data = {'errors': ['Mode vacance not found']}
@@ -1048,12 +1052,29 @@ class ShopModeVacanceView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TempShopGetPhoneCodesView(APIView):
+class ShopGetPhoneCodesView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def get(*args, **kwargs):
+    def get(request, *args, **kwargs):
         data = {}
         phone_codes = PhoneCodes.objects.all().values_list('phone_code', flat=True)
         data['phone_codes'] = phone_codes
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class ShopUniqueIDVerifyView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        unique_id = request.data.get('unique_id')
+        try:
+            TempShop.objects.get(unique_id=unique_id)
+            return Response(status=status.HTTP_200_OK)
+        except TempShop.DoesNotExist:
+            data = {
+                "detail": "Unique_id is invalid or expired",
+                "code": "unique_id_not_valid"
+            }
+            return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)

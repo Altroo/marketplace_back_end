@@ -1,11 +1,13 @@
-import re
+from re import sub, escape
 from django.template.defaultfilters import slugify
+from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
+from PIL import Image
+from io import BytesIO
 
 
-def unique_slugify(instance, value, slug_field_name, queryset=None,
-                   slug_separator='-'):
+# generate unique qaryb links
+def unique_slugify(instance, value, slug_field_name, queryset=None, slug_separator='-'):
     slug_field = instance._meta.get_field(slug_field_name)
-
     slug_len = slug_field.max_length
 
     slug = slugify(value)
@@ -38,13 +40,47 @@ def _slug_strip(value, separator='-'):
     if separator == '-' or not separator:
         re_sep = '-'
     else:
-        re_sep = '(?:-|%s)' % re.escape(separator)
+        re_sep = '(?:-|%s)' % escape(separator)
 
     if separator != re_sep:
-        value = re.sub('%s+' % re_sep, separator, value)
+        value = sub('%s+' % re_sep, separator, value)
 
     if separator:
         if separator != '-':
-            re_sep = re.escape(separator)
-        value = re.sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
+            re_sep = escape(separator)
+        value = sub(r'^%s+|%s+$' % (re_sep, re_sep), '', value)
     return value
+
+
+class ImageProcessor:
+
+    @staticmethod
+    def load_image(img_path):
+        loaded_img = cvtColor(imread(img_path), COLOR_BGR2RGB)
+        return loaded_img
+
+    @staticmethod
+    def image_resize(image, width=None, height=None, inter=INTER_AREA):
+        (h, w) = image.shape[:2]
+
+        if width is None and height is None:
+            return image
+
+        if width is None:
+            r = height / float(h)
+            dim = (int(w * r), height)
+
+        else:
+            r = width / float(w)
+            dim = (width, int(h * r))
+
+        resized = resize(image, dim, interpolation=inter)
+        return resized
+
+    @staticmethod
+    def from_img_to_io(image, format_):
+        image = Image.fromarray(image)
+        bytes_io = BytesIO()
+        image.save(bytes_io, format=format_)
+        bytes_io.seek(0)
+        return bytes_io

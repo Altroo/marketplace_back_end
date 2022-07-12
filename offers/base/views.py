@@ -1957,7 +1957,7 @@ class ShopOfferSolderView(APIView):
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         offer_pk = request.data.get('offer_pk')
         user = request.user
         # Temp offers
@@ -1974,9 +1974,10 @@ class ShopOfferSolderView(APIView):
                     if temp_solder.solder_value >= 100:
                         data = {'errors': ["Solder can't be applied up to 100%."]}
                         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-                serializer = BaseTempShopOfferSolderPutSerializer(data=request.data)
+                serializer = BaseTempShopOfferSolderPutSerializer(temp_solder, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(temp_solder, serializer.validated_data)
+                    # serializer.update(temp_solder, serializer.validated_data)
+                    serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except TempSolder.DoesNotExist:
@@ -1994,9 +1995,10 @@ class ShopOfferSolderView(APIView):
                     if solder.solder_value >= 100:
                         data = {'errors': ["Solder can't be applied up to 100%."]}
                         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-                serializer = BaseShopOfferSolderPutSerializer(data=request.data)
+                serializer = BaseShopOfferSolderPutSerializer(solder, data=request.data, partial=True)
                 if serializer.is_valid():
-                    serializer.update(solder, serializer.validated_data)
+                    # serializer.update(solder, serializer.validated_data)
+                    serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except Solder.DoesNotExist:

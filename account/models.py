@@ -45,7 +45,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                    default=False,
                                    help_text=_('Designates whether the user can log into this admin site.'), )
     is_active = models.BooleanField(_('active'),
-                                    default=False,
+                                    default=True,
                                     help_text=_(
                                         'Designates whether this user should be treated as active. '
                                         'Unselect this instead of deleting accounts.'
@@ -56,6 +56,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Codes
     activation_code = models.IntegerField(verbose_name='Account Activation Code', blank=True, null=True)
     password_reset_code = models.IntegerField(verbose_name='Password Reset Code', blank=True, null=True)
+    # Task ids for Codes
+    task_id_activation = models.CharField(verbose_name='Task ID activation',
+                                          max_length=40, default=None, null=True, blank=True)
+    task_id_password_reset = models.CharField(verbose_name='Task ID password reset',
+                                              max_length=40, default=None, null=True, blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 

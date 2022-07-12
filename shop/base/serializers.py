@@ -44,6 +44,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AuthShop
+        # has pk & creator
         fields = ['pk', 'shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
@@ -61,10 +62,10 @@ class BaseShopAvatarPutSerializer(serializers.ModelSerializer):
             'avatar': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.avatar = validated_data.get('avatar', instance.avatar)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopNamePutSerializer(serializers.ModelSerializer):
@@ -75,10 +76,10 @@ class BaseShopNamePutSerializer(serializers.ModelSerializer):
             'shop_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.shop_name = validated_data.get('shop_name', instance.shop_name)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.shop_name = validated_data.get('shop_name', instance.shop_name)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopBioPutSerializer(serializers.ModelSerializer):
@@ -89,10 +90,10 @@ class BaseShopBioPutSerializer(serializers.ModelSerializer):
             'bio': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.bio = validated_data.get('bio', instance.bio)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.bio = validated_data.get('bio', instance.bio)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopAvailabilityPutSerializer(serializers.ModelSerializer):
@@ -101,13 +102,13 @@ class BaseShopAvailabilityPutSerializer(serializers.ModelSerializer):
         fields = ['morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to']
 
-    def update(self, instance, validated_data):
-        instance.morning_hour_from = validated_data.get('morning_hour_from', instance.morning_hour_from)
-        instance.morning_hour_to = validated_data.get('morning_hour_to', instance.morning_hour_to)
-        instance.afternoon_hour_from = validated_data.get('afternoon_hour_from', instance.afternoon_hour_from)
-        instance.afternoon_hour_to = validated_data.get('afternoon_hour_to', instance.afternoon_hour_to)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.morning_hour_from = validated_data.get('morning_hour_from', instance.morning_hour_from)
+    #     instance.morning_hour_to = validated_data.get('morning_hour_to', instance.morning_hour_to)
+    #     instance.afternoon_hour_from = validated_data.get('afternoon_hour_from', instance.afternoon_hour_from)
+    #     instance.afternoon_hour_to = validated_data.get('afternoon_hour_to', instance.afternoon_hour_to)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopContactPutSerializer(serializers.ModelSerializer):
@@ -117,16 +118,16 @@ class BaseShopContactPutSerializer(serializers.ModelSerializer):
                   'website_link',
                   'facebook_link', 'twitter_link', 'instagram_link', 'whatsapp']
 
-    def update(self, instance, validated_data):
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.contact_email = validated_data.get('contact_email', instance.contact_email)
-        instance.website_link = validated_data.get('website_link', instance.website_link)
-        instance.facebook_link = validated_data.get('facebook_link', instance.facebook_link)
-        instance.twitter_link = validated_data.get('twitter_link', instance.twitter_link)
-        instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
-        instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.phone = validated_data.get('phone', instance.phone)
+    #     instance.contact_email = validated_data.get('contact_email', instance.contact_email)
+    #     instance.website_link = validated_data.get('website_link', instance.website_link)
+    #     instance.facebook_link = validated_data.get('facebook_link', instance.facebook_link)
+    #     instance.twitter_link = validated_data.get('twitter_link', instance.twitter_link)
+    #     instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
+    #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopTelPutSerializer(serializers.ModelSerializer):
@@ -137,10 +138,10 @@ class BaseShopTelPutSerializer(serializers.ModelSerializer):
             'phone': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.phone = validated_data.get('phone', instance.phone)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopWtspPutSerializer(serializers.ModelSerializer):
@@ -151,10 +152,10 @@ class BaseShopWtspPutSerializer(serializers.ModelSerializer):
             'whatsapp': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopAddressPutSerializer(serializers.ModelSerializer):
@@ -177,14 +178,14 @@ class BaseShopAddressPutSerializer(serializers.ModelSerializer):
             'address_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.zone_by = validated_data.get('zone_by', instance.zone_by)
-        instance.longitude = validated_data.get('longitude', instance.longitude)
-        instance.latitude = validated_data.get('latitude', instance.latitude)
-        instance.address_name = validated_data.get('address_name', instance.address_name)
-        instance.km_radius = validated_data.get('km_radius', instance.km_radius)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.zone_by = validated_data.get('zone_by', instance.zone_by)
+    #     instance.longitude = validated_data.get('longitude', instance.longitude)
+    #     instance.latitude = validated_data.get('latitude', instance.latitude)
+    #     instance.address_name = validated_data.get('address_name', instance.address_name)
+    #     instance.km_radius = validated_data.get('km_radius', instance.km_radius)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopColorPutSerializer(serializers.ModelSerializer):
@@ -196,11 +197,11 @@ class BaseShopColorPutSerializer(serializers.ModelSerializer):
             'bg_color_code': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.color_code = validated_data.get('color_code', instance.color_code)
-        instance.bg_color_code = validated_data.get('bg_color_code', instance.bg_color_code)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.color_code = validated_data.get('color_code', instance.color_code)
+    #     instance.bg_color_code = validated_data.get('bg_color_code', instance.bg_color_code)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopFontPutSerializer(serializers.ModelSerializer):
@@ -211,10 +212,10 @@ class BaseShopFontPutSerializer(serializers.ModelSerializer):
             'font_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.font_name = validated_data.get('font_name', instance.font_name)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.font_name = validated_data.get('font_name', instance.font_name)
+    #     instance.save()
+    #     return instance
 
 
 class BaseShopAskForCreatorLabelSerializer(serializers.ModelSerializer):
@@ -235,11 +236,11 @@ class BaseShopModeVacancePUTSerializer(serializers.ModelSerializer):
         model = ModeVacance
         fields = ['date_from', 'date_to']
 
-    def update(self, instance, validated_data):
-        instance.date_from = validated_data.get('date_from', instance.date_from)
-        instance.date_to = validated_data.get('date_to', instance.date_to)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.date_from = validated_data.get('date_from', instance.date_from)
+    #     instance.date_to = validated_data.get('date_to', instance.date_to)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):
@@ -280,6 +281,7 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TempShop
+        # has not pk & creator
         fields = ['shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
@@ -297,10 +299,10 @@ class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
             'avatar': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.avatar = validated_data.get('avatar', instance.avatar)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopNamePutSerializer(serializers.ModelSerializer):
@@ -311,10 +313,10 @@ class BaseTempShopNamePutSerializer(serializers.ModelSerializer):
             'shop_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.shop_name = validated_data.get('shop_name', instance.shop_name)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #    instance.shop_name = validated_data.get('shop_name', instance.shop_name)
+    #    instance.save()
+    #    return instance
 
 
 class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
@@ -325,10 +327,10 @@ class BaseTempShopBioPutSerializer(serializers.ModelSerializer):
             'bio': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.bio = validated_data.get('bio', instance.bio)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.bio = validated_data.get('bio', instance.bio)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopAvailabilityPutSerializer(serializers.ModelSerializer):
@@ -337,13 +339,13 @@ class BaseTempShopAvailabilityPutSerializer(serializers.ModelSerializer):
         fields = ['morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to']
 
-    def update(self, instance, validated_data):
-        instance.morning_hour_from = validated_data.get('morning_hour_from', instance.morning_hour_from)
-        instance.morning_hour_to = validated_data.get('morning_hour_to', instance.morning_hour_to)
-        instance.afternoon_hour_from = validated_data.get('afternoon_hour_from', instance.afternoon_hour_from)
-        instance.afternoon_hour_to = validated_data.get('afternoon_hour_to', instance.afternoon_hour_to)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.morning_hour_from = validated_data.get('morning_hour_from', instance.morning_hour_from)
+    #     instance.morning_hour_to = validated_data.get('morning_hour_to', instance.morning_hour_to)
+    #     instance.afternoon_hour_from = validated_data.get('afternoon_hour_from', instance.afternoon_hour_from)
+    #     instance.afternoon_hour_to = validated_data.get('afternoon_hour_to', instance.afternoon_hour_to)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
@@ -353,16 +355,16 @@ class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
                   'website_link',
                   'facebook_link', 'twitter_link', 'instagram_link', 'whatsapp']
 
-    def update(self, instance, validated_data):
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.contact_email = validated_data.get('contact_email', instance.contact_email)
-        instance.website_link = validated_data.get('website_link', instance.website_link)
-        instance.facebook_link = validated_data.get('facebook_link', instance.facebook_link)
-        instance.twitter_link = validated_data.get('twitter_link', instance.twitter_link)
-        instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
-        instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.phone = validated_data.get('phone', instance.phone)
+    #     instance.contact_email = validated_data.get('contact_email', instance.contact_email)
+    #     instance.website_link = validated_data.get('website_link', instance.website_link)
+    #     instance.facebook_link = validated_data.get('facebook_link', instance.facebook_link)
+    #     instance.twitter_link = validated_data.get('twitter_link', instance.twitter_link)
+    #     instance.instagram_link = validated_data.get('instagram_link', instance.instagram_link)
+    #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
@@ -373,10 +375,10 @@ class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
             'phone': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.phone = validated_data.get('phone', instance.phone)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
@@ -387,10 +389,10 @@ class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
             'whatsapp': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
@@ -413,14 +415,14 @@ class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
             'address_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.zone_by = validated_data.get('zone_by', instance.zone_by)
-        instance.longitude = validated_data.get('longitude', instance.longitude)
-        instance.latitude = validated_data.get('latitude', instance.latitude)
-        instance.address_name = validated_data.get('address_name', instance.address_name)
-        instance.km_radius = validated_data.get('km_radius', instance.km_radius)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.zone_by = validated_data.get('zone_by', instance.zone_by)
+    #     instance.longitude = validated_data.get('longitude', instance.longitude)
+    #     instance.latitude = validated_data.get('latitude', instance.latitude)
+    #     instance.address_name = validated_data.get('address_name', instance.address_name)
+    #     instance.km_radius = validated_data.get('km_radius', instance.km_radius)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopColorPutSerializer(serializers.ModelSerializer):
@@ -432,11 +434,11 @@ class BaseTempShopColorPutSerializer(serializers.ModelSerializer):
             'bg_color_code': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.color_code = validated_data.get('color_code', instance.color_code)
-        instance.bg_color_code = validated_data.get('bg_color_code', instance.bg_color_code)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.color_code = validated_data.get('color_code', instance.color_code)
+    #     instance.bg_color_code = validated_data.get('bg_color_code', instance.bg_color_code)
+    #     instance.save()
+    #     return instance
 
 
 class BaseTempShopFontPutSerializer(serializers.ModelSerializer):
@@ -447,7 +449,7 @@ class BaseTempShopFontPutSerializer(serializers.ModelSerializer):
             'font_name': {'required': True},
         }
 
-    def update(self, instance, validated_data):
-        instance.font_name = validated_data.get('font_name', instance.font_name)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.font_name = validated_data.get('font_name', instance.font_name)
+    #     instance.save()
+    #     return instance

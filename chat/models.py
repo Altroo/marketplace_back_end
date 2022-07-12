@@ -8,10 +8,9 @@ from django.dispatch import receiver
 from os import path
 from uuid import uuid4
 from Qaryb_API_new.settings import API_URL
-from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
-from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+from shop.base.utils import ImageProcessor
 
 
 def chat_img_directory_path(instance, filename):
@@ -19,6 +18,7 @@ def chat_img_directory_path(instance, filename):
     return path.join('chat/', str(uuid4()) + file_extension)
 
 
+# TODO change to just Message
 class MessageModel(Model):
     user = ForeignKey(CustomUser, on_delete=SET_NULL, verbose_name='Sender', related_name='sent_messages',
                       db_index=True, null=True)
@@ -97,43 +97,13 @@ class MessageModel(Model):
         return None
 
 
-def load_image(img_path):
-    loaded_img = cvtColor(imread(img_path), COLOR_BGR2RGB)
-    return loaded_img
-
-
-def image_resize(image, width=None, height=None, inter=INTER_AREA):
-    (h, w) = image.shape[:2]
-
-    if width is None and height is None:
-        return image
-
-    if width is None:
-        r = height / float(h)
-        dim = (int(w * r), height)
-
-    else:
-        r = width / float(w)
-        dim = (width, int(h * r))
-
-    resized = resize(image, dim, interpolation=inter)
-    return resized
-
-
-def from_img_to_io(image, format_):
-    image = Image.fromarray(image)
-    bytes_io = BytesIO()
-    image.save(bytes_io, format=format_)
-    bytes_io.seek(0)
-    return bytes_io
-
-
 @receiver(post_save, sender=MessageModel)
 def create_thumbnail(sender, instance, created, raw, using, update_fields, **kwargs):
     if created and instance.attachment.name:
-        loaded_img = load_image(instance.attachment.path)
-        resized_thumb = image_resize(loaded_img, width=300, height=300)
-        img_thumbnail = from_img_to_io(resized_thumb, 'JPEG')
+        image_processor = ImageProcessor()
+        loaded_img = image_processor.load_image(instance.attachment.path)
+        resized_thumb = image_processor.image_resize(loaded_img, width=300, height=300)
+        img_thumbnail = image_processor.from_img_to_io(resized_thumb, 'JPEG')
         instance.save_image('attachment_thumbnail', img_thumbnail)
 
 

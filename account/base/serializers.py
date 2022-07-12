@@ -103,16 +103,16 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['avatar', 'first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
 
-    def update(self, instance, validated_data):
-        instance.avatar = validated_data.get('avatar', instance.avatar)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.gender = validated_data.get('gender', instance.gender)
-        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
-        instance.city = validated_data.get('city', instance.city)
-        instance.country = validated_data.get('country', instance.country)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.avatar = validated_data.get('avatar', instance.avatar)
+    #     instance.first_name = validated_data.get('first_name', instance.first_name)
+    #     instance.last_name = validated_data.get('last_name', instance.last_name)
+    #     instance.gender = validated_data.get('gender', instance.gender)
+    #     instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+    #     instance.city = validated_data.get('city', instance.city)
+    #     instance.country = validated_data.get('country', instance.country)
+    #     instance.save()
+    #     return instance
 
 
 class BaseProfileGETSerializer(serializers.ModelSerializer):
@@ -180,18 +180,18 @@ class BaseUserAddressPutSerializer(serializers.ModelSerializer):
                   'last_name', 'address', 'city', 'zip_code',
                   'country', 'phone', 'email']
 
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.address = validated_data.get('address', instance.address)
-        instance.city = validated_data.get('city', instance.city)
-        instance.zip_code = validated_data.get('zip_code', instance.zip_code)
-        instance.country = validated_data.get('country', instance.country)
-        instance.phone = validated_data.get('phone', instance.phone)
-        instance.email = validated_data.get('email', instance.email)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get('title', instance.title)
+    #     instance.first_name = validated_data.get('first_name', instance.first_name)
+    #     instance.last_name = validated_data.get('last_name', instance.last_name)
+    #     instance.address = validated_data.get('address', instance.address)
+    #     instance.city = validated_data.get('city', instance.city)
+    #     instance.zip_code = validated_data.get('zip_code', instance.zip_code)
+    #     instance.country = validated_data.get('country', instance.country)
+    #     instance.phone = validated_data.get('phone', instance.phone)
+    #     instance.email = validated_data.get('email', instance.email)
+    #     instance.save()
+    #     return instance
 
 
 class BaseEmailPutSerializer(serializers.ModelSerializer):

@@ -13,6 +13,10 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from Qaryb_API_new.settings import SIMPLE_JWT
+from celery import current_app
+from datetime import timedelta, timezone
+import datetime
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
     BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
@@ -25,6 +29,7 @@ from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
 from shop.models import AuthShop
 from shop.base.tasks import base_generate_avatar_thumbnail
+from account.base.tasks import base_start_deleting_expired_codes
 from offers.models import Offers
 from rest_framework.pagination import PageNumberPagination
 from dj_rest_auth.views import LoginView as Dj_rest_login
@@ -144,7 +149,6 @@ class RegistrationView(APIView):
         email = str(request.data.get('email')).lower()
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
-
         serializer = BaseRegistrationSerializer(data={
             'email': email,
             'password': password,
@@ -171,18 +175,25 @@ class RegistrationView(APIView):
                 base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
                 # Generate refresh token
                 refresh = RefreshToken.for_user(user)
+                date_now = datetime.datetime.now(timezone.utc)
                 data = {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
+                    "access_token": str(refresh.access_token),
+                    "refresh_token": str(refresh),
                     "user": {
                         "pk": user.pk,
                         "email": user.email,
                         "first_name": user.first_name,
                         "last_name": user.last_name
-                    }
+                    },
+                    "access_token_expiration": (date_now + SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']),
+                    "refresh_token_expiration": (date_now + SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'])
                 }
                 # Generate user avatar and thumbnail
                 base_generate_user_thumbnail.apply_async((user.pk,), )
+                shift = date_now + timedelta(hours=24)
+                task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
+                user.task_id_activation = str(task_id_activation)
+                user.save()
                 return Response(data=data, status=status.HTTP_200_OK)
             return Response(email_address_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -203,8 +214,13 @@ class ActivateAccountView(APIView):
                 data['errors'] = ["Account already verified!"]
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             if code is not None and email is not None:
-                user.activation_code = ''
-                user.save()
+                # revoke 24h previous periodic task (default activation)
+                task_id_activation = user.task_id_activation
+                if task_id_activation:
+                    current_app.control.revoke(task_id_activation, terminate=True, signal='SIGKILL')
+                    user.task_id_activation = None
+                    user.activation_code = ''
+                    user.save()
                 user_email.verified = True
                 user_email.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
@@ -227,6 +243,12 @@ class ResendActivationCodeView(APIView):
         data = {}
         try:
             user = CustomUser.objects.get(email=email)
+            # revoke 24h previous periodic task (default activation)
+            task_id_activation = user.task_id_activation
+            if task_id_activation:
+                current_app.control.revoke(task_id_activation, terminate=True, signal='SIGKILL')
+                user.task_id_activation = None
+                user.save()
             mail_subject = 'Vérifiez votre compte'
             mail_template = 'activate_account.html'
             # if user.activation_code:
@@ -238,6 +260,11 @@ class ResendActivationCodeView(APIView):
                 'code': code,
             })
             base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
+            date_now = datetime.datetime.now(timezone.utc)
+            shift = date_now + timedelta(hours=24)
+            task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
+            user.task_id_activation = str(task_id_activation)
+            user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
             data['email'] = ["User Doesn't exist!"]
@@ -259,9 +286,12 @@ class SendPasswordResetView(APIView):
             if user.email is not None:
                 serializer = BaseUserEmailSerializer(data=request.data)
                 if serializer.is_valid():
-                    # if user.password_reset_code:
-                    #    code = user.password_reset_code
-                    # else:
+                    # revoke 24h previous periodic task (default password_reset)
+                    task_id_password_reset = user.task_id_password_reset
+                    if task_id_password_reset:
+                        current_app.control.revoke(task_id_password_reset, terminate=True, signal='SIGKILL')
+                        user.task_id_password_reset = None
+                        user.save()
                     mail_subject = 'Renouvellement du mot de passe'
                     mail_template = 'password_reset.html'
                     code = self.generate_random_code()
@@ -271,6 +301,12 @@ class SendPasswordResetView(APIView):
                     })
                     base_send_email.apply_async((user.pk, user.email, mail_subject, message, code,
                                                  'password_reset_code'), )
+                    date_now = datetime.datetime.now(timezone.utc)
+                    shift = date_now + timedelta(hours=24)
+                    task_id_password_reset = base_start_deleting_expired_codes.apply_async((user.pk, 'password_reset'),
+                                                                                           eta=shift)
+                    user.task_id_password_reset = str(task_id_password_reset)
+                    user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
             data['email'] = ["User Doesn't exist!"]
@@ -305,6 +341,12 @@ class PasswordResetView(APIView):
             if code is not None and email is not None and code == user.password_reset_code:
                 serializer = BasePasswordResetSerializer(data=request.data)
                 if serializer.is_valid():
+                    # revoke 24h previous periodic task (default password_reset)
+                    if user.task_id_password_reset:
+                        task_id_password_reset = user.task_id_password_reset
+                        current_app.control.revoke(task_id_password_reset, terminate=True, signal='SIGKILL')
+                        user.task_id_password_reset = None
+                        user.save()
                     # Check old password
                     new_password = serializer.data.get("new_password")
                     new_password2 = serializer.data.get("new_password2")
@@ -453,9 +495,9 @@ class ProfileView(APIView):
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = CustomUser.objects.get(pk=request.user.pk)
-        serializer = BaseProfilePutSerializer(data=request.data)
+        serializer = BaseProfilePutSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             if user.avatar:
                 try:
@@ -467,7 +509,8 @@ class ProfileView(APIView):
                     remove(user.avatar_thumbnail.path)
                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                     pass
-            new_avatar = serializer.update(user, serializer.validated_data)
+            # new_avatar = serializer.update(user, serializer.validated_data)
+            new_avatar = serializer.save()
             # Generate new avatar thumbnail
             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -581,14 +624,15 @@ class AddressView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def put(request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user_pk = request.user
         address_pk = request.data.get('address_pk')
         user_address = UserAddress.objects.get(user=user_pk, pk=address_pk)
-        serializer = BaseUserAddressPutSerializer(data=request.data)
+        serializer = BaseUserAddressPutSerializer(user_address, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.update(user_address, serializer.validated_data)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            # serializer.update(user_address, serializer.validated_data)
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
