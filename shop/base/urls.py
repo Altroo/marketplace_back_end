@@ -3,8 +3,8 @@ from .views import ShopView, \
     ShopAvatarPutView, ShopNamePutView, ShopBioPutView, \
     ShopAvailabilityPutView, ShopContactPutView, ShopAddressPutView, ShopColorPutView, \
     ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView, \
-    ShopAskBecomeCreator, ShopQrCodeView, ShopVisitCardView, \
-    ShopModeVacanceView, ShopGetPhoneCodesView, ShopUniqueIDVerifyView
+    ShopAskBecomeCreator, ShopQrCodeView, \
+    ShopModeVacanceView, ShopGetPhoneCodesView
 
 app_name = 'shop'
 

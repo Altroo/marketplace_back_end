@@ -1088,19 +1088,19 @@ class ShopGetPhoneCodesView(APIView):
         data['phone_codes'] = phone_codes
         return Response(data=data, status=status.HTTP_200_OK)
 
-
-class ShopUniqueIDVerifyView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        unique_id = request.data.get('unique_id')
-        try:
-            TempShop.objects.get(unique_id=unique_id)
-            return Response(status=status.HTTP_200_OK)
-        except TempShop.DoesNotExist:
-            data = {
-                "detail": "Unique_id is invalid or expired",
-                "code": "unique_id_not_valid"
-            }
-            return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
+#
+# class ShopUniqueIDVerifyView(APIView):
+#     permission_classes = (permissions.AllowAny,)
+#
+#     @staticmethod
+#     def post(request, *args, **kwargs):
+#         unique_id = request.data.get('unique_id')
+#         try:
+#             TempShop.objects.get(unique_id=unique_id)
+#             return Response(status=status.HTTP_200_OK)
+#         except TempShop.DoesNotExist:
+#             data = {
+#                 "detail": "Unique_id is invalid or expired",
+#                 "code": "unique_id_not_valid"
+#             }
+#             return Response(data=data, status=status.HTTP_401_UNAUTHORIZED)
