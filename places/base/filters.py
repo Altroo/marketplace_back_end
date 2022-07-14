@@ -55,7 +55,7 @@ class CountryFilterSet(BasePlaceFilterSet):
 
 
 class BaseAllCountryFilter(FilterSet):
-    name_fr = CharFilter(lookup_expr='istartswith')
+    code = CharFilter(lookup_expr='istartswith', field_name='name_fr')
 
     class Meta:
         model = Country

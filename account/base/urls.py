@@ -44,6 +44,8 @@ urlpatterns = [
     path('password_change/', PasswordChangeView.as_view()),
     # POST : Password reset
     path('send_password_reset/', SendPasswordResetView.as_view()),
+    # GET: check if email & code are valid
+    # PUT: reset with new password
     path('password_reset/<str:email>/<int:code>/', PasswordResetView.as_view()),
     # POST : Tokens, Verify if token valid, Refresh access token
     # path('token_verify/', TokenVerifyView.as_view()),
@@ -74,8 +76,9 @@ urlpatterns = [
     path('addresses/', GetAllAddressesView.as_view()),
     # POST : Cloturer mon compte
     path('enclose/', EncloseAccountView.as_view()),
+    # GET : check if email has password
     # POST : Change email
     path('email/', ChangeEmailAccountView.as_view()),
     # Delete Account
-    path('delete_account', DeleteAccountView.as_view()),
+    path('delete_account/', DeleteAccountView.as_view()),
 ]

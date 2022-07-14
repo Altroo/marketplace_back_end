@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import ShopOfferView, \
     GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
-    GetLastThreeDeliveriesView, GetLastUsedLocalisationView, GetOfferTagsView, GetOffersVuesListView
+    GetLastThreeDeliveriesView, GetLastUsedLocalisationView, \
+    GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2
 
 app_name = 'offer'
 
@@ -13,11 +14,12 @@ urlpatterns = [
     path('deliveries/<uuid:unique_id>/', GetLastThreeDeliveriesView.as_view()),
     # GET : Last used localisation (lon, lat + localisation name)
     path('localisation/<str:offer_type>/', GetLastUsedLocalisationView.as_view()),
+    path('localisation/<str:offer_type>/<uuid:unique_id>/', GetLastUsedLocalisationView.as_view()),
     # GET : My shop products list
     path('my_offers/', GetMyShopOffersListView.as_view()),
     path('my_offers/<uuid:unique_id>/', GetMyShopOffersListView.as_view()),
     # POST : Create solder,
-    # PUT : Edit solder
+    # PATCH : Edit solder
     path('solder/', ShopOfferSolderView.as_view()),
     # GET : Get solder,
     # DELETE : Delete solder
@@ -26,11 +28,12 @@ urlpatterns = [
     # GET : Get vues list
     path('vues/', GetOffersVuesListView.as_view()),
     # POST : Duplicate
-    # path('duplicate/', ShopOfferDuplicateView.as_view()),
+    path('duplicate/', ShopOfferDuplicateView.as_view()),
     # POST : Create product
     # PUT : Edit product
     # DELETE : Delete product
     # GET : product details
-    path('', ShopOfferView.as_view()),
+    path('', ShopOfferViewV2.as_view()),
     path('<int:offer_pk>/', ShopOfferView.as_view()),
+    # path('backup/', ShopOfferView.as_view()),
 ]

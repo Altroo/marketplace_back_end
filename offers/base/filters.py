@@ -11,4 +11,4 @@ class TagsFilterSet(FilterSet):
 
     class Meta:
         model = OfferTags
-        fields = ['name_tag']
+        fields = ('name_tag',)

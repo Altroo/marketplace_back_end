@@ -16,7 +16,7 @@ urlpatterns = [
     path('creator/', ShopAskBecomeCreator.as_view()),
     # POST: Transfer temp shop to auth shop
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
-    # PUT : Edit shop
+    # PATCH : Edit shop
     path('phone/', ShopTelPutView.as_view()),
     path('whatsapp/', ShopWtspPutView.as_view()),
     path('avatar/', ShopAvatarPutView.as_view()),
@@ -28,9 +28,14 @@ urlpatterns = [
     path('address/', ShopAddressPutView.as_view()),
     path('color/', ShopColorPutView.as_view()),
     path('font/', ShopFontPutView.as_view()),
+    # POST : generate qr code
+    # GET : get qr code
     path('qr_code/', ShopQrCodeView.as_view()),
-    # TODO REMOVED (visit_card)
-    path('visit_card/', ShopVisitCardView.as_view()),
+    # path('visit_card/', ShopVisitCardView.as_view()),
+    # GET : get mode vacance
+    # POST : add mode vacance
+    # PATCH : update mode vacance
+    # DELETE : delete mode vacance
     path('mode_vacance/', ShopModeVacanceView.as_view()),
     # path('unique_id_verify/', ShopUniqueIDVerifyView.as_view()),
     # POST : Create shop

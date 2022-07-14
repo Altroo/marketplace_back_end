@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from shop.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance
+from shop.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance, AuthShopDays
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
@@ -30,17 +30,24 @@ class BaseShopSerializer(serializers.ModelSerializer):
         return shop
 
 
+class BaseProductColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthShopDays
+        fields = ['pk', 'code_day', 'name_day']
+
+
 class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
-    opening_days = serializers.SerializerMethodField()
+    # opening_days = serializers.SerializerMethodField()
+    opening_days = BaseProductColorSerializer(many=True, read_only=True)
     morning_hour_from = serializers.TimeField(format='%H:%M')
     morning_hour_to = serializers.TimeField(format='%H:%M')
     afternoon_hour_from = serializers.TimeField(format='%H:%M')
     afternoon_hour_to = serializers.TimeField(format='%H:%M')
 
-    @staticmethod
-    def get_opening_days(instance):
-        return instance.opening_days.values_list('code_day', flat=True)
+    # @staticmethod
+    # def get_opening_days(instance):
+    #     return instance.opening_days.values_list('code_day', flat=True)
 
     class Meta:
         model = AuthShop
@@ -269,15 +276,16 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
 
 class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
-    opening_days = serializers.SerializerMethodField()
+    # opening_days = serializers.SerializerMethodField()
+    opening_days = BaseProductColorSerializer(many=True, read_only=True)
     morning_hour_from = serializers.TimeField(format='%H:%M')
     morning_hour_to = serializers.TimeField(format='%H:%M')
     afternoon_hour_from = serializers.TimeField(format='%H:%M')
     afternoon_hour_to = serializers.TimeField(format='%H:%M')
 
-    @staticmethod
-    def get_opening_days(instance):
-        return instance.opening_days.values_list('code_day', flat=True)
+    # @staticmethod
+    # def get_opening_days(instance):
+    #     return instance.opening_days.values_list('code_day', flat=True)
 
     class Meta:
         model = TempShop

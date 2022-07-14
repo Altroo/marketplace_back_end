@@ -319,9 +319,22 @@ class ShopAvailabilityPutView(APIView):
                         # new_availability = serializer.update(temp_shop, serializer.validated_data)
                         new_availability = serializer.save()
                         new_availability.opening_days.clear()
+                        days_list = []
                         for day in opening_days:
                             new_availability.opening_days.add(day.pk)
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
+                            days_list.append({
+                                'pk': day.pk,
+                                'code_day': day.code_day,
+                                'name_day': day.name_day
+                            })
+                            data = {
+                                'opening_days': days_list,
+                                'morning_hour_from': serializer.data.get('morning_hour_from'),
+                                'morning_hour_to': serializer.data.get('morning_hour_to'),
+                                'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
+                                'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
+                            }
+                            return Response(data=data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 except TempShop.DoesNotExist:
                     data = {'errors': ['Temp shop not found.']}
@@ -346,9 +359,22 @@ class ShopAvailabilityPutView(APIView):
                     # new_availability = serializer.update(shop, serializer.validated_data)
                     new_availability = serializer.save()
                     new_availability.opening_days.clear()
+                    days_list = []
                     for day in opening_days:
                         new_availability.opening_days.add(day.pk)
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
+                        days_list.append({
+                            'pk': day.pk,
+                            'code_day': day.code_day,
+                            'name_day': day.name_day
+                        })
+                    data = {
+                        'opening_days': days_list,
+                        'morning_hour_from': serializer.data.get('morning_hour_from'),
+                        'morning_hour_to': serializer.data.get('morning_hour_to'),
+                        'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
+                        'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
+                    }
+                    return Response(data=data, status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}

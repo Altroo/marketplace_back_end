@@ -572,7 +572,7 @@ class ReportView(APIView):
         })
         if serializer.is_valid():
             serializer.save()
-            # TODO check if we'll get notification emails on repported users
+            # ! TODO check if we'll get notification emails on repported users
             # check_repport_email_limit = BaseCheckRepportEmailLimit()
             # check_repport_email_limit.apply_async((post_id,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -702,7 +702,7 @@ class ChangeEmailAccountView(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    def post(request, *args, **kwargs):
+    def put(request, *args, **kwargs):
         user = request.user
         has_password = user.has_usable_password()
         new_email = request.data.get('new_email')

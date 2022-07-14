@@ -27,12 +27,14 @@ class BaseCountrySerializer(BasePlaceBaseSerializer):
 
 
 class BaseCountriesSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='name_fr')
 
     class Meta:
         model = Country
         fields = (
             'pk',
-            'name_fr',
+            'name',
+            'code'
         )
 
 
