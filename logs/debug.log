@@ -13207,3 +13207,5 @@ Bad Request: /api/1.0.0/offer/solder/1/
 [31;1mHTTP GET /api/1.0.0/offer/solder/1/ 400 [0.02, 127.0.0.1:60606][0m
 Bad Request: /api/1.0.0/offer/solder/1/
 [31;1mHTTP GET /api/1.0.0/offer/solder/1/ 400 [0.02, 127.0.0.1:60606][0m
+Not Found: /
+[33mHTTP GET / 404 [0.02, 127.0.0.1:60756][0m

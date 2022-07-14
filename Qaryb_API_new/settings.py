@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',
-    'drf_yasg',
+    # 'drf_yasg',
     'corsheaders',
     'channels',
     'chat.apps.ChatConfig',
@@ -82,7 +82,8 @@ WSGI_APPLICATION = config('WSGI_APPLICATION')
 TEMPLATES = [
     {
         'BACKEND': config('TEMPLATES_BACKEND'),
-        'DIRS': [(os.path.join(BASE_DIR, config('SWAGGER_ADMIN_LINK_PATH')))],
+        # 'DIRS': [(os.path.join(BASE_DIR, config('SWAGGER_ADMIN_LINK_PATH')))],
+        'DIRS': [],
         'APP_DIRS': config('TEMPLATES_APP_DIRS', cast=bool),
         'OPTIONS': {
             'context_processors': [
@@ -300,17 +301,17 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = config('ACCOUNT_MAX_EMAIL_ADDRESSES', cast=int)
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = config('ACCOUNT_DEFAULT_HTTP_PROTOCOL')
 
 # SWAGGER_SETTINGS settings
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'basic': {
-            'type': config('SECURITY_DEFINITIONS_BASIC_TYPE')
-        },
-        'Bearer': {
-            'type': config('SECURITY_DEFINITIONS_BEARER_TYPE'),
-            'name': config('SECURITY_DEFINITIONS_BEARER_NAME'),
-            'in': config('SECURITY_DEFINITIONS_BEARER_IN')
-        }
-    },
-    'LOGIN_URL': config('SWAGGER_LOGIN_URL'),
-    'LOGOUT_URL': config('SWAGGER_LOGOUT_URL'),
-}
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'basic': {
+#             'type': config('SECURITY_DEFINITIONS_BASIC_TYPE')
+#         },
+#         'Bearer': {
+#             'type': config('SECURITY_DEFINITIONS_BEARER_TYPE'),
+#             'name': config('SECURITY_DEFINITIONS_BEARER_NAME'),
+#             'in': config('SECURITY_DEFINITIONS_BEARER_IN')
+#         }
+#     },
+#     'LOGIN_URL': config('SWAGGER_LOGIN_URL'),
+#     'LOGOUT_URL': config('SWAGGER_LOGOUT_URL'),
+# }
