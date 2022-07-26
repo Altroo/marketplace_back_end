@@ -254,6 +254,8 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
+                        cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                        cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 # Services
@@ -295,6 +297,8 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
+                        cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                        cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -444,6 +448,8 @@ class ValidateCartOffersView(APIView):
             else:
                 return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             if order_valid:
+                cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                cart_offers.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
 

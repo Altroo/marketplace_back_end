@@ -18332,3 +18332,4 @@ Traceback (most recent call last):
 account.models.UserAddress.DoesNotExist: UserAddress matching query does not exist.
 [35;1mHTTP POST /api/1.0.0/cart/order/ 500 [0.14, 127.0.0.1:53524][0m
 Not Found: /favicon.ico
+Not Found: /favicon.ico
