@@ -20,7 +20,6 @@ urlpatterns = [
     path('phone/', ShopTelPutView.as_view()),
     path('whatsapp/', ShopWtspPutView.as_view()),
     path('avatar/', ShopAvatarPutView.as_view()),
-    # TODO change it to just name
     path('shop_name/', ShopNamePutView.as_view()),
     path('bio/', ShopBioPutView.as_view()),
     path('availability/', ShopAvailabilityPutView.as_view()),

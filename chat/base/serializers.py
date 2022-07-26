@@ -41,12 +41,12 @@ class BaseMessageModelSerializer(ModelSerializer):
         else:
             body = instance.body
         event = {
-            "type": 'recieve_group_message',
+            "type": "recieve_group_message",
             "message": {
-                "type": "message",
+                "type": "NEW_MESSAGE",
                 "pk": instance.id,
-                "initiator_pk": instance.user.pk,
-                "recipient_pk": instance.recipient.pk,
+                "initiator": instance.user.pk,
+                "recipient": instance.recipient.pk,
                 "body": body,
             }
         }
@@ -61,12 +61,12 @@ class BaseMessageModelSerializer(ModelSerializer):
         else:
             body = instance.body
         event = {
-            "type": 'recieve_group_message',
+            "type": "recieve_group_message",
             "message": {
-                "type": "message",
+                "type": "NEW_MESSAGE",
                 "pk": instance.id,
-                "initiator_pk": instance.user.pk,
-                "recipient_pk": instance.recipient.pk,
+                "initiator": instance.user.pk,
+                "recipient": instance.recipient.pk,
                 "body": body,
             }
         }
@@ -163,14 +163,15 @@ class BaseMessageModelSerializer(ModelSerializer):
 
 # Conversations list
 class BaseChatUserModelSerializer(ModelSerializer):
-    last_message = SerializerMethodField()
+    pk = SerializerMethodField()
+    body = SerializerMethodField()
     online = SerializerMethodField()
     user_pk = SerializerMethodField()
     user_avatar = SerializerMethodField()
     user_first_name = SerializerMethodField()
     user_last_name = SerializerMethodField()
-    seen = SerializerMethodField()
-    created_date = SerializerMethodField()
+    viewed = SerializerMethodField()
+    created = SerializerMethodField()
     shop_pk = SerializerMethodField()
     shop_name = SerializerMethodField()
     shop_avatar_thumbnail = SerializerMethodField()
@@ -194,7 +195,7 @@ class BaseChatUserModelSerializer(ModelSerializer):
         user_receiver = CustomUser.objects.get(pk=instance.pk)
         return user_receiver.get_absolute_avatar_thumbnail
 
-    def get_seen(self, instance):
+    def get_viewed(self, instance):
         user = self.context.get('request').user
         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
@@ -209,7 +210,7 @@ class BaseChatUserModelSerializer(ModelSerializer):
             if result_msg_recipient:
                 return result_msg_recipient.viewed
 
-    def get_created_date(self, instance):
+    def get_created(self, instance):
         user = self.context.get('request').user
         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
@@ -224,7 +225,7 @@ class BaseChatUserModelSerializer(ModelSerializer):
             if result_msg_recipient:
                 return result_msg_recipient.created
 
-    def get_last_message(self, instance):
+    def get_body(self, instance):
         user = self.context.get('request').user
         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
@@ -281,11 +282,29 @@ class BaseChatUserModelSerializer(ModelSerializer):
             shop = None
         return shop
 
+    def get_pk(self, instance):
+        user = self.context.get('request').user
+        result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
+        result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
+        if result_msg_user and result_msg_recipient:
+            if result_msg_user.created > result_msg_recipient.created:
+                return result_msg_user.pk
+            else:
+                return result_msg_recipient.pk
+        else:
+            if result_msg_user:
+                return result_msg_user.pk
+            if result_msg_recipient:
+                return result_msg_recipient.pk
+
     class Meta:
         model = CustomUser
-        fields = ['user_pk', 'user_avatar', 'user_first_name', 'user_last_name',
-                  'last_message', 'seen', 'created_date', 'online',
+        fields = ['pk', 'user_pk', 'user_avatar', 'user_first_name', 'user_last_name',
+                  'body', 'viewed', 'created', 'online',
                   'shop_pk', 'shop_name', 'shop_avatar_thumbnail']
+        extra_kwargs = {
+            'pk': {'read_only': True}
+        }
 
 
 class BaseArchiveConversationSerializer(ModelSerializer):

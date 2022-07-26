@@ -1,10 +1,11 @@
 from django.urls import path
 from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
-    RegistrationView, ActivateAccountView, ResendActivationCodeView, \
+    RegistrationView, VerifyAccountView, ResendVerificationCodeView, \
     PasswordResetView, SendPasswordResetView, ProfileView, BlockView, \
     ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
     FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView, \
-    EncloseAccountView, ChangeEmailAccountView, DeleteAccountView
+    EncloseAccountView, ChangeEmailHasPasswordAccountView, ChangeEmailNotHasPasswordAccountView, \
+    DeleteAccountView, CheckAccountView, ChangePasswordView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 from dj_rest_auth.views import PasswordChangeView
@@ -36,12 +37,13 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     # POST : Create account - verification code sent
     path('register/', RegistrationView.as_view()),
-    # POST : Activate account
-    path('activate_account/', ActivateAccountView.as_view()),
-    # POST : Resend activation code
-    path('resend_activation/', ResendActivationCodeView.as_view()),
+    # POST : Verify account
+    path('verify_account/', VerifyAccountView.as_view()),
+    # POST : Resend verification code
+    path('resend_verification/', ResendVerificationCodeView.as_view()),
     # POST : Change password (from dj-rest-auth)
-    path('password_change/', PasswordChangeView.as_view()),
+    # path('password_change/', PasswordChangeView.as_view()),
+    path('password_change/', ChangePasswordView.as_view()),
     # POST : Password reset
     path('send_password_reset/', SendPasswordResetView.as_view()),
     # GET: check if email & code are valid
@@ -50,12 +52,10 @@ urlpatterns = [
     # POST : Tokens, Verify if token valid, Refresh access token
     # path('token_verify/', TokenVerifyView.as_view()),
     path('token_refresh/', get_refresh_view().as_view()),
-    # PUT : Edit image
-    # path('avatar/', ProfileAvatarPUTView.as_view()),
-    # PUT : Edit profil
+    # PATCH : Edit profil
     # GET : Get profil data include avatar
     path('profil/', ProfileView.as_view()),
-    path('profil/<int:user_pk>/', ProfileView.as_view()),
+    # path('profil/<int:user_pk>/', ProfileView.as_view()),
     # Blocked Users
     # GET : Get blocked users list
     # POST : Block a user
@@ -67,7 +67,7 @@ urlpatterns = [
     path('report/', ReportView.as_view()),
     # Address
     # POST : Create new address
-    # PUT : Edit an address
+    # PATCH : Edit an address
     # GET : Get one address
     # DELETE : Delete an address
     path('address/', AddressView.as_view()),
@@ -76,9 +76,12 @@ urlpatterns = [
     path('addresses/', GetAllAddressesView.as_view()),
     # POST : Cloturer mon compte
     path('enclose/', EncloseAccountView.as_view()),
-    # GET : check if email has password
-    # POST : Change email
-    path('email/', ChangeEmailAccountView.as_view()),
+    # PUT : Change email
+    # path('email/', ChangeEmailAccountView.as_view()),
+    path('change_email_has_password/', ChangeEmailHasPasswordAccountView.as_view()),
+    path('change_email_not_has_password/', ChangeEmailNotHasPasswordAccountView.as_view()),
+    # GET : check account
+    path('check_account/', CheckAccountView.as_view()),
     # Delete Account
     path('delete_account/', DeleteAccountView.as_view()),
 ]

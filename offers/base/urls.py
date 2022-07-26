@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import ShopOfferView, \
-    GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
+from .views import GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
     GetLastThreeDeliveriesView, GetLastUsedLocalisationView, \
     GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2
 
@@ -24,6 +23,10 @@ urlpatterns = [
     # GET : Get solder,
     # DELETE : Delete solder
     path('solder/<int:offer_pk>/', ShopOfferSolderView.as_view()),
+    # GET : Get temp solder,
+    # POST : Create temp solder,
+    # PATCH : Edit temp solder
+    # DELETE : Delete temp solder
     path('solder/<uuid:unique_id>/<int:offer_pk>/', ShopOfferSolderView.as_view()),
     # GET : Get vues list
     path('vues/', GetOffersVuesListView.as_view()),
@@ -34,6 +37,7 @@ urlpatterns = [
     # DELETE : Delete product
     # GET : product details
     path('', ShopOfferViewV2.as_view()),
-    path('<int:offer_pk>/', ShopOfferView.as_view()),
+    path('<int:offer_pk>/', ShopOfferViewV2.as_view()),
+    path('<uuid:unique_id>/<int:offer_pk>/', ShopOfferViewV2.as_view()),
     # path('backup/', ShopOfferView.as_view()),
 ]

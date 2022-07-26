@@ -2,7 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 from Qaryb_API_new.settings import MESSAGES_TO_LOAD, CONVERSATIONS_TO_LOAD
 from rest_framework.response import Response
 from account.models import CustomUser
-from shop.models import AuthShop
+from shop.models import AuthShop, ModeVacance
 from chat.models import Status
 from datetime import date
 
@@ -46,7 +46,7 @@ class BaseMessagePagination(PageNumberPagination):
                     'shop_avatar': auth_shop.get_absolute_avatar_thumbnail,
                     'mode_vacance': mode_vacance
                 }
-            except AuthShop.DoesNotExist:
+            except ModeVacance.DoesNotExist:
                 shop = {
                 }
             return Response({

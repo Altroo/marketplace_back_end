@@ -2,140 +2,49 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from collections import OrderedDict
 from cart.models import Cart
+from places.models import City
 from offers.models import Solder
 from cart.base.serializers import BaseSingleCartOneOrMultiOffersSerializer
-
-
-# class GetMyCartPagination(PageNumberPagination):
-#
-#     @staticmethod
-#     def get_offer_price(instance):
-#         try:
-#             solder = Solder.objects.get(offer=instance.offer.pk)
-#             # Réduction fix
-#             if solder.solder_type == 'F':
-#                 offer_price = instance.offer.price - solder.solder_value
-#             # Réduction Pourcentage
-#             else:
-#                 offer_price = instance.offer.price - (instance.offer.price * solder.solder_value / 100)
-#             return offer_price * instance.picked_quantity
-#         except Solder.DoesNotExist:
-#             return instance.offer.price * instance.picked_quantity
-#
-#     def get_paginated_response_custom(self, datas, cart_shop_count, total_price):
-#         # Manual serialzer
-#         # One or multiple offers from one or multiple shops.
-#         if cart_shop_count > 1:
-#             results = []
-#             clean_results = []
-#             results_dict = {}
-#             clean_results_dict = {}
-#
-#             for cart_offer in datas:
-#                 results_dict['shop_pk'] = cart_offer.offer.auth_shop.pk
-#                 results_dict['shop_picture'] = cart_offer.offer.auth_shop.get_absolute_avatar_thumbnail
-#                 results_dict['shop_name'] = cart_offer.offer.auth_shop.shop_name
-#                 results_dict['offer_title'] = cart_offer.offer.title
-#                 results_dict['offer_price'] = self.get_offer_price(cart_offer)
-#                 results_dict['id_offers'] = cart_offer.offer.pk
-#                 result_dict = OrderedDict(results_dict)
-#                 results.append(result_dict)
-#                 results_dict.clear()
-#
-#             for result in results:
-#                 shop_pk = result['shop_pk']
-#                 query = Cart.objects.filter(user=self.request.user, offer__auth_shop=shop_pk)
-#                 offer_ids = list(query.values_list('offer_id', flat=True))
-#                 offers_len = len(query)
-#                 offer_prices = 0
-#                 for offer in query:
-#                     offer_prices += self.get_offer_price(offer)
-#                 cart_ids = list(query.values_list('pk', flat=True))
-#                 clean_results_dict['shop_pk'] = shop_pk
-#                 clean_results_dict['shop_picture'] = result['shop_picture']
-#                 clean_results_dict['shop_name'] = result['shop_name']
-#                 if offers_len == 1:
-#                     title_value = result['offer_title']
-#                     offer_price = result['offer_price']
-#                 else:
-#                     title_value = "{} articles".format(offers_len)
-#                     offer_price = offer_prices
-#                 clean_results_dict['offer_title'] = title_value
-#                 clean_results_dict['offer_price'] = offer_price
-#                 clean_results_dict['id_offers'] = offer_ids
-#                 clean_results_dict['offers_count'] = offers_len
-#                 clean_results_dict['cart_ids'] = cart_ids
-#                 clean_result = OrderedDict(clean_results_dict)
-#                 if clean_result not in clean_results:
-#                     clean_results.append(clean_result)
-#                 clean_results_dict.clear()
-#
-#             return Response(OrderedDict([
-#                 ('count', self.page.paginator.count),
-#                 ('next', self.get_next_link()),
-#                 ('previous', self.get_previous_link()),
-#                 ('total_price', total_price),
-#                 ('results', clean_results)
-#             ]))
-#         else:
-#             # One or multiple offers from one shop.
-#             # CASE 2
-#             page = self.paginate_queryset(request=self.request, queryset=datas)
-#             if page is not None:
-#                 serializer = BaseSingleCartOneOrMultiOffersSerializer(instance=page, many=True,
-#                                                                       context={'total_price': total_price})
-#                 return self.get_paginated_response(serializer.data)
+from cart.base.utils import GetCartPrices
+from django.db.models import F
 
 
 class GetMyCartPagination(PageNumberPagination):
 
-    @staticmethod
-    def get_offer_price(instance):
-        try:
-            solder = Solder.objects.get(offer=instance.offer.pk)
-            # Réduction fix
-            if solder.solder_type == 'F':
-                offer_price = instance.offer.price - solder.solder_value
-            # Réduction Pourcentage
-            else:
-                offer_price = instance.offer.price - (instance.offer.price * solder.solder_value / 100)
-            return offer_price * instance.picked_quantity
-        except Solder.DoesNotExist:
-            return instance.offer.price * instance.picked_quantity
-
     def get_paginated_response_custom(self, datas, shop_count, total_price):
         # Manual serialzer
-        # One or multiple offers from one or multiple shops.
         if shop_count > 1:
             results = []
+            shop_pks = set()
             for cart_offer in datas:
                 results_dict = {}
                 details_list = []
                 shops = Cart.objects.filter(offer__auth_shop__pk=cart_offer.offer.auth_shop.pk)
                 results_dict['offers_count'] = shops.count()
                 results_dict['shop_pk'] = cart_offer.offer.auth_shop.pk
+                shop_pks.add(cart_offer.offer.auth_shop.pk)
                 results_dict['shop_picture'] = cart_offer.offer.auth_shop.get_absolute_avatar_thumbnail
                 results_dict['shop_name'] = cart_offer.offer.auth_shop.shop_name
                 query = Cart.objects.filter(user=self.request.user, offer__auth_shop=results_dict['shop_pk'])
                 offer_prices = 0
                 for offer in query:
-                    offer_prices += self.get_offer_price(offer)
+                    offer_prices += GetCartPrices().get_offer_price(offer)
                 results_dict['offers_total_price'] = offer_prices
                 # Details
                 for i in shops:
                     details_dict = {'cart_pk': i.pk, 'offer_pk': i.offer.pk,
                                     'offer_picture': i.offer.get_absolute_picture_1_thumbnail,
-                                    'offer_title': i.offer.title, 'offer_price': i.offer.price}
+                                    'offer_title': i.offer.title, 'offer_price': i.offer.price, 'offer_details': {}}
                     # Product
                     if i.offer.offer_type == 'V':
-                        details_dict['offer_max_quantity'] = i.offer.offer_products.product_quantity
-                        details_dict['picked_color'] = i.picked_color
-                        details_dict['picked_size'] = i.picked_size
-                        details_dict['picked_quantity'] = i.picked_quantity
+                        details_dict['offer_details']['offer_max_quantity'] = i.offer.offer_products.product_quantity
+                        details_dict['offer_details']['picked_color'] = i.picked_color
+                        details_dict['offer_details']['picked_size'] = i.picked_size
+                        details_dict['offer_details']['picked_quantity'] = i.picked_quantity
                         if results_dict['offers_count'] == 1:
                             if i.offer.offer_products.product_longitude and i.offer.offer_products.product_latitude \
                                     and i.offer.offer_products.product_address:
-                                details_dict['click_and_collect'] = {
+                                results_dict['click_and_collect'] = {
                                     "product_longitude": i.offer.offer_products.product_longitude,
                                     "product_latitude": i.offer.offer_products.product_latitude,
                                     "product_address": i.offer.offer_products.product_address
@@ -143,35 +52,44 @@ class GetMyCartPagination(PageNumberPagination):
                             if i.offer.offer_delivery:
                                 deliveries_list = []
                                 for delivery in i.offer.offer_delivery.all():
+                                    results_ = list(delivery.delivery_city.values('pk', name_=F('name_fr')).all())
+                                    delivery_city = []
+                                    for result in results_:
+                                        delivery_city.append({
+                                            'pk': result['pk'],
+                                            'name': result['name_']
+                                        })
                                     deliveries_dict = {
-                                        "delivery_city": delivery.delivery_city.values_list('name_fr', flat=True).all(),
+                                        "pk": delivery.pk,
+                                        "delivery_city": delivery_city,
                                         "delivery_price": delivery.delivery_price,
                                         "delivery_days": delivery.delivery_days,
                                     }
                                     deliveries_list.append(deliveries_dict)
-                                details_dict['deliveries'] = deliveries_list
+                                results_dict['deliveries'] = deliveries_list
                     # Service
                     else:
-                        details_dict['picked_date'] = i.picked_date
-                        details_dict['picked_hour'] = i.picked_hour
+                        details_dict['offer_details']['picked_date'] = i.picked_date
+                        details_dict['offer_details']['picked_hour'] = i.picked_hour
                     # if details_dict not in details_list:
                     details_list.append(details_dict)
-                    results_dict['details'] = details_list
+                    results_dict['cart_details'] = details_list
                 if results_dict not in results:
                     results.append(results_dict)
 
             clean_results = []
             for i in results:
-                offers_len = len(i['details'])
+                offers_len = len(i['cart_details'])
                 if offers_len > 1:
                     i['shop_name'] = "{} articles".format(offers_len)
                 clean_results.append(i)
 
+            # One or multiple offers from one or multiple shops.
             return Response(OrderedDict([
-                ('count', self.page.paginator.count),
+                ('shops_count', len(shop_pks)),
+                ('total_offers_count', self.page.paginator.count),
                 ('total_price', total_price),
                 ('results', clean_results),
-                # ('results', results)
             ]))
         else:
             # One or multiple offers from one shop.
@@ -180,8 +98,12 @@ class GetMyCartPagination(PageNumberPagination):
             if page is not None:
                 serializer = BaseSingleCartOneOrMultiOffersSerializer(instance=page, many=True,
                                                                       context={'total_price': total_price})
+                shop_count = 0
+                if serializer.data:
+                    shop_count = 1
                 return Response(OrderedDict([
-                    ('count', self.page.paginator.count),
+                    ('shops_count', shop_count),
+                    ('total_offers_count', self.page.paginator.count),
                     ('total_price', total_price),
                     ('results', serializer.data)
                 ]))
@@ -255,7 +177,7 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                 "product_latitude": product_latitude,
                 "product_address": product_address,
             }
-            offres_dict['offres'] = lot_1_list
+            offres_dict['cart_details'] = lot_1_list
             offres_dict['click_and_collect'] = click_and_collect
 
             # Append to Lot 1
@@ -307,43 +229,64 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                         list_of_prices.append(delivery.delivery_price)
                         list_of_days.append(delivery.delivery_days)
 
-            mixed_cities_deliveries_days = list(zip(list_of_cities, list_of_prices, list_of_days,
-                                                    list_of_deliveries_pks))
+            mixed_cities_deliveries_days = list(
+                zip(
+                    list_of_cities,
+                    list_of_prices,
+                    list_of_days,
+                    list_of_deliveries_pks
+                )
+            )
             deliveries = {}
-            for d in mixed_cities_deliveries_days:
-                if d[0] not in deliveries:
-                    deliveries[d[0]] = {'price': d[1], 'days': d[2], 'delivery_pk': d[3]}
+            for mixed_cities in mixed_cities_deliveries_days:
+                if mixed_cities[0] not in deliveries:
+                    deliveries[mixed_cities[0]] = {
+                        'delivery_price': mixed_cities[1],
+                        'delivery_days': mixed_cities[2],
+                        'pk': mixed_cities[3]
+                    }
                 else:
-                    if deliveries[d[0]]['price'] < d[1]:
-                        deliveries[d[0]]['price'] = d[1]
-                        deliveries[d[0]]['delivery_pk'] = d[3]
-                    if deliveries[d[0]]['days'] < d[2]:
-                        deliveries[d[0]]['days'] = d[2]
-                        deliveries[d[0]]['delivery_pk'] = d[3]
+                    if deliveries[mixed_cities[0]]['delivery_price'] < mixed_cities[1]:
+                        deliveries[mixed_cities[0]]['delivery_price'] = mixed_cities[1]
+                        deliveries[mixed_cities[0]]['pk'] = mixed_cities[3]
+                    if deliveries[mixed_cities[0]]['delivery_days'] < mixed_cities[2]:
+                        deliveries[mixed_cities[0]]['delivery_days'] = mixed_cities[2]
+                        deliveries[mixed_cities[0]]['pk'] = mixed_cities[3]
 
             unique_shifts = {}
+            cities_str = [key for (key, value) in deliveries.items()]
+            cities_obj = City.objects.filter(name_fr__in=cities_str)
             for key, val in deliveries.items():
+                city = cities_obj.get(name_fr=str(key))
                 if str(val) not in unique_shifts.keys():
                     unique_shifts[str(val)] = len(deliveries_output)
+                    delivery_city = {
+                        "pk": city.pk,
+                        "name": city.name_fr
+                    }
                     deliveries_output.append(
                         {
-                            "pk": val['delivery_pk'],
-                            "cities": [str(key)],
-                            "price": val['price'],
-                            "days": val['days']
+                            "pk": val['pk'],
+                            "delivery_city": [delivery_city],
+                            "delivery_price": val['delivery_price'],
+                            "delivery_days": val['delivery_days']
                         }
                     )
                 else:
-                    deliveries_output[unique_shifts[str(val)]]["cities"].append(str(key))
+                    delivery_city = {
+                        "pk": city.pk,
+                        "name": city.name_fr
+                    }
+                    deliveries_output[unique_shifts[str(val)]]["delivery_city"].append(delivery_city)
 
             click_and_collect = {
                 "product_longitude": product_longitude,
                 "product_latitude": product_latitude,
                 "product_address": product_address,
             }
-            offres_dict['offres'] = lot_1_list
+            offres_dict['cart_details'] = lot_1_list
             offres_dict['click_and_collect'] = click_and_collect
-            sorted_deliveries = sorted(deliveries_output, key=lambda item: item['price'])
+            sorted_deliveries = sorted(deliveries_output, key=lambda item: item['delivery_price'])
             offres_dict['deliveries'] = sorted_deliveries
 
             # Append to Lot 1, 2 if exists
@@ -379,7 +322,7 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                 lot_3_dict['offer_details'] = service_details
                 lot_3_list.append(lot_3_dict)
 
-            offres_dict['offres'] = lot_3_list
+            offres_dict['cart_details'] = lot_3_list
 
             # Append to Lot 1, 2, 3 if exists
             if lot_2:
@@ -394,7 +337,7 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
         # TO ADD Exclude click & collect ids from the ones with deliveries
 
         return Response(OrderedDict([
-            ('count', self.page.paginator.count),
+            ('offers_count', self.page.paginator.count),
             ('total_price', total_price),
             ('results', results_list),
         ]))

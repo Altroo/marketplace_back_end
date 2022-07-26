@@ -378,7 +378,7 @@ class OffersTotalVues(Model):
 
 
 class TempOffers(Model):
-    temp_shop = models.ForeignKey(TempShop, on_delete=models.CASCADE,
+    auth_shop = models.ForeignKey(TempShop, on_delete=models.CASCADE,
                                   verbose_name='Temp Shop', related_name='temp_shop')
     offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
                                   choices=OfferChoices.OFFER_TYPE_CHOICES)
@@ -466,8 +466,8 @@ class TempOffers(Model):
 
 
 class TempProducts(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer', related_name='temp_offer_products')
+    offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                 verbose_name='Temp Offer', related_name='temp_offer_products')
     product_colors = models.ManyToManyField(Colors, verbose_name='Product Colors',
                                             related_name='temp_product_colors')
     product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
@@ -485,7 +485,7 @@ class TempProducts(Model):
                                        blank=True, null=True, default=None)
 
     def __str__(self):
-        return '{}'.format(self.temp_offer.title)
+        return '{}'.format(self.offer.title)
 
     class Meta:
         verbose_name = 'Temp Product'
@@ -494,8 +494,8 @@ class TempProducts(Model):
 
 
 class TempServices(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer', related_name='temp_offer_services')
+    offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                 verbose_name='Temp Offer', related_name='temp_offer_services')
     service_availability_days = models.ManyToManyField(ServiceDays, verbose_name='Opening days',
                                                        related_name='temp_service_availability_days')
     service_morning_hour_from = models.TimeField(verbose_name='Morning hour from', blank=True, null=True, default=None)
@@ -518,7 +518,7 @@ class TempServices(Model):
     service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
 
     def __str__(self):
-        return '{}'.format(self.temp_offer.title)
+        return '{}'.format(self.offer.title)
 
     class Meta:
         verbose_name = 'Temp Service'
@@ -527,18 +527,18 @@ class TempServices(Model):
 
 
 class TempDelivery(Model):
-    temp_offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
-                                   verbose_name='Temp Offer',
-                                   related_name='temp_offer_delivery')
-    temp_delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
-                                                related_name='temp_delivery_city')
-    temp_delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
-    temp_delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
+    offer = models.ForeignKey(TempOffers, on_delete=models.CASCADE,
+                              verbose_name='Temp Offer',
+                              related_name='temp_offer_delivery')
+    delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
+                                           related_name='temp_delivery_city')
+    delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
+    delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.temp_offer.pk,
-                                     self.temp_delivery_price,
-                                     self.temp_delivery_days)
+        return '{} - {} - {}'.format(self.offer.pk,
+                                     self.delivery_price,
+                                     self.delivery_days)
 
     class Meta:
         verbose_name = 'Temp Delivery'
@@ -546,17 +546,17 @@ class TempDelivery(Model):
 
 
 class TempSolder(Model):
-    temp_offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
-                                      verbose_name='Temp Offer',
-                                      related_name='temp_offer_solder', unique=True)
-    temp_solder_type = models.CharField(verbose_name='Temp solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
-                                        max_length=1)
-    temp_solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
+    offer = models.OneToOneField(TempOffers, on_delete=models.CASCADE,
+                                 verbose_name='Temp Offer',
+                                 related_name='temp_offer_solder', unique=True)
+    solder_type = models.CharField(verbose_name='Temp solder type', choices=OfferChoices.SOLDER_BY_CHOICES,
+                                   max_length=1)
+    solder_value = models.FloatField(verbose_name='Temp solder value', default=0.0)
 
     def __str__(self):
-        return "{} - {} - {}".format(self.temp_offer.pk,
-                                     self.temp_solder_type,
-                                     self.temp_solder_value)
+        return "{} - {} - {}".format(self.offer.pk,
+                                     self.solder_type,
+                                     self.solder_value)
 
     class Meta:
         verbose_name = 'Temp Solder'

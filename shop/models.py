@@ -84,8 +84,6 @@ class AuthShop(Model):
                                          null=True, default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
-    # font_name = models.CharField(verbose_name='Font name', max_length=2,
-    #                              choices=ShopChoices.FONT_CHOICES, default='L')
     font_name = models.CharField(verbose_name='Font name', max_length=1,
                                  choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)

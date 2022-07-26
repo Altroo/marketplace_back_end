@@ -60,26 +60,26 @@ class ShopView(APIView):
                 'unique_id': str(unique_id),
             })
             if serializer.is_valid():
-                temp_shop = serializer.save()
-                qaryb_link = unique_slugify(instance=temp_shop, value=temp_shop.shop_name, slug_field_name='qaryb_link')
-                temp_shop.qaryb_link = qaryb_link
-                temp_shop.save()
+                auth_shop = serializer.save()
+                qaryb_link = unique_slugify(instance=auth_shop, value=auth_shop.shop_name, slug_field_name='qaryb_link')
+                auth_shop.qaryb_link = qaryb_link
+                auth_shop.save()
                 shift = datetime.utcnow() + timedelta(hours=24)
                 data = {
                     'unique_id': unique_id,
-                    'shop_name': temp_shop.shop_name,
-                    'avatar': temp_shop.get_absolute_avatar_img,
-                    'color_code': temp_shop.color_code,
-                    'bg_color_code': temp_shop.bg_color_code,
-                    'font_name': temp_shop.font_name,
+                    'shop_name': auth_shop.shop_name,
+                    'avatar': auth_shop.get_absolute_avatar_img,
+                    'color_code': auth_shop.color_code,
+                    'bg_color_code': auth_shop.bg_color_code,
+                    'font_name': auth_shop.font_name,
                     'qaryb_link': qaryb_link,
                     'expiration_date': shift
                 }
                 # Generate thumbnail
-                base_generate_avatar_thumbnail.apply_async((temp_shop.pk, 'TempShop'), )
-                task_id = base_start_deleting_expired_shops.apply_async((temp_shop.pk,), eta=shift)
-                temp_shop.task_id = str(task_id)
-                temp_shop.save()
+                base_generate_avatar_thumbnail.apply_async((auth_shop.pk, 'TempShop'), )
+                task_id = base_start_deleting_expired_shops.apply_async((auth_shop.pk,), eta=shift)
+                auth_shop.task_id = str(task_id)
+                auth_shop.save()
                 return Response(data=data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Auth shop
@@ -120,9 +120,9 @@ class ShopView(APIView):
         if user.is_anonymous:
             unique_id = kwargs.get('unique_id')
             try:
-                temp_shop = TempShop.objects.get(unique_id=unique_id)
-                temp_shop_details_serializer = BaseGETTempShopInfoSerializer(temp_shop)
-                return Response(temp_shop_details_serializer.data, status=status.HTTP_200_OK)
+                auth_shop = TempShop.objects.get(unique_id=unique_id)
+                shop_details_serializer = BaseGETTempShopInfoSerializer(auth_shop)
+                return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
             except TempShop.DoesNotExist:
                 data = {'errors': ['Temp shop not found.']}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -131,10 +131,10 @@ class ShopView(APIView):
             shop_link = kwargs.get('shop_link')
             try:
                 if shop_link:
-                    shop = AuthShop.objects.get(qaryb_link=shop_link)
+                    auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
                 else:
-                    shop = AuthShop.objects.get(user=user)
-                shop_details_serializer = BaseGETShopInfoSerializer(shop)
+                    auth_shop = AuthShop.objects.get(user=user)
+                shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
                 return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
             except AuthShop.DoesNotExist:
                 data = {'errors': ['Auth shop not found.']}
@@ -152,17 +152,17 @@ class ShopAvatarPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvatarPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopAvatarPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
-                        if temp_shop.avatar:
+                        if auth_shop.avatar:
                             try:
-                                remove(temp_shop.avatar.path)
+                                remove(auth_shop.avatar.path)
                             except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                                 pass
-                        if temp_shop.avatar_thumbnail:
+                        if auth_shop.avatar_thumbnail:
                             try:
-                                remove(temp_shop.avatar_thumbnail.path)
+                                remove(auth_shop.avatar_thumbnail.path)
                             except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                                 pass
                         # new_avatar = serializer.update(temp_shop, serializer.validated_data)
@@ -218,8 +218,8 @@ class ShopNamePutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopNamePutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopNamePutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -260,8 +260,8 @@ class ShopBioPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopBioPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopBioPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -308,8 +308,8 @@ class ShopAvailabilityPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvailabilityPutSerializer(temp_shop, data={
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopAvailabilityPutSerializer(auth_shop, data={
                         'morning_hour_from': morning_hour_from,
                         'morning_hour_to': morning_hour_to,
                         'afternoon_hour_from': afternoon_hour_from,
@@ -392,8 +392,8 @@ class ShopContactPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopContactPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopContactPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -434,8 +434,8 @@ class ShopTelPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopTelPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopTelPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -476,8 +476,8 @@ class ShopWtspPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopWtspPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopWtspPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         serializer.save()
                         # serializer.update(temp_shop, serializer.validated_data)
@@ -518,8 +518,8 @@ class ShopAddressPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAddressPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopAddressPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -560,8 +560,8 @@ class ShopColorPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopColorPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopColorPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -602,8 +602,8 @@ class ShopFontPutView(APIView):
             unique_id = request.data.get('unique_id')
             if unique_id:
                 try:
-                    temp_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopFontPutSerializer(temp_shop, data=request.data, partial=True)
+                    auth_shop = TempShop.objects.get(unique_id=unique_id)
+                    serializer = BaseTempShopFontPutSerializer(auth_shop, data=request.data, partial=True)
                     if serializer.is_valid():
                         # serializer.update(temp_shop, serializer.validated_data)
                         serializer.save()
@@ -682,7 +682,7 @@ class TempShopToAuthShopView(APIView):
                 for opening_day in opening_days:
                     auth_shop.opening_days.add(opening_day.pk)
                 # Offers
-                temp_offers = TempOffers.objects.filter(temp_shop=temp_shop.pk) \
+                temp_offers = TempOffers.objects.filter(auth_shop=temp_shop.pk) \
                     .select_related('temp_offer_products') \
                     .select_related('temp_offer_services') \
                     .select_related('temp_offer_solder') \
@@ -757,33 +757,30 @@ class TempShopToAuthShopView(APIView):
                             service.service_availability_days.add(service_availability_day.pk)
                     # Transfer solder
                     try:
-                        temp_solder = TempSolder.objects.get(temp_offer=temp_offer.pk)
+                        temp_solder = TempSolder.objects.get(offer=temp_offer.pk)
                         solder = Solder.objects.create(
                             offer=offer.pk,
-                            solder_type=temp_solder.temp_solder_type,
-                            solder_value=temp_solder.temp_solder_value
+                            solder_type=temp_solder.solder_type,
+                            solder_value=temp_solder.solder_value
                         )
                         solder.save()
                     except TempSolder.DoesNotExist:
-                        continue
+                        pass
                     # Transfer deliveries
-                    temp_deliveries = TempDelivery.objects.filter(temp_offer=temp_offer.pk)
+                    temp_deliveries = TempDelivery.objects.filter(offer=temp_offer.pk)
                     for temp_delivery in temp_deliveries:
                         delivery = Delivery.objects.create(
                             offer=offer.pk,
                             # delivery_city
-                            delivery_price=temp_delivery.temp_delivery_price,
-                            delivery_days=temp_delivery.temp_delivery_days,
+                            delivery_price=temp_delivery.delivery_price,
+                            delivery_days=temp_delivery.delivery_days,
                         )
                         delivery.save()
-                        temp_delivery_cities = temp_delivery.temp_delivery_city.all()
+                        temp_delivery_cities = temp_delivery.delivery_city.all()
                         for temp_delivery_city in temp_delivery_cities:
                             delivery.delivery_city.add(temp_delivery_city.pk)
                 temp_shop.delete()
-                data = {
-                    'response': 'Temp shop data transfered into Auth shop!'
-                }
-                return Response(data=data, status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             except IntegrityError:
                 data = {'errors': ['User already has a shop.']}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -821,20 +818,6 @@ class ShopAskBecomeCreator(APIView):
 class ShopQrCodeView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
-
-    # @staticmethod
-    # def from_img_to_io(image, format_, type_):
-    #     if type_ == 'input':
-    #         image = Image.fromarray(image)
-    #         bytes_io = BytesIO()
-    #         image.save(bytes_io, format=format_)
-    #         bytes_io.seek(0)
-    #         return bytes_io
-    #     if type_ == 'output':
-    #         bytes_io = BytesIO()
-    #         image.save(bytes_io, format=format_)
-    #         bytes_io.seek(0)
-    #         return bytes_io
 
     @staticmethod
     def from_img_to_io(image, format_, type_):

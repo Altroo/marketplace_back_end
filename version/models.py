@@ -32,7 +32,7 @@ def check_maintenance(sender, instance, created, raw, using, update_fields, **kw
             event = {
                 "type": "recieve_group_message",
                 "message": {
-                    "type": "maintenance",
+                    "type": "MAINTENANCE",
                     "recipient": user.user.pk,
                     "maintenance": True
                 }
@@ -43,7 +43,7 @@ def check_maintenance(sender, instance, created, raw, using, update_fields, **kw
             event = {
                 "type": "recieve_group_message",
                 "message": {
-                    "type": "maintenance",
+                    "type": "MAINTENANCE",
                     "recipient": user.user.pk,
                     "maintenance": False
                 }

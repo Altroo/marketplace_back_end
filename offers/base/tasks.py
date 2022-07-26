@@ -39,7 +39,7 @@ def base_generate_offer_thumbnails(self, product_pk, which):
         event = {
             "type": "recieve_group_message",
             "message": {
-                "type": "offer_thumbnail",
+                "type": "OFFER_THUMBNAIL",
                 "pk": offer.pk,
                 "offer_thumbnail": offer.get_absolute_picture_1_thumbnail,
             }
@@ -79,7 +79,7 @@ def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
         event = {
             "type": "recieve_group_message",
             "message": {
-                "type": "offer_thumbnail",
+                "type": "OFFER_THUMBNAIL",
                 "pk": new_offer.pk,
                 "offer_thumbnail": new_offer.get_absolute_picture_1_thumbnail,
             }
@@ -145,7 +145,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
             event = {
                 "type": "recieve_group_message",
                 "message": {
-                    "type": "shop_avatar",
+                    "type": "SHOP_AVATAR",
                     "pk": object_.user.pk,
                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
                 }
@@ -156,7 +156,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
             event = {
                 "type": "recieve_group_message",
                 "message": {
-                    "type": "user_avatar",
+                    "type": "USER_AVATAR",
                     "pk": object_.pk,
                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
                 }
@@ -187,58 +187,58 @@ def base_delete_shop_media_files(self, media_paths_list):
 
 @app.task(bind=True)
 def base_start_deleting_expired_shops(self, shop_pk):
-    temp_shop = TempShop.objects.get(pk=shop_pk)
-    if temp_shop.unique_id is not None:
+    auth_shop = TempShop.objects.get(pk=shop_pk)
+    if auth_shop.unique_id is not None:
         # Delete avatar image
         try:
-            avatar_img = temp_shop.avatar.path
+            avatar_img = auth_shop.avatar.path
             remove(avatar_img)
         except (FileNotFoundError, ValueError, AttributeError):
             pass
         # Delete avatar thumbnail
         try:
-            avatar_thumbnail_img = temp_shop.avatar_thumbnail.path
+            avatar_thumbnail_img = auth_shop.avatar_thumbnail.path
             remove(avatar_thumbnail_img)
         except (FileNotFoundError, ValueError, AttributeError):
             pass
         # Delete temp product images
-        temp_products = TempOffers.objects.filter(temp_shop=temp_shop.pk)
-        for temp_product in temp_products:
+        products = TempOffers.objects.filter(auth_shop=auth_shop.pk)
+        for product in products:
             # Picture 1
             try:
-                picture_1 = temp_product.picture_1.path
+                picture_1 = product.picture_1.path
                 remove(picture_1)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
             # Picture 1 thumbnail
             try:
-                picture_1_thumbnail = temp_product.picture_1_thumbnail.path
+                picture_1_thumbnail = product.picture_1_thumbnail.path
                 remove(picture_1_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
             # Picture 2
             try:
-                picture_2 = temp_product.picture_2.path
+                picture_2 = product.picture_2.path
                 remove(picture_2)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
             # Picture 2 thumbnail
             try:
-                picture_2_thumbnail = temp_product.picture_2_thumbnail.path
+                picture_2_thumbnail = product.picture_2_thumbnail.path
                 remove(picture_2_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
             # Picture 3
             try:
-                picture_3 = temp_product.picture_3.path
+                picture_3 = product.picture_3.path
                 remove(picture_3)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
             # Picture 3 thumbnail
             try:
-                picture_3_thumbnail = temp_product.picture_3_thumbnail.path
+                picture_3_thumbnail = product.picture_3_thumbnail.path
                 remove(picture_3_thumbnail)
             except (FileNotFoundError, ValueError, AttributeError):
                 pass
         # Delete object
-        temp_shop.delete()
+        auth_shop.delete()

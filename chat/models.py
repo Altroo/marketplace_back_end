@@ -50,7 +50,7 @@ class MessageModel(Model):
         event = {
             "type": "recieve_group_message",
             "message": {
-                "type": "seen",
+                "type": "MSG_SEEN",
                 "pk": self.id,
                 "initiator": self.user.id,
                 "recipient": self.recipient.id,
@@ -63,7 +63,7 @@ class MessageModel(Model):
         event = {
             "type": "recieve_group_message",
             "message": {
-                "type": "seen",
+                "type": "MSG_SEEN",
                 "pk": self.id,
                 "initiator": self.user.id,
                 "recipient": self.recipient.id,

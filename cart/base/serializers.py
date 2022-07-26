@@ -5,6 +5,7 @@ from places.models import City
 from offers.models import Delivery, Products
 from order.models import Order, OrderDetails
 from account.models import CustomUser
+from offers.base.serializers import BaseShopCitySerializer
 
 
 class BaseNewOrderSerializer(serializers.ModelSerializer):
@@ -92,15 +93,11 @@ class BaseShopCityOriginalKeysSerializer(serializers.ModelSerializer):
 
 
 class BaseCartDeliverySerializer(serializers.ModelSerializer):
-    delivery_city = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_delivery_city(instance):
-        return instance.delivery_city.values_list('name_fr', flat=True).all()
+    delivery_city = BaseShopCitySerializer(many=True, read_only=True)
 
     class Meta:
         model = Delivery
-        fields = ['delivery_city', 'delivery_price', 'delivery_days']
+        fields = ['pk', 'delivery_city', 'delivery_price', 'delivery_days']
 
 
 class BaseCartDetailsProductSerializer(serializers.Serializer):
@@ -187,37 +184,9 @@ class BaseCartDetailsProductDeliveriesSerializer(serializers.Serializer):
         pass
 
 
-# class BaseCartOffersDetailsSerializer(serializers.Serializer):
-#     cart_pk = serializers.IntegerField(source='pk')
-#     offer_pk = serializers.IntegerField(source='offer.pk')
-#     offer_picture = serializers.CharField(source='offer.get_absolute_picture_1_thumbnail')
-#     offer_title = serializers.CharField(source='offer.title')
-#     offer_price = serializers.SerializerMethodField()
-#     offer_details = serializers.SerializerMethodField()
-#
-#     @staticmethod
-#     def get_offer_details(instance):
-#         # Product
-#         if instance.offer.offer_type == 'V':
-#             details_product = BaseCartDetailsProductDeliveriesSerializer(instance)
-#             return details_product.data
-#         if instance.offer.offer_type == 'S':
-#             details_service = BaseCartDetailsServiceSerializer(instance)
-#             return details_service.data
-#
-#     def update(self, instance, validated_data):
-#         pass
-#
-#     def create(self, validated_data):
-#         pass
-#
-#     @staticmethod
-#     def get_offer_price(instance):
-#         return GetCartPrices().get_offer_price(instance)
-
-
 class BaseSingleCartOneOrMultiOffersSerializer(serializers.Serializer):
-    total_price = serializers.SerializerMethodField()
+    offers_count = serializers.SerializerMethodField()
+    offers_total_price = serializers.SerializerMethodField()
     cart_details = serializers.SerializerMethodField()
     click_and_collect = serializers.SerializerMethodField()
     deliveries = serializers.SerializerMethodField()
@@ -237,13 +206,25 @@ class BaseSingleCartOneOrMultiOffersSerializer(serializers.Serializer):
         except Products.DoesNotExist:
             return {}
 
-    def get_total_price(self, instance):
+    def get_offers_total_price(self, instance):
         return self.context.get("total_price")
 
     @staticmethod
     def get_cart_details(instance):
         cart_details = BaseCartDetailsListSerializer(instance)
         return cart_details.data
+
+    @staticmethod
+    def get_offers_count(instance):
+        shops = Cart.objects.filter(offer__auth_shop__pk=instance.offer.auth_shop.pk)
+        return shops.count()
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.offer.offer_type == 'S':
+            del data['deliveries']
+            del data['click_and_collect']
+        return data
 
     def update(self, instance, validated_data):
         pass
@@ -257,13 +238,30 @@ class BaseCartOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['pk', 'user', 'offer', 'picked_color',
-                  'picked_size', 'picked_quantity', 'picked_date', 'picked_hour']
+                  'picked_size', 'picked_quantity',
+                  'picked_date', 'picked_hour']
 
 
-class BaseCartOfferPutSerializer(serializers.ModelSerializer):
+class BaseCartOfferPatchSerializer(serializers.ModelSerializer):
+    total_price = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_total_price(instance):
+        return GetCartPrices().get_offer_price(instance)
+
     class Meta:
         model = Cart
-        fields = ['picked_color', 'picked_size', 'picked_quantity', 'picked_date', 'picked_hour']
+        fields = [
+            'pk',
+            'picked_color',
+            'picked_size',
+            'picked_quantity',
+            'picked_date',
+            'picked_hour',
+            'total_price']
+        extra_kwargs = {
+            'total_price': {'read_only': True},
+        }
 
     # def update(self, instance, validated_data):
     #     instance.picked_color = validated_data.get('picked_color', instance.picked_color)

@@ -38,6 +38,7 @@ class BaseProductColorSerializer(serializers.ModelSerializer):
 
 class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
+    avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
     # opening_days = serializers.SerializerMethodField()
     opening_days = BaseProductColorSerializer(many=True, read_only=True)
     morning_hour_from = serializers.TimeField(format='%H:%M')
@@ -52,7 +53,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthShop
         # has pk & creator
-        fields = ['pk', 'shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
+        fields = ['pk', 'shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
                   'phone', 'contact_email',
@@ -262,7 +263,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        temp_shop = TempShop(
+        shop = TempShop(
             shop_name=self.validated_data['shop_name'],
             avatar=self.validated_data['avatar'],
             color_code=self.validated_data['color_code'],
@@ -270,12 +271,13 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
             font_name=self.validated_data['font_name'],
             unique_id=self.validated_data['unique_id'],
         )
-        temp_shop.save()
-        return temp_shop
+        shop.save()
+        return shop
 
 
 class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
     avatar = serializers.CharField(source='get_absolute_avatar_img')
+    avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
     # opening_days = serializers.SerializerMethodField()
     opening_days = BaseProductColorSerializer(many=True, read_only=True)
     morning_hour_from = serializers.TimeField(format='%H:%M')
@@ -290,7 +292,7 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         # has not pk & creator
-        fields = ['shop_name', 'avatar', 'color_code', 'bg_color_code', 'font_name', 'bio',
+        fields = ['shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code', 'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
                   'phone', 'contact_email',

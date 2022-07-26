@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from account.models import UserAddress
 from offers.models import Offers, Delivery, Products, Services, Solder
-from cart.base.serializers import BaseCartOfferSerializer, BaseCartOfferPutSerializer, \
+from cart.base.serializers import BaseCartOfferSerializer, BaseCartOfferPatchSerializer, \
     BaseNewOrderSerializer, BaseOferDetailsProductSerializer, \
     BaseOfferDetailsServiceSerializer, BaseNewOrderHighestDeliveryPrice, \
     BaseGetServicesCoordinatesSerializer
@@ -16,23 +16,6 @@ from django.utils.encoding import force_bytes
 from order.base.tasks import base_duplicate_order_images
 from collections import Counter
 
-
-# Mobile only not used
-# class GetCartOffersView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     @staticmethod
-#     def get(request, *args, **kwargs):
-#         user = request.user
-#         # offer_pks = kwargs.get('offer_pks')
-#         shop_pk = kwargs.get('shop_pk')
-#         # offer_pks_list = str(offer_pks).split(',')
-#         # cart_offer = Cart.objects.filter(user=user_pk, offer_id__in=offer_pks_list) \
-#         #     .order_by('-created_date', '-updated_date')
-#         cart_offer = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
-#         .order_by('-created_date', '-updated_date')
-#         cart_offer_details_serializer = BaseCartDetailsListSerializer(cart_offer, many=True)
-#         return Response(cart_offer_details_serializer.data, status=status.HTTP_200_OK)
 
 class GetCartOffersDetailsView(APIView, GetCartOffersDetailsPagination):
     permission_classes = (permissions.IsAuthenticated,)
@@ -48,22 +31,6 @@ class GetCartOffersDetailsView(APIView, GetCartOffersDetailsPagination):
             return self.get_paginated_response_custom(user, shop_pk, total_price)
 
 
-# class GetCartOffersDetailsView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     @staticmethod
-#     def get(request, *args, **kwargs):
-#         user = request.user
-#         shop_pk = kwargs.get('shop_pk')
-#         cart_offer = Cart.objects.filter(user=user, offer__auth_shop=shop_pk).order_by('-created_date',
-#         '-updated_date')
-#         serializer = BaseCartOffersDetailsSerializer(cart_offer, many=True)
-#         print(type(serializer.data))
-#         print(serializer.data)
-#         result = serializer.data.sort(reverse=True, key=lambda key_needed: key_needed['offer_details'])
-#         return Response(result, status=status.HTTP_200_OK)
-
-
 class CartOffersView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -73,7 +40,7 @@ class CartOffersView(APIView):
         offer_pk = request.data.get('offer_pk')
         picked_color = request.data.get('picked_color', None)
         picked_size = request.data.get('picked_size', None)
-        picked_quantity = request.data.get('picked_quantity', None)
+        picked_quantity = request.data.get('picked_quantity', 1)
         picked_date = request.data.get('picked_date', None)
         picked_hour = request.data.get('picked_hour', None)
         try:
@@ -90,6 +57,9 @@ class CartOffersView(APIView):
                 }
                 return Response(data=data, status=status.HTTP_200_OK)
             except Cart.DoesNotExist:
+                # Check to not multiply by 0
+                if int(picked_quantity) <= 0 or picked_quantity is None:
+                    picked_quantity = 1
                 serializer = BaseCartOfferSerializer(data={
                     "user": user_pk,
                     "offer": offer_pk,
@@ -109,7 +79,7 @@ class CartOffersView(APIView):
         user_pk = request.user
         cart_pk = request.data.get('cart_pk')
         cart_offer = Cart.objects.get(user=user_pk, pk=cart_pk)
-        serializer = BaseCartOfferPutSerializer(cart_offer, data=request.data, partial=True)
+        serializer = BaseCartOfferPatchSerializer(cart_offer, data=request.data, partial=True)
         if serializer.is_valid():
             # serializer.update(cart_offer, serializer.validated_data)
             serializer.save()
@@ -121,7 +91,7 @@ class CartOffersView(APIView):
             #     "picked_hour": serializer.validated_data.get('picked_hour'),
             #     "total_price": GetCartPrices().get_offer_price(cart_offer)
             # }
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # Return new total price
@@ -131,30 +101,14 @@ class CartOffersView(APIView):
         cart_pk = kwargs.get('cart_pk')
         try:
             cart_offer = Cart.objects.get(user=user, pk=cart_pk)
-            reduced_price = GetCartPrices().get_offer_price(cart_offer)
             cart_offer.delete()
             data = {
-                'total_price': reduced_price
+                'offer_pk': cart_offer.offer.pk
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except Cart.DoesNotExist:
             data = {'errors': ['Cart offer not found.']}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class GetMyCartListView(APIView, GetMyCartPagination):
-#     permission_classes = (permissions.IsAuthenticated,)
-#     page_size = 10
-#
-#     def get(self, request, *args, **kwargs):
-#         user_pk = request.user
-#         cart_offers = Cart.objects.filter(user=user_pk).order_by('-created_date', '-updated_date')
-#         # Check how many shop ids exist on user cart
-#         cart_shop_count = cart_offers.values('offer__auth_shop').count()
-#         total_price = GetCartPrices().calculate_total_price(cart_offers)
-#         page = self.paginate_queryset(request=request, queryset=cart_offers)
-#         if page is not None:
-#             return self.get_paginated_response_custom(page, cart_shop_count, total_price)
 
 
 class GetMyCartListView(APIView, GetMyCartPagination):
@@ -246,6 +200,7 @@ class ValidateCartOffersView(APIView):
                     user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
                     product_details = Products.objects.get(offer=cart_offer.offer.pk)
                     delivery_price = 0
+                    total_self_price = 0
                     if picked_delivery and picked_delivery == str(1):
                         order_updater = BaseNewOrderHighestDeliveryPrice(data={
                             'highest_delivery_price': delivery.delivery_price
@@ -299,7 +254,7 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
-                        return Response(data=order_details_product_serializer.data, status=status.HTTP_200_OK)
+                        return Response(status=status.HTTP_204_NO_CONTENT)
                     return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 # Services
                 elif cart_offer.offer.offer_type == 'S':
@@ -340,7 +295,7 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
-                        return Response(data=order_details_service_serializer.data, status=status.HTTP_200_OK)
+                        return Response(status=status.HTTP_204_NO_CONTENT)
                     return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Multiple offers from one store / may include products & services
@@ -385,6 +340,7 @@ class ValidateCartOffersView(APIView):
                         user_address_pk = request.data.get('user_address_pk')
                         user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
                         delivery_price = 0
+                        total_self_price = 0
                         if check_picked_delivery or check_click_and_collect:
                             if check_picked_delivery:
                                 if check_picked_delivery[cart_offer[0]] == str(1):
@@ -488,7 +444,7 @@ class ValidateCartOffersView(APIView):
             else:
                 return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             if order_valid:
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class GetServicesCoordinates(APIView):

@@ -31,7 +31,8 @@ from shop.models import AuthShop
 from shop.base.tasks import base_generate_avatar_thumbnail
 from account.base.tasks import base_start_deleting_expired_codes
 from offers.models import Offers
-from rest_framework.pagination import PageNumberPagination
+from places.models import City, Country
+from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.models import Status, MessageModel
@@ -41,6 +42,7 @@ from dj_rest_auth.registration.views import SocialConnectView, SocialAccountList
 class FacebookLoginView(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
 
+    # Email Address auto added : primary true - verified true
     def login(self):
         super(FacebookLoginView, self).login()
         user = CustomUser.objects.get(pk=self.user.pk)
@@ -67,12 +69,12 @@ class FacebookLoginView(SocialLoginView):
             if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
                     user__id=user_pk).online:
                 event = {
-                    'type': 'recieve_group_message',
-                    'message': {
-                        'type': 'status',
-                        'user_pk': self.user.pk,
-                        'online': True,
-                        'recipient_pk': user_pk,
+                    "type": "recieve_group_message",
+                    "message": {
+                        "type": "USER_STATUS",
+                        "user": self.user.pk,
+                        "online": True,
+                        "recipient": user_pk,
                     }
                 }
                 async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
@@ -81,6 +83,7 @@ class FacebookLoginView(SocialLoginView):
 class GoogleLoginView(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
+    # Email Address auto added : primary true - verified true
     def login(self):
         super(GoogleLoginView, self).login()
         user = CustomUser.objects.get(pk=self.user.pk)
@@ -107,12 +110,12 @@ class GoogleLoginView(SocialLoginView):
             if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
                     user__id=user_pk).online:
                 event = {
-                    'type': 'recieve_group_message',
-                    'message': {
-                        'type': 'status',
-                        'user_pk': self.user.pk,
-                        'online': True,
-                        'recipient_pk': user_pk,
+                    "type": "recieve_group_message",
+                    "message": {
+                        "type": "USER_STATUS",
+                        "user": self.user.pk,
+                        "online": True,
+                        "recipient": user_pk,
                     }
                 }
                 async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
@@ -128,6 +131,14 @@ class GoogleLinkingView(SocialConnectView):
 
 class GetSocialAccountListView(SocialAccountListView):
     serializer_class = BaseSocialAccountSerializer
+    pagination_class = None
+
+
+class ChangePasswordView(PasswordChangeView):
+
+    def post(self, request, *args, **kwargs):
+        super(ChangePasswordView, self).post(request, *args, **kwargs)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RegistrationView(APIView):
@@ -199,7 +210,7 @@ class RegistrationView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ActivateAccountView(APIView):
+class VerifyAccountView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
@@ -211,8 +222,7 @@ class ActivateAccountView(APIView):
             user = CustomUser.objects.get(email=email)
             user_email = EmailAddress.objects.get(email=email)
             if user_email.verified:
-                data['errors'] = ["Account already verified!"]
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             if code is not None and email is not None:
                 # revoke 24h previous periodic task (default activation)
                 task_id_activation = user.task_id_activation
@@ -224,14 +234,14 @@ class ActivateAccountView(APIView):
                 user_email.verified = True
                 user_email.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            data['errors'] = ["Verification code invalid!"]
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            data['errors'] = ["User Doesn't exist!"]
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ResendActivationCodeView(APIView):
+class ResendVerificationCodeView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
@@ -325,10 +335,10 @@ class PasswordResetView(APIView):
             user = CustomUser.objects.get(email=email)
             if code is not None and code == user.password_reset_code:
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            data['errors'] = ['Code invalid!']
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            data['errors'] = ["User Doesn't exist!"]
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
@@ -359,10 +369,10 @@ class PasswordResetView(APIView):
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            data['errors'] = ['Code invalid!']
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            data['errors'] = ["User Doesn't exist!"]
+            data['errors'] = ["User or Verification code invalid!"]
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -372,13 +382,11 @@ class CheckEmailView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
-        data = {}
         try:
             CustomUser.objects.get(email=email)
-            data['email'] = ['This email address already exists.']
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         except CustomUser.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class LoginView(Dj_rest_login):
@@ -408,12 +416,12 @@ class LoginView(Dj_rest_login):
             if Status.objects.filter(user__id=user_pk).exists() and Status.objects.get(
                     user__id=user_pk).online:
                 event = {
-                    'type': 'recieve_group_message',
-                    'message': {
-                        'type': 'status',
-                        'user_pk': self.user.pk,
-                        'online': True,
-                        'recipient_pk': user_pk,
+                    "type": "recieve_group_message",
+                    "message": {
+                        "type": "USER_STATUS",
+                        "user": self.user.pk,
+                        "online": True,
+                        "recipient": user_pk,
                     }
                 }
                 async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
@@ -443,12 +451,12 @@ class LogoutView(Dj_rest_logout):
                 .exclude(is_active=False).values_list('id', flat=True):
             if Status.objects.filter(user__id=user_id).exists() and Status.objects.get(user__id=user_id).online:
                 event = {
-                    'type': 'recieve_group_message',
-                    'message': {
-                        'type': 'status',
-                        'user_pk': request.user.pk,
-                        'online': False,
-                        'recipient_pk': user_id,
+                    "type": "recieve_group_message",
+                    "message": {
+                        "type": "USER_STATUS",
+                        "user": request.user.pk,
+                        "online": False,
+                        "recipient": user_id,
                     }
                 }
                 async_to_sync(channel_layer.group_send)("%s" % user_id, event)
@@ -485,9 +493,12 @@ class ProfileView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        user_pk = kwargs.get('user_pk')
+        # user_pk = kwargs.get('user_pk')
         try:
-            user = CustomUser.objects.get(pk=user_pk)
+            # if user_pk:
+            #    user = CustomUser.objects.get(pk=user_pk)
+            # else:
+            user = CustomUser.objects.get(pk=request.user.pk)
             user_serializer = BaseProfileGETSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
@@ -497,7 +508,24 @@ class ProfileView(APIView):
     @staticmethod
     def patch(request, *args, **kwargs):
         user = CustomUser.objects.get(pk=request.user.pk)
-        serializer = BaseProfilePutSerializer(user, data=request.data, partial=True)
+        city_pk = request.data.get('city_pk')
+        country_pk = request.data.get('country_pk')
+        try:
+            city = City.objects.get(pk=city_pk)
+            country = Country.objects.get(pk=country_pk)
+        except (City.DoesNotExist, Country.DoesNotExist):
+            data = {'errors': ["City or Country Doesn't exist!"]}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        data = {
+            'avatar': request.data.get('avatar', None),
+            'first_name': request.data.get('first_name'),
+            'last_name': request.data.get('last_name'),
+            'gender': request.data.get('gender', ''),
+            'birth_date': request.data.get('birth_date'),
+            'city': city_pk,
+            'country': country_pk,
+        }
+        serializer = BaseProfilePutSerializer(user, data=data, partial=True)
         if serializer.is_valid():
             if user.avatar:
                 try:
@@ -513,21 +541,30 @@ class ProfileView(APIView):
             new_avatar = serializer.save()
             # Generate new avatar thumbnail
             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            data['pk'] = user.pk
+            data['avatar'] = user.get_absolute_avatar_img
+            data['avatar_thumbnail'] = user.get_absolute_avatar_thumbnail
+            data['city'] = {
+                'pk': city.pk,
+                'name': city.name_fr,
+            }
+            data['country'] = {
+                'pk': country.pk,
+                'name': country.name_fr,
+            }
+            data['date_joined'] = user.date_joined
+            return Response(data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BlockView(APIView, PageNumberPagination):
+class BlockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    page_size = 10
 
-    def get(self, request, *args, **kwargs):
-        user_pk = request.user
-        posts = BlockedUsers.objects.filter(user=user_pk)
-        page = self.paginate_queryset(request=request, queryset=posts)
-        if page is not None:
-            serializer = BaseBlockedUsersListSerializer(instance=page, many=True)
-            return self.get_paginated_response(serializer.data)
+    @staticmethod
+    def get(request, *args, **kwargs):
+        blocked_users = BlockedUsers.objects.filter(user=request.user)
+        serializer = BaseBlockedUsersListSerializer(blocked_users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request, *args, **kwargs):
@@ -548,10 +585,9 @@ class BlockView(APIView, PageNumberPagination):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        user_pk = request.user
         user_blocked_pk = kwargs.get('user_pk')
         try:
-            BlockedUsers.objects.get(user=user_pk, user_blocked=user_blocked_pk).delete()
+            BlockedUsers.objects.get(user=request.user, user_blocked=user_blocked_pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except BlockedUsers.DoesNotExist:
             data = {'errors': ['User not found']}
@@ -572,7 +608,7 @@ class ReportView(APIView):
         })
         if serializer.is_valid():
             serializer.save()
-            # ! TODO check if we'll get notification emails on repported users
+            # TODO check if we'll get notification emails on repported users
             # check_repport_email_limit = BaseCheckRepportEmailLimit()
             # check_repport_email_limit.apply_async((post_id,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -601,9 +637,9 @@ class AddressView(APIView):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         address = request.data.get('address')
-        city = request.data.get('city')
+        city = request.data.get('city_pk')
         zip_code = request.data.get('zip_code')
-        country = request.data.get('country')
+        country = request.data.get('country_pk')
         phone = request.data.get('phone')
         email = request.data.get('email')
         serializer = BaseUserAddressSerializer(data={
@@ -620,7 +656,25 @@ class AddressView(APIView):
         })
         if serializer.is_valid():
             serializer.save()
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            data = {
+                "pk": serializer.data.get('pk'),
+                "title": serializer.data.get('title'),
+                "first_name": serializer.data.get('first_name'),
+                "last_name": serializer.data.get('last_name'),
+                "address": serializer.data.get('address'),
+                "zip_code": serializer.data.get('zip_code'),
+                "phone": serializer.data.get('phone'),
+                "email": serializer.data.get('email'),
+            }
+            if city is not None:
+                city = City.objects.get(pk=city)
+                city = {'pk': city.pk, 'name': city.name_fr},
+            if country is not None:
+                country = Country.objects.get(pk=country)
+                country = {'pk': country.pk, 'name': country.name_fr, 'code': country.code},
+            data['city'] = city
+            data['country'] = country
+            return Response(data=data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
@@ -628,9 +682,19 @@ class AddressView(APIView):
         user_pk = request.user
         address_pk = request.data.get('address_pk')
         user_address = UserAddress.objects.get(user=user_pk, pk=address_pk)
-        serializer = BaseUserAddressPutSerializer(user_address, data=request.data, partial=True)
+        data = {
+            "title": request.data.get('title'),
+            "first_name": request.data.get('first_name'),
+            "last_name": request.data.get('last_name'),
+            "address": request.data.get('address'),
+            "city": request.data.get('city_pk'),
+            "zip_code": request.data.get('zip_code'),
+            "country": request.data.get('country_pk'),
+            "phone": request.data.get('phone'),
+            "email": request.data.get('email'),
+        }
+        serializer = BaseUserAddressPutSerializer(user_address, data=data, partial=True)
         if serializer.is_valid():
-            # serializer.update(user_address, serializer.validated_data)
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -647,17 +711,15 @@ class AddressView(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetAllAddressesView(APIView, PageNumberPagination):
+class GetAllAddressesView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
-    page_size = 10
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request, *args, **kwargs):
         user = request.user
-        posts = UserAddress.objects.filter(user=user)
-        page = self.paginate_queryset(request=request, queryset=posts)
-        if page is not None:
-            serializer = BaseUserAddressesListSerializer(instance=page, many=True)
-            return self.get_paginated_response(serializer.data)
+        addresses = UserAddress.objects.filter(user=user)
+        serializer = BaseUserAddressesListSerializer(addresses, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class EncloseAccountView(APIView):
@@ -667,7 +729,7 @@ class EncloseAccountView(APIView):
     def post(request, *args, **kwargs):
         user_pk = request.user.pk
         reason_choice = request.data.get('reason_choice')
-        typed_reason = request.data.get('typed_reason')
+        typed_reason = request.data.get('typed_reason', '')
         serializer = BaseEnclosedAccountsSerializer(data={
             "user": user_pk,
             "reason_choice": reason_choice,
@@ -678,11 +740,130 @@ class EncloseAccountView(APIView):
             user = CustomUser.objects.get(pk=user_pk)
             user.is_enclosed = True
             user.save()
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            logout(request)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ChangeEmailAccountView(APIView):
+# class ChangeEmailAccountView(APIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     @staticmethod
+#     def put(request, *args, **kwargs):
+#         user = request.user
+#         has_password = user.has_usable_password()
+#         new_email = request.data.get('new_email')
+#         data = {}
+#         try:
+#             CustomUser.objects.get(email=new_email)
+#             data['email'] = ['This email address already exists.']
+#             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+#         except CustomUser.DoesNotExist:
+#             # Require email & password
+#             if has_password:
+#                 password = request.data.get('password')
+#                 if not user.check_password(password):
+#                     return Response({"password": ["Sorry, but this is a wrong password."]},
+#                                     status=status.HTTP_400_BAD_REQUEST)
+#                 else:
+#                     serializer = BaseEmailPutSerializer(data={'email': new_email})
+#                     if serializer.is_valid():
+#                         serializer.update(request.user, serializer.validated_data)
+#                         email_address = EmailAddress.objects.get(user=user)
+#                         email_address.email = new_email
+#                         email_address.verified = False
+#                         email_address.save()
+#                         return Response(status=status.HTTP_204_NO_CONTENT)
+#                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 # Require email & to set a new password
+#                 new_password = request.data.get("new_password")
+#                 new_password2 = request.data.get("new_password2")
+#                 if new_password != new_password2:
+#                     return Response({"new_password": ["Sorry, the passwords do not match."]},
+#                                     status=status.HTTP_400_BAD_REQUEST)
+#                 elif len(new_password) < 8 or len(new_password2) < 8:
+#                     data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
+#                     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+#                 serializer = BaseEmailPutSerializer(data={'email': new_email})
+#                 if serializer.is_valid():
+#                     serializer.update(request.user, serializer.validated_data)
+#                     user.set_password(new_password)
+#                     user.save()
+#                     email_address = EmailAddress.objects.get(user=user)
+#                     email_address.email = new_email
+#                     email_address.verified = False
+#                     email_address.save()
+#                     return Response(status=status.HTTP_200_OK)
+#                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeEmailHasPasswordAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = request.user
+        new_email = request.data.get('new_email')
+        data = {}
+        try:
+            CustomUser.objects.get(email=new_email)
+            data['email'] = ['This email address already exists.']
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            # Require email & password
+            password = request.data.get('password')
+            if not user.check_password(password):
+                return Response({"password": ["Sorry, but this is a wrong password."]},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                serializer = BaseEmailPutSerializer(data={'email': new_email})
+                if serializer.is_valid():
+                    serializer.update(request.user, serializer.validated_data)
+                    email_address = EmailAddress.objects.get(user=user)
+                    email_address.email = new_email
+                    email_address.verified = False
+                    email_address.save()
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangeEmailNotHasPasswordAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = request.user
+        new_email = request.data.get('new_email')
+        data = {}
+        try:
+            CustomUser.objects.get(email=new_email)
+            data['email'] = ['This email address already exists.']
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            # Require email & to set a new password
+            new_password = request.data.get("new_password")
+            new_password2 = request.data.get("new_password2")
+            if new_password != new_password2:
+                return Response({"new_password": ["Sorry, the passwords do not match."]},
+                                status=status.HTTP_400_BAD_REQUEST)
+            elif len(new_password) < 8 or len(new_password2) < 8:
+                data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            serializer = BaseEmailPutSerializer(data={'email': new_email})
+            if serializer.is_valid():
+                serializer.update(request.user, serializer.validated_data)
+                user.set_password(new_password)
+                user.save()
+                email_address = EmailAddress.objects.get(user=user)
+                email_address.email = new_email
+                email_address.verified = False
+                email_address.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CheckAccountView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
@@ -700,55 +881,6 @@ class ChangeEmailAccountView(APIView):
         except EmailAddress.DoesNotExist:
             data = {'errors': ['Email not found.']}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-    @staticmethod
-    def put(request, *args, **kwargs):
-        user = request.user
-        has_password = user.has_usable_password()
-        new_email = request.data.get('new_email')
-        data = {}
-        try:
-            CustomUser.objects.get(email=new_email)
-            data['email'] = ['This email address already exists.']
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        except CustomUser.DoesNotExist:
-            # Require email & password
-            if has_password:
-                password = request.data.get('password')
-                if not user.check_password(password):
-                    return Response({"password": ["Sorry, but this is a wrong password."]},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    serializer = BaseEmailPutSerializer(data={'email': new_email})
-                    if serializer.is_valid():
-                        serializer.update(request.user, serializer.validated_data)
-                        email_address = EmailAddress.objects.get(user=user)
-                        email_address.email = new_email
-                        email_address.verified = False
-                        email_address.save()
-                        return Response(status=status.HTTP_204_NO_CONTENT)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                # Require email & to set a new password
-                new_password = request.data.get("new_password")
-                new_password2 = request.data.get("new_password2")
-                if new_password != new_password2:
-                    return Response({"new_password": ["Sorry, the passwords do not match."]},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                elif len(new_password) < 8 or len(new_password2) < 8:
-                    data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
-                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-                serializer = BaseEmailPutSerializer(data={'email': new_email})
-                if serializer.is_valid():
-                    serializer.update(request.user, serializer.validated_data)
-                    user.set_password(new_password)
-                    user.save()
-                    email_address = EmailAddress.objects.get(user=user)
-                    email_address.email = new_email
-                    email_address.verified = False
-                    email_address.save()
-                    return Response(status=status.HTTP_200_OK)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DeleteAccountView(APIView):

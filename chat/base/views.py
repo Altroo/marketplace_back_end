@@ -120,9 +120,8 @@ class BaseChatUserModelViewSet(ModelViewSet):
         who is making this request.
         """
         response = super(BaseChatUserModelViewSet, self).list(request, args, kwargs)
-        # created_date from the serializer method field
-        response.data['results'].sort(reverse=True, key=lambda key_needed: key_needed['created_date'])
-
+        # created from the serializer method field
+        response.data['results'].sort(reverse=True, key=lambda key_needed: key_needed['created'])
         return response
 
 
@@ -137,10 +136,6 @@ class BaseArchiveConversationView(APIView):
         # Check if conversation already archived.
         try:
             ArchivedConversations.objects.get(user=user_pk, recipient=receiver)
-            # data = {
-            #     'errors': 'Conversation already archived!'
-            # }
-            # return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_204_NO_CONTENT)
         # Else add to archive
         except ArchivedConversations.DoesNotExist:

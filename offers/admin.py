@@ -179,15 +179,15 @@ class CustomTempOfferAdmin(ModelAdmin):
 
 
 class CustomTempSolderAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_offer', 'temp_solder_type', 'temp_solder_value')
-    search_fields = ('pk', 'temp_offer', 'temp_solder_type', 'temp_solder_value')
+    list_display = ('pk', 'offer', 'solder_type', 'solder_value')
+    search_fields = ('pk', 'offer', 'solder_type', 'solder_value')
     ordering = ('-pk',)
 
 
 class CustomTempProductAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_offer', 'show_colors', 'show_sizes', 'product_quantity',
+    list_display = ('pk', 'offer', 'show_colors', 'show_sizes', 'product_quantity',
                     'product_price_by', 'product_longitude', 'product_latitude', 'product_address')
-    search_fields = ('pk', 'temp_offer', 'product_address', 'product_quantity')
+    search_fields = ('pk', 'offer', 'product_address', 'product_quantity')
     list_filter = ('product_price_by', )
     ordering = ('-pk',)
 
@@ -201,11 +201,11 @@ class CustomTempProductAdmin(ModelAdmin):
 
 
 class CustomTempServiceAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_offer', 'show_availability_days', 'service_morning_hour_from',
+    list_display = ('pk', 'offer', 'show_availability_days', 'service_morning_hour_from',
                     'service_morning_hour_to', 'service_afternoon_hour_from', 'service_afternoon_hour_to',
                     'service_zone_by', 'service_price_by', 'service_longitude', 'service_latitude',
                     'service_address', 'service_km_radius')
-    search_fields = ('pk', 'temp_offer', 'service_morning_hour_from', 'service_morning_hour_to',
+    search_fields = ('pk', 'offer', 'service_morning_hour_from', 'service_morning_hour_to',
                      'service_afternoon_hour_from', 'service_afternoon_hour_to',
                      'service_zone_by', 'service_price_by', 'service_longitude', 'service_latitude',
                      'service_address', 'service_km_radius')
@@ -218,13 +218,13 @@ class CustomTempServiceAdmin(ModelAdmin):
 
 
 class CustomTempDeliveryAdmin(ModelAdmin):
-    list_display = ('pk', 'temp_offer', 'show_cities', 'temp_delivery_price', 'temp_delivery_days')
-    search_fields = ('pk', 'temp_delivery_price', 'temp_delivery_days')
+    list_display = ('pk', 'offer', 'show_cities', 'delivery_price', 'delivery_days')
+    search_fields = ('pk', 'delivery_price', 'delivery_days')
     ordering = ('-pk',)
 
     @staticmethod
     def show_cities(obj):
-        return "\n".join([i.name_fr for i in obj.temp_delivery_city.all()])
+        return "\n".join([i.name_fr for i in obj.delivery_city.all()])
 
 
 admin.site.register(Delivery, CustomDeliveryAdmin)
