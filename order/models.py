@@ -61,7 +61,7 @@ class Order(Model):
     # )
     # order_status = models.CharField(verbose_name='Order Status', max_length=2,
     #                                 choices=ORDER_STATUS_CHOICES, default='TC')
-    # highest_delivery_price = models.FloatField(verbose_name='Highest delivery price', blank=True, null=True)
+    highest_delivery_price = models.FloatField(verbose_name='Highest delivery price', blank=True, null=True)
     viewed_buyer = models.BooleanField(default=False)
     viewed_seller = models.BooleanField(default=False)
 
