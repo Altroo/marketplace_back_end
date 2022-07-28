@@ -49,19 +49,19 @@ class Order(Model):
     order_number = models.CharField(verbose_name='Order number', max_length=255, unique=True)
     order_date = models.DateTimeField(verbose_name='Order date', editable=False,
                                       auto_now_add=True, db_index=True)
-    ORDER_STATUS_CHOICES = (
-        ('TC', 'To confirm'),
-        ('OG', 'On-going'),
-        ('SH', 'Shipped'),
-        ('RD', 'Ready'),
-        ('TE', 'To evaluate'),
-        ('CM', 'Completed'),
-        ('CB', 'Canceled by buyer'),
-        ('CS', 'Canceled by seller'),
-    )
-    order_status = models.CharField(verbose_name='Order Status', max_length=2,
-                                    choices=ORDER_STATUS_CHOICES, default='TC')
-    highest_delivery_price = models.FloatField(verbose_name='Highest delivery price', blank=True, null=True)
+    # ORDER_STATUS_CHOICES = (
+    #     ('TC', 'To confirm'),
+    #     ('OG', 'On-going'),
+    #     ('SH', 'Shipped'),
+    #     ('RD', 'Ready'),
+    #     ('TE', 'To evaluate'),
+    #     ('CM', 'Completed'),
+    #     ('CB', 'Canceled by buyer'),
+    #     ('CS', 'Canceled by seller'),
+    # )
+    # order_status = models.CharField(verbose_name='Order Status', max_length=2,
+    #                                 choices=ORDER_STATUS_CHOICES, default='TC')
+    # highest_delivery_price = models.FloatField(verbose_name='Highest delivery price', blank=True, null=True)
     viewed_buyer = models.BooleanField(default=False)
     viewed_seller = models.BooleanField(default=False)
 
@@ -93,6 +93,7 @@ class Order(Model):
 
 class OrderDetails(Model):
     # Even if cascade API doesn't offer The possibility to delete the order
+    # But it offers to delete account
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               verbose_name='Order', related_name='order_details_order', null=True, blank=True)
     # Order fallback if deleted
@@ -165,13 +166,26 @@ class OrderDetails(Model):
                                        blank=True, null=True, default=None)
     service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     total_self_price = models.FloatField(verbose_name='Total self price', default=0.0)
-    OFFER_CANCELED_STATUS_CHOICES = (
+    # OFFER_CANCELED_STATUS_CHOICES = (
+    #    ('CB', 'Canceled by buyer'),
+    #     ('CS', 'Canceled by seller'),
+    # )
+    # offer_canceled = models.CharField(verbose_name='Offer Canceled', max_length=2,
+    #                                  choices=OFFER_CANCELED_STATUS_CHOICES, default=None,
+    #                                  null=True, blank=True)
+
+    ORDER_STATUS_CHOICES = (
+        ('TC', 'To confirm'),
+        ('OG', 'On-going'),
+        ('SH', 'Shipped'),
+        ('RD', 'Ready'),
+        ('TE', 'To evaluate'),
+        ('CM', 'Completed'),
         ('CB', 'Canceled by buyer'),
         ('CS', 'Canceled by seller'),
     )
-    offer_canceled = models.CharField(verbose_name='Offer Canceled', max_length=2,
-                                      choices=OFFER_CANCELED_STATUS_CHOICES, default=None,
-                                      null=True, blank=True)
+    order_status = models.CharField(verbose_name='Order Status', max_length=2,
+                                    choices=ORDER_STATUS_CHOICES, default='TC')
 
     def __str__(self):
         try:

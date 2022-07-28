@@ -2,6 +2,7 @@ from rest_framework import serializers
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib.auth.password_validation import validate_password
 from allauth.account.models import EmailAddress
+from shop.models import AuthShop
 from offers.base.serializers import BaseShopCitySerializer
 from places.base.serializers import BaseCountriesSerializer
 
@@ -95,23 +96,9 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
 class BaseProfileGETSerializer(serializers.ModelSerializer):
     avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
     city = BaseShopCitySerializer(read_only=True)
-    # city = serializers.SerializerMethodField()
     country = BaseCountriesSerializer(read_only=True)
-    # country = serializers.SerializerMethodField()
     gender = serializers.SerializerMethodField()
     date_joined = serializers.DateTimeField(format='%Y-%m-%d')
-
-    # @staticmethod
-    # def get_city(instance):
-    #     if instance.city:
-    #         return instance.city.name_fr
-    #     return None
-    #
-    # @staticmethod
-    # def get_country(instance):
-    #     if instance.country:
-    #         return instance.country.name_fr
-    #     return None
 
     @staticmethod
     def get_gender(instance):

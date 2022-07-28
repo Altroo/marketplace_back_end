@@ -16,7 +16,7 @@ class BaseNewOrderSerializer(serializers.ModelSerializer):
                   'first_name', 'last_name', 'buyer_avatar_thumbnail',
                   # Seller fallback if deleted
                   'shop_name', 'seller_avatar_thumbnail', 'note',
-                  'order_number', 'order_date', 'order_status', 'highest_delivery_price']
+                  'order_number', 'order_date', 'highest_delivery_price']
 
 
 class BaseNewOrderHighestDeliveryPrice(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
         fields = [
             'order',
             # Order Fallback if deleted
-            # 'order_number', 'order_date', 'order_status', 'viewed_buyer', 'viewed_seller',
+            # 'order_number', 'order_date', 'viewed_buyer', 'viewed_seller',
             # 'offer',
             # Offer Fallback if deleted
             'offer_type', 'title', 'offer_thumbnail',
@@ -52,6 +52,7 @@ class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone', 'email',
             # Product
             'picked_color', 'picked_size', 'picked_quantity',
+            # order_status
             'total_self_price'
         ]
 

@@ -132,12 +132,14 @@ class BaseShopOriginalCitySerializer(serializers.ModelSerializer):
 
 class BaseShopDeliverySerializer(serializers.ModelSerializer):
     delivery_city = BaseShopCitySerializer(many=True, read_only=True)
+    pk = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Delivery
-        fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
+        fields = ['pk', 'offer', 'delivery_city', 'delivery_price', 'delivery_days']
         extra_kwargs = {
             'offer': {'write_only': True},
+            'pk': {'read_only': True},
         }
 
 
@@ -522,11 +524,14 @@ class BaseTempShopCitySerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
+    pk = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = TempDelivery
         fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
         extra_kwargs = {
             'offer': {'write_only': True},
+            'pk': {'read_only': True},
         }
 
 

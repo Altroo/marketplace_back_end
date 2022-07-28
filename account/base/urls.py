@@ -5,12 +5,12 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
     ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
     FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView, \
     EncloseAccountView, ChangeEmailHasPasswordAccountView, ChangeEmailNotHasPasswordAccountView, \
-    DeleteAccountView, CheckAccountView, ChangePasswordView
+    DeleteAccountView, CheckAccountView, ChangePasswordView, GetProfileView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
-from dj_rest_auth.views import PasswordChangeView
+# from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.registration.views import SocialAccountDisconnectView
-from rest_framework_simplejwt.views import TokenVerifyView  # , TokenRefreshView
+# from rest_framework_simplejwt.views import TokenVerifyView  # , TokenRefreshView
 from dj_rest_auth.jwt_auth import get_refresh_view
 
 app_name = 'account'
@@ -55,7 +55,7 @@ urlpatterns = [
     # PATCH : Edit profil
     # GET : Get profil data include avatar
     path('profil/', ProfileView.as_view()),
-    # path('profil/<int:user_pk>/', ProfileView.as_view()),
+    path('get_profil/<int:user_pk>/', GetProfileView.as_view()),
     # Blocked Users
     # GET : Get blocked users list
     # POST : Block a user

@@ -2,7 +2,7 @@ from collections import defaultdict
 from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import IntegrityError
-from django.db.models import Count
+from django.db.models import Count, F
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -383,6 +383,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
@@ -393,6 +394,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
@@ -403,6 +405,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
@@ -738,6 +741,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
@@ -748,6 +752,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
@@ -758,6 +763,7 @@ class ShopOfferViewV2(APIView):
                         deliveries.append(
                             {
                                 'offer': offer_pk,
+                                'pk': offer_pk,
                                 'delivery_city': delivery_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
@@ -1144,6 +1150,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_city_1,
                                         'delivery_price': float(delivery_price_1),
                                         'delivery_days': int(delivery_days_1)
@@ -1154,6 +1161,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_city_2,
                                         'delivery_price': float(delivery_price_2),
                                         'delivery_days': int(delivery_days_2)
@@ -1164,6 +1172,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_city_3,
                                         'delivery_price': float(delivery_price_3),
                                         'delivery_days': int(delivery_days_3)
@@ -1592,6 +1601,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_cities_1,
                                         'delivery_price': float(delivery_price_1),
                                         'delivery_days': int(delivery_days_1)
@@ -1602,6 +1612,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_cities_2,
                                         'delivery_price': float(delivery_price_2),
                                         'delivery_days': int(delivery_days_2)
@@ -1612,6 +1623,7 @@ class ShopOfferViewV2(APIView):
                                 deliveries.append(
                                     {
                                         'offer': offer_pk,
+                                        'pk': offer_pk,
                                         'delivery_city': delivery_cities_3,
                                         'delivery_price': float(delivery_price_3),
                                         'delivery_days': int(delivery_days_3)
@@ -2255,16 +2267,14 @@ class ShopOfferDuplicateView(APIView):
                         pass
                     # Delivery 1 cities
                     delivery_cities_1_pk = []
+                    delivery_cities_1 = []
                     if delivery_city_1:
                         cities = City.objects.filter(pk__in=delivery_city_1)
-                        delivery_cities_1 = []
                         for city in cities:
                             delivery_cities_1.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
-                                    "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    "city": city.name_fr,
                                 }
                             )
                             delivery_cities_1_pk.append(
@@ -2272,16 +2282,14 @@ class ShopOfferDuplicateView(APIView):
                             )
                     # Delivery 2 cities
                     delivery_cities_2_pk = []
+                    delivery_cities_2 = []
                     if delivery_city_2:
                         cities = City.objects.filter(pk__in=delivery_city_2)
-                        delivery_cities_2 = []
                         for city in cities:
                             delivery_cities_2.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
-                                    "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    "city": city.name_fr,
                                 }
                             )
                             delivery_cities_2_pk.append(
@@ -2289,16 +2297,14 @@ class ShopOfferDuplicateView(APIView):
                             )
                     # Delivery 3 cities
                     delivery_cities_3_pk = []
+                    delivery_cities_3 = []
                     if delivery_city_3:
                         cities = City.objects.filter(pk__in=delivery_city_3)
-                        delivery_cities_3 = []
                         for city in cities:
                             delivery_cities_3.append(
                                 {
                                     "pk": city.pk,
-                                    "city_en": city.name_en,
-                                    "city_fr": city.name_fr,
-                                    "city_ar": city.name_ar
+                                    "city": city.name_fr,
                                 }
                             )
                             delivery_cities_3_pk.append(
@@ -2312,8 +2318,7 @@ class ShopOfferDuplicateView(APIView):
                         city_1_check = True
                         deliveries.append(
                             {
-                                'offer': offer_serializer.pk,
-                                'delivery_city': delivery_cities_1_pk,
+                                'delivery_city': delivery_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
                             }
@@ -2322,8 +2327,7 @@ class ShopOfferDuplicateView(APIView):
                         city_2_check = True
                         deliveries.append(
                             {
-                                'offer': offer_serializer.pk,
-                                'delivery_city': delivery_cities_2_pk,
+                                'delivery_city': delivery_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
                             }
@@ -2332,8 +2336,7 @@ class ShopOfferDuplicateView(APIView):
                         city_3_check = True
                         deliveries.append(
                             {
-                                'offer': offer_serializer.pk,
-                                'delivery_city': delivery_cities_3_pk,
+                                'delivery_city': delivery_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
                             }
@@ -2419,6 +2422,16 @@ class GetLastThreeDeliveriesView(APIView):
                 for offer in offers:
                     deliveries = offer.offer_delivery.all().order_by('-pk')
                     for delivery in deliveries:
+                        delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
+                        delivery_city = []
+                        for i in delivery_cities:
+                            delivery_obj = {'pk': '', 'name': ''}
+                            for k, v in i.items():
+                                if k == 'name_':
+                                    delivery_obj['name'] = v
+                                else:
+                                    delivery_obj[k] = v
+                            delivery_city.append(delivery_obj)
                         deliveries_list = {
                             'pk': '',
                             'delivery_city': '',
@@ -2427,8 +2440,7 @@ class GetLastThreeDeliveriesView(APIView):
                         }
                         dict_title = "deliveries"
                         deliveries_list['pk'] = delivery.pk
-                        deliveries_list['delivery_city'] = delivery.delivery_city.all() \
-                            .values_list('name_fr', flat=True)
+                        deliveries_list['delivery_city'] = delivery_city
                         deliveries_list['delivery_price'] = delivery.delivery_price
                         deliveries_list['delivery_days'] = delivery.delivery_days
                         data[dict_title].append(deliveries_list)

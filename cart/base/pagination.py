@@ -162,15 +162,14 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                     "offer_pk": i.offer.pk,
                     "offer_picture": i.offer.get_absolute_picture_1_thumbnail,
                     "offer_title": i.offer.title,
-                    "offer_price": self.get_offer_price(i, 'V')
+                    "offer_price": self.get_offer_price(i, 'V'),
+                    "offer_details": {
+                        "offer_max_quantity": i.offer.offer_products.product_quantity,
+                        "picked_color": i.picked_color,
+                        "picked_size": i.picked_size,
+                        "picked_quantity": i.picked_quantity
+                    }
                 }
-                product_details = {
-                    "offer_max_quantity": i.offer.offer_products.product_quantity,
-                    "picked_color": i.picked_color,
-                    "picked_size": i.picked_size,
-                    "picked_quantity": i.picked_quantity
-                }
-                lot_1_dict['offer_details'] = product_details
                 lot_1_list.append(lot_1_dict)
             click_and_collect = {
                 "product_longitude": product_longitude,
@@ -180,8 +179,8 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
             offres_dict['cart_details'] = lot_1_list
             offres_dict['click_and_collect'] = click_and_collect
 
-            # Append to Lot 1
-            details_dict["Lot N°1"] = offres_dict
+            # Lot 1
+            details_dict["Lot"] = offres_dict
             lot_1 = True
             results_list.append(details_dict)
 
@@ -208,15 +207,14 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                     "offer_pk": i.offer.pk,
                     "offer_picture": i.offer.get_absolute_picture_1_thumbnail,
                     "offer_title": i.offer.title,
-                    "offer_price": self.get_offer_price(i, 'V')
+                    "offer_price": self.get_offer_price(i, 'V'),
+                    "offer_details": {
+                        "offer_max_quantity": i.offer.offer_products.product_quantity,
+                        "picked_color": i.picked_color,
+                        "picked_size": i.picked_size,
+                        "picked_quantity": i.picked_quantity
+                    }
                 }
-                product_details = {
-                    "offer_max_quantity": i.offer.offer_products.product_quantity,
-                    "picked_color": i.picked_color,
-                    "picked_size": i.picked_size,
-                    "picked_quantity": i.picked_quantity
-                }
-                lot_1_dict['offer_details'] = product_details
                 lot_1_list.append(lot_1_dict)
                 offer_deliveries = i.offer.offer_delivery.all()
                 for delivery in offer_deliveries:
@@ -292,11 +290,13 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
             # Append to Lot 1, 2 if exists
             if lot_1:
                 lot_2 = True
-                details_dict["Lot N°2"] = offres_dict
+                # lot 2
+                details_dict["Lot"] = offres_dict
             else:
                 lot_1 = True
                 lot_2 = False
-                details_dict["Lot N°1"] = offres_dict
+                # lot 1
+                details_dict["Lot"] = offres_dict
             results_list.append(details_dict)
         # Check for Lot 3
         # Excludings products
@@ -313,29 +313,29 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                     "offer_pk": i.offer.pk,
                     "offer_picture": i.offer.get_absolute_picture_1_thumbnail,
                     "offer_title": i.offer.title,
-                    "offer_price": self.get_offer_price(i, 'S')
+                    "offer_price": self.get_offer_price(i, 'S'),
+                    "offer_details": {
+                        "picked_date": i.picked_date,
+                        "picked_hour": i.picked_hour,
+                    }
                 }
-                service_details = {
-                    "picked_date": i.picked_date,
-                    "picked_hour": i.picked_hour,
-                }
-                lot_3_dict['offer_details'] = service_details
                 lot_3_list.append(lot_3_dict)
 
             offres_dict['cart_details'] = lot_3_list
 
             # Append to Lot 1, 2, 3 if exists
             if lot_2:
-                details_dict["Lot N°3"] = offres_dict
+                # lot 3
+                details_dict["Lot"] = offres_dict
             else:
                 if lot_1:
-                    details_dict["Lot N°2"] = offres_dict
+                    # lot 2
+                    details_dict["Lot"] = offres_dict
                 else:
-                    details_dict["Lot N°1"] = offres_dict
+                    # lot 1
+                    details_dict["Lot"] = offres_dict
             results_list.append(details_dict)
         # Append Lot 2 to Lot 1 check if lot_1 = True
-        # TO ADD Exclude click & collect ids from the ones with deliveries
-
         return Response(OrderedDict([
             ('offers_count', self.page.paginator.count),
             ('total_price', total_price),

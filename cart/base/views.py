@@ -164,7 +164,6 @@ class ValidateCartOffersView(APIView):
         timestamp_rnd = str_time_stamp_seconds[0][6:]
         uid = urlsafe_base64_encode(force_bytes(request.user.pk))
         # order_date = default auto now
-        # order_status = default to confirm
         # my_unique_id = self.random_unique_id()
         buyer_pk = cart_offer.user.pk
         seller_pk = cart_offer.offer.auth_shop.pk
@@ -219,6 +218,7 @@ class ValidateCartOffersView(APIView):
                         }
                         order_serializer.delete()
                         return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                    # order_status = default to confirm
                     order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                         'order': order_serializer.pk,
                         # Offer Fallback if deleted

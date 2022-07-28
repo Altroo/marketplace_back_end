@@ -463,29 +463,20 @@ class LogoutView(Dj_rest_logout):
         return super(LogoutView, self).logout(request)
 
 
-# class ProfileAvatarPUTView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     @staticmethod
-#     def put(request, *args, **kwargs):
-#         user = CustomUser.objects.get(pk=request.user.pk)
-#         serializer = BaseProfileAvatarPutSerializer(data=request.data)
-#         if serializer.is_valid():
-#             if user.avatar:
-#                 try:
-#                     remove(user.avatar.path)
-#                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-#                     pass
-#             if user.avatar_thumbnail:
-#                 try:
-#                     remove(user.avatar_thumbnail.path)
-#                 except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-#                     pass
-#             new_avatar = serializer.update(user, serializer.validated_data)
-#             # Generate new avatar thumbnail
-#             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
-#             return Response(status=status.HTTP_204_NO_CONTENT)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class GetProfileView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user_pk = kwargs.get('user_pk')
+        # TODO missing shop name, offer categories, offer products, ratings (buys, sells)
+        try:
+            user = CustomUser.objects.get(pk=user_pk)
+            user_serializer = BaseProfileGETSerializer(user)
+            return Response(user_serializer.data, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            data = {'errors': ["User Doesn't exist!"]}
+            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileView(APIView):
@@ -493,11 +484,7 @@ class ProfileView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        # user_pk = kwargs.get('user_pk')
         try:
-            # if user_pk:
-            #    user = CustomUser.objects.get(pk=user_pk)
-            # else:
             user = CustomUser.objects.get(pk=request.user.pk)
             user_serializer = BaseProfileGETSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
@@ -872,10 +859,16 @@ class CheckAccountView(APIView):
         has_password = user.has_usable_password()
         try:
             check_verified = EmailAddress.objects.get(user=user).verified
+            try:
+                AuthShop.objects.get(user=user)
+                has_shop = True
+            except AuthShop.DoesNotExist:
+                has_shop = False
             data = {
                 'email': user.email,
                 "verified": check_verified,
                 "has_password": has_password,
+                'has_shop': has_shop,
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except EmailAddress.DoesNotExist:

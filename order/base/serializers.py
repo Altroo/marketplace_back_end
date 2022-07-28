@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from order.models import OrderDetails
+from collections import Counter
 
 
 # Model = Order
@@ -9,7 +10,7 @@ class BaseOrdersListSerializer(serializers.Serializer):
     initiator_name = serializers.SerializerMethodField()
     offer_title = serializers.SerializerMethodField()
     total_price = serializers.SerializerMethodField()
-    order_status = serializers.CharField()
+    order_status = serializers.SerializerMethodField()
     order_date = serializers.DateTimeField()
     viewed = serializers.SerializerMethodField()
 
@@ -45,6 +46,26 @@ class BaseOrdersListSerializer(serializers.Serializer):
         return "{} articles".format(orders_len)
 
     @staticmethod
+    def get_order_status_by_priority(order_details):
+        order_status = Counter(order_details)
+        # Give priority to "To confirm" then "On-going" status
+        for k, v in order_status.items():
+            if k == 'TC':
+                return 'TC'
+            if k == 'OG':
+                return 'OG'
+        # Else return min status by counter ex : Counter({'TC': 2, 'SH': 1})
+        # If two have the same value priority is given to the first item
+        return min(order_status, key=order_status.get)
+
+    def get_order_status(self, instance):
+        order_details = OrderDetails.objects.filter(order=instance.pk).values_list('order_status', flat=True)
+        if len(order_details) == 1:
+            return order_details[0]
+        else:
+            return self.get_order_status_by_priority(order_details)
+
+    @staticmethod
     def get_total_price(instance):
         order_detail = OrderDetails.objects.filter(order=instance.pk)
         if len(order_detail) == 1:
@@ -78,16 +99,6 @@ class BaseClickAndCollectSerializer(serializers.Serializer):
         pass
 
 
-class BaseDeliverySerializer(serializers.Serializer):
-    price = serializers.FloatField(source='delivery_price')
-
-    def update(self, instance, validated_data):
-        pass
-
-    def create(self, validated_data):
-        pass
-
-
 # Dynamic for BaseOrderDetailsTypeListSerializer
 class BaseDetailsOrderProductSerializer(serializers.Serializer):
     thumbnail = serializers.CharField(source='get_absolute_offer_thumbnail')
@@ -97,7 +108,7 @@ class BaseDetailsOrderProductSerializer(serializers.Serializer):
     picked_size = serializers.CharField()
     picked_quantity = serializers.IntegerField()
     click_and_collect = serializers.SerializerMethodField()
-    delivery = serializers.SerializerMethodField()
+    delivery_price = serializers.SerializerMethodField()
 
     @staticmethod
     def get_click_and_collect(instance):
@@ -107,10 +118,9 @@ class BaseDetailsOrderProductSerializer(serializers.Serializer):
         return None
 
     @staticmethod
-    def get_delivery(instance):
+    def get_delivery_price(instance):
         if instance.picked_delivery:
-            delivery = BaseDeliverySerializer(instance)
-            return delivery.data
+            return instance.delivery_price
         return None
 
     def update(self, instance, validated_data):
@@ -184,57 +194,23 @@ class BaseBuyerCoordinatesSerializer(serializers.Serializer):
 # Model = OrderDetails
 class BaseOrderDetailsListSerializer(serializers.Serializer):
     # From Order model :
-    # Buyer name or seller shop name (check order type)
-    initiator_name = serializers.SerializerMethodField()
-    order_number = serializers.SerializerMethodField()
-    order_date = serializers.SerializerMethodField()
-    order_status = serializers.SerializerMethodField()
-    note = serializers.SerializerMethodField()
+    pk = serializers.IntegerField()
+    offer_type = serializers.CharField()
     # From Order details model :
-    order_details = BaseOrderDetailsTypeListSerializer(many=True)
-    buyer_coordinates = serializers.SerializerMethodField()
-    total_price = serializers.SerializerMethodField()
+    order_details = serializers.SerializerMethodField()
     offer_canceled = serializers.CharField()
 
-    def get_initiator_name(self, instance):
-        if self.context.get("order_type") == "buy":
-            try:
-                return instance.order.seller.shop_name
-            except AttributeError:
-                return instance.order.shop_name
-        try:
-            return instance.order.buyer.first_name + ' ' + instance.order.buyer.last_name
-        except AttributeError:
-            return instance.order.first_name + ' ' + instance.order.last_name
-
     @staticmethod
-    def get_order_number(instance):
-        return instance.order.order_number
-
-    @staticmethod
-    def get_order_date(instance):
-        return instance.order.order_date
-
-    @staticmethod
-    def get_order_status(instance):
-        return instance.order.order_status
-
-    @staticmethod
-    def get_note(instance):
-        return instance.order.note
-
-    @staticmethod
-    def get_total_price(instance):
-        order_detail = OrderDetails.objects.filter(order=instance.order.pk)
-        price = 0
-        for i in order_detail:
-            price += i.total_self_price
-        return price
-
-    @staticmethod
-    def get_buyer_coordinates(instance):
-        buyer_address = BaseBuyerCoordinatesSerializer(instance)
-        return buyer_address.data
+    def get_order_details(instance):
+        # We get from original offer_type case owner changed it
+        # Order product details
+        if instance.offer_type == 'V':
+            details_product = BaseDetailsOrderProductSerializer(instance)
+            return details_product.data
+        # order service details
+        if instance.offer_type == 'S':
+            details_service = BaseDetailsOrderServiceSerializer(instance)
+            return details_service.data
 
     def update(self, instance, validated_data):
         pass
