@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Model
 from account.models import CustomUser
 from shop.models import AuthShop, LonLatValidators
-from offers.models import OfferChoices
+from offers.models import OfferChoices, Offers
 from Qaryb_API_new.settings import API_URL
 from django.utils.translation import gettext_lazy as _
 from os import path
@@ -96,26 +96,8 @@ class OrderDetails(Model):
     # But it offers to delete account
     order = models.ForeignKey(Order, on_delete=models.CASCADE,
                               verbose_name='Order', related_name='order_details_order', null=True, blank=True)
-    # Order fallback if deleted
-    # order_number = models.CharField(verbose_name='Order number', max_length=255, unique=True)
-    # order_date = models.DateTimeField(verbose_name='Order date', editable=False,
-    #                                  auto_now_add=True, db_index=True)
-    # ORDER_STATUS_CHOICES = (
-    #     ('TC', 'To confirm'),
-    #     ('OG', 'On-going'),
-    #     ('SH', 'Shipped'),
-    #     ('RD', 'Ready'),
-    #     ('TE', 'To evaluate'),
-    #     ('CM', 'Completed'),
-    #     ('CB', 'Canceled by buyer'),
-    #     ('CS', 'Canceled by seller'),
-    # )
-    # order_status = models.CharField(verbose_name='Order Status', max_length=2,
-    #                                 choices=ORDER_STATUS_CHOICES, default='TC')
-    # viewed_buyer = models.BooleanField(default=False)
-    # viewed_seller = models.BooleanField(default=False)
-    # offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
-    #                          verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
+    offer = models.ForeignKey(Offers, on_delete=models.SET_NULL,
+                              verbose_name='Offer', related_name='order_details_offer', null=True, blank=True)
     # Offer fallback if deleted
     offer_type = models.CharField(verbose_name='Offer Type', max_length=1,
                                   choices=OfferChoices.OFFER_TYPE_CHOICES, blank=True, null=True)
@@ -130,9 +112,19 @@ class OrderDetails(Model):
                                          validators=[LonLatValidators.lat_validator], default=False)
     product_address = models.CharField(verbose_name='product_address', max_length=255, default=False)
     picked_delivery = models.BooleanField(verbose_name='Delivery', default=False)
-    # delivery_city = models.CharField(verbose_name='Delivery city', max_length=255)
     delivery_price = models.FloatField(verbose_name='Delivery price', blank=True, null=True)
-    # delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
+    new_delivery_price = models.FloatField(verbose_name='New Delivery price', blank=True, null=True)
+    NEW_DELIVERY_PRICE_REASON_CHOICES = (
+        ('P', 'Weight is greater'),
+        # Get from body text (new_delivery_price_body)
+        ('O', 'Other'),
+        ('', 'Unset'),
+    )
+    new_delivery_price_reason = models.CharField(verbose_name='New delivery price reason', max_length=1,
+                                                 choices=NEW_DELIVERY_PRICE_REASON_CHOICES, default='',
+                                                 null=True, blank=True)
+    new_delivery_price_body = models.CharField(verbose_name='New delivery price body', max_length=255,
+                                               blank=True, null=True, default=None)
     # Buyer coordinates
     # Products only
     address = models.CharField(verbose_name='Address', max_length=300, blank=True, null=True)
@@ -166,26 +158,46 @@ class OrderDetails(Model):
                                        blank=True, null=True, default=None)
     service_km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
     total_self_price = models.FloatField(verbose_name='Total self price', default=0.0)
-    # OFFER_CANCELED_STATUS_CHOICES = (
-    #    ('CB', 'Canceled by buyer'),
-    #     ('CS', 'Canceled by seller'),
-    # )
-    # offer_canceled = models.CharField(verbose_name='Offer Canceled', max_length=2,
-    #                                  choices=OFFER_CANCELED_STATUS_CHOICES, default=None,
-    #                                  null=True, blank=True)
 
     ORDER_STATUS_CHOICES = (
+        # A confirmer
         ('TC', 'To confirm'),
+        # Delivery price adjusted
+        ('DP', 'Delivery price'),
+        # Preparation en cours
         ('OG', 'On-going'),
+        # Expidée
         ('SH', 'Shipped'),
+        # Prête
         ('RD', 'Ready'),
+        # A évaluer
         ('TE', 'To evaluate'),
+        # Terminée
         ('CM', 'Completed'),
+        # Annuler par le vendeur
         ('CB', 'Canceled by buyer'),
+        # Annuler par l'acheteur
         ('CS', 'Canceled by seller'),
     )
     order_status = models.CharField(verbose_name='Order Status', max_length=2,
                                     choices=ORDER_STATUS_CHOICES, default='TC')
+
+    SELLER_CANCELED_REASON_CHOICES = (
+        ('S', 'No more stock'),
+        ('I', 'Not available'),
+        # Get from body text (seller_cancel_body)
+        ('O', 'Other'),
+        ('', 'Unset'),
+    )
+    seller_canceled_reason = models.CharField(verbose_name='Seller canceled', max_length=1,
+                                              choices=SELLER_CANCELED_REASON_CHOICES, default='',
+                                              null=True, blank=True)
+    seller_cancel_body = models.CharField(verbose_name='Seller cancel body', max_length=255,
+                                          blank=True, null=True, default=None)
+    # TODO need to know if this is applied to each order detail
+    # or to a grouped orders.
+    has_buyer_rating = models.BooleanField(default=False)
+    has_seller_rating = models.BooleanField(default=False)
 
     def __str__(self):
         try:

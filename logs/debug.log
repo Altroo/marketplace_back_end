@@ -20521,3 +20521,141 @@ Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/
+Bad Request: /api/1.0.0/shop/
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.29, 127.0.0.1:55429][0m
+Not Found: /
+[33mHTTP GET / 404 [0.01, 127.0.0.1:49737][0m
+Not Found: /favicon.ico
+[33mHTTP GET /favicon.ico 404 [0.01, 127.0.0.1:49737][0m
+[35;1mHTTP GET /static/admin/js/prepopulate.js 500 [0.07, 127.0.0.1:49742][0m
+[35;1mHTTP GET /static/admin/js/vendor/xregexp/xregexp.js 500 [0.06, 127.0.0.1:49741][0m
+[35;1mHTTP GET /static/admin/js/filters.js 500 [0.06, 127.0.0.1:49737][0m
+Not Found: /user_avatars/a6ffbb70-bef7-46fd-9b4d-731a2729df8e.jpg
+[33mHTTP GET /user_avatars/a6ffbb70-bef7-46fd-9b4d-731a2729df8e.jpg 404 [0.01, 127.0.0.1:49744][0m
+Not Found: /api/1.0.0/api/cookies
+[33mHTTP GET /api/1.0.0/api/cookies 404 [0.32, 127.0.0.1:50363][0m
+Not Found: /api/1.0.0/api/cookies
+[33mHTTP GET /api/1.0.0/api/cookies 404 [0.01, 127.0.0.1:50363][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.16, 127.0.0.1:54501][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.13, 127.0.0.1:54544][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.08, 127.0.0.1:54544][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.09, 127.0.0.1:54597][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.10, 127.0.0.1:54664][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.65, 127.0.0.1:54742][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.05, 127.0.0.1:54752][0m
+Not Found: /api/shop/
+[33mHTTP POST /api/shop/ 404 [0.05, 127.0.0.1:54801][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.08, 127.0.0.1:54890][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.17, 127.0.0.1:55090][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.03, 127.0.0.1:55090][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.13, 127.0.0.1:55247][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.07, 127.0.0.1:57719][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/
+[31;1mHTTP GET /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/ 400 [0.03, 127.0.0.1:58169][0m
+Bad Request: /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/
+[31;1mHTTP GET /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/ 400 [0.03, 127.0.0.1:58168][0m
+Bad Request: /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/
+[31;1mHTTP GET /api/1.0.0/shop/ff663d0f-53aa-40f0-82e9-ff9448d3b475/ 400 [0.03, 127.0.0.1:58172][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/bbba51ba-e9d1-4ab7-a6fc-80ca3fbcff01/
+[31;1mHTTP GET /api/1.0.0/shop/bbba51ba-e9d1-4ab7-a6fc-80ca3fbcff01/ 400 [0.20, 127.0.0.1:54909][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.25, 127.0.0.1:57122][0m
+Internal Server Error: /api/1.0.0/shop/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 435, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 476, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 103, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/shop/base/views.py", line 50, in post
+    avatar = base64.b64decode(re.search(r'base64,(.*)', avatar_data).group(1))
+AttributeError: 'BaseConverter' object has no attribute 'b64decode'
+[35;1mHTTP POST /api/1.0.0/shop/ 500 [0.13, 127.0.0.1:50127][0m
+Internal Server Error: /api/1.0.0/shop/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 435, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 476, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 103, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/shop/base/views.py", line 50, in post
+    avatar = base64.b64decode(re.search(r'base64,(.*)', avatar_data).group(1))
+AttributeError: 'BaseConverter' object has no attribute 'b64decode'
+[35;1mHTTP POST /api/1.0.0/shop/ 500 [0.14, 127.0.0.1:50308][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.16, 127.0.0.1:50686][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [2.62, 127.0.0.1:50819][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [2.76, 127.0.0.1:51448][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [3.56, 127.0.0.1:51448][0m
+Not Found: /favicon.ico
+Not Found: /media/shop_avatars/82438263-ca85-4ae4-8cab-96fd37bb2bdd.jpg
+[33mHTTP GET /media/shop_avatars/82438263-ca85-4ae4-8cab-96fd37bb2bdd.jpg 404 [0.01, 127.0.0.1:58455][0m

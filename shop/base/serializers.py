@@ -1,8 +1,13 @@
 from rest_framework import serializers
 from shop.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance, AuthShopDays
+from shop.base.utils import Base64ImageField
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     class Meta:
         model = AuthShop
         fields = [
@@ -63,6 +68,10 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
 
 
 class BaseShopAvatarPutSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     class Meta:
         model = AuthShop
         fields = ['avatar']
@@ -239,7 +248,6 @@ class BaseShopModeVacanceSerializer(serializers.ModelSerializer):
 
 
 class BaseShopModeVacancePUTSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ModeVacance
         fields = ['date_from', 'date_to']
@@ -252,6 +260,10 @@ class BaseShopModeVacancePUTSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     class Meta:
         model = TempShop
         fields = ['shop_name',
@@ -302,6 +314,10 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
 
 
 class BaseTempShopAvatarPutSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     class Meta:
         model = TempShop
         fields = ['avatar']

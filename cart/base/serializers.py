@@ -37,7 +37,7 @@ class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
             'order',
             # Order Fallback if deleted
             # 'order_number', 'order_date', 'viewed_buyer', 'viewed_seller',
-            # 'offer',
+            'offer',
             # Offer Fallback if deleted
             'offer_type', 'title', 'offer_thumbnail',
             # Seller offer details
@@ -63,6 +63,7 @@ class BaseOfferDetailsServiceSerializer(serializers.ModelSerializer):
         fields = [
             'order',
             # Offer Fallback if deleted
+            'offer',
             'offer_type', 'title', 'offer_thumbnail',
             'service_zone_by',
             'service_longitude',

@@ -48,10 +48,14 @@ class BaseOrdersListSerializer(serializers.Serializer):
     @staticmethod
     def get_order_status_by_priority(order_details):
         order_status = Counter(order_details)
-        # Give priority to "To confirm" then "On-going" status
+        # Give priority to "To confirm"
+        # then Delivery price adjusted
+        # then "On-going" status
         for k, v in order_status.items():
             if k == 'TC':
                 return 'TC'
+            if k == 'DP':
+                return 'DP'
             if k == 'OG':
                 return 'OG'
         # Else return min status by counter ex : Counter({'TC': 2, 'SH': 1})

@@ -50,6 +50,7 @@
       <sourceFolder url="file://$MODULE_DIR$/offers/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ratings/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/base" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/places/management/commands" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/venv_brew" />

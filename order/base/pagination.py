@@ -120,6 +120,12 @@ class GetMyOrderDetailsPagination(PageNumberPagination):
                 lot_1_list.append(lot_1_dict)
                 if i.delivery_price > deliveries_obj["delivery_price"]:
                     deliveries_obj["delivery_price"] = i.delivery_price
+
+                if i.new_delivery_price_reason != '':
+                    deliveries_obj["new_delivery_price_reason"] = i.new_delivery_price_reason
+                    deliveries_obj["new_delivery_price_body"] = i.new_delivery_price_body
+                    deliveries_obj["new_delivery_price"] = i.new_delivery_price
+
                 if i.first_name:
                     deliveries_obj["first_name"] = i.first_name
                 if i.last_name:
@@ -221,6 +227,7 @@ class GetMyOrderDetailsPagination(PageNumberPagination):
             ('count', self.page.paginator.count),
             ('user_name', user_name),
             ('user_pk', user_pk),
+            ('order_pk', order.pk),
             ('order_number', order.order_number),
             ('order_date', order.order_date),
             # ('order_status', order.order_status),

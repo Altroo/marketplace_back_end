@@ -222,6 +222,7 @@ class ValidateCartOffersView(APIView):
                     order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                         'order': order_serializer.pk,
                         # Offer Fallback if deleted
+                        'offer': cart_offer.offer.pk,
                         'offer_type': cart_offer.offer.offer_type,
                         'title': cart_offer.offer.title,
                         'offer_thumbnail': None,
@@ -370,6 +371,7 @@ class ValidateCartOffersView(APIView):
                             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
                         order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                             'order': order_serializer.pk,
+                            'offer': cart_offer[1].offer.pk,
                             'offer_type': cart_offer[1].offer.offer_type,
                             'title': cart_offer[1].offer.title,
                             'offer_thumbnail': None,
@@ -413,6 +415,7 @@ class ValidateCartOffersView(APIView):
                         service_details = Services.objects.get(offer=cart_offer[1].offer.pk)
                         order_details_service_serializer = BaseOfferDetailsServiceSerializer(data={
                             'order': order_serializer.pk,
+                            'offer': cart_offer[1].offer.pk,
                             'offer_type': cart_offer[1].offer.offer_type,
                             'title': cart_offer[1].offer.title,
                             'offer_thumbnail': None,

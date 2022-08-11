@@ -4,6 +4,7 @@ from offers.models import Offers, Solder, Products, Services, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery, OfferTags, \
     TempOffers, TempSolder, TempProducts, TempServices, TempDelivery, OfferVue
 from places.models import City
+from shop.base.utils import Base64ImageField
 
 
 class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
@@ -81,6 +82,15 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
 
 # Global Offer serializer
 class BaseShopOfferSerializer(serializers.ModelSerializer):
+    picture_1 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+    picture_2 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+    picture_3 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
@@ -146,6 +156,7 @@ class BaseShopDeliverySerializer(serializers.ModelSerializer):
 # Used in offer details view
 class BaseShopOriginalDeliverySerializer(serializers.ModelSerializer):
     delivery_city = BaseShopOriginalCitySerializer(many=True, read_only=True)
+
     # delivery_city = serializers.SerializerMethodField()
 
     # @staticmethod
@@ -316,12 +327,12 @@ class BaseOffersListSerializer(serializers.Serializer):
 
 
 class BaseOfferPutSerializer(serializers.ModelSerializer):
-    picture_1 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
-    picture_2 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
-    picture_3 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
+    picture_1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
+    picture_2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
+    picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
 
     class Meta:
         model = Offers
@@ -483,6 +494,15 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
 
 # Global Offer serializer
 class BaseTempShopOfferSerializer(serializers.ModelSerializer):
+    picture_1 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+    picture_2 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+    picture_3 = Base64ImageField(
+        max_length=None, use_url=True,
+    )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
@@ -676,12 +696,12 @@ class BaseTempOfferssListSerializer(serializers.Serializer):
 
 
 class BaseTempOfferPutSerializer(serializers.ModelSerializer):
-    picture_1 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
-    picture_2 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
-    picture_3 = serializers.ImageField(required=False, allow_empty_file=True,
-                                       default=None, max_length=None, allow_null=True)
+    picture_1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
+    picture_2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
+    picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
 
     class Meta:
         model = TempOffers

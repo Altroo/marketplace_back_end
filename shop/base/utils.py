@@ -3,6 +3,12 @@ from django.template.defaultfilters import slugify
 from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
 from PIL import Image
 from io import BytesIO
+from rest_framework import serializers
+from django.core.files.base import ContentFile
+from base64 import b64decode
+from six import string_types
+from uuid import uuid4
+from imghdr import what
 
 
 # generate unique qaryb links
@@ -84,3 +90,36 @@ class ImageProcessor:
         image.save(bytes_io, format=format_)
         bytes_io.seek(0)
         return bytes_io
+
+
+class Base64ImageField(serializers.ImageField):
+    def to_internal_value(self, data):
+        # Check if this is a base64 string
+        if isinstance(data, string_types):
+            # Check if the base64 string is in the "data:" format
+            if 'data:' in data and ';base64,' in data:
+                # Break out the header from the base64 content
+                header, data = data.split(';base64,')
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = b64decode(data)
+            except TypeError:
+                self.fail('invalid_image')
+
+            # Generate file name:
+            file_name = str(uuid4())[:12]  # 12 characters are more than enough.
+            # Get the file name extension:
+            file_extension = self.get_file_extension(file_name, decoded_file)
+
+            complete_file_name = "%s.%s" % (file_name, file_extension,)
+
+            data = ContentFile(decoded_file, name=complete_file_name)
+
+        return super(Base64ImageField, self).to_internal_value(data)
+
+    @staticmethod
+    def get_file_extension(file_name, decoded_file):
+        extension = what(file_name, decoded_file)
+        extension = "jpg" if extension == "jpeg" else extension
+
+        return extension

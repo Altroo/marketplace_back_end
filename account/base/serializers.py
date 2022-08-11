@@ -2,9 +2,9 @@ from rest_framework import serializers
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib.auth.password_validation import validate_password
 from allauth.account.models import EmailAddress
-from shop.models import AuthShop
 from offers.base.serializers import BaseShopCitySerializer
 from places.base.serializers import BaseCountriesSerializer
+from shop.base.utils import Base64ImageField
 
 
 class BaseSocialAccountSerializer(serializers.Serializer):
@@ -88,6 +88,10 @@ class BaseUserEmailSerializer(serializers.ModelSerializer):
 
 
 class BaseProfilePutSerializer(serializers.ModelSerializer):
+    avatar = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     class Meta:
         model = CustomUser
         fields = ['avatar', 'first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
