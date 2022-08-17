@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ShopView, \
     ShopAvatarPutView, ShopNamePutView, ShopBioPutView, \
     ShopAvailabilityPutView, ShopContactPutView, ShopAddressPutView, ShopColorPutView, \
-    ShopFontPutView, ShopTelPutView, ShopWtspPutView, TempShopToAuthShopView, \
+    ShopFontPutView, ShopPhoneContactPutView, TempShopToAuthShopView, \
     ShopAskBecomeCreator, ShopQrCodeView, \
     ShopModeVacanceView, ShopGetPhoneCodesView
 
@@ -17,8 +17,8 @@ urlpatterns = [
     # POST: Transfer temp shop to auth shop
     path('transfer_shop/', TempShopToAuthShopView.as_view()),
     # PATCH : Edit shop
-    path('phone/', ShopTelPutView.as_view()),
-    path('whatsapp/', ShopWtspPutView.as_view()),
+    path('phone_contact/', ShopPhoneContactPutView.as_view()),
+    # path('whatsapp/', ShopWtspPutView.as_view()),
     path('avatar/', ShopAvatarPutView.as_view()),
     path('shop_name/', ShopNamePutView.as_view()),
     path('bio/', ShopBioPutView.as_view()),

@@ -13,7 +13,7 @@ class BaseShopSerializer(serializers.ModelSerializer):
         fields = [
             'user',
             'shop_name',
-            'avatar', 'color_code', 'bg_color_code',
+            'avatar', 'color_code', 'bg_color_code', 'border', 'icon_color',
             'font_name',
             'creator']
         extra_kwargs = {
@@ -27,6 +27,8 @@ class BaseShopSerializer(serializers.ModelSerializer):
             avatar=self.validated_data['avatar'],
             color_code=self.validated_data['color_code'],
             bg_color_code=self.validated_data['bg_color_code'],
+            border=self.validated_data['border'],
+            icon_color=self.validated_data['icon_color'],
             font_name=self.validated_data['font_name'],
             # Read only default to False
             creator=self.validated_data['creator'],
@@ -58,9 +60,12 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthShop
         # has pk & creator
-        fields = ['pk', 'shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code', 'font_name', 'bio',
+        fields = ['pk', 'shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code',
+                  'border', 'icon_color',
+                  'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
+                  'contact_phone_code', 'contact_phone', 'contact_whatsapp_code', 'contact_whatsapp', 'contact_mode',
                   'phone', 'contact_email',
                   'website_link', 'facebook_link', 'twitter_link', 'instagram_link',
                   'whatsapp', 'zone_by', 'longitude', 'latitude',
@@ -147,13 +152,10 @@ class BaseShopContactPutSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class BaseShopTelPutSerializer(serializers.ModelSerializer):
+class BaseShopPhoneContactPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthShop
-        fields = ['phone']
-        extra_kwargs = {
-            'phone': {'required': True},
-        }
+        fields = ['contact_phone_code', 'contact_phone', 'contact_whatsapp_code', 'contact_whatsapp', 'contact_mode']
 
     # def update(self, instance, validated_data):
     #     instance.phone = validated_data.get('phone', instance.phone)
@@ -161,13 +163,10 @@ class BaseShopTelPutSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class BaseShopWtspPutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuthShop
-        fields = ['whatsapp']
-        extra_kwargs = {
-            'whatsapp': {'required': True},
-        }
+# class BaseShopWtspPutSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AuthShop
+#         fields = ['whatsapp_code', 'whatsapp']
 
     # def update(self, instance, validated_data):
     #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
@@ -208,10 +207,12 @@ class BaseShopAddressPutSerializer(serializers.ModelSerializer):
 class BaseShopColorPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthShop
-        fields = ['color_code', 'bg_color_code']
+        fields = ['color_code', 'bg_color_code', 'border', 'icon_color']
         extra_kwargs = {
             'color_code': {'required': True},
             'bg_color_code': {'required': True},
+            'border': {'required': True},
+            'icon_color': {'required': True},
         }
 
     # def update(self, instance, validated_data):
@@ -267,7 +268,7 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         fields = ['shop_name',
-                  'avatar', 'color_code', 'bg_color_code',
+                  'avatar', 'color_code', 'bg_color_code', 'border', 'icon_color',
                   'font_name',
                   'unique_id']
         extra_kwargs = {
@@ -280,6 +281,8 @@ class BaseTempShopSerializer(serializers.ModelSerializer):
             avatar=self.validated_data['avatar'],
             color_code=self.validated_data['color_code'],
             bg_color_code=self.validated_data['bg_color_code'],
+            border=self.validated_data['border'],
+            icon_color=self.validated_data['icon_color'],
             font_name=self.validated_data['font_name'],
             unique_id=self.validated_data['unique_id'],
         )
@@ -304,9 +307,13 @@ class BaseGETTempShopInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
         # has not pk & creator
-        fields = ['shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code', 'font_name', 'bio',
+        fields = ['shop_name', 'avatar', 'avatar_thumbnail',
+                  'color_code', 'bg_color_code',
+                  'border', 'icon_color',
+                  'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
                   'afternoon_hour_from', 'afternoon_hour_to',
+                  'contact_phone_code', 'contact_phone', 'contact_whatsapp_code', 'contact_whatsapp', 'contact_mode',
                   'phone', 'contact_email',
                   'website_link', 'facebook_link', 'twitter_link', 'instagram_link',
                   'whatsapp', 'zone_by', 'longitude', 'latitude',
@@ -393,13 +400,10 @@ class BaseTempShopContactPutSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
+class BaseTempShopPhoneContactPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
-        fields = ['phone']
-        extra_kwargs = {
-            'phone': {'required': True},
-        }
+        fields = ['contact_phone_code', 'contact_phone', 'contact_whatsapp_code', 'contact_whatsapp', 'contact_mode']
 
     # def update(self, instance, validated_data):
     #     instance.phone = validated_data.get('phone', instance.phone)
@@ -407,18 +411,15 @@ class BaseTempShopTelPutSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TempShop
-        fields = ['whatsapp']
-        extra_kwargs = {
-            'whatsapp': {'required': True},
-        }
-
-    # def update(self, instance, validated_data):
-    #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
-    #     instance.save()
-    #     return instance
+# class BaseTempShopWtspPutSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TempShop
+#         fields = ['whatsapp_code', 'whatsapp']
+#
+#     # def update(self, instance, validated_data):
+#     #     instance.whatsapp = validated_data.get('whatsapp', instance.whatsapp)
+#     #     instance.save()
+#     #     return instance
 
 
 class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
@@ -454,10 +455,12 @@ class BaseTempShopAddressPutSerializer(serializers.ModelSerializer):
 class BaseTempShopColorPutSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempShop
-        fields = ['color_code', 'bg_color_code']
+        fields = ['color_code', 'bg_color_code', 'border', 'icon_color']
         extra_kwargs = {
             'color_code': {'required': True},
             'bg_color_code': {'required': True},
+            'border': {'required': True},
+            'icon_color': {'required': True},
         }
 
     # def update(self, instance, validated_data):

@@ -33,6 +33,16 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
+    @staticmethod
+    def validate_password(value):
+        validate_password(value)
+        return value
+
+    @staticmethod
+    def validate_password2(value):
+        validate_password(value)
+        return value
+
     def save(self):
         account = CustomUser(
             email=self.validated_data['email'],
@@ -43,11 +53,7 @@ class BaseRegistrationSerializer(serializers.ModelSerializer):
         password2 = self.validated_data['password2']
         if password != password2:
             raise serializers.ValidationError(
-                {'password2': ['The passwords don\'t match.']}
-            )
-        elif len(password) < 8 or len(password2) < 8:
-            raise serializers.ValidationError(
-                {'password': ['The password must be at least 8 characters long.']}
+                {'password2': ["Ces mot de passes ne correspond pas."]}
             )
         account.set_password(password)
         account.save()
@@ -72,6 +78,11 @@ class BasePasswordResetSerializer(serializers.Serializer):
 
     @staticmethod
     def validate_new_password(value):
+        validate_password(value)
+        return value
+
+    @staticmethod
+    def validate_new_password2(value):
         validate_password(value)
         return value
 

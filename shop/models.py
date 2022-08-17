@@ -42,6 +42,12 @@ class ShopChoices:
         ('B', 'Black'),
     )
 
+    CONTACT_MODE = (
+        ('', 'Unset'),
+        ('P', 'Phone'),
+        ('W', 'Whatsapp'),
+    )
+
     ZONE_BY_CHOICES = (
         ('A', 'Address'),
         ('S', 'Sector')
@@ -84,6 +90,12 @@ class AuthShop(Model):
                                          null=True, default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    border = models.CharField(verbose_name='Border', max_length=30,
+                              blank=True, null=True,
+                              default=None)
+    icon_color = models.CharField(verbose_name='Icon color',
+                                  max_length=10,
+                                  blank=True, null=True)
     font_name = models.CharField(verbose_name='Font name', max_length=1,
                                  choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
@@ -93,6 +105,17 @@ class AuthShop(Model):
     morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True, default=None)
     afternoon_hour_to = models.TimeField(verbose_name='Afternoon hour to', blank=True, null=True, default=None)
+    # Contacter fields
+    contact_phone_code = models.CharField(verbose_name='Contact phone code', max_length=8, blank=True, null=True,
+                                          default=None)
+    contact_phone = models.CharField(verbose_name='Contact phone number', max_length=15, blank=True, null=True,
+                                     default=None)
+    contact_whatsapp_code = models.CharField(verbose_name='Contact whatsapp code', max_length=8, blank=True, null=True,
+                                             default=None)
+    contact_whatsapp = models.CharField(verbose_name='Contact whatsapp number', max_length=15, blank=True, null=True,
+                                        default=None)
+    contact_mode = models.CharField(verbose_name='Contact mode', max_length=1, choices=ShopChoices.CONTACT_MODE,
+                                    default='', null=True, blank=True)
     phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
     contact_email = models.EmailField(verbose_name='Contact Email', blank=True, null=True, default=None)
     website_link = models.URLField(verbose_name='Website', blank=True, null=True, default=None)
@@ -170,10 +193,17 @@ class TempShop(Model):
     shop_name = models.CharField(verbose_name='Shop name', max_length=150, blank=False, null=False)
     avatar = models.ImageField(verbose_name='Avatar', upload_to=get_shop_avatar_path, blank=False, null=False,
                                default=None)
-    avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail', upload_to=get_shop_avatar_path, blank=True, null=True,
+    avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail', upload_to=get_shop_avatar_path, blank=True,
+                                         null=True,
                                          default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
     bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    border = models.CharField(verbose_name='Border', max_length=30,
+                              blank=True, null=True,
+                              default=None)
+    icon_color = models.CharField(verbose_name='Icon color',
+                                  max_length=10,
+                                  blank=True, null=True)
     font_name = models.CharField(verbose_name='Font name', max_length=2,
                                  choices=ShopChoices.FONT_CHOICES, default='L')
     bio = models.TextField(verbose_name='Bio', null=True, blank=True)
@@ -183,6 +213,17 @@ class TempShop(Model):
     morning_hour_to = models.TimeField(verbose_name='Morning hour to', blank=True, null=True, default=None)
     afternoon_hour_from = models.TimeField(verbose_name='Afternoon hour from', blank=True, null=True, default=None)
     afternoon_hour_to = models.TimeField(verbose_name='Afternoon hour to', blank=True, null=True, default=None)
+    # Contacter fields
+    contact_phone_code = models.CharField(verbose_name='Contact phone code', max_length=8, blank=True, null=True,
+                                          default=None)
+    contact_phone = models.CharField(verbose_name='Contact phone number', max_length=15, blank=True, null=True,
+                                     default=None)
+    contact_whatsapp_code = models.CharField(verbose_name='Contact whatsapp code', max_length=8, blank=True, null=True,
+                                             default=None)
+    contact_whatsapp = models.CharField(verbose_name='Contact whatsapp number', max_length=15, blank=True, null=True,
+                                        default=None)
+    contact_mode = models.CharField(verbose_name='Contact mode', max_length=1, choices=ShopChoices.CONTACT_MODE,
+                                    default='', null=True, blank=True)
     phone = models.CharField(verbose_name='Phone number', max_length=15, blank=True, null=True, default=None)
     contact_email = models.EmailField(verbose_name='Contact Email', blank=True, null=True, default=None)
     website_link = models.URLField(verbose_name='Website', blank=True, null=True, default=None)

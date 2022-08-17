@@ -9,6 +9,10 @@ from base64 import b64decode
 from six import string_types
 from uuid import uuid4
 from imghdr import what
+from rest_framework.views import exception_handler
+from http import HTTPStatus
+from typing import Any
+from rest_framework.views import Response
 
 
 # generate unique qaryb links
@@ -123,3 +127,68 @@ class Base64ImageField(serializers.ImageField):
         extension = "jpg" if extension == "jpeg" else extension
 
         return extension
+
+
+# def api_exception_handler_v2(exc: Exception, context: dict[str, list | Any]) -> Response:
+#     """Custom API exception handler."""
+#
+#     # Call REST framework's default exception handler first,
+#     # to get the standard error response.
+#     response = exception_handler(exc, context)
+#     if response is not None:
+#         # Using the description's of the HTTPStatus class as error message.
+#         http_code_to_message = {v.value: v.description for v in HTTPStatus}
+#         error_payload = {
+#             "error": {
+#                 "status_code": 0,
+#                 "message": "",
+#                 "details": [],
+#             }
+#         }
+#         error = error_payload["error"]
+#         status_code = response.status_code
+#         # if isinstance(response.data, dict):
+#         if 'error' in response.data.keys():
+#             if isinstance(response.data['error'], str):
+#                 error["details"] = {'error' : [response.data['error']]}
+#             else:
+#                 error["details"] = response.data
+#         elif 'detail' in response.data.keys():
+#             if isinstance(response.data['detail'], str):
+#                 error["details"] = {'error' : [response.data['detail']]}
+#             else:
+#                 error["details"] = response.data
+#         else:
+#             error["details"] = response.data
+#         error["status_code"] = status_code
+#         error["message"] = http_code_to_message[status_code]
+#         # error["details"] = response.data
+#         response.data = error_payload
+#     return response
+
+
+def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response:
+    """Custom API exception handler."""
+
+    # Call REST framework's default exception handler first,
+    # to get the standard error response.
+    response = exception_handler(exc, context)
+
+    if response is not None:
+        # Using the description's of the HTTPStatus class as error message.
+        http_code_to_message = {v.value: v.description for v in HTTPStatus}
+        error_payload = {
+            "error": {
+                "status_code": 0,
+                "message": "",
+                "details": [],
+            }
+        }
+        error = error_payload["error"]
+        status_code = response.status_code
+
+        error["status_code"] = status_code
+        error["message"] = http_code_to_message[status_code]
+        error["details"] = response.data
+        response.data = error_payload
+    return response

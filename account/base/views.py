@@ -10,6 +10,7 @@ from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -146,17 +147,11 @@ class RegistrationView(APIView):
 
     @staticmethod
     def generate_random_code(length=4):
-        return ''.join(choice(digits) for i in range(length))
+        return ''.join(choice(digits) for _ in range(length))
 
     def post(self, request):
         password = request.data.get('password')
         password2 = request.data.get('password2')
-        if password != password2:
-            data = {'Error': {'password2': ["The passwords don't match."]}}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-        elif len(password) < 8 or len(password2) < 8:
-            data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         email = str(request.data.get('email')).lower()
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
@@ -207,7 +202,8 @@ class RegistrationView(APIView):
                 user.save()
                 return Response(data=data, status=status.HTTP_200_OK)
             return Response(email_address_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyAccountView(APIView):
@@ -249,7 +245,7 @@ class ResendVerificationCodeView(APIView):
 
     @staticmethod
     def generate_random_code(length=4):
-        return ''.join(choice(digits) for i in range(length))
+        return ''.join(choice(digits) for _ in range(length))
 
     def post(self, request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
@@ -290,7 +286,7 @@ class SendPasswordResetView(APIView):
 
     @staticmethod
     def generate_random_code(length=4):
-        return ''.join(choice(digits) for i in range(length))
+        return ''.join(choice(digits) for _ in range(length))
 
     def post(self, request):
         email = str(request.data.get('email')).lower()
