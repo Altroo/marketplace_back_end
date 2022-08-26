@@ -1,4 +1,5 @@
 from django.db.models import Q
+from rest_framework.exceptions import ValidationError
 from account.models import CustomUser, BlockedUsers
 from rest_framework.viewsets import ModelViewSet
 from chat.base.serializers import BaseMessageModelSerializer, BaseChatUserModelSerializer, \
@@ -136,7 +137,8 @@ class BaseArchiveConversationView(APIView):
         # Check if conversation already archived.
         try:
             ArchivedConversations.objects.get(user=user_pk, recipient=receiver)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            errors = {"error": ["Conversation already archived."]}
+            raise ValidationError(errors)
         # Else add to archive
         except ArchivedConversations.DoesNotExist:
             serializer = BaseArchiveConversationSerializer(data={
@@ -146,4 +148,4 @@ class BaseArchiveConversationView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(serializer.errors)

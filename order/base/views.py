@@ -1,8 +1,8 @@
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from order.base.pagination import GetMyOrderDetailsPagination
 from shop.models import AuthShop
 from order.models import Order, OrderDetails
@@ -22,8 +22,8 @@ class GetMySellingOrdersListView(APIView, PageNumberPagination):
                 serializer = BaseOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
                 return self.get_paginated_response(serializer.data)
         except AuthShop.DoesNotExist:
-            data = {"errors": ["User doesn't own a store yet."]}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User doesn't own a shop yet."]}
+            raise ValidationError(errors)
 
 
 class GetMyBuyingsOrdersListView(APIView, PageNumberPagination):
@@ -83,10 +83,8 @@ class CancelOneOrderView(APIView):
                 order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except OrderDetails.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class CancelAllView(APIView):
@@ -117,10 +115,8 @@ class CancelAllView(APIView):
                     order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class AcceptOrdersView(APIView):
@@ -156,10 +152,8 @@ class AcceptOrdersView(APIView):
                     order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class PatchOrderStatusView(APIView):
@@ -188,10 +182,8 @@ class PatchOrderStatusView(APIView):
                     order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class AdjustDeliveryPriceView(APIView):
@@ -216,10 +208,8 @@ class AdjustDeliveryPriceView(APIView):
                     order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class AcceptNewAdjustedDeliveryPrice(APIView):
@@ -249,7 +239,5 @@ class AcceptNewAdjustedDeliveryPrice(APIView):
                     order_detail.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            data = {
-                "errors": "OrderDetail doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Order doesn't exist!"]}
+            raise ValidationError(errors)

@@ -3,6 +3,7 @@ from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import IntegrityError
 from django.db.models import Count, F
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -54,8 +55,8 @@ class ShopOfferViewV2(APIView):
                 offer_details_serializer = BaseTempOfferDetailsSerializer(offer)
                 return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
             except TempOffers.DoesNotExist:
-                data = {'errors': ['Temp offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -85,8 +86,8 @@ class ShopOfferViewV2(APIView):
                     OffersTotalVues.objects.create(auth_shop=offer.auth_shop, date=month, nbr_total_vue=1).save()
                 return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
             except Offers.DoesNotExist:
-                data = {'errors': ['Offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
 
     @staticmethod
     def post(request, *args, **kwargs):
@@ -97,8 +98,8 @@ class ShopOfferViewV2(APIView):
             try:
                 shop = TempShop.objects.get(unique_id=unique_id)
             except TempShop.DoesNotExist:
-                data = {'errors': ['Temp offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
             offer_type = request.data.get('offer_type')
             title = request.data.get('title')
             description = request.data.get('description')
@@ -430,21 +431,21 @@ class ShopOfferViewV2(APIView):
                         # For products
                         return Response(data=data, status=status.HTTP_200_OK)
                     else:
-                        return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(delivery_serializer.errors)
                 else:
                     offer.delete()
                     if offer_type == 'V' and product_serializer_errors:
-                        return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(product_serializer_errors.errors)
                     if offer_type == 'S' and service_serializer_errors:
-                        return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(service_serializer_errors.errors)
+            raise ValidationError(offer_serializer.errors)
         # Real offers
         else:
             try:
                 auth_shop = AuthShop.objects.get(user=user)
             except AuthShop.DoesNotExist:
-                data = {'errors': ['User shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
             offer_type = request.data.get('offer_type')
             title = request.data.get('title')
             description = request.data.get('description')
@@ -788,14 +789,14 @@ class ShopOfferViewV2(APIView):
                         # For products
                         return Response(data=data, status=status.HTTP_200_OK)
                     else:
-                        return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(delivery_serializer.errors)
                 else:
                     offer.delete()
                     if offer_type == 'V' and product_serializer_errors:
-                        return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(product_serializer_errors.errors)
                     if offer_type == 'S' and service_serializer_errors:
-                        return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(service_serializer_errors.errors)
+            raise ValidationError(offer_serializer.errors)
 
     def put(self, request, *args, **kwargs):
         offer_pk = request.data.get('offer_pk')
@@ -1201,7 +1202,7 @@ class ShopOfferViewV2(APIView):
                                 data['deliveries'] = deliveries
                                 return Response(data, status=status.HTTP_200_OK)
                             else:
-                                return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                                raise ValidationError(delivery_serializer.errors)
                         if service_valid:
                             service = TempServices.objects.get(offer=offer.pk)
                             # serializer referenced before assignment fixed by the service_valid = True
@@ -1236,13 +1237,13 @@ class ShopOfferViewV2(APIView):
                             return Response(data, status=status.HTTP_200_OK)
                     else:
                         if offer_type == 'V' and product_serializer_errors:
-                            return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(product_serializer_errors)
                         if offer_type == 'S' and service_serializer_errors:
-                            return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-                return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(service_serializer_errors)
+                raise ValidationError(offer_serializer.errors)
             except TempOffers.DoesNotExist:
-                data = {'errors': ['Temp offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -1652,7 +1653,7 @@ class ShopOfferViewV2(APIView):
                                 data['deliveries'] = deliveries
                                 return Response(data, status=status.HTTP_200_OK)
                             else:
-                                return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                                raise ValidationError(delivery_serializer.errors)
                         if service_valid:
                             service = Services.objects.get(offer=offer.pk)
                             # serializer referenced before assignment fixed by the service_valid = True
@@ -1687,13 +1688,13 @@ class ShopOfferViewV2(APIView):
                             return Response(data, status=status.HTTP_200_OK)
                     else:
                         if offer_type == 'V' and product_serializer_errors:
-                            return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(product_serializer_errors)
                         if offer_type == 'S' and service_serializer_errors:
-                            return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-                return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(service_serializer_errors)
+                raise ValidationError(offer_serializer.errors)
             except Offers.DoesNotExist:
-                data = {'errors': [' offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -1705,8 +1706,8 @@ class ShopOfferViewV2(APIView):
             try:
                 offer = TempOffers.objects.get(pk=offer_pk)
                 if offer.auth_shop.unique_id != unique_id:
-                    data = {'errors': ['Temp offer not yours to delete.']}
-                    return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                    errors = {"error": ["Offer not yours to delete."]}
+                    raise ValidationError(errors)
                 # Delete temp product images
                 # Picture 1
                 try:
@@ -1747,15 +1748,15 @@ class ShopOfferViewV2(APIView):
                 offer.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except TempOffers.DoesNotExist:
-                data = {'errors': ['Temp offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
                 shop = AuthShop.objects.get(user=user)
             except AuthShop.DoesNotExist:
-                data = {'errors': ['User shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
             offers = Offers.objects.filter(auth_shop=shop)
             deleted = False
             for offer in offers:
@@ -1802,8 +1803,8 @@ class ShopOfferViewV2(APIView):
             if deleted:
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
-                data = {'errors': ['Offer not yours to delete.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not yours to delete."]}
+                raise ValidationError(errors)
 
 
 class GetMyShopOffersListView(APIView, PaginationMixinBy5):
@@ -1828,11 +1829,9 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
                 if page is not None:
                     serializer = BaseTempOfferssListSerializer(instance=page, many=True)
                     return self.get_paginated_response(serializer.data)
-                # data = {'response': 'Temp shop has no products.'}
-                # return Response(data=data, status=status.HTTP_200_OK)
             except TempShop.DoesNotExist:
-                data = {'errors': ['Temp shop unique_id not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -1847,11 +1846,9 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
                 if page is not None:
                     serializer = BaseOffersListSerializer(instance=page, many=True)
                     return self.get_paginated_response(serializer.data)
-                # data = {'response': 'Shop has no products.'}
-                # return Response(data=data, status=status.HTTP_200_OK)
             except AuthShop.DoesNotExist:
-                data = {'errors': ['User shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
 
 
 class GetOffersVuesListView(APIView, GetMyVuesPagination):
@@ -1872,11 +1869,10 @@ class GetOffersVuesListView(APIView, GetMyVuesPagination):
                 response = sorted(list(serializer.data), reverse=True,
                                   key=lambda key_needed: key_needed['nbr_total_vue'])
                 return self.get_paginated_response_custom(response, total_vues=total_vues, auth_shop=auth_shop)
-            data = {'response': 'Shop has no offers.'}
-            return Response(data=data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except AuthShop.DoesNotExist:
-            data = {'errors': ['User shop not found.']}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopOfferSolderView(APIView):
@@ -1894,8 +1890,8 @@ class ShopOfferSolderView(APIView):
                 offer_details_serializer = BaseTempShopOfferSolderSerializer(solder)
                 return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
             except TempSolder.DoesNotExist:
-                data = {'errors': ['Temp offer solder not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer solder not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -1903,8 +1899,8 @@ class ShopOfferSolderView(APIView):
                 offer_details_serializer = BaseShopOfferSolderSerializer(solder)
                 return Response(offer_details_serializer.data, status=status.HTTP_200_OK)
             except Solder.DoesNotExist:
-                data = {'errors': ['Offer solder not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer solder not found."]}
+                raise ValidationError(errors)
 
     @staticmethod
     def post(request, *args, **kwargs):
@@ -1919,12 +1915,12 @@ class ShopOfferSolderView(APIView):
                 offer = TempOffers.objects.get(pk=offer_pk, auth_shop__unique_id=unique_id)
                 if solder_type == 'F':
                     if float(solder_value) >= offer.price:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder fix price is more than the offer price."]}
+                        raise ValidationError(errors)
                 if solder_type == 'P':
                     if float(solder_value) >= 100:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder can't be applied up to 100%."]}
+                        raise ValidationError(errors)
                 serializer = BaseTempShopOfferSolderSerializer(data={
                     'offer': offer.pk,
                     'solder_type': solder_type,
@@ -1933,22 +1929,22 @@ class ShopOfferSolderView(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
             except TempOffers.DoesNotExist:
-                data = {'errors': ['Temp offer not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
                 offer = Offers.objects.get(pk=offer_pk, auth_shop__user=user)
                 if solder_type == 'F':
                     if float(solder_value) >= offer.price:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder fix price is more than the offer price."]}
+                        raise ValidationError(errors)
                 if solder_type == 'P':
                     if float(solder_value) >= 100:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder can't be applied up to 100%."]}
+                        raise ValidationError(errors)
                 serializer = BaseShopOfferSolderSerializer(data={
                     'offer': offer.pk,
                     'solder_type': solder_type,
@@ -1957,10 +1953,10 @@ class ShopOfferSolderView(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
             except Offers.DoesNotExist:
-                data = {'errors': ["Offer not found."]}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -1973,12 +1969,12 @@ class ShopOfferSolderView(APIView):
                 solder = TempSolder.objects.get(offer=offer_pk, offer__auth_shop__unique_id=unique_id)
                 if solder.solder_type == 'F':
                     if solder.solder_value >= solder.offer.price:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder fix price is more than the offer price."]}
+                        raise ValidationError(errors)
                 if solder.solder_type == 'P':
                     if solder.solder_value >= 100:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder can't be applied up to 100%."]}
+                        raise ValidationError(errors)
                 serializer = BaseTempShopOfferSolderPutSerializer(solder, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -1988,22 +1984,22 @@ class ShopOfferSolderView(APIView):
                         'solder_value': serializer.data.get('solder_value'),
                     }
                     return Response(data=data, status=status.HTTP_200_OK)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
             except TempSolder.DoesNotExist:
-                data = {'errors': ["Temp solder not found."]}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Solder not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
                 solder = Solder.objects.get(offer=offer_pk, offer__auth_shop__user=user)
                 if solder.solder_type == 'F':
                     if solder.solder_value >= solder.offer.price:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder fix price is more than the offer price."]}
+                        raise ValidationError(errors)
                 if solder.solder_type == 'P':
                     if solder.solder_value >= 100:
-                        data = {'errors': ["Solder can't be applied up to 100%."]}
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["Solder can't be applied up to 100%."]}
+                        raise ValidationError(errors)
                 serializer = BaseShopOfferSolderPutSerializer(solder, data=request.data, partial=True)
                 if serializer.is_valid():
                     # serializer.update(solder, serializer.validated_data)
@@ -2014,10 +2010,10 @@ class ShopOfferSolderView(APIView):
                         'solder_value': serializer.data.get('solder_value'),
                     }
                     return Response(data=data, status=status.HTTP_200_OK)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
             except Solder.DoesNotExist:
-                data = {'errors': ["Solder not found."]}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Solder not found."]}
+                raise ValidationError(errors)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -2030,16 +2026,16 @@ class ShopOfferSolderView(APIView):
                 TempSolder.objects.get(offer=offer_pk, offer__auth_shop__unique_id=unique_id).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except TempSolder.DoesNotExist:
-                data = {'errors': ["Temp offer solder not found."]}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Solder not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
                 Solder.objects.get(offer=offer_pk, offer__auth_shop__user=user).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except Solder.DoesNotExist:
-                data = {'errors': ["Offer solder not found."]}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Solder not found."]}
+                raise ValidationError(errors)
 
 
 class ShopOfferDuplicateView(APIView):
@@ -2357,17 +2353,17 @@ class ShopOfferDuplicateView(APIView):
                         data['deliveries'] = deliveries
                         return Response(data=data, status=status.HTTP_200_OK)
                     else:
-                        return Response(delivery_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(delivery_serializer.errors)
                 else:
                     offer_serializer.delete()
                     if offer_type == 'V' and product_serializer_errors:
-                        return Response(product_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(product_serializer_errors)
                     if offer_type == 'S' and service_serializer_errors:
-                        return Response(service_serializer_errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(offer_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        raise ValidationError(service_serializer_errors)
+            raise ValidationError(offer_serializer.errors)
         except Offers.DoesNotExist:
-            data = {'errors': ['Offer not found.']}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Offer not found."]}
+            raise ValidationError(errors)
 
 
 class GetLastThreeDeliveriesView(APIView):
@@ -2408,8 +2404,8 @@ class GetLastThreeDeliveriesView(APIView):
                         break
                 return Response(data, status=status.HTTP_200_OK)
             except TempShop.DoesNotExist:
-                data = {'errors': ['Temp shop unique_id not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -2450,8 +2446,8 @@ class GetLastThreeDeliveriesView(APIView):
                         break
                 return Response(data, status=status.HTTP_200_OK)
             except AuthShop.DoesNotExist:
-                data = {'errors': ['Auth shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
 
 
 class GetLastUsedLocalisationView(APIView):
@@ -2501,8 +2497,8 @@ class GetLastUsedLocalisationView(APIView):
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except TempOffers.DoesNotExist:
-                data = {'errors': ['Temp shop unique_id not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
         # Real offers
         else:
             try:
@@ -2542,8 +2538,8 @@ class GetLastUsedLocalisationView(APIView):
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except AuthShop.DoesNotExist:
-                data = {'errors': ['Auth shop not found.']}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
 
 
 class GetOfferTagsView(ListAPIView):

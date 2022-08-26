@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from .models import Version
 from version.serializers import VersionSerializer
-from rest_framework.exceptions import ValidationError
+# from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -15,5 +15,5 @@ class GetVersionView(APIView):
         version = Version.objects.all().first()
         serializer = VersionSerializer(version)
         # data = 'Error simulation'
-        # return Response(data=serializer.data, status=status.HTTP_200_OK)
-        raise ValidationError([{'error': 'Error simulation'}])
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        # raise ValidationError({'error': ['Error simulation testing state']})

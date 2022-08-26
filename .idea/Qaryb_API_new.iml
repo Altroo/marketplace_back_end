@@ -51,6 +51,7 @@
       <sourceFolder url="file://$MODULE_DIR$/ratings/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/shop/base" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/places/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/account/management/commands" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/venv_brew" />
@@ -78,6 +79,7 @@
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/account/templates" />
+        <option value="$MODULE_DIR$/account/templates/admin" />
       </list>
     </option>
   </component>

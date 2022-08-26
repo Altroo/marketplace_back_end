@@ -61,10 +61,10 @@ class ShopChoices:
 
 
 class LonLatValidators:
-    lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$',
+    lat_validator = RegexValidator(r'^(\+|-)?(?:90(?:(?:\.0{1,18})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,18})?))$',
                                    'Only Geo numbers are allowed.')
-    long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
-                                    r'(?:(?:\.[0-9]{1,6})?))$',
+    long_validator = RegexValidator(r'^(\+|-)?(?:180(?:(?:\.0{1,18})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])'
+                                    r'(?:(?:\.[0-9]{1,18})?))$',
                                     'Only Geo numbers are allowed.')
 
 
@@ -89,7 +89,7 @@ class AuthShop(Model):
     avatar_thumbnail = models.ImageField(verbose_name='Avatar thumbnail', upload_to=get_shop_avatar_path, blank=True,
                                          null=True, default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
-    bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    bg_color_code = ColorField(verbose_name='Bg Color code', default='#FFFFFF')
     border = models.CharField(verbose_name='Border', max_length=30,
                               blank=True, null=True,
                               default=None)
@@ -125,9 +125,9 @@ class AuthShop(Model):
     whatsapp = models.CharField(verbose_name='Whatsapp number', max_length=15, blank=True, null=True, default=None)
     zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=ShopChoices.ZONE_BY_CHOICES, default='A')
     longitude = models.FloatField(verbose_name='Longitude', blank=True,
-                                  null=True, max_length=10, validators=[LonLatValidators.long_validator], default=None)
+                                  null=True, max_length=20, validators=[LonLatValidators.long_validator], default=None)
     latitude = models.FloatField(verbose_name='Latitude', blank=True,
-                                 null=True, max_length=10, validators=[LonLatValidators.lat_validator], default=None)
+                                 null=True, max_length=20, validators=[LonLatValidators.lat_validator], default=None)
     address_name = models.CharField(verbose_name='Address name', max_length=255,
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)
@@ -197,7 +197,7 @@ class TempShop(Model):
                                          null=True,
                                          default=None)
     color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
-    bg_color_code = ColorField(verbose_name='Color code', default='#FFFFFF')
+    bg_color_code = ColorField(verbose_name='Bg Color code', default='#FFFFFF')
     border = models.CharField(verbose_name='Border', max_length=30,
                               blank=True, null=True,
                               default=None)
@@ -233,9 +233,9 @@ class TempShop(Model):
     whatsapp = models.CharField(verbose_name='Whatsapp number', max_length=15, blank=True, null=True, default=None)
     zone_by = models.CharField(verbose_name='Zone by', max_length=1, choices=ShopChoices.ZONE_BY_CHOICES, default='A')
     longitude = models.FloatField(verbose_name='Longitude', blank=True,
-                                  null=True, max_length=10, validators=[LonLatValidators.long_validator], default=None)
+                                  null=True, max_length=20, validators=[LonLatValidators.long_validator], default=None)
     latitude = models.FloatField(verbose_name='Latitude', blank=True,
-                                 null=True, max_length=10, validators=[LonLatValidators.lat_validator], default=None)
+                                 null=True, max_length=20, validators=[LonLatValidators.lat_validator], default=None)
     address_name = models.CharField(verbose_name='Address name', max_length=255,
                                     blank=True, null=True, default=None)
     km_radius = models.FloatField(verbose_name='Km radius', blank=True, null=True, default=None)

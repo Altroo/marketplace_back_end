@@ -17,6 +17,11 @@
             <path value="file://$PROJECT_DIR$/media/fallback_shop_avatars" />
             <path value="file://$PROJECT_DIR$/media/fallback_user_avatars" />
             <path value="file://$PROJECT_DIR$/media/fallback_shop_offers" />
+            <path value="file://$PROJECT_DIR$/media/media" />
+            <path value="file://$PROJECT_DIR$/media/media/fallback_shop_offers" />
+            <path value="file://$PROJECT_DIR$/media/media/fallback_user_avatars" />
+            <path value="file://$PROJECT_DIR$/media/media/shop_avatars" />
+            <path value="file://$PROJECT_DIR$/media/media/shop_offers" />
           </resourceRoots>
         </entryData>
       </entry>

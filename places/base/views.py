@@ -1,4 +1,5 @@
 from django.db.models.functions import Coalesce
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 
@@ -87,8 +88,8 @@ class GetLocalisationNameView(APIView):
                     break
 
             if final_result is None:
-                data = {'errors': 'The given geo is not a valid road!'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"error": ["The given geo is not a valid road!"]}
+                raise ValidationError(errors)
 
             clean_result = LanguageCleaner().clear_string(final_result, 'tifinagh',
                                                           {'tifinagh': {'start': 'u2d30', 'end': 'u2d7f'}})
@@ -97,6 +98,6 @@ class GetLocalisationNameView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
 
         except (IndexError, AttributeError):
-            data = {'errors': 'The given geo is not a valid road!'}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["The given geo is not a valid road!"]}
+            raise ValidationError(errors)
 

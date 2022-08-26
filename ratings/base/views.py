@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponse
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
@@ -22,8 +23,8 @@ class GetBuyingRatingsList(APIView, PageNumberPagination):
                 serializer = BaseGetRatingsListSerializer(instance=page, many=True, context={'order_type': 'buy'})
                 return self.get_paginated_response(serializer.data)
         except CustomUser.DoesNotExist:
-            data = {"errors": "User doesn't exist!"}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class GetSellingRatingsList(APIView, PageNumberPagination):
@@ -39,8 +40,8 @@ class GetSellingRatingsList(APIView, PageNumberPagination):
                 serializer = BaseGetRatingsListSerializer(instance=page, many=True, context={'order_type': 'sell'})
                 return self.get_paginated_response(serializer.data)
         except CustomUser.DoesNotExist:
-            data = {"errors": "User doesn't exist!"}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 # try:

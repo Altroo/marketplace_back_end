@@ -1,4 +1,5 @@
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from account.models import UserAddress
@@ -45,17 +46,13 @@ class CartOffersView(APIView):
         picked_hour = request.data.get('picked_hour', None)
         try:
             Offers.objects.get(pk=offer_pk, auth_shop__user_id=user_pk)
-            data = {
-                'errors': "Can't add your own offers to your cart!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Can't add your own offers to your cart!"]}
+            raise ValidationError(errors)
         except Offers.DoesNotExist:
             try:
                 Cart.objects.get(user_id=user_pk, offer_id=offer_pk)
-                data = {
-                    'errors': "Already in cart!"
-                }
-                return Response(data=data, status=status.HTTP_200_OK)
+                errors = {"error": ["Already in cart!"]}
+                raise ValidationError(errors)
             except Cart.DoesNotExist:
                 # Check to not multiply by 0
                 if int(picked_quantity) <= 0 or picked_quantity is None:
@@ -72,7 +69,7 @@ class CartOffersView(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
-                return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -92,9 +89,8 @@ class CartOffersView(APIView):
             #     "total_price": GetCartPrices().get_offer_price(cart_offer)
             # }
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
-    # Return new total price
     @staticmethod
     def delete(request, *args, **kwargs):
         user = request.user
@@ -102,13 +98,11 @@ class CartOffersView(APIView):
         try:
             cart_offer = Cart.objects.get(user=user, pk=cart_pk)
             cart_offer.delete()
-            data = {
-                'offer_pk': cart_offer.offer.pk
-            }
+            data = {'offer_pk': cart_offer.offer.pk}
             return Response(data=data, status=status.HTTP_200_OK)
         except Cart.DoesNotExist:
-            data = {'errors': ['Cart offer not found.']}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Cart offer not found."]}
+            raise ValidationError(errors)
 
 
 class GetMyCartListView(APIView, GetMyCartPagination):
@@ -151,10 +145,8 @@ class ValidateCartOffersView(APIView):
         cart_offers = Cart.objects.filter(user=user, offer__auth_shop_id=shop_pk) \
             .order_by('-created_date', '-updated_date')
         if len(cart_offers) == 0:
-            data = {
-                'errors': "Your cart is empty"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Your cart is empty"]}
+            raise ValidationError(errors)
         # Means single or multiple products/services from one shop
         cart_offer = cart_offers[0]
         date_time = datetime.now()
@@ -213,11 +205,9 @@ class ValidateCartOffersView(APIView):
                         total_self_price = self.get_offer_price(cart_offer.offer, cart_offer.picked_quantity,
                                                                 0, solder)
                     if not picked_delivery and not picked_click_and_collect:
-                        data = {
-                            'errors': "You need to pick a delivery or click & collect"
-                        }
                         order_serializer.delete()
-                        return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                        errors = {"error": ["You need add a delivery or pick click & collect"]}
+                        raise ValidationError(errors)
                     # order_status = default to confirm
                     order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                         'order': order_serializer.pk,
@@ -258,7 +248,7 @@ class ValidateCartOffersView(APIView):
                         cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
                         cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
-                    return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    raise ValidationError(order_details_product_serializer.errors)
                 # Services
                 elif cart_offer.offer.offer_type == 'S':
                     service_details = Services.objects.get(offer=cart_offer.offer.pk)
@@ -301,8 +291,8 @@ class ValidateCartOffersView(APIView):
                         cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
                         cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
-                    return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    raise ValidationError(order_details_service_serializer.errors)
+            raise ValidationError(order_serializer.errors)
         # Multiple offers from one store / may include products & services
         else:
             # Since len > 1 we take all objects
@@ -364,11 +354,9 @@ class ValidateCartOffersView(APIView):
                                                                             cart_offer[1].picked_quantity,
                                                                             0, solder)
                         if not check_picked_delivery and not check_click_and_collect:
-                            data = {
-                                'errors': "You need to pick a delivery or click & collect"
-                            }
                             order_serializer.delete()
-                            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                            errors = {"error": ["You need add a delivery or pick click & collect"]}
+                            raise ValidationError(errors)
                         order_details_product_serializer = BaseOferDetailsProductSerializer(data={
                             'order': order_serializer.pk,
                             'offer': cart_offer[1].offer.pk,
@@ -405,7 +393,7 @@ class ValidateCartOffersView(APIView):
                                                                      'offer_thumbnail'), )
                             order_valid = True
                         else:
-                            return Response(order_details_product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(order_details_product_serializer.errors)
                     # Service
                     elif cart_offer[1].offer.offer_type == 'S':
                         first_name = request.data.get('first_name')
@@ -447,9 +435,9 @@ class ValidateCartOffersView(APIView):
                                                                      'offer_thumbnail'), )
                             order_valid = True
                         else:
-                            return Response(order_details_service_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                            raise ValidationError(order_details_service_serializer.errors)
             else:
-                return Response(order_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(order_serializer.errors)
             if order_valid:
                 cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
                 cart_offers.delete()

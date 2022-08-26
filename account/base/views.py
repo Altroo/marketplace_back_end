@@ -201,9 +201,8 @@ class RegistrationView(APIView):
                 user.task_id_activation = str(task_id_activation)
                 user.save()
                 return Response(data=data, status=status.HTTP_200_OK)
-            return Response(email_address_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(email_address_serializer.errors)
         raise ValidationError(serializer.errors)
-        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyAccountView(APIView):
@@ -213,6 +212,7 @@ class VerifyAccountView(APIView):
     def post(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
         code = request.data.get('code')
+        errors = {"error": ["User or Verification code invalid!"]}
         try:
             user = CustomUser.objects.get(email=email)
             user_email = EmailAddress.objects.get(email=email)
@@ -229,15 +229,10 @@ class VerifyAccountView(APIView):
                 user_email.verified = True
                 user_email.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
+        # raise ValidationError(delivery_serializer.errors)
         except CustomUser.DoesNotExist:
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
 
 
 class ResendVerificationCodeView(APIView):
@@ -275,10 +270,8 @@ class ResendVerificationCodeView(APIView):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
-            data = {
-                'email': "User Doesn't exist!"
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"email": ["Email Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class SendPasswordResetView(APIView):
@@ -318,10 +311,8 @@ class SendPasswordResetView(APIView):
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
-            data = {
-                'email': "User Doesn't exist!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"email": ["Email Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class PasswordResetView(APIView):
@@ -331,24 +322,20 @@ class PasswordResetView(APIView):
     def get(request, *args, **kwargs):
         email = str(kwargs.get('email')).lower()
         code = kwargs.get('code')
+        errors = {"error": ["User or Verification code invalid!"]}
         try:
             user = CustomUser.objects.get(email=email)
             if code is not None and code == user.password_reset_code:
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
         except CustomUser.DoesNotExist:
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
 
     @staticmethod
     def put(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
         code = request.data.get('code')
+        errors = {"error": ["User or Verification code invalid!"]}
         try:
             user = CustomUser.objects.get(email=email)
             if code is not None and email is not None and code == user.password_reset_code:
@@ -361,26 +348,20 @@ class PasswordResetView(APIView):
                         user.task_id_password_reset = None
                         user.save()
                     # Check old password
-                    new_password = serializer.data.get("new_password")
-                    new_password2 = serializer.data.get("new_password2")
+                    # new_password = serializer.data.get("new_password")
+                    # new_password2 = serializer.data.get("new_password2")
                     # set_password also hashes the password that the user will get
-                    if new_password != new_password2:
-                        return Response({"new_password": ["Passwords doesn't match!"]},
-                                        status=status.HTTP_400_BAD_REQUEST)
+                    # if new_password != new_password2:
+                    #    return Response({"new_password": ["Passwords doesn't match!"]},
+                    #                    status=status.HTTP_400_BAD_REQUEST)
                     user.set_password(serializer.data.get("new_password"))
                     user.password_reset_code = ''
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
+            raise ValidationError(errors)
         except CustomUser.DoesNotExist:
-            data = {
-                'errors': "User or Verification code invalid!"
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
 
 
 class CheckEmailView(APIView):
@@ -389,9 +370,10 @@ class CheckEmailView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
+        errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà"]}
         try:
             CustomUser.objects.get(email=email)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -482,8 +464,8 @@ class GetProfileView(APIView):
             user_serializer = BaseProfileGETSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
-            data = {'errors': ["User Doesn't exist!"]}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class ProfileView(APIView):
@@ -496,8 +478,8 @@ class ProfileView(APIView):
             user_serializer = BaseProfileGETSerializer(user)
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
-            data = {'errors': ["User Doesn't exist!"]}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User Doesn't exist!"]}
+            raise ValidationError(errors)
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -508,8 +490,8 @@ class ProfileView(APIView):
             city = City.objects.get(pk=city_pk)
             country = Country.objects.get(pk=country_pk)
         except (City.DoesNotExist, Country.DoesNotExist):
-            data = {'errors': ["City or Country Doesn't exist!"]}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["City or Country is invalid."]}
+            raise ValidationError(errors)
         data = {
             'avatar': request.data.get('avatar', None),
             'first_name': request.data.get('first_name'),
@@ -548,7 +530,7 @@ class ProfileView(APIView):
             }
             data['date_joined'] = user.date_joined
             return Response(data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
 
 class BlockView(APIView):
@@ -565,8 +547,8 @@ class BlockView(APIView):
         user_pk = request.user.pk
         user_blocked_pk = request.data.get('user_pk')
         if user_pk == user_blocked_pk:
-            data = {'errors': ['You can\'t block yourself!']}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["You can't block yourself!"]}
+            raise ValidationError(errors)
         serializer = BaseBlockUserSerializer(data={
             "user": user_pk,
             "user_blocked": user_blocked_pk,
@@ -575,7 +557,7 @@ class BlockView(APIView):
             serializer.save()
             base_mark_every_messages_as_read.apply_async((user_blocked_pk, user_pk), )
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -584,8 +566,8 @@ class BlockView(APIView):
             BlockedUsers.objects.get(user=request.user, user_blocked=user_blocked_pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except BlockedUsers.DoesNotExist:
-            data = {"errors": ["User not found"]}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["User Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class ReportView(APIView):
@@ -606,7 +588,7 @@ class ReportView(APIView):
             # check_repport_email_limit = BaseCheckRepportEmailLimit()
             # check_repport_email_limit.apply_async((post_id,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
 
 class AddressView(APIView):
@@ -621,8 +603,8 @@ class AddressView(APIView):
             user_address_details_serializer = BaseUserAddresseDetailSerializer(user_address)
             return Response(user_address_details_serializer.data, status=status.HTTP_200_OK)
         except UserAddress.DoesNotExist:
-            data = {"errors": ["Address not found."]}
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Address not found."]}
+            raise ValidationError(errors)
 
     @staticmethod
     def post(request, *args, **kwargs):
@@ -669,7 +651,7 @@ class AddressView(APIView):
             data['city'] = city
             data['country'] = country
             return Response(data=data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -691,7 +673,7 @@ class AddressView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(data=serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -701,8 +683,8 @@ class AddressView(APIView):
             UserAddress.objects.get(user=user, pk=address_pk).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except UserAddress.DoesNotExist:
-            data = {"errors": "Address not found."}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"error": ["Address not found."]}
+            raise ValidationError(errors)
 
 
 class GetAllAddressesView(APIView):
@@ -736,7 +718,7 @@ class EncloseAccountView(APIView):
             user.save()
             logout(request)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)
 
 
 # class ChangeEmailAccountView(APIView):
@@ -777,7 +759,7 @@ class EncloseAccountView(APIView):
 #                     return Response({"new_password": ["Sorry, the passwords do not match."]},
 #                                     status=status.HTTP_400_BAD_REQUEST)
 #                 elif len(new_password) < 8 or len(new_password2) < 8:
-#                     data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
+#                     data = {"error": {'password': ["The password must be at least 8 characters long."]}}
 #                     return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 #                 serializer = BaseEmailPutSerializer(data={'email': new_email})
 #                 if serializer.is_valid():
@@ -801,16 +783,14 @@ class ChangeEmailHasPasswordAccountView(APIView):
         new_email = request.data.get('new_email')
         try:
             CustomUser.objects.get(email=new_email)
-            data = {
-                "email": "This email address already exists."
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà."]}
+            raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             # Require email & password
             password = request.data.get('password')
             if not user.check_password(password):
-                return Response({"password": ["Sorry, but this is a wrong password."]},
-                                status=status.HTTP_400_BAD_REQUEST)
+                errors = {"password": ["Sorry, but this is a wrong password."]}
+                raise ValidationError(errors)
             else:
                 serializer = BaseEmailPutSerializer(data={'email': new_email})
                 if serializer.is_valid():
@@ -820,7 +800,7 @@ class ChangeEmailHasPasswordAccountView(APIView):
                     email_address.verified = False
                     email_address.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError(serializer.errors)
 
 
 class ChangeEmailNotHasPasswordAccountView(APIView):
@@ -832,31 +812,64 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
         new_email = request.data.get('new_email')
         try:
             CustomUser.objects.get(email=new_email)
-            data = {
-                "email": "This email address already exists."
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà."]}
+            raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             # Require email & to set a new password
             new_password = request.data.get("new_password")
             new_password2 = request.data.get("new_password2")
             if new_password != new_password2:
-                return Response({"new_password": ["Sorry, the passwords do not match."]},
-                                status=status.HTTP_400_BAD_REQUEST)
-            elif len(new_password) < 8 or len(new_password2) < 8:
-                data = {'Error': {'password': ["The password must be at least 8 characters long."]}}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            serializer = BaseEmailPutSerializer(data={'email': new_email})
-            if serializer.is_valid():
-                serializer.update(request.user, serializer.validated_data)
-                user.set_password(new_password)
-                user.save()
-                email_address = EmailAddress.objects.get(user=user)
-                email_address.email = new_email
-                email_address.verified = False
-                email_address.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                errors = {"new_password2": ["Ces mot de passes ne correspond pas."]}
+                raise ValidationError(errors)
+            if new_password is not None and new_password2 is not None:
+                if len(new_password) < 8 and len(new_password2) < 8:
+                    errors = {"error": {
+                        "new_password": [
+                            "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."
+                        ],
+                        "new_password2": [
+                            "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."
+                        ],
+                    }}
+                    raise ValidationError(errors)
+                elif len(new_password) < 8:
+                    errors = {"error": {"new_password": [
+                        "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."]}}
+                    raise ValidationError(errors)
+                elif len(new_password2) < 8:
+                    errors = {"error": {"new_password2": [
+                        "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."]}}
+                    raise ValidationError(errors)
+                serializer = BaseEmailPutSerializer(data={'email': new_email})
+                if serializer.is_valid():
+                    serializer.update(request.user, serializer.validated_data)
+                    user.set_password(new_password)
+                    user.save()
+                    email_address = EmailAddress.objects.get(user=user)
+                    email_address.email = new_email
+                    email_address.verified = False
+                    email_address.save()
+                    return Response(status=status.HTTP_204_NO_CONTENT)
+                raise ValidationError(serializer.errors)
+            else:
+                if new_password is None and new_password2 is None:
+                    errors = {"error": {
+                        "new_password": [
+                            "Ce champ est obligatoire."
+                        ],
+                        "new_password2": [
+                            "Ce champ est obligatoire."
+                        ],
+                    }}
+                    raise ValidationError(errors)
+                elif new_password is None:
+                    errors = {"error": {"new_password": [
+                        "Ce champ est obligatoire."]}}
+                    raise ValidationError(errors)
+                elif new_password2 is None:
+                    errors = {"error": {"new_password2": [
+                        "Ce champ est obligatoire."]}}
+                    raise ValidationError(errors)
 
 
 class CheckAccountView(APIView):
@@ -881,10 +894,8 @@ class CheckAccountView(APIView):
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except EmailAddress.DoesNotExist:
-            data = {
-                "email": "Email not found."
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            errors = {"email": ["Email Doesn't exist!"]}
+            raise ValidationError(errors)
 
 
 class DeleteAccountView(APIView):
@@ -954,4 +965,4 @@ class DeleteAccountView(APIView):
             user.delete()
             logout(request)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        raise ValidationError(serializer.errors)

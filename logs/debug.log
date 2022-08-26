@@ -25319,3 +25319,1137 @@ Bad Request: /api/1.0.0/shop/avatar/
 [31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.33, 127.0.0.1:49183][0m
 Bad Request: /api/1.0.0/shop/avatar/
 [31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.06, 127.0.0.1:49292][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.19, 127.0.0.1:53517][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.02, 127.0.0.1:53517][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.02, 127.0.0.1:53564][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.58, 127.0.0.1:55930][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [1.29, 127.0.0.1:55928][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:55930][0m
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:55928][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:55930][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:55928][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:55930][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:55930][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:56103][0m
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:56101][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.64, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:56152][0m
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:56190][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:56190][0m
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:56190][0m
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:56152][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:56298][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:56296][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:56502][0m
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:56501][0m
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:56503][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:56902][0m
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:56900][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:56902][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:56902][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:56900][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:57014][0m
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:57012][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.55, 127.0.0.1:57026][0m
+[31;1mHTTP GET /api/version/ 400 [0.34, 127.0.0.1:57028][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.35, 127.0.0.1:57237][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.20, 127.0.0.1:57246][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.97, 127.0.0.1:57471][0m
+[31;1mHTTP GET /api/version/ 400 [1.26, 127.0.0.1:57468][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:57643][0m
+[31;1mHTTP GET /api/version/ 400 [0.44, 127.0.0.1:57641][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.24, 127.0.0.1:57782][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:57786][0m
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:57784][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:57782][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:57784][0m
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:57786][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:57824][0m
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:57826][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:57827][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:57824][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:57824][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:57826][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:57824][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:57827][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:57824][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:57861][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:57861][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:57864][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.47, 127.0.0.1:57885][0m
+[31;1mHTTP GET /api/version/ 400 [0.59, 127.0.0.1:57861][0m
+[31;1mHTTP GET /api/version/ 400 [0.49, 127.0.0.1:57864][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:57861][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:57861][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:57932][0m
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:57934][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.75, 127.0.0.1:58095][0m
+[31;1mHTTP GET /api/version/ 400 [0.83, 127.0.0.1:58094][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.21, 127.0.0.1:58094][0m
+[31;1mHTTP GET /api/version/ 400 [0.21, 127.0.0.1:58108][0m
+[31;1mHTTP GET /api/version/ 400 [0.72, 127.0.0.1:58095][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:58094][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:58095][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58095][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58095][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.40, 127.0.0.1:58195][0m
+[31;1mHTTP GET /api/version/ 400 [0.52, 127.0.0.1:58194][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:58198][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:58195][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58194][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58198][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:58239][0m
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:58237][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:58256][0m
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:58239][0m
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:58237][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:58256][0m
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:58239][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58239][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58239][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:58297][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:58299][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58297][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58297][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:58320][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58320][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58323][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:58480][0m
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:58478][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58480][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58478][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:58480][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.31, 127.0.0.1:58761][0m
+[31;1mHTTP GET /api/version/ 400 [0.22, 127.0.0.1:58764][0m
+[31;1mHTTP GET /api/version/ 400 [0.47, 127.0.0.1:58759][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:58806][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:58804][0m
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:58802][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:58804][0m
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:58802][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:58806][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:58804][0m
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:58802][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:58806][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:58804][0m
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:58806][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:58943][0m
+[31;1mHTTP GET /api/version/ 400 [0.20, 127.0.0.1:58942][0m
+[31;1mHTTP GET /api/version/ 400 [0.25, 127.0.0.1:58940][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.34, 127.0.0.1:59017][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:59019][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:59017][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:59019][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59019][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59017][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59217][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:59216][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59217][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59217][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:59216][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.39, 127.0.0.1:59217][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:59216][0m
+[31;1mHTTP GET /api/version/ 400 [0.29, 127.0.0.1:59275][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59217][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59217][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59216][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.27, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59341][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:59373][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.20, 127.0.0.1:59341][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.32, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59338][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:59400][0m
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:59397][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:59399][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:59428][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:59430][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:59430][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59428][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:59542][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:59541][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.42, 127.0.0.1:59539][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59539][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:59542][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59541][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:59542][0m
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:59539][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59542][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59542][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:59689][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59691][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:59690][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:59706][0m
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:59708][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.51, 127.0.0.1:59772][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59772][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:59772][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59783][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59782][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:59862][0m
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:59861][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.70, 127.0.0.1:59862][0m
+[31;1mHTTP GET /api/version/ 400 [0.60, 127.0.0.1:59861][0m
+[31;1mHTTP GET /api/version/ 400 [0.58, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59863][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59861][0m
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59862][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:59862][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:59957][0m
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.37, 127.0.0.1:59975][0m
+[31;1mHTTP GET /api/version/ 400 [0.40, 127.0.0.1:59957][0m
+[31;1mHTTP GET /api/version/ 400 [0.49, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59957][0m
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:59975][0m
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:59863][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:60001][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:60003][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:60001][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:59999][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.35, 127.0.0.1:60054][0m
+[31;1mHTTP GET /api/version/ 400 [0.77, 127.0.0.1:60052][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60054][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:60052][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.27, 127.0.0.1:60054][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60054][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:60052][0m
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:60054][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:60054][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:60052][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:60122][0m
+[31;1mHTTP GET /api/version/ 400 [0.22, 127.0.0.1:60120][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:60122][0m
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:60171][0m
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:60120][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60122][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60171][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.48, 127.0.0.1:60229][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:60231][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.38, 127.0.0.1:60229][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:60231][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:60229][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:60231][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:49464][0m
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:49462][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49464][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49462][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49479][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49481][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49479][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:49501][0m
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:49500][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.51, 127.0.0.1:49511][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49511][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:49523][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49525][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49526][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:49525][0m
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:49523][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:49526][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:49546][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49546][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:49560][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:49569][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49579][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49579][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.28, 127.0.0.1:49604][0m
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:49606][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:49617][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49617][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:49638][0m
+[31;1mHTTP GET /api/version/ 400 [0.21, 127.0.0.1:49636][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:49649][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49649][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49651][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:49704][0m
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:49702][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:49714][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49714][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:49728][0m
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49730][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:49754][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49759][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49815][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49822][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:49822][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:49820][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49815][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:49822][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:49934][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:49933][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:50035][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:50033][0m
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:50031][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:50033][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:50035][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:50050][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:50031][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:50060][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:50062][0m
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:50058][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:50050][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:50062][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:50059][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:50050][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50062][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50035][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50031][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.02, 127.0.0.1:50035][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:50035][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50035][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50035][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50033][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:50177][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:50175][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:50181][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:50183][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:50204][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50204][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50204][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50206][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:50342][0m
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:50344][0m
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:50334][0m
+[31;1mHTTP GET /api/version/ 400 [0.31, 127.0.0.1:50338][0m
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:50339][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50342][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50350][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50352][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50334][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:50340][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:50343][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:50338][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:53675][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53675][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53675][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:53679][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:53675][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:53686][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:53717][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:53723][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:53729][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53717][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:53725][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:53730][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:53740][0m
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:53737][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:53730][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:53738][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53738][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53729][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.36, 127.0.0.1:53871][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.32, 127.0.0.1:53879][0m
+[31;1mHTTP GET /api/version/ 400 [0.61, 127.0.0.1:53867][0m
+[31;1mHTTP GET /api/version/ 400 [0.24, 127.0.0.1:53875][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:53871][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:53881][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:53881][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:53879][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:53899][0m
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:53881][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:53891][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:53896][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:53879][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:53891][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.21, 127.0.0.1:54004][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:54012][0m
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:54008][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54004][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54022][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:54026][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54030][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:54022][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54028][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54028][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.11, 127.0.0.1:54026][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:54022][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.43, 127.0.0.1:54063][0m
+[31;1mHTTP GET /api/version/ 400 [0.31, 127.0.0.1:54065][0m
+[31;1mHTTP GET /api/version/ 400 [0.27, 127.0.0.1:54069][0m
+[31;1mHTTP GET /api/version/ 400 [0.26, 127.0.0.1:54071][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54065][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:54064][0m
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:54071][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54063][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54064][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54070][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:54099][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:54106][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:54108][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.01, 127.0.0.1:54099][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:54254][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.02, 127.0.0.1:54255][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54255][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54262][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.15, 127.0.0.1:54254][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54254][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54255][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:54254][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.44, 127.0.0.1:54345][0m
+[31;1mHTTP GET /api/version/ 400 [0.52, 127.0.0.1:54341][0m
+[31;1mHTTP GET /api/version/ 400 [0.45, 127.0.0.1:54343][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54346][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:54342][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:54346][0m
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:54341][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.19, 127.0.0.1:54342][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.76, 127.0.0.1:54416][0m
+[31;1mHTTP GET /api/version/ 400 [0.57, 127.0.0.1:54420][0m
+[31;1mHTTP GET /api/version/ 400 [0.57, 127.0.0.1:54422][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.76, 127.0.0.1:54416][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.77, 127.0.0.1:54422][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:54417][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54416][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:54421][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.61, 127.0.0.1:54473][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.61, 127.0.0.1:54475][0m
+[31;1mHTTP GET /api/version/ 400 [0.68, 127.0.0.1:54471][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:54473][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.08, 127.0.0.1:54472][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.13, 127.0.0.1:54472][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.07, 127.0.0.1:54472][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54472][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.21, 127.0.0.1:54534][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:54538][0m
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:54535][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54535][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:54534][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.26, 127.0.0.1:54539][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:54550][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.10, 127.0.0.1:54534][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.62, 127.0.0.1:54622][0m
+[31;1mHTTP GET /api/version/ 400 [0.43, 127.0.0.1:54628][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54629][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54623][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.06, 127.0.0.1:54622][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.05, 127.0.0.1:54628][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.03, 127.0.0.1:54629][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.04, 127.0.0.1:54641][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.70, 127.0.0.1:54802][0m
+[31;1mHTTP GET /api/version/ 400 [0.30, 127.0.0.1:54806][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.14, 127.0.0.1:54802][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.17, 127.0.0.1:54813][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:54803][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:54802][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:54803][0m
+[31;1mHTTP GET /api/version/ 400 [0.18, 127.0.0.1:54806][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.09, 127.0.0.1:54802][0m
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.12, 127.0.0.1:54806][0m
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+Bad Request: /api/version/
+[31;1mHTTP GET /api/version/ 400 [0.23, 127.0.0.1:55456][0m
+[31;1mHTTP GET /api/version/ 400 [0.16, 127.0.0.1:55463][0m
+[31;1mHTTP GET /api/version/ 400 [0.25, 127.0.0.1:55455][0m
+[31;1mHTTP GET /api/version/ 400 [0.46, 127.0.0.1:55453][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.02, 127.0.0.1:62212][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.03, 127.0.0.1:65156][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.14, 127.0.0.1:65470][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.02, 127.0.0.1:49822][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.28, 127.0.0.1:50012][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.10, 127.0.0.1:50717][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.02, 127.0.0.1:50731][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.02, 127.0.0.1:50940][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.09, 127.0.0.1:51064][0m
+Bad Request: /api/1.0.0/shop/
+[31;1mHTTP POST /api/1.0.0/shop/ 400 [0.22, 127.0.0.1:51322][0m
+Not Found: /api/1.0.0/undefined
+[33mHTTP PATCH /api/1.0.0/undefined 404 [0.06, 127.0.0.1:59261][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.17, 127.0.0.1:52238][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:52334][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:52334][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:52404][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.04, 127.0.0.1:52481][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.08, 127.0.0.1:52526][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.03, 127.0.0.1:52526][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:52639][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:52639][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:52743][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:52743][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.06, 127.0.0.1:52858][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:52914][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:53068][0m
+Bad Request: /api/1.0.0/places/localisation/-6.8314361572265625/34.08650231890501/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.8314361572265625/34.08650231890501/ 400 [0.54, 127.0.0.1:59716][0m
+Bad Request: /api/1.0.0/places/localisation/-6.813926696777345/34.10611931869012/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.813926696777345/34.10611931869012/ 400 [0.07, 127.0.0.1:59716][0m
+Bad Request: /api/1.0.0/places/localisation/-6.801223754882813/34.11834210562594/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.801223754882813/34.11834210562594/ 400 [0.06, 127.0.0.1:59716][0m
+Bad Request: /api/1.0.0/places/localisation/-6.824741363525391/34.10810919505794/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.824741363525391/34.10810919505794/ 400 [0.05, 127.0.0.1:59716][0m
+Bad Request: /api/1.0.0/places/localisation/-6.835041046142579/34.06602755916643/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.835041046142579/34.06602755916643/ 400 [0.26, 127.0.0.1:54786][0m
+Bad Request: /api/1.0.0/places/localisation/-6.879501342773438/34.02662816974167/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.879501342773438/34.02662816974167/ 400 [0.16, 127.0.0.1:54880][0m
+Bad Request: /api/1.0.0/places/localisation/-6.880874633789063/34.0408538625957/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.880874633789063/34.0408538625957/ 400 [0.03, 127.0.0.1:54880][0m
+Bad Request: /api/1.0.0/places/localisation/-6.8837928771972665/34.03388358382995/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.8837928771972665/34.03388358382995/ 400 [0.06, 127.0.0.1:54880][0m
+Bad Request: /api/1.0.0/places/localisation/-6.8686866760253915/34.04512113757758/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.8686866760253915/34.04512113757758/ 400 [0.14, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.891860961914063/34.04341426329144/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.891860961914063/34.04341426329144/ 400 [0.04, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.892375946044922/34.04085388744741/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.892375946044922/34.04085388744741/ 400 [0.27, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.915035247455533/34.004858205992896/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.915035247455533/34.004858205992896/ 400 [0.24, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.91143035888672/34.01282694464169/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.91143035888672/34.01282694464169/ 400 [0.06, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.899586292631917/34.01524587822409/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.899586292631917/34.01524587822409/ 400 [0.02, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.900100708007813/34.00884267008781/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.900100708007813/34.00884267008781/ 400 [0.04, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.896839141845704/34.01581502905094/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.896839141845704/34.01581502905094/ 400 [0.12, 127.0.0.1:55408][0m
+Bad Request: /api/1.0.0/places/localisation/-6.9112586975097665/34.014392144829415/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.9112586975097665/34.014392144829415/ 400 [0.22, 127.0.0.1:55515][0m
+Bad Request: /api/1.0.0/places/localisation/-6.9112586975097665/34.00300821258022/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.9112586975097665/34.00300821258022/ 400 [0.09, 127.0.0.1:55515][0m
+Bad Request: /api/1.0.0/places/localisation/-6.911945343017579/34.013822984463445/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.911945343017579/34.013822984463445/ 400 [0.10, 127.0.0.1:55515][0m
+Bad Request: /api/1.0.0/places/localisation/-6.911945343017579/34.013822984463445/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.911945343017579/34.013822984463445/ 400 [0.18, 127.0.0.1:55515][0m
+Bad Request: /api/1.0.0/places/localisation/-6.933917999267579/34.004715899706596/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.933917999267579/34.004715899706596/ 400 [0.18, 127.0.0.1:55515][0m
+Bad Request: /api/1.0.0/places/localisation/-6.863880157470704/34.052232743961376/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.863880157470704/34.052232743961376/ 400 [0.03, 127.0.0.1:55573][0m
+Bad Request: /api/1.0.0/places/localisation/-6.8782997131347665/34.05550388259356/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.8782997131347665/34.05550388259356/ 400 [0.04, 127.0.0.1:55723][0m
+Bad Request: /api/1.0.0/places/localisation/-6.877441391807594/34.02990030202362/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.877441391807594/34.02990030202362/ 400 [0.02, 127.0.0.1:55723][0m
+Bad Request: /api/1.0.0/places/localisation/-6.890487670898438/34.039289175269104/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.890487670898438/34.039289175269104/ 400 [0.02, 127.0.0.1:55723][0m
+Bad Request: /api/1.0.0/places/localisation/-6.858386993408204/34.04739686078163/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.858386993408204/34.04739686078163/ 400 [0.02, 127.0.0.1:55723][0m
+Bad Request: /api/1.0.0/places/localisation/-6.854782104492188/34.044552183299444/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.854782104492188/34.044552183299444/ 400 [0.06, 127.0.0.1:55944][0m
+Bad Request: /api/1.0.0/places/localisation/-6.871948242187501/34.040569396471156/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.871948242187501/34.040569396471156/ 400 [0.04, 127.0.0.1:55944][0m
+Bad Request: /api/1.0.0/places/localisation/-6.862163543701173/34.03829343430809/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.862163543701173/34.03829343430809/ 400 [0.03, 127.0.0.1:55944][0m
+Bad Request: /api/1.0.0/places/localisation/-6.878128051757813/34.036870926943614/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.878128051757813/34.036870926943614/ 400 [0.10, 127.0.0.1:56026][0m
+Bad Request: /api/1.0.0/places/localisation/-6.892719268798829/34.03146518140282/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.892719268798829/34.03146518140282/ 400 [0.07, 127.0.0.1:56026][0m
+Bad Request: /api/1.0.0/places/localisation/-6.897354125976563/34.02136404964113/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.897354125976563/34.02136404964113/ 400 [0.03, 127.0.0.1:56026][0m
+Bad Request: /api/1.0.0/places/localisation/-6.909027099609376/34.01851844336969/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.909027099609376/34.01851844336969/ 400 [0.13, 127.0.0.1:56026][0m
+Bad Request: /api/1.0.0/places/localisation/-6.863193511962891/34.037155426774554/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.863193511962891/34.037155426774554/ 400 [0.03, 127.0.0.1:56130][0m
+Bad Request: /api/1.0.0/places/localisation/-6.907224655151368/33.99087237246965/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.907224655151368/33.99087237246965/ 400 [0.02, 127.0.0.1:56130][0m
+Bad Request: /api/1.0.0/places/localisation/-6.843280792236328/34.049103710638974/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.843280792236328/34.049103710638974/ 400 [0.11, 127.0.0.1:58001][0m
+Bad Request: /api/1.0.0/places/localisation/-6.870918273925782/34.018803008289744/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.870918273925782/34.018803008289744/ 400 [0.11, 127.0.0.1:58241][0m
+Bad Request: /api/1.0.0/places/localisation/-6.877269744873048/34.02933123965998/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.877269744873048/34.02933123965998/ 400 [0.02, 127.0.0.1:58241][0m
+Bad Request: /api/1.0.0/places/localisation/-6.877098083496095/34.04128062212257/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.877098083496095/34.04128062212257/ 400 [0.03, 127.0.0.1:58241][0m
+Bad Request: /api/1.0.0/places/localisation/-6.866455078125001/34.037582183607775/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.866455078125001/34.037582183607775/ 400 [0.12, 127.0.0.1:58241][0m
+Bad Request: /api/1.0.0/places/localisation/-6.8714332580566415/34.030184822797445/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.8714332580566415/34.030184822797445/ 400 [0.03, 127.0.0.1:58241][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/address/
+[31;1mHTTP PATCH /api/1.0.0/shop/address/ 400 [0.17, 127.0.0.1:59160][0m
+Bad Request: /api/1.0.0/shop/address/
+[31;1mHTTP PATCH /api/1.0.0/shop/address/ 400 [0.11, 127.0.0.1:59254][0m
+Bad Request: /api/1.0.0/places/localisation/-6.866626739501954/34.050952698832965/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.866626739501954/34.050952698832965/ 400 [0.19, 127.0.0.1:59654][0m
+Bad Request: /api/1.0.0/places/localisation/-6.89495086669922/34.02748178007089/
+[31;1mHTTP GET /api/1.0.0/places/localisation/-6.89495086669922/34.02748178007089/ 400 [0.04, 127.0.0.1:59654][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.12, 127.0.0.1:51573][0m
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.09, 127.0.0.1:51672][0m
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.10, 127.0.0.1:51707][0m
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.07, 127.0.0.1:51707][0m
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.10, 127.0.0.1:51707][0m
+Bad Request: /api/1.0.0/shop/avatar/
+[31;1mHTTP PATCH /api/1.0.0/shop/avatar/ 400 [0.10, 127.0.0.1:51775][0m
+Internal Server Error: /api/1.0.0/shop/avatar/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 435, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/asyncio/tasks.py", line 408, in wait_for
+    return await fut
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/asgiref/sync.py", line 476, in thread_handler
+    return func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/django/views/generic/base.py", line 103, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/Users/youness/Desktop/Qaryb_API_new/shop/base/views.py", line 172, in patch
+    if serializer.is_valid():
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 227, in is_valid
+    self._validated_data = self.run_validation(self.initial_data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 426, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/serializers.py", line 483, in to_internal_value
+    validated_value = field.run_validation(primitive_value)
+  File "/Users/youness/Desktop/Qaryb_API_new/venv/lib/python3.10/site-packages/rest_framework/fields.py", line 568, in run_validation
+    value = self.to_internal_value(data)
+  File "/Users/youness/Desktop/Qaryb_API_new/shop/base/utils.py", line 109, in to_internal_value
+    decoded_file = b64decode(data)
+  File "/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/base64.py", line 87, in b64decode
+    return binascii.a2b_base64(s)
+binascii.Error: Incorrect padding
+[35;1mHTTP PATCH /api/1.0.0/shop/avatar/ 500 [0.12, 127.0.0.1:51775][0m
+Not Found: /media/shop_avatars/592a5db6-bf5c-4bb6-a2da-f4f41eb56d49.jpg
+[33mHTTP GET /media/shop_avatars/592a5db6-bf5c-4bb6-a2da-f4f41eb56d49.jpg 404 [0.02, 127.0.0.1:51821][0m
+Not Found: /media/shop_avatars/fbef77df-7fbe-431f-8cc7-2b6b8181e550.jpg
+[33mHTTP GET /media/shop_avatars/fbef77df-7fbe-431f-8cc7-2b6b8181e550.jpg 404 [0.01, 127.0.0.1:51821][0m
+Not Found: /media/shop_avatars/bcbd3347-ba4b-41c6-8ba9-4e6993fdc431.jpg
+[33mHTTP GET /media/shop_avatars/bcbd3347-ba4b-41c6-8ba9-4e6993fdc431.jpg 404 [0.01, 127.0.0.1:51821][0m
+Not Found: /media/shop_avatars/ab6751a5-623b-42d8-abdb-6681c94671dd.png
+[33mHTTP GET /media/shop_avatars/ab6751a5-623b-42d8-abdb-6681c94671dd.png 404 [0.01, 127.0.0.1:52023][0m
+Not Found: /favicon.ico
