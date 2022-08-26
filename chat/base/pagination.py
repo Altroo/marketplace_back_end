@@ -1,5 +1,5 @@
 from rest_framework.pagination import PageNumberPagination
-from Qaryb_api.settings import MESSAGES_TO_LOAD, CONVERSATIONS_TO_LOAD
+from Qaryb_API.settings import MESSAGES_TO_LOAD, CONVERSATIONS_TO_LOAD
 from rest_framework.response import Response
 from account.models import CustomUser
 from shop.models import AuthShop, ModeVacance

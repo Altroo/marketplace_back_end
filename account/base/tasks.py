@@ -1,8 +1,8 @@
-from Qaryb_api.celery_conf import app
+from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from PIL import Image, ImageDraw, ImageFont
 from account.models import CustomUser
-from Qaryb_api.settings import STATIC_PATH
+from Qaryb_API.settings import STATIC_PATH
 from io import BytesIO
 from random import shuffle
 from django.core.files import File

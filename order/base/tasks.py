@@ -1,5 +1,5 @@
 from os import path
-from Qaryb_api.celery_conf import app
+from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from account.models import CustomUser
 from shop.models import AuthShop

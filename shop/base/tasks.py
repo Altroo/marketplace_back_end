@@ -1,6 +1,6 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from Qaryb_api.celery_conf import app
+from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from shop.models import AuthShop, TempShop, ModeVacance
 from offers.base.tasks import start_generating_thumbnail

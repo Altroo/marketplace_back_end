@@ -71,16 +71,7 @@
       <excludeFolder url="file://$MODULE_DIR$/tests/places" />
       <excludeFolder url="file://$MODULE_DIR$/tests" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.10 (Qaryb_API_new)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (Qaryb_API)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-  </component>
-  <component name="TemplatesService">
-    <option name="TEMPLATE_CONFIGURATION" value="Django" />
-    <option name="TEMPLATE_FOLDERS">
-      <list>
-        <option value="$MODULE_DIR$/account/templates" />
-        <option value="$MODULE_DIR$/account/templates/admin" />
-      </list>
-    </option>
   </component>
 </module>

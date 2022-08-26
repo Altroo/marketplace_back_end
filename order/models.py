@@ -4,7 +4,7 @@ from django.db.models import Model
 from account.models import CustomUser
 from shop.models import AuthShop, LonLatValidators
 from offers.models import OfferChoices, Offers
-from Qaryb_api.settings import API_URL
+from Qaryb_API.settings import API_URL
 from django.utils.translation import gettext_lazy as _
 from os import path
 from uuid import uuid4

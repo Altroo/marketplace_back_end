@@ -3,9 +3,9 @@ import os
 from celery import Celery
 from django.conf import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_api.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_API.settings")
 
-app = Celery('Qaryb_api', broker=settings.CELERY_BROKER_URL)
+app = Celery('Qaryb_API', broker=settings.CELERY_BROKER_URL)
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.timezone = settings.TIME_ZONE
 app.autodiscover_tasks(

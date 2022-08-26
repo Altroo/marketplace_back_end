@@ -2,7 +2,7 @@ from os import path
 from django.db import models
 from django.db.models import Model
 from shop.models import AuthShop, LonLatValidators, TempShop
-from Qaryb_api.settings import API_URL
+from Qaryb_API.settings import API_URL
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
