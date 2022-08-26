@@ -11,7 +11,7 @@ class OrderAdmin(ModelAdmin):
 
 
 class OrderDetailsAdmin(ModelAdmin):
-    list_display = ('pk', 'order', 'offer', 'total_self_price', 'order_status')
+    list_display = ('pk', 'order', 'total_self_price', 'order_status')
     search_fields = ('pk', 'order__first_name', 'order__last_name',
                      'order__shop_name', 'order__order_number')
     list_filter = ('order_status',)
