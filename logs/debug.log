@@ -26453,3 +26453,5 @@ Not Found: /media/shop_avatars/bcbd3347-ba4b-41c6-8ba9-4e6993fdc431.jpg
 Not Found: /media/shop_avatars/ab6751a5-623b-42d8-abdb-6681c94671dd.png
 [33mHTTP GET /media/shop_avatars/ab6751a5-623b-42d8-abdb-6681c94671dd.png 404 [0.01, 127.0.0.1:52023][0m
 Not Found: /favicon.ico
+Not Found: /
+[33mHTTP GET / 404 [0.03, 127.0.0.1:55277][0m
