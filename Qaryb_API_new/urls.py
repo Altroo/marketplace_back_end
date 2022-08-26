@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve
-from Qaryb_API_new.settings import STATICFILES_DIRS, MEDIA_ROOT
+from Qaryb_api.settings import STATICFILES_DIRS, MEDIA_ROOT
 # from rest_framework import permissions
 # from drf_yasg.views import get_schema_view
 # from drf_yasg import openapi

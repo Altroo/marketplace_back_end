@@ -8,7 +8,7 @@ from .managers import CustomUserManager
 from places.models import City, Country, PlaceType
 from os import path
 from uuid import uuid4
-from Qaryb_API_new.settings import API_URL
+from Qaryb_api.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
 

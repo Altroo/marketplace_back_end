@@ -26,7 +26,7 @@ from offers.base.serializers import BaseShopOfferSerializer, \
     BaseTempServicePutSerializer, BaseTempProductPutSerializer, BaseTempOfferPutSerializer
 from offers.base.filters import TagsFilterSet
 from os import path, remove
-from Qaryb_API_new.settings import API_URL
+from Qaryb_api.settings import API_URL
 from offers.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images, \
     base_duplicate_offervue_images
 from offers.mixins import PaginationMixinBy5

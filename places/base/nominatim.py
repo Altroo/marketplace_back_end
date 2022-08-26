@@ -4,7 +4,7 @@ import logging
 from collections import namedtuple
 from json import JSONDecodeError
 from urllib.parse import urlencode
-from Qaryb_API_new.settings import NOMINATIM_PROTOCOL, MAP_DOMAIN
+from Qaryb_api.settings import NOMINATIM_PROTOCOL, MAP_DOMAIN
 from places.base.utils import RequestMixin
 
 

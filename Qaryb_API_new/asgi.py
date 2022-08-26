@@ -7,7 +7,7 @@ from chat.jwt_middleware import SimpleJwtTokenAuthMiddleware
 from channels.routing import ProtocolTypeRouter, URLRouter
 from chat.routing import websocket_urlpatterns
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_API_new.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_api.settings")
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

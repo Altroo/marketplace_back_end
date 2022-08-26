@@ -4,7 +4,7 @@ from django.db.models import Model
 from os import path
 from uuid import uuid4
 from colorfield.fields import ColorField
-from Qaryb_API_new.settings import API_URL
+from Qaryb_api.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
 from account.models import CustomUser

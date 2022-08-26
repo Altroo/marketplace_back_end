@@ -14,7 +14,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from Qaryb_API_new.settings import SIMPLE_JWT
+from Qaryb_api.settings import SIMPLE_JWT
 from celery import current_app
 from datetime import timedelta, timezone
 import datetime

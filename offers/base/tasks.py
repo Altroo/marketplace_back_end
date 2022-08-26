@@ -2,7 +2,7 @@ from os import path, remove
 from django.core.exceptions import SuspiciousFileOperation
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from Qaryb_API_new.celery_conf import app
+from Qaryb_api.celery_conf import app
 from celery.utils.log import get_task_logger
 from offers.models import Offers, OfferVue, TempOffers
 from shop.models import AuthShop, TempShop, ModeVacance
