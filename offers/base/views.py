@@ -2549,20 +2549,20 @@ class GetOfferTagsView(ListAPIView):
     filter_class = TagsFilterSet
     pagination_class = None
 
-    def get_queryset(self):
-        if not self.request.GET.get('name_tag'):
-            return self.queryset.model.objects.none()
-        else:
-            self.filter_class = TagsFilterSet
-            self.serializer_class = BaseOfferTagsSerializer
-            return super().get_queryset()
+    # def get_queryset(self):
+    #     if not self.request.GET.get('name_tag'):
+    #         return self.queryset.model.objects.none()
+    #     else:
+    #         self.filter_class = TagsFilterSet
+    #         self.serializer_class = BaseOfferTagsSerializer
+    #         return super().get_queryset()
 
-    # def list(self, request, *args, **kwargs):
-    #     queryset = self.filter_queryset(self.get_queryset())
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     data = []
-    #     for obj in serializer.data:
-    #         for k, v in obj.items():
-    #             data.append(v)
-    #     # return Response({'name_tag': data})
-    #     return Response(data=data, status=status.HTTP_200_OK)
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        data = []
+        for obj in serializer.data:
+            for k, v in obj.items():
+                data.append(v)
+        # return Response({'name_tag': data})
+        return Response(data=data, status=status.HTTP_200_OK)

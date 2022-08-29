@@ -16,7 +16,7 @@ class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
 class BaseOfferTagsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfferTags
-        fields = ['pk', 'name_tag']
+        fields = ['name_tag']
 
 
 # class BaseOfferTagsSerializer(serializers.Serializer):
