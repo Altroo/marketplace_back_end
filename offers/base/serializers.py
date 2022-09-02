@@ -83,13 +83,13 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
 # Global Offer serializer
 class BaseShopOfferSerializer(serializers.ModelSerializer):
     picture_1 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=True,
     )
     picture_2 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     picture_3 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
@@ -146,7 +146,7 @@ class BaseShopDeliverySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Delivery
-        fields = ['pk', 'offer', 'delivery_city', 'delivery_price', 'delivery_days']
+        fields = ['pk', 'offer', 'delivery_city', 'all_cities', 'delivery_price', 'delivery_days']
         extra_kwargs = {
             'offer': {'write_only': True},
             'pk': {'read_only': True},
@@ -495,13 +495,13 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
 # Global Offer serializer
 class BaseTempShopOfferSerializer(serializers.ModelSerializer):
     picture_1 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=True,
     )
     picture_2 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     picture_3 = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
@@ -548,7 +548,7 @@ class BaseTempShopDeliverySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TempDelivery
-        fields = ['offer', 'delivery_city', 'delivery_price', 'delivery_days']
+        fields = ['offer', 'delivery_city', 'all_cities', 'delivery_price', 'delivery_days']
         extra_kwargs = {
             'offer': {'write_only': True},
             'pk': {'read_only': True},

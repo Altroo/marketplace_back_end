@@ -26514,3 +26514,13 @@ AttributeError: Got AttributeError when attempting to get a value for field `nam
 The serializer field might be named incorrectly and not match any attribute or key on the `str` instance.
 Original exception text was: 'str' object has no attribute 'name_tag'.
 [35;1mHTTP GET /api/1.0.0/offer/tags/?name_tag=Tag 500 [0.06, 127.0.0.1:59682][0m
+Not Found: /api/offer/
+[33mHTTP POST /api/offer/ 404 [0.07, 127.0.0.1:55658][0m
+Unauthorized: /api/1.0.0/offer/
+[31;1mHTTP POST /api/1.0.0/offer/ 401 [0.04, 127.0.0.1:55658][0m
+Bad Request: /api/1.0.0/offer/
+[31;1mHTTP POST /api/1.0.0/offer/ 400 [0.10, 127.0.0.1:55658][0m
+Bad Request: /api/1.0.0/offer/
+[31;1mHTTP POST /api/1.0.0/offer/ 400 [0.05, 127.0.0.1:55658][0m
+Bad Request: /api/1.0.0/offer/
+[31;1mHTTP POST /api/1.0.0/offer/ 400 [0.07, 127.0.0.1:55684][0m

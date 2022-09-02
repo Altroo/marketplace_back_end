@@ -63,6 +63,16 @@ class CitiesListView(PlaceLanguageMixin, ListAPIView):
             return self.queryset.model.objects.none()
         return super().get_queryset()
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        data = []
+        for obj in serializer.data:
+            for k, v in obj.items():
+                data.append(v)
+        # return Response({'name_tag': data})
+        return Response(data=data, status=status.HTTP_200_OK)
+
 
 class GetLocalisationNameView(APIView):
     permission_classes = (permissions.AllowAny,)

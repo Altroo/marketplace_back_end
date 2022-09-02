@@ -283,6 +283,7 @@ class Delivery(Model):
                               related_name='offer_delivery')
     delivery_city = models.ManyToManyField(City, verbose_name='Delivery City',
                                            related_name='delivery_city')
+    all_cities = models.BooleanField(verbose_name='Tout le maroc ?', default=False)
     delivery_price = models.FloatField(verbose_name='Delivery Price', default=0.0)
     delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
 
@@ -532,6 +533,7 @@ class TempDelivery(Model):
                               related_name='temp_offer_delivery')
     delivery_city = models.ManyToManyField(City, verbose_name='Temp Delivery City',
                                            related_name='temp_delivery_city')
+    all_cities = models.BooleanField(verbose_name='Tout le maroc ?', default=False)
     delivery_price = models.FloatField(verbose_name='Temp delivery Price', default=0.0)
     delivery_days = models.PositiveIntegerField(verbose_name='Temp number of Days', default=0)
 

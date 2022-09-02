@@ -304,12 +304,15 @@ class ShopOfferViewV2(APIView):
 
                 if product_valid:
                     # Deliveries
+                    all_cities_1 = request.data.get('all_cities_1', None)
                     delivery_price_1 = request.data.get('delivery_price_1', None)
                     delivery_days_1 = request.data.get('delivery_days_1', None)
 
+                    all_cities_2 = request.data.get('all_cities_2', None)
                     delivery_price_2 = request.data.get('delivery_price_2', None)
                     delivery_days_2 = request.data.get('delivery_days_2', None)
 
+                    all_cities_3 = request.data.get('all_cities_3', None)
                     delivery_price_3 = request.data.get('delivery_price_3', None)
                     delivery_days_3 = request.data.get('delivery_days_3', None)
 
@@ -321,9 +324,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_1.append(city.name_fr)
                             delivery_cities_1.append(
@@ -342,9 +345,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_2.append(city.name_fr)
                             delivery_cities_2.append(
@@ -363,9 +366,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_3.append(city.name_fr)
                             delivery_cities_3.append(
@@ -386,6 +389,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_1,
+                                'all_cities': all_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
                             }
@@ -397,6 +401,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_2,
+                                'all_cities': all_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
                             }
@@ -408,6 +413,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_3,
+                                'all_cities': all_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
                             }
@@ -662,12 +668,15 @@ class ShopOfferViewV2(APIView):
 
                 if product_valid:
                     # Deliveries
+                    all_cities_1 = request.data.get('all_cities_1', None)
                     delivery_price_1 = request.data.get('delivery_price_1', None)
                     delivery_days_1 = request.data.get('delivery_days_1', None)
 
+                    all_cities_2 = request.data.get('all_cities_2', None)
                     delivery_price_2 = request.data.get('delivery_price_2', None)
                     delivery_days_2 = request.data.get('delivery_days_2', None)
 
+                    all_cities_3 = request.data.get('all_cities_3', None)
                     delivery_price_3 = request.data.get('delivery_price_3', None)
                     delivery_days_3 = request.data.get('delivery_days_3', None)
 
@@ -679,9 +688,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_1.append(city.name_fr)
                             delivery_cities_1.append(
@@ -700,9 +709,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_2.append(city.name_fr)
                             delivery_cities_2.append(
@@ -721,9 +730,9 @@ class ShopOfferViewV2(APIView):
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
-                            cities.append(int(city))
+                            cities.append(str(city))
 
-                        cities = City.objects.filter(pk__in=cities)
+                        cities = City.objects.filter(name_fr__in=cities)
                         for city in cities:
                             # delivery_cities_3.append(city.name_fr)
                             delivery_cities_3.append(
@@ -744,6 +753,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_1,
+                                'all_cities': all_cities_1,
                                 'delivery_price': float(delivery_price_1),
                                 'delivery_days': int(delivery_days_1)
                             }
@@ -755,6 +765,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_2,
+                                'all_cities': all_cities_2,
                                 'delivery_price': float(delivery_price_2),
                                 'delivery_days': int(delivery_days_2)
                             }
@@ -766,6 +777,7 @@ class ShopOfferViewV2(APIView):
                                 'offer': offer_pk,
                                 'pk': offer_pk,
                                 'delivery_city': delivery_cities_3,
+                                'all_cities': all_cities_3,
                                 'delivery_price': float(delivery_price_3),
                                 'delivery_days': int(delivery_days_3)
                             }

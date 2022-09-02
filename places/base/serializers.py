@@ -43,5 +43,6 @@ class BaseCitySerializer(BasePlaceBaseSerializer):
     City serializer
     """
 
-    class Meta(BasePlaceBaseSerializer.Meta):
+    class Meta:
         model = City
+        fields = ['name']

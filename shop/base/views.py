@@ -69,7 +69,8 @@ class ShopView(APIView):
                 qaryb_link = unique_slugify(instance=auth_shop, value=auth_shop.shop_name, slug_field_name='qaryb_link')
                 auth_shop.qaryb_link = qaryb_link
                 auth_shop.save()
-                shift = datetime.utcnow() + timedelta(hours=24)
+                # shift = datetime.utcnow() + timedelta(hours=24)
+                shift = datetime.utcnow() + timedelta(days=60)
                 data = {
                     'unique_id': unique_id,
                     'shop_name': auth_shop.shop_name,
