@@ -26524,3 +26524,12 @@ Bad Request: /api/1.0.0/offer/
 [31;1mHTTP POST /api/1.0.0/offer/ 400 [0.05, 127.0.0.1:55658][0m
 Bad Request: /api/1.0.0/offer/
 [31;1mHTTP POST /api/1.0.0/offer/ 400 [0.07, 127.0.0.1:55684][0m
+[35;1mHTTP GET /static/admin/js/prepopulate.js 500 [0.06, 127.0.0.1:55079][0m
+[35;1mHTTP GET /static/admin/js/change_form.js 500 [0.86, 127.0.0.1:55078][0m
+[35;1mHTTP GET /static/admin/js/prepopulate_init.js 500 [0.86, 127.0.0.1:55084][0m
+Not Found: /media/shop_avatars/25b205a0-14a0-4a00-ab72-9a2af018e7dd.png
+[33mHTTP GET /media/shop_avatars/25b205a0-14a0-4a00-ab72-9a2af018e7dd.png 404 [0.02, 127.0.0.1:55080][0m
+Not Found: /favicon.ico
+[35;1mHTTP GET /static/admin/js/urlify.js 500 [0.82, 127.0.0.1:49574][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico

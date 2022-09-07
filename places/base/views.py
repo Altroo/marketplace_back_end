@@ -36,14 +36,14 @@ class CountriesListView(PlaceLanguageMixin, ListAPIView):
     permission_classes = (AllowAny,)
     queryset = Country.objects.filter(cities__isnull=False, type=PlaceType.COUNTRY).distinct()
     serializer_class = BaseCountrySerializer
-    filter_class = CountryFilterSet
+    filterset_class = CountryFilterSet
     pagination_class = None
 
     def get_queryset(self):
         if not self.request.GET.get('all'):
             return super().get_queryset()
         else:
-            self.filter_class = BaseAllCountryFilter
+            self.filterset_class = BaseAllCountryFilter
             self.serializer_class = BaseCountriesSerializer
             return Country.objects.all()
 
@@ -55,7 +55,7 @@ class CitiesListView(PlaceLanguageMixin, ListAPIView):
 
     queryset = City.objects.all()
     serializer_class = BaseCitySerializer
-    filter_class = CityFilterSet
+    filterset_class = CityFilterSet
     pagination_class = None
 
     def get_queryset(self):

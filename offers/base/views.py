@@ -2558,7 +2558,7 @@ class GetOfferTagsView(ListAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = OfferTags.objects.all()
     serializer_class = BaseOfferTagsSerializer
-    filter_class = TagsFilterSet
+    filterset_class = TagsFilterSet
     pagination_class = None
 
     # def get_queryset(self):
