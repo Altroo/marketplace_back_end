@@ -140,11 +140,15 @@ class Offers(Model):
                                   default=None, max_length=1000)
     picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
+    picture_4 = models.ImageField(verbose_name='Picture 4', upload_to=get_shop_offers_path, blank=True, null=True,
+                                  default=None, max_length=1000)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     picture_2_thumbnail = models.ImageField(verbose_name='Picture 2 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     picture_3_thumbnail = models.ImageField(verbose_name='Picture 3 thumbnail', blank=True, null=True,
+                                            upload_to=get_shop_offers_path, max_length=1000)
+    picture_4_thumbnail = models.ImageField(verbose_name='Picture 4 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
@@ -205,6 +209,18 @@ class Offers(Model):
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
+        return None
+
+    @property
+    def get_absolute_picture_4_img(self):
+        if self.picture_4:
+            return "{0}/media{1}".format(API_URL, self.picture_4.url)
+        return None
+
+    @property
+    def get_absolute_picture_4_thumbnail(self):
+        if self.picture_4_thumbnail:
+            return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
 
     def save_image(self, field_name, image):
@@ -392,11 +408,15 @@ class TempOffers(Model):
                                   default=None, max_length=1000)
     picture_3 = models.ImageField(verbose_name='Picture 3', upload_to=get_shop_offers_path, blank=True, null=True,
                                   default=None, max_length=1000)
+    picture_4 = models.ImageField(verbose_name='Picture 4', upload_to=get_shop_offers_path, blank=True, null=True,
+                                  default=None, max_length=1000)
     picture_1_thumbnail = models.ImageField(verbose_name='Picture 1 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     picture_2_thumbnail = models.ImageField(verbose_name='Picture 2 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     picture_3_thumbnail = models.ImageField(verbose_name='Picture 3 thumbnail', blank=True, null=True,
+                                            upload_to=get_shop_offers_path, max_length=1000)
+    picture_4_thumbnail = models.ImageField(verbose_name='Picture 4 thumbnail', blank=True, null=True,
                                             upload_to=get_shop_offers_path, max_length=1000)
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
@@ -455,6 +475,18 @@ class TempOffers(Model):
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
+        return None
+
+    @property
+    def get_absolute_picture_4_img(self):
+        if self.picture_4:
+            return "{0}/media{1}".format(API_URL, self.picture_4.url)
+        return None
+
+    @property
+    def get_absolute_picture_4_thumbnail(self):
+        if self.picture_4_thumbnail:
+            return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
 
     def save_image(self, field_name, image):

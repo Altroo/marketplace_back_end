@@ -956,6 +956,10 @@ class DeleteAccountView(APIView):
                         media_paths_list.append(offer.picture_3.path)
                     if offer.picture_3_thumbnail:
                         media_paths_list.append(offer.picture_3_thumbnail.path)
+                    if offer.picture_4:
+                        media_paths_list.append(offer.picture_4.path)
+                    if offer.picture_4_thumbnail:
+                        media_paths_list.append(offer.picture_4_thumbnail.path)
                 auth_shop.delete()
             except AuthShop.DoesNotExist:
                 pass

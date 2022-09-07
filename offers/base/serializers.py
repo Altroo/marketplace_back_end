@@ -58,8 +58,8 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'title',
-                  'picture_1', 'picture_2', 'picture_3',
-                  'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_3_thumbnail',
+                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_4_thumbnail',
                   'description', 'price']
 
     def save(self):
@@ -70,9 +70,11 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
             picture_1=self.validated_data['picture_1'],
             picture_2=self.validated_data['picture_2'],
             picture_3=self.validated_data['picture_3'],
+            picture_4=self.validated_data['picture_4'],
             picture_1_thumbnail=self.validated_data['picture_1_thumbnail'],
             picture_2_thumbnail=self.validated_data['picture_2_thumbnail'],
             picture_3_thumbnail=self.validated_data['picture_3_thumbnail'],
+            picture_4_thumbnail=self.validated_data['picture_4_thumbnail'],
             description=self.validated_data['description'],
             price=self.validated_data['price'],
         )
@@ -91,6 +93,9 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     picture_3 = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
+    picture_4 = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
@@ -98,7 +103,7 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
-                  'picture_1', 'picture_2', 'picture_3',
+                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'for_whom', 'creator_label', 'made_in_label',
                   'tags', 'price']
 
@@ -239,6 +244,8 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     picture_2_thumb = serializers.CharField(source='get_absolute_picture_2_thumbnail')
     picture_3 = serializers.CharField(source='get_absolute_picture_3_img')
     picture_3_thumb = serializers.CharField(source='get_absolute_picture_3_thumbnail')
+    picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
+    picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     creator_label = serializers.BooleanField()
@@ -316,6 +323,8 @@ class BaseOffersListSerializer(serializers.Serializer):
             return instance.get_absolute_picture_2_thumbnail
         elif instance.picture_3_thumbnail:
             return instance.get_absolute_picture_3_thumbnail
+        elif instance.picture_4_thumbnail:
+            return instance.get_absolute_picture_4_thumbnail
         else:
             return None
 
@@ -333,15 +342,18 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
                                  allow_null=True)
     picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
                                  allow_null=True)
+    picture_4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
 
     class Meta:
         model = Offers
-        fields = ['title', 'picture_1', 'picture_2', 'picture_3',
+        fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'creator_label', 'made_in_label', 'price']
         extra_kwargs = {
             'picture_1': {'required': False},
             'picture_2': {'required': False},
             'picture_3': {'required': False},
+            'picture_4': {'required': False},
         }
 
     def update(self, instance, validated_data):
@@ -349,6 +361,7 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
         instance.picture_1 = validated_data.get('picture_1', instance.picture_1)
         instance.picture_2 = validated_data.get('picture_2', instance.picture_2)
         instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
+        instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
         instance.creator_label = validated_data.get('creator_label', instance.creator_label)
         instance.made_in_label = validated_data.get('made_in_label', instance.made_in_label)
@@ -439,6 +452,8 @@ class BaseOffersVuesListSerializer(serializers.Serializer):
             return instance.get_absolute_picture_2_thumbnail
         elif instance.picture_3_thumbnail:
             return instance.get_absolute_picture_3_thumbnail
+        elif instance.picture_4_thumbnail:
+            return instance.get_absolute_picture_4_thumbnail
         else:
             return instance.offer_vues.get_absolute_thumbnail
 
@@ -470,8 +485,8 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempOffers
         fields = ['auth_shop', 'offer_type', 'title',
-                  'picture_1', 'picture_2', 'picture_3',
-                  'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_3_thumbnail',
+                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'picture_1_thumbnail', 'picture_2_thumbnail', 'picture_3_thumbnail', 'picture_4_thumbnail',
                   'description', 'price']
 
     def save(self):
@@ -482,9 +497,11 @@ class BaseTempShopOfferDuplicateSerializer(serializers.ModelSerializer):
             picture_1=self.validated_data['picture_1'],
             picture_2=self.validated_data['picture_2'],
             picture_3=self.validated_data['picture_3'],
+            picture_4=self.validated_data['picture_4'],
             picture_1_thumbnail=self.validated_data['picture_1_thumbnail'],
             picture_2_thumbnail=self.validated_data['picture_2_thumbnail'],
             picture_3_thumbnail=self.validated_data['picture_3_thumbnail'],
+            picture_4_thumbnail=self.validated_data['picture_4_thumbnail'],
             description=self.validated_data['description'],
             price=self.validated_data['price'],
         )
@@ -503,6 +520,9 @@ class BaseTempShopOfferSerializer(serializers.ModelSerializer):
     picture_3 = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
+    picture_4 = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
@@ -510,7 +530,7 @@ class BaseTempShopOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = TempOffers
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
-                  'picture_1', 'picture_2', 'picture_3',
+                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'for_whom', 'tags', 'price']
 
 
@@ -622,6 +642,8 @@ class BaseTempOfferDetailsSerializer(serializers.Serializer):
     picture_2_thumb = serializers.CharField(source='get_absolute_picture_2_thumbnail')
     picture_3 = serializers.CharField(source='get_absolute_picture_3_img')
     picture_3_thumb = serializers.CharField(source='get_absolute_picture_3_thumbnail')
+    picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
+    picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     price = serializers.FloatField()
@@ -685,6 +707,8 @@ class BaseTempOfferssListSerializer(serializers.Serializer):
             return instance.get_absolute_picture_2_thumbnail
         elif instance.picture_3_thumbnail:
             return instance.get_absolute_picture_3_thumbnail
+        elif instance.picture_4_thumbnail:
+            return instance.get_absolute_picture_4_thumbnail
         else:
             return None
 
@@ -702,15 +726,18 @@ class BaseTempOfferPutSerializer(serializers.ModelSerializer):
                                  allow_null=True)
     picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
                                  allow_null=True)
+    picture_4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+                                 allow_null=True)
 
     class Meta:
         model = TempOffers
-        fields = ['title', 'picture_1', 'picture_2', 'picture_3',
+        fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'price']
         extra_kwargs = {
             'picture_1': {'required': False},
             'picture_2': {'required': False},
             'picture_3': {'required': False},
+            'picture_4': {'required': False},
         }
 
     def update(self, instance, validated_data):
@@ -718,6 +745,7 @@ class BaseTempOfferPutSerializer(serializers.ModelSerializer):
         instance.picture_1 = validated_data.get('picture_1', instance.picture_1)
         instance.picture_2 = validated_data.get('picture_2', instance.picture_2)
         instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
+        instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
         instance.description = validated_data.get('description', instance.description)
         instance.price = validated_data.get('price', instance.price)
         instance.save()

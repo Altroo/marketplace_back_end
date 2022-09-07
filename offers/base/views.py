@@ -104,13 +104,18 @@ class ShopOfferViewV2(APIView):
             title = request.data.get('title')
             description = request.data.get('description')
             price = request.data.get('price')
+            picture_1 = request.data.get('picture_1')
+            picture_2 = request.data.get('picture_2')
+            picture_3 = request.data.get('picture_3')
+            picture_4 = request.data.get('picture_4')
             offer_serializer = BaseTempShopOfferSerializer(data={
                 'auth_shop': shop.pk,
                 'offer_type': offer_type,
                 'title': title,
-                'picture_1': request.data.get('picture_1', None),
-                'picture_2': request.data.get('picture_2', None),
-                'picture_3': request.data.get('picture_3', None),
+                'picture_1': picture_1 if picture_1 != 'null' else None,
+                'picture_2': picture_2 if picture_2 != 'null' else None,
+                'picture_3': picture_3 if picture_3 != 'null' else None,
+                'picture_4': picture_4 if picture_4 != 'null' else None,
                 'description': description,
                 'price': price,
             })
@@ -132,6 +137,8 @@ class ShopOfferViewV2(APIView):
                     'picture_2_thumb': offer.get_absolute_picture_2_thumbnail,
                     'picture_3': offer.get_absolute_picture_3_img,
                     'picture_3_thumb': offer.get_absolute_picture_3_thumbnail,
+                    'picture_4': offer.get_absolute_picture_4_img,
+                    'picture_4_thumb': offer.get_absolute_picture_4_thumbnail,
                     'description': description,
                     'price': price
                 }
@@ -320,7 +327,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
                     delivery_cities_1 = []
-                    if delivery_city_1:
+                    if delivery_city_1 is not None and delivery_city_1 != 'null':
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
@@ -341,7 +348,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
                     delivery_cities_2 = []
-                    if delivery_city_2:
+                    if delivery_city_2 is not None and delivery_city_2 != 'null':
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
@@ -362,7 +369,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
                     delivery_cities_3 = []
-                    if delivery_city_3:
+                    if delivery_city_3 is not None and delivery_city_3 != 'null':
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
@@ -382,7 +389,7 @@ class ShopOfferViewV2(APIView):
                     city_1_check = False
                     city_2_check = False
                     city_3_check = False
-                    if delivery_city_1:
+                    if delivery_city_1 is not None and delivery_city_1 != 'null':
                         city_1_check = True
                         deliveries.append(
                             {
@@ -394,7 +401,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_1)
                             }
                         )
-                    if delivery_city_2:
+                    if delivery_city_2 is not None and delivery_city_2 != 'null':
                         city_2_check = True
                         deliveries.append(
                             {
@@ -406,7 +413,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_2)
                             }
                         )
-                    if delivery_city_3:
+                    if delivery_city_3 is not None and delivery_city_3 != 'null':
                         city_3_check = True
                         deliveries.append(
                             {
@@ -462,14 +469,19 @@ class ShopOfferViewV2(APIView):
             else:
                 creator_label = False
                 made_in_label = None
+            picture_1 = request.data.get('picture_1')
+            picture_2 = request.data.get('picture_2')
+            picture_3 = request.data.get('picture_3')
+            picture_4 = request.data.get('picture_4')
             offer_serializer = BaseShopOfferSerializer(data={
                 'auth_shop': auth_shop.pk,
                 'offer_type': offer_type,
                 # Categories
                 'title': title,
-                'picture_1': request.data.get('picture_1', None),
-                'picture_2': request.data.get('picture_2', None),
-                'picture_3': request.data.get('picture_3', None),
+                'picture_1': picture_1 if picture_1 != 'null' else None,
+                'picture_2': picture_2 if picture_2 != 'null' else None,
+                'picture_3': picture_3 if picture_3 != 'null' else None,
+                'picture_4': picture_4 if picture_4 != 'null' else None,
                 'description': description,
                 'creator_label': creator_label,
                 'made_in_label': made_in_label,
@@ -494,6 +506,8 @@ class ShopOfferViewV2(APIView):
                     'picture_2_thumb': offer.get_absolute_picture_2_thumbnail,
                     'picture_3': offer.get_absolute_picture_3_img,
                     'picture_3_thumb': offer.get_absolute_picture_3_thumbnail,
+                    'picture_4': offer.get_absolute_picture_4_img,
+                    'picture_4_thumb': offer.get_absolute_picture_4_thumbnail,
                     'description': description,
                     'creator_label': creator_label,
                     'made_in_label': made_in_label,
@@ -684,7 +698,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
                     delivery_cities_1 = []
-                    if delivery_city_1:
+                    if delivery_city_1 is not None and delivery_city_1 != 'null':
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
@@ -705,7 +719,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
                     delivery_cities_2 = []
-                    if delivery_city_2:
+                    if delivery_city_2 is not None and delivery_city_2 != 'null':
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
@@ -726,7 +740,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
                     delivery_cities_3 = []
-                    if delivery_city_3:
+                    if delivery_city_3 is not None and delivery_city_3 != 'null':
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
@@ -746,7 +760,7 @@ class ShopOfferViewV2(APIView):
                     city_1_check = False
                     city_2_check = False
                     city_3_check = False
-                    if delivery_city_1:
+                    if delivery_city_1 is not None and delivery_city_1 != 'null':
                         city_1_check = True
                         deliveries.append(
                             {
@@ -758,7 +772,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_1)
                             }
                         )
-                    if delivery_city_2:
+                    if delivery_city_2 is not None and delivery_city_2 != 'null':
                         city_2_check = True
                         deliveries.append(
                             {
@@ -770,7 +784,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_2)
                             }
                         )
-                    if delivery_city_3:
+                    if delivery_city_3 is not None and delivery_city_3 != 'null':
                         city_3_check = True
                         deliveries.append(
                             {
@@ -820,6 +834,7 @@ class ShopOfferViewV2(APIView):
                 picture_1 = request.data.get('picture_1', None)
                 picture_2 = request.data.get('picture_2', None)
                 picture_3 = request.data.get('picture_3', None)
+                picture_4 = request.data.get('picture_4', None)
 
                 previous_images = list()
                 previous_images.append(API_URL + offer.picture_1.url
@@ -828,6 +843,8 @@ class ShopOfferViewV2(APIView):
                                        if offer.picture_2 else False)
                 previous_images.append(API_URL + offer.picture_3.url
                                        if offer.picture_3 else False)
+                previous_images.append(API_URL + offer.picture_4.url
+                                       if offer.picture_4 else False)
 
                 if isinstance(picture_1, InMemoryUploadedFile):
                     try:
@@ -848,8 +865,10 @@ class ShopOfferViewV2(APIView):
                                 picture_1 = offer.picture_1
                             elif img_1_index == 1:
                                 picture_1 = offer.picture_2
-                            else:
+                            elif img_1_index == 2:
                                 picture_1 = offer.picture_3
+                            else:
+                                picture_1 = offer.picture_4
                         # None wasn't sent
                         except ValueError:
                             picture_1 = None
@@ -873,8 +892,10 @@ class ShopOfferViewV2(APIView):
                                 picture_2 = offer.picture_1
                             elif img_2_index == 1:
                                 picture_2 = offer.picture_2
-                            else:
+                            elif img_2_index == 2:
                                 picture_2 = offer.picture_3
+                            else:
+                                picture_2 = offer.picture_4
                         # None wasn't sent
                         except ValueError:
                             picture_2 = None
@@ -898,11 +919,39 @@ class ShopOfferViewV2(APIView):
                                 picture_3 = offer.picture_1
                             elif img_3_index == 1:
                                 picture_3 = offer.picture_2
-                            else:
+                            elif img_3_index == 2:
                                 picture_3 = offer.picture_3
+                            else:
+                                picture_3 = offer.picture_4
                         # None wasn't sent
                         except ValueError:
                             picture_3 = None
+                if isinstance(picture_4, InMemoryUploadedFile):
+                    try:
+                        picture_4_path = self.parent_file_dir + offer.picture_4.url
+                        picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
+                        remove(picture_4_path)
+                        remove(picture_4_thumb_path)
+                    except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                        pass
+                    offer.picture_4 = None
+                    offer.save()
+                else:
+                    # src
+                    if picture_4 in previous_images:
+                        try:
+                            img_4_index = previous_images.index(picture_4)
+                            if img_4_index == 0:
+                                picture_4 = offer.picture_1
+                            elif img_4_index == 1:
+                                picture_4 = offer.picture_2
+                            elif img_4_index == 2:
+                                picture_4 = offer.picture_3
+                            else:
+                                picture_4 = offer.picture_3
+                        # None wasn't sent
+                        except ValueError:
+                            picture_4 = None
 
                 title = request.data.get('title', '')
                 description = request.data.get('description', '')
@@ -913,6 +962,7 @@ class ShopOfferViewV2(APIView):
                     'picture_1': picture_1,
                     'picture_2': picture_2,
                     'picture_3': picture_3,
+                    'picture_4': picture_4,
                     'description': description,
                     'price': price,
                 })
@@ -981,6 +1031,8 @@ class ShopOfferViewV2(APIView):
                             'picture_2_thumb': updated_offer.get_absolute_picture_2_thumbnail,
                             'picture_3': updated_offer.get_absolute_picture_3_img,
                             'picture_3_thumb': updated_offer.get_absolute_picture_3_thumbnail,
+                            'picture_4': updated_offer.get_absolute_picture_4_img,
+                            'picture_4_thumb': updated_offer.get_absolute_picture_4_thumbnail,
                             'description': updated_offer.description,
                             'price': updated_offer.price
                         }
@@ -1264,6 +1316,7 @@ class ShopOfferViewV2(APIView):
                 picture_1 = request.data.get('picture_1', None)
                 picture_2 = request.data.get('picture_2', None)
                 picture_3 = request.data.get('picture_3', None)
+                picture_4 = request.data.get('picture_4', None)
 
                 previous_images = list()
                 previous_images.append(API_URL + offer.picture_1.url
@@ -1272,6 +1325,8 @@ class ShopOfferViewV2(APIView):
                                        if offer.picture_2 else False)
                 previous_images.append(API_URL + offer.picture_3.url
                                        if offer.picture_3 else False)
+                previous_images.append(API_URL + offer.picture_4.url
+                                       if offer.picture_4 else False)
 
                 if isinstance(picture_1, InMemoryUploadedFile):
                     try:
@@ -1347,6 +1402,32 @@ class ShopOfferViewV2(APIView):
                         # None wasn't sent
                         except ValueError:
                             picture_3 = None
+                if isinstance(picture_4, InMemoryUploadedFile):
+                    try:
+                        picture_4_path = self.parent_file_dir + offer.picture_4.url
+                        picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
+                        remove(picture_4_path)
+                        remove(picture_4_thumb_path)
+                    except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                        pass
+                    offer.picture_4 = None
+                    offer.save()
+                else:
+                    # src
+                    if picture_4 in previous_images:
+                        try:
+                            img_4_index = previous_images.index(picture_4)
+                            if img_4_index == 0:
+                                picture_4 = offer.picture_1
+                            elif img_4_index == 1:
+                                picture_4 = offer.picture_2
+                            elif img_4_index == 2:
+                                picture_4 = offer.picture_3
+                            else:
+                                picture_4 = offer.picture_4
+                        # None wasn't sent
+                        except ValueError:
+                            picture_4 = None
 
                 title = request.data.get('title', '')
                 description = request.data.get('description', '')
@@ -1363,6 +1444,7 @@ class ShopOfferViewV2(APIView):
                     'picture_1': picture_1,
                     'picture_2': picture_2,
                     'picture_3': picture_3,
+                    'picture_4': picture_4,
                     'description': description,
                     'creator_label': creator_label,
                     'made_in_label': made_in_label,
@@ -1433,6 +1515,8 @@ class ShopOfferViewV2(APIView):
                             'picture_2_thumb': updated_offer.get_absolute_picture_2_thumbnail,
                             'picture_3': updated_offer.get_absolute_picture_3_img,
                             'picture_3_thumb': updated_offer.get_absolute_picture_3_thumbnail,
+                            'picture_4': updated_offer.get_absolute_picture_4_img,
+                            'picture_4_thumb': updated_offer.get_absolute_picture_4_thumbnail,
                             'description': updated_offer.description,
                             'price': updated_offer.price
                         }
@@ -1757,6 +1841,18 @@ class ShopOfferViewV2(APIView):
                     remove(picture_3_thumbnail)
                 except (FileNotFoundError, ValueError, AttributeError):
                     pass
+                # Picture 4
+                try:
+                    picture_4 = offer.picture_4.path
+                    remove(picture_4)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
+                # Picture 4 thumbnail
+                try:
+                    picture_4_thumbnail = offer.picture_4_thumbnail.path
+                    remove(picture_4_thumbnail)
+                except (FileNotFoundError, ValueError, AttributeError):
+                    pass
                 offer.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except TempOffers.DoesNotExist:
@@ -1808,6 +1904,18 @@ class ShopOfferViewV2(APIView):
                     try:
                         picture_3_thumbnail = offer.picture_3_thumbnail.path
                         remove(picture_3_thumbnail)
+                    except (FileNotFoundError, ValueError, AttributeError):
+                        pass
+                    # Picture 4
+                    try:
+                        picture_4 = offer.picture_4.path
+                        remove(picture_4)
+                    except (FileNotFoundError, ValueError, AttributeError):
+                        pass
+                    # Picture 4 thumbnail
+                    try:
+                        picture_4_thumbnail = offer.picture_4_thumbnail.path
+                        remove(picture_4_thumbnail)
                     except (FileNotFoundError, ValueError, AttributeError):
                         pass
                     offer.delete()
@@ -2080,9 +2188,11 @@ class ShopOfferDuplicateView(APIView):
                 'picture_1': offer.picture_1 if offer.picture_1 else None,
                 'picture_2': offer.picture_2 if offer.picture_2 else None,
                 'picture_3': offer.picture_3 if offer.picture_3 else None,
+                'picture_4': offer.picture_4 if offer.picture_4 else None,
                 'picture_1_thumbnail': offer.picture_1_thumbnail if offer.picture_1_thumbnail else None,
                 'picture_2_thumbnail': offer.picture_2_thumbnail if offer.picture_2_thumbnail else None,
                 'picture_3_thumbnail': offer.picture_3_thumbnail if offer.picture_3_thumbnail else None,
+                'picture_4_thumbnail': offer.picture_4_thumbnail if offer.picture_4_thumbnail else None,
                 'description': description,
                 'price': price
             })
@@ -2113,6 +2223,8 @@ class ShopOfferDuplicateView(APIView):
                     'picture_2_thumb': offer_serializer.get_absolute_picture_2_thumbnail,
                     'picture_3': offer_serializer.get_absolute_picture_3_img,
                     'picture_3_thumb': offer_serializer.get_absolute_picture_3_thumbnail,
+                    'picture_4': offer_serializer.get_absolute_picture_4_img,
+                    'picture_4_thumb': offer_serializer.get_absolute_picture_4_thumbnail,
                     'description': offer_serializer.description,
                     'price': offer_serializer.price
                 }
