@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
     GetLastThreeDeliveriesView, GetLastUsedLocalisationView, \
-    GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2
+    GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2, ShopOfferPinUnpinView
 
 app_name = 'offer'
 
@@ -17,6 +17,9 @@ urlpatterns = [
     # GET : My shop products list
     path('my_offers/', GetMyShopOffersListView.as_view()),
     path('my_offers/<uuid:unique_id>/', GetMyShopOffersListView.as_view()),
+    # POST : pin my offer
+    path('pin/<int:offer_pk>/', ShopOfferPinUnpinView.as_view()),
+    path('pin/<uuid:unique_id>/<int:offer_pk>/', ShopOfferPinUnpinView.as_view()),
     # POST : Create solder,
     # PATCH : Edit solder
     path('solder/', ShopOfferSolderView.as_view()),

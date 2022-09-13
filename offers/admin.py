@@ -169,7 +169,7 @@ class CustomOffersTotalVuesAdmin(ModelAdmin):
 
 
 class CustomTempOfferAdmin(ModelAdmin):
-    list_display = ('pk', 'offer_type', 'title', 'show_categories')
+    list_display = ('pk', 'offer_type', 'title', 'show_categories', 'pinned')
     search_fields = ('pk', 'title')
     ordering = ('-pk',)
 

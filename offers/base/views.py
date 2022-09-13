@@ -203,6 +203,10 @@ class ShopOfferViewV2(APIView):
                     product_longitude = request.data.get('product_longitude')
                     product_latitude = request.data.get('product_latitude')
                     product_address = request.data.get('product_address')
+                    if product_latitude == 'null':
+                        product_longitude = None
+                        product_latitude = None
+                        product_address = None
                     product_serializer = BaseTempShopProductSerializer(data={
                         'offer': offer_pk,
                         'product_quantity': product_quantity,
@@ -327,7 +331,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
                     delivery_cities_1 = []
-                    if delivery_city_1 is not None and delivery_city_1 != 'null':
+                    if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
@@ -348,7 +352,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
                     delivery_cities_2 = []
-                    if delivery_city_2 is not None and delivery_city_2 != 'null':
+                    if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
@@ -369,7 +373,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
                     delivery_cities_3 = []
-                    if delivery_city_3 is not None and delivery_city_3 != 'null':
+                    if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
@@ -389,7 +393,7 @@ class ShopOfferViewV2(APIView):
                     city_1_check = False
                     city_2_check = False
                     city_3_check = False
-                    if delivery_city_1 is not None and delivery_city_1 != 'null':
+                    if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                         city_1_check = True
                         deliveries.append(
                             {
@@ -401,7 +405,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_1)
                             }
                         )
-                    if delivery_city_2 is not None and delivery_city_2 != 'null':
+                    if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                         city_2_check = True
                         deliveries.append(
                             {
@@ -413,7 +417,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_2)
                             }
                         )
-                    if delivery_city_3 is not None and delivery_city_3 != 'null':
+                    if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                         city_3_check = True
                         deliveries.append(
                             {
@@ -448,9 +452,9 @@ class ShopOfferViewV2(APIView):
                 else:
                     offer.delete()
                     if offer_type == 'V' and product_serializer_errors:
-                        raise ValidationError(product_serializer_errors.errors)
+                        raise ValidationError(product_serializer_errors)
                     if offer_type == 'S' and service_serializer_errors:
-                        raise ValidationError(service_serializer_errors.errors)
+                        raise ValidationError(service_serializer_errors)
             raise ValidationError(offer_serializer.errors)
         # Real offers
         else:
@@ -574,6 +578,10 @@ class ShopOfferViewV2(APIView):
                     product_longitude = request.data.get('product_longitude')
                     product_latitude = request.data.get('product_latitude')
                     product_address = request.data.get('product_address')
+                    if product_latitude == 'null':
+                        product_longitude = None
+                        product_latitude = None
+                        product_address = None
                     product_serializer = BaseShopProductSerializer(data={
                         'offer': offer_pk,
                         'product_quantity': product_quantity,
@@ -698,7 +706,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_1 = request.data.get('delivery_city_1')
                     delivery_cities_1_pk = []
                     delivery_cities_1 = []
-                    if delivery_city_1 is not None and delivery_city_1 != 'null':
+                    if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                         cities_str = str(delivery_city_1).split(',')
                         cities = []
                         for city in cities_str:
@@ -719,7 +727,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_2 = request.data.get('delivery_city_2')
                     delivery_cities_2_pk = []
                     delivery_cities_2 = []
-                    if delivery_city_2 is not None and delivery_city_2 != 'null':
+                    if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                         cities_str = str(delivery_city_2).split(',')
                         cities = []
                         for city in cities_str:
@@ -740,7 +748,7 @@ class ShopOfferViewV2(APIView):
                     delivery_city_3 = request.data.get('delivery_city_3')
                     delivery_cities_3_pk = []
                     delivery_cities_3 = []
-                    if delivery_city_3 is not None and delivery_city_3 != 'null':
+                    if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                         cities_str = str(delivery_city_3).split(',')
                         cities = []
                         for city in cities_str:
@@ -760,7 +768,7 @@ class ShopOfferViewV2(APIView):
                     city_1_check = False
                     city_2_check = False
                     city_3_check = False
-                    if delivery_city_1 is not None and delivery_city_1 != 'null':
+                    if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                         city_1_check = True
                         deliveries.append(
                             {
@@ -772,7 +780,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_1)
                             }
                         )
-                    if delivery_city_2 is not None and delivery_city_2 != 'null':
+                    if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                         city_2_check = True
                         deliveries.append(
                             {
@@ -784,7 +792,7 @@ class ShopOfferViewV2(APIView):
                                 'delivery_days': int(delivery_days_2)
                             }
                         )
-                    if delivery_city_3 is not None and delivery_city_3 != 'null':
+                    if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                         city_3_check = True
                         deliveries.append(
                             {
@@ -819,9 +827,9 @@ class ShopOfferViewV2(APIView):
                 else:
                     offer.delete()
                     if offer_type == 'V' and product_serializer_errors:
-                        raise ValidationError(product_serializer_errors.errors)
+                        raise ValidationError(product_serializer_errors)
                     if offer_type == 'S' and service_serializer_errors:
-                        raise ValidationError(service_serializer_errors.errors)
+                        raise ValidationError(service_serializer_errors)
             raise ValidationError(offer_serializer.errors)
 
     def put(self, request, *args, **kwargs):
@@ -837,13 +845,13 @@ class ShopOfferViewV2(APIView):
                 picture_4 = request.data.get('picture_4', None)
 
                 previous_images = list()
-                previous_images.append(API_URL + offer.picture_1.url
+                previous_images.append(API_URL + '/media' + offer.picture_1.url
                                        if offer.picture_1 else False)
-                previous_images.append(API_URL + offer.picture_2.url
+                previous_images.append(API_URL + '/media' + offer.picture_2.url
                                        if offer.picture_2 else False)
-                previous_images.append(API_URL + offer.picture_3.url
+                previous_images.append(API_URL + '/media' + offer.picture_3.url
                                        if offer.picture_3 else False)
-                previous_images.append(API_URL + offer.picture_4.url
+                previous_images.append(API_URL + '/media' + offer.picture_4.url
                                        if offer.picture_4 else False)
 
                 if isinstance(picture_1, InMemoryUploadedFile):
@@ -952,7 +960,11 @@ class ShopOfferViewV2(APIView):
                         # None wasn't sent
                         except ValueError:
                             picture_4 = None
-
+                print(previous_images)
+                print(picture_1)
+                print(picture_2)
+                print(picture_3)
+                print(picture_4)
                 title = request.data.get('title', '')
                 description = request.data.get('description', '')
                 price = request.data.get('price', '')
@@ -982,6 +994,10 @@ class ShopOfferViewV2(APIView):
                         product_longitude = request.data.get('product_longitude', '')
                         product_latitude = request.data.get('product_latitude', '')
                         product_address = request.data.get('product_address', '')
+                        if product_latitude == 'null':
+                            product_longitude = None
+                            product_latitude = None
+                            product_address = None
                         product_serializer = BaseTempProductPutSerializer(data={
                             'product_quantity': product_quantity,
                             'product_price_by': product_price_by,
@@ -1146,7 +1162,7 @@ class ShopOfferViewV2(APIView):
                             delivery_city_1 = request.data.get('delivery_city_1')
                             delivery_cities_1_pk = []
                             delivery_cities_1 = []
-                            if delivery_city_1:
+                            if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                                 cities_str = str(delivery_city_1).split(',')
                                 cities = []
                                 for city in cities_str:
@@ -1167,7 +1183,7 @@ class ShopOfferViewV2(APIView):
                             delivery_city_2 = request.data.get('delivery_city_2')
                             delivery_cities_2_pk = []
                             delivery_cities_2 = []
-                            if delivery_city_2:
+                            if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                                 cities_str = str(delivery_city_2).split(',')
                                 cities = []
                                 for city in cities_str:
@@ -1188,7 +1204,7 @@ class ShopOfferViewV2(APIView):
                             delivery_city_3 = request.data.get('delivery_city_3')
                             delivery_cities_3_pk = []
                             delivery_cities_3 = []
-                            if delivery_city_3:
+                            if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                                 cities_str = str(delivery_city_3).split(',')
                                 cities = []
                                 for city in cities_str:
@@ -1210,7 +1226,7 @@ class ShopOfferViewV2(APIView):
                             city_2_check = False
                             city_3_check = False
 
-                            if delivery_city_1:
+                            if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                                 city_1_check = True
                                 deliveries.append(
                                     {
@@ -1221,7 +1237,7 @@ class ShopOfferViewV2(APIView):
                                         'delivery_days': int(delivery_days_1)
                                     }
                                 )
-                            if delivery_city_2:
+                            if delivery_city_2 is not None and delivery_city_2 != 'null' and delivery_city_2 != '':
                                 city_2_check = True
                                 deliveries.append(
                                     {
@@ -1232,7 +1248,7 @@ class ShopOfferViewV2(APIView):
                                         'delivery_days': int(delivery_days_2)
                                     }
                                 )
-                            if delivery_city_3:
+                            if delivery_city_3 is not None and delivery_city_3 != 'null' and delivery_city_3 != '':
                                 city_3_check = True
                                 deliveries.append(
                                     {
@@ -1466,6 +1482,10 @@ class ShopOfferViewV2(APIView):
                         product_longitude = request.data.get('product_longitude', '')
                         product_latitude = request.data.get('product_latitude', '')
                         product_address = request.data.get('product_address', '')
+                        if product_latitude == 'null':
+                            product_longitude = None
+                            product_latitude = None
+                            product_address = None
                         product_serializer = BaseProductPutSerializer(data={
                             'product_quantity': product_quantity,
                             'product_price_by': product_price_by,
@@ -1944,7 +1964,7 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
                     .select_related('temp_offer_products') \
                     .select_related('temp_offer_services') \
                     .prefetch_related('temp_offer_delivery') \
-                    .filter(auth_shop=auth_shop).order_by('-created_date')
+                    .filter(auth_shop=auth_shop).order_by('-pinned', '-created_date')
                 page = self.paginate_queryset(queryset=offers)
                 if page is not None:
                     serializer = BaseTempOfferssListSerializer(instance=page, many=True)
@@ -1961,13 +1981,51 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
                     .select_related('offer_products') \
                     .select_related('offer_services') \
                     .prefetch_related('offer_delivery') \
-                    .filter(auth_shop=auth_shop).order_by('-created_date')
+                    .filter(auth_shop=auth_shop).order_by('-pinned', '-created_date')
                 page = self.paginate_queryset(queryset=shop_offers)
                 if page is not None:
                     serializer = BaseOffersListSerializer(instance=page, many=True)
                     return self.get_paginated_response(serializer.data)
             except AuthShop.DoesNotExist:
                 errors = {"error": ["Shop not found."]}
+                raise ValidationError(errors)
+
+
+class ShopOfferPinUnpinView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        user = request.user
+        offer_pk = kwargs.get('offer_pk')
+        # Temp offers
+        if user.is_anonymous:
+            unique_id = kwargs.get('unique_id')
+            try:
+                offer = TempOffers.objects.get(pk=offer_pk, auth_shop__unique_id=unique_id)
+                offer.pinned = not offer.pinned
+                offer.save()
+                data = {
+                    'offer_pk': offer.pk,
+                    'pinned': offer.pinned,
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+            except TempOffers.DoesNotExist:
+                errors = {"error": ["Offer not found."]}
+                raise ValidationError(errors)
+        # Real offers
+        else:
+            try:
+                offer = Offers.objects.get(pk=offer_pk, auth_shop__user=user)
+                offer.pinned = not offer.pinned
+                offer.save()
+                data = {
+                    'offer_pk': offer.pk,
+                    'pinned': offer.pinned,
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+            except Offers.DoesNotExist:
+                errors = {"error": ["Offer not found."]}
                 raise ValidationError(errors)
 
 

@@ -1,6 +1,8 @@
 from os import path
 from django.db import models
 from django.db.models import Model
+from base64 import b64encode
+
 from shop.models import AuthShop, LonLatValidators, TempShop
 from Qaryb_API.settings import API_URL
 from uuid import uuid4
@@ -157,6 +159,7 @@ class Offers(Model):
     made_in_label = models.CharField(verbose_name='Made in', max_length=150, default=None, blank=True, null=True)
     tags = models.ManyToManyField(OfferTags, verbose_name='Offer Tags', related_name='offer_tags', blank=True)
     price = models.FloatField(verbose_name='Price', default=0.0)
+    pinned = models.BooleanField(verbose_name='Pinned ?', default=False)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
@@ -182,10 +185,27 @@ class Offers(Model):
         return None
 
     @property
+    def get_absolute_picture_1_img_base64(self):
+        if self.picture_1:
+            _, file_extension = path.splitext(self.picture_1.path)
+            encoded_string = b64encode(self.picture_1.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+        return None
+
+    @property
     def get_absolute_picture_1_thumbnail(self):
         if self.picture_1_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_1_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_1_thumbnail_base64(self):
+        if self.picture_1_thumbnail:
+            _, file_extension = path.splitext(self.picture_1_thumbnail.path)
+            encoded_string = b64encode(self.picture_1_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_2_img(self):
@@ -194,10 +214,26 @@ class Offers(Model):
         return None
 
     @property
+    def get_absolute_picture_2_img_base64(self):
+        if self.picture_2:
+            _, file_extension = path.splitext(self.picture_2.path)
+            encoded_string = b64encode(self.picture_2.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_2_thumbnail(self):
         if self.picture_2_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_2_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_2_thumbnail_base64(self):
+        if self.picture_2_thumbnail:
+            _, file_extension = path.splitext(self.picture_2_thumbnail.path)
+            encoded_string = b64encode(self.picture_2_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_3_img(self):
@@ -206,10 +242,26 @@ class Offers(Model):
         return None
 
     @property
+    def get_absolute_picture_3_img_base64(self):
+        if self.picture_3:
+            _, file_extension = path.splitext(self.picture_3.path)
+            encoded_string = b64encode(self.picture_3.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_3_thumbnail_base64(self):
+        if self.picture_3_thumbnail:
+            _, file_extension = path.splitext(self.picture_3_thumbnail.path)
+            encoded_string = b64encode(self.picture_3_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_4_img(self):
@@ -218,10 +270,26 @@ class Offers(Model):
         return None
 
     @property
+    def get_absolute_picture_4_img_base64(self):
+        if self.picture_4:
+            _, file_extension = path.splitext(self.picture_4.path)
+            encoded_string = b64encode(self.picture_4.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_4_thumbnail(self):
         if self.picture_4_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_4_thumbnail_base64(self):
+        if self.picture_4_thumbnail:
+            _, file_extension = path.splitext(self.picture_4_thumbnail.path)
+            encoded_string = b64encode(self.picture_4_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     def save_image(self, field_name, image):
         if not isinstance(image, BytesIO):
@@ -423,6 +491,7 @@ class TempOffers(Model):
                                       related_name='temp_offer_for_whom')
     price = models.FloatField(verbose_name='Price', default=0.0)
     tags = models.ManyToManyField(OfferTags, verbose_name='Temp Offer Tags', related_name='temp_offer_tags')
+    pinned = models.BooleanField(verbose_name='Pinned ?', default=False)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
@@ -448,10 +517,27 @@ class TempOffers(Model):
         return None
 
     @property
+    def get_absolute_picture_1_img_base64(self):
+        if self.picture_1:
+            _, file_extension = path.splitext(self.picture_1.path)
+            encoded_string = b64encode(self.picture_1.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+        return None
+
+    @property
     def get_absolute_picture_1_thumbnail(self):
         if self.picture_1_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_1_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_1_thumbnail_base64(self):
+        if self.picture_1_thumbnail:
+            _, file_extension = path.splitext(self.picture_1_thumbnail.path)
+            encoded_string = b64encode(self.picture_1_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_2_img(self):
@@ -460,10 +546,26 @@ class TempOffers(Model):
         return None
 
     @property
+    def get_absolute_picture_2_img_base64(self):
+        if self.picture_2:
+            _, file_extension = path.splitext(self.picture_2.path)
+            encoded_string = b64encode(self.picture_2.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_2_thumbnail(self):
         if self.picture_2_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_2_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_2_thumbnail_base64(self):
+        if self.picture_2_thumbnail:
+            _, file_extension = path.splitext(self.picture_2_thumbnail.path)
+            encoded_string = b64encode(self.picture_2_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_3_img(self):
@@ -472,10 +574,26 @@ class TempOffers(Model):
         return None
 
     @property
+    def get_absolute_picture_3_img_base64(self):
+        if self.picture_3:
+            _, file_extension = path.splitext(self.picture_3.path)
+            encoded_string = b64encode(self.picture_3.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_3_thumbnail_base64(self):
+        if self.picture_3_thumbnail:
+            _, file_extension = path.splitext(self.picture_3_thumbnail.path)
+            encoded_string = b64encode(self.picture_3_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_picture_4_img(self):
@@ -484,10 +602,26 @@ class TempOffers(Model):
         return None
 
     @property
+    def get_absolute_picture_4_img_base64(self):
+        if self.picture_4:
+            _, file_extension = path.splitext(self.picture_4.path)
+            encoded_string = b64encode(self.picture_4.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+
+    @property
     def get_absolute_picture_4_thumbnail(self):
         if self.picture_4_thumbnail:
             return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
+
+    @property
+    def get_absolute_picture_4_thumbnail_base64(self):
+        if self.picture_4_thumbnail:
+            _, file_extension = path.splitext(self.picture_4_thumbnail.path)
+            encoded_string = b64encode(self.picture_4_thumbnail.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     def save_image(self, field_name, image):
         if not isinstance(image, BytesIO):
