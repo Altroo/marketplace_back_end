@@ -1821,7 +1821,7 @@ class ShopOfferViewV2(APIView):
             unique_id = kwargs.get('unique_id')
             try:
                 offer = TempOffers.objects.get(pk=offer_pk)
-                if offer.auth_shop.unique_id != unique_id:
+                if offer.auth_shop.unique_id != str(unique_id):
                     errors = {"error": ["Offer not yours to delete."]}
                     raise ValidationError(errors)
                 # Delete temp product images

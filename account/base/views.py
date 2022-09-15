@@ -3,6 +3,7 @@ from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.account.models import EmailAddress
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
@@ -38,10 +39,14 @@ from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
+from decouple import config
 
 
 class FacebookLoginView(SocialLoginView):
+    authentication_classes = []
     adapter_class = FacebookOAuth2Adapter
+    callback_url = config('FRONT_DOMAIN')
+    client_class = OAuth2Client
 
     # Email Address auto added : primary true - verified true
     def login(self):
@@ -82,7 +87,10 @@ class FacebookLoginView(SocialLoginView):
 
 
 class GoogleLoginView(SocialLoginView):
+    authentication_classes = []
     adapter_class = GoogleOAuth2Adapter
+    callback_url = config('FRONT_DOMAIN')
+    client_class = OAuth2Client
 
     # Email Address auto added : primary true - verified true
     def login(self):

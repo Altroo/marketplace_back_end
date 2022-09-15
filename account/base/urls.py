@@ -10,7 +10,7 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
 # from dj_rest_auth.views import LogoutView
 # from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.registration.views import SocialAccountDisconnectView
-# from rest_framework_simplejwt.views import TokenVerifyView  # , TokenRefreshView
+from rest_framework_simplejwt.views import TokenVerifyView  # , TokenRefreshView
 from dj_rest_auth.jwt_auth import get_refresh_view
 
 app_name = 'account'
@@ -50,7 +50,7 @@ urlpatterns = [
     # PUT: reset with new password
     path('password_reset/<str:email>/<int:code>/', PasswordResetView.as_view()),
     # POST : Tokens, Verify if token valid, Refresh access token
-    # path('token_verify/', TokenVerifyView.as_view()),
+    path('token_verify/', TokenVerifyView.as_view()),
     path('token_refresh/', get_refresh_view().as_view()),
     # PATCH : Edit profil
     # GET : Get profil data include avatar
