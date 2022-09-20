@@ -158,11 +158,11 @@ class RegistrationView(APIView):
         return ''.join(choice(digits) for _ in range(length))
 
     def post(self, request):
-        password = request.data.get('password')
-        password2 = request.data.get('password2')
         email = str(request.data.get('email')).lower()
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
+        password = request.data.get('password')
+        password2 = request.data.get('password2')
         serializer = BaseRegistrationSerializer(data={
             'email': email,
             'password': password,
@@ -278,7 +278,7 @@ class ResendVerificationCodeView(APIView):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except CustomUser.DoesNotExist:
-            errors = {"email": ["Email Doesn't exist!"]}
+            errors = {"email": ["Aucun compte existant utilisant cette adresse électronique."]}
             raise ValidationError(errors)
 
 
@@ -318,8 +318,12 @@ class SendPasswordResetView(APIView):
                     user.task_id_password_reset = str(task_id_password_reset)
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
+                raise ValidationError(serializer.errors)
+            else:
+                errors = {"email": ["Aucun compte existant utilisant cette adresse électronique."]}
+                raise ValidationError(errors)
         except CustomUser.DoesNotExist:
-            errors = {"email": ["Email Doesn't exist!"]}
+            errors = {"email": ["Aucun compte existant utilisant cette adresse électronique."]}
             raise ValidationError(errors)
 
 
@@ -346,7 +350,7 @@ class PasswordResetView(APIView):
         errors = {"error": ["User or Verification code invalid!"]}
         try:
             user = CustomUser.objects.get(email=email)
-            if code is not None and email is not None and code == user.password_reset_code:
+            if code is not None and email is not None and code == str(user.password_reset_code):
                 serializer = BasePasswordResetSerializer(data=request.data)
                 if serializer.is_valid():
                     # revoke 24h previous periodic task (default password_reset)
@@ -363,7 +367,7 @@ class PasswordResetView(APIView):
                     #    return Response({"new_password": ["Passwords doesn't match!"]},
                     #                    status=status.HTTP_400_BAD_REQUEST)
                     user.set_password(serializer.data.get("new_password"))
-                    user.password_reset_code = ''
+                    user.password_reset_code = None
                     user.save()
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 raise ValidationError(serializer.errors)
@@ -378,7 +382,7 @@ class CheckEmailView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         email = str(request.data.get('email')).lower()
-        errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà"]}
+        errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
         try:
             CustomUser.objects.get(email=email)
             raise ValidationError(errors)
@@ -791,7 +795,7 @@ class ChangeEmailHasPasswordAccountView(APIView):
         new_email = request.data.get('new_email')
         try:
             CustomUser.objects.get(email=new_email)
-            errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà."]}
+            errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
             raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             # Require email & password
@@ -820,7 +824,7 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
         new_email = request.data.get('new_email')
         try:
             CustomUser.objects.get(email=new_email)
-            errors = {"email": ["Un objet User avec ce champ adresse électronique existe déjà."]}
+            errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
             raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             # Require email & to set a new password
@@ -880,6 +884,27 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
                     raise ValidationError(errors)
 
 
+class SetFacebookEmailAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = request.user
+        email = request.data.get('email')
+        try:
+            CustomUser.objects.get(email=email)
+            errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
+            raise ValidationError(errors)
+        except CustomUser.DoesNotExist:
+            email_address = EmailAddress.objects.get(user=user)
+            email_address.email = email
+            email_address.verified = False
+            email_address.save()
+            user.email = email
+            user.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class CheckAccountView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -887,6 +912,9 @@ class CheckAccountView(APIView):
     def get(request, *args, **kwargs):
         user = request.user
         has_password = user.has_usable_password()
+        is_new = False
+        if (user.last_login - user.date_joined).seconds < 90:
+            is_new = True
         try:
             check_verified = EmailAddress.objects.get(user=user).verified
             try:
@@ -899,10 +927,11 @@ class CheckAccountView(APIView):
                 "verified": check_verified,
                 "has_password": has_password,
                 "has_shop": has_shop,
+                "is_new": is_new,
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except EmailAddress.DoesNotExist:
-            errors = {"email": ["Email Doesn't exist!"]}
+            errors = {"email": ["Aucun compte existant utilisant cette adresse électronique."]}
             raise ValidationError(errors)
 
 

@@ -5,7 +5,7 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
     ReportView, LoginView, LogoutView, AddressView, GetAllAddressesView, \
     FacebookLinkingView, GoogleLinkingView, GetSocialAccountListView, \
     EncloseAccountView, ChangeEmailHasPasswordAccountView, ChangeEmailNotHasPasswordAccountView, \
-    DeleteAccountView, CheckAccountView, ChangePasswordView, GetProfileView
+    DeleteAccountView, CheckAccountView, ChangePasswordView, GetProfileView, SetFacebookEmailAccountView
 # from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
 # from dj_rest_auth.views import LogoutView
 # from dj_rest_auth.views import PasswordChangeView
@@ -48,6 +48,7 @@ urlpatterns = [
     path('send_password_reset/', SendPasswordResetView.as_view()),
     # GET: check if email & code are valid
     # PUT: reset with new password
+    path('password_reset/', PasswordResetView.as_view()),
     path('password_reset/<str:email>/<int:code>/', PasswordResetView.as_view()),
     # POST : Tokens, Verify if token valid, Refresh access token
     path('token_verify/', TokenVerifyView.as_view()),
@@ -80,6 +81,7 @@ urlpatterns = [
     # path('email/', ChangeEmailAccountView.as_view()),
     path('change_email_has_password/', ChangeEmailHasPasswordAccountView.as_view()),
     path('change_email_not_has_password/', ChangeEmailNotHasPasswordAccountView.as_view()),
+    path('set_fb_email/', SetFacebookEmailAccountView.as_view()),
     # GET : check account
     path('check_account/', CheckAccountView.as_view()),
     # Delete Account
