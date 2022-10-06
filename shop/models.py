@@ -264,13 +264,13 @@ class TempShop(Model):
     @property
     def get_absolute_avatar_img(self):
         if self.avatar:
-            return "{0}{1}".format(API_URL, self.avatar.url)
+            return "{0}/media{1}".format(API_URL, self.avatar.url)
         return None
 
     @property
     def get_absolute_avatar_thumbnail(self):
         if self.avatar_thumbnail:
-            return "{0}{1}".format(API_URL, self.avatar_thumbnail.url)
+            return "{0}/media{1}".format(API_URL, self.avatar_thumbnail.url)
         return None
 
     def save_image(self, field_name, image):

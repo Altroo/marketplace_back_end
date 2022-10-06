@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 
 def get_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('user_avatars/', str(uuid4()) + file_extension)
+    return path.join('media/user_avatars/', str(uuid4()) + file_extension)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):

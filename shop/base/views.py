@@ -140,6 +140,11 @@ class ShopView(APIView):
                     data = {"errors": ["Shop not found."]}
                     raise ValidationError(data)
             else:
+                shop_link = kwargs.get('shop_link')
+                if shop_link:
+                    auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
+                    shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
+                    return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
                 data = {"errors": ["Shop not found."]}
                 raise ValidationError(data)
         # Auth shop
@@ -656,6 +661,7 @@ class TempShopToAuthShopView(APIView):
                         description=temp_offer.description,
                         # For whom
                         # Tags
+                        made_in_label=temp_offer.made_in_label,
                         price=temp_offer.price,
                     )
                     offer.save()
@@ -725,6 +731,7 @@ class TempShopToAuthShopView(APIView):
                         delivery = Delivery.objects.create(
                             offer=offer.pk,
                             # delivery_city
+                            all_cities=temp_delivery.all_cities,
                             delivery_price=temp_delivery.delivery_price,
                             delivery_days=temp_delivery.delivery_days,
                         )

@@ -2,13 +2,13 @@ from os import path
 from django.db import models
 from django.db.models import Model
 from base64 import b64encode
-
+from places.base.choices import PlaceType
 from shop.models import AuthShop, LonLatValidators, TempShop
 from Qaryb_API.settings import API_URL
 from uuid import uuid4
 from io import BytesIO
 from django.core.files.base import ContentFile
-from places.models import City
+from places.models import City, Country
 
 
 def get_shop_offers_path(instance, filename):
@@ -156,7 +156,10 @@ class Offers(Model):
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='product_for_whom')
     creator_label = models.BooleanField(verbose_name='Creator label', default=False)
-    made_in_label = models.CharField(verbose_name='Made in', max_length=150, default=None, blank=True, null=True)
+    made_in_label = models.ForeignKey(Country, verbose_name='Made in', blank=True, null=True,
+                                      related_name='country_offer',
+                                      on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
+    # made_in_label = models.CharField(verbose_name='Made in', max_length=150, default=None, blank=True, null=True)
     tags = models.ManyToManyField(OfferTags, verbose_name='Offer Tags', related_name='offer_tags', blank=True)
     price = models.FloatField(verbose_name='Price', default=0.0)
     pinned = models.BooleanField(verbose_name='Pinned ?', default=False)
@@ -490,6 +493,9 @@ class TempOffers(Model):
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='temp_offer_for_whom')
     price = models.FloatField(verbose_name='Price', default=0.0)
+    made_in_label = models.ForeignKey(Country, verbose_name='Made in', blank=True, null=True,
+                                      related_name='country_temp_offer',
+                                      on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
     tags = models.ManyToManyField(OfferTags, verbose_name='Temp Offer Tags', related_name='temp_offer_tags')
     pinned = models.BooleanField(verbose_name='Pinned ?', default=False)
     created_date = models.DateTimeField(verbose_name='Created date', editable=False, auto_now_add=True, db_index=True)

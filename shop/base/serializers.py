@@ -52,6 +52,12 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     morning_hour_to = serializers.TimeField(format='%H:%M')
     afternoon_hour_from = serializers.TimeField(format='%H:%M')
     afternoon_hour_to = serializers.TimeField(format='%H:%M')
+    is_subscribed = serializers.SerializerMethodField()
+
+    # TODO just a placeholder for now
+    @staticmethod
+    def get_is_subscribed(instance):
+        return False
 
     # @staticmethod
     # def get_opening_days(instance):
@@ -60,7 +66,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthShop
         # has pk & creator
-        fields = ['pk', 'shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code',
+        fields = ['pk', 'user', 'shop_name', 'avatar', 'avatar_thumbnail', 'color_code', 'bg_color_code',
                   'border', 'icon_color',
                   'font_name', 'bio',
                   'opening_days', 'morning_hour_from', 'morning_hour_to',
@@ -69,7 +75,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
                   'phone', 'contact_email',
                   'website_link', 'facebook_link', 'twitter_link', 'instagram_link',
                   'whatsapp', 'zone_by', 'longitude', 'latitude',
-                  'address_name', 'km_radius', 'creator']
+                  'address_name', 'km_radius', 'creator', 'is_subscribed']
 
 
 class BaseShopAvatarPutSerializer(serializers.ModelSerializer):

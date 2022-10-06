@@ -34,7 +34,8 @@ class CountriesListView(PlaceLanguageMixin, ListAPIView):
     """
 
     permission_classes = (AllowAny,)
-    queryset = Country.objects.filter(cities__isnull=False, type=PlaceType.COUNTRY).distinct()
+    queryset = Country.objects.filter(cities__isnull=False, type=PlaceType.COUNTRY).distinct()\
+        .exclude(code='').order_by('name_fr')
     serializer_class = BaseCountrySerializer
     filterset_class = CountryFilterSet
     pagination_class = None
@@ -45,7 +46,20 @@ class CountriesListView(PlaceLanguageMixin, ListAPIView):
         else:
             self.filterset_class = BaseAllCountryFilter
             self.serializer_class = BaseCountriesSerializer
-            return Country.objects.all()
+            return Country.objects.all().distinct().exclude(code='').order_by('name_fr')
+
+
+class CountryCodesListView(APIView):
+    """
+       List of countries
+       """
+    permission_classes = (AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        queryset = Country.objects.filter(type=PlaceType.COUNTRY).exclude(code='') \
+            .distinct().order_by('code').values_list('code', flat=True)
+        return Response(queryset)
 
 
 class CitiesListView(PlaceLanguageMixin, ListAPIView):
@@ -110,4 +124,3 @@ class GetLocalisationNameView(APIView):
         except (IndexError, AttributeError):
             errors = {"error": ["The given geo is not a valid road!"]}
             raise ValidationError(errors)
-

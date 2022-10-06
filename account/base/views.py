@@ -52,6 +52,8 @@ class FacebookLoginView(SocialLoginView):
     def login(self):
         super(FacebookLoginView, self).login()
         user = CustomUser.objects.get(pk=self.user.pk)
+        if not user.avatar:
+            base_generate_user_thumbnail.apply_async((user.pk,), )
         user.is_enclosed = False
         user.save()
         try:
@@ -96,6 +98,8 @@ class GoogleLoginView(SocialLoginView):
     def login(self):
         super(GoogleLoginView, self).login()
         user = CustomUser.objects.get(pk=self.user.pk)
+        if not user.avatar:
+            base_generate_user_thumbnail.apply_async((user.pk,), )
         user.is_enclosed = False
         user.save()
         try:
@@ -913,21 +917,32 @@ class CheckAccountView(APIView):
         user = request.user
         has_password = user.has_usable_password()
         is_new = False
+        shop_url = False
+        is_creator = False
         if (user.last_login - user.date_joined).seconds < 90:
             is_new = True
         try:
             check_verified = EmailAddress.objects.get(user=user).verified
             try:
-                AuthShop.objects.get(user=user)
+                shop = AuthShop.objects.get(user=user)
                 has_shop = True
+                shop_url = shop.qaryb_link
+                is_creator = shop.creator
             except AuthShop.DoesNotExist:
                 has_shop = False
             data = {
+                "pk": user.pk,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
                 "email": user.email,
                 "verified": check_verified,
                 "has_password": has_password,
                 "has_shop": has_shop,
+                "shop_url": shop_url,
                 "is_new": is_new,
+                "is_subscribed": False,
+                "is_creator": is_creator,
+                "picture": user.get_absolute_avatar_thumbnail,
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except EmailAddress.DoesNotExist:
