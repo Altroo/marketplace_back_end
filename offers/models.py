@@ -155,7 +155,7 @@ class Offers(Model):
     description = models.TextField(verbose_name='Description', null=True, blank=True)
     for_whom = models.ManyToManyField(ForWhom, verbose_name='For Whom',
                                       related_name='product_for_whom')
-    creator_label = models.BooleanField(verbose_name='Creator label', default=False)
+    creator_label = models.BooleanField(verbose_name='Creator label', default=False, blank=True, null=True)
     made_in_label = models.ForeignKey(Country, verbose_name='Made in', blank=True, null=True,
                                       related_name='country_offer',
                                       on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})

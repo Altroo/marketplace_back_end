@@ -309,6 +309,10 @@ class ShopOfferViewV2(APIView):
                     service_morning_hour_to = request.data.get('service_morning_hour_to')
                     service_afternoon_hour_from = request.data.get('service_afternoon_hour_from')
                     service_afternoon_hour_to = request.data.get('service_afternoon_hour_to')
+                    if service_afternoon_hour_from == 'null':
+                        service_afternoon_hour_from = None
+                    if service_afternoon_hour_to == 'null':
+                        service_afternoon_hour_to = None
                     service_zone_by = request.data.get('service_zone_by')
                     service_price_by = request.data.get('service_price_by')
                     service_longitude = request.data.get('service_longitude')
@@ -526,7 +530,7 @@ class ShopOfferViewV2(APIView):
             except Country.DoesNotExist:
                 made_in_label = None
             if auth_shop.creator:
-                creator_label = request.data.get('creator_label')
+                creator_label = request.data.get('creator_label', False)
             else:
                 creator_label = False
             picture_1 = request.data.get('picture_1')
@@ -695,6 +699,10 @@ class ShopOfferViewV2(APIView):
                     service_morning_hour_to = request.data.get('service_morning_hour_to')
                     service_afternoon_hour_from = request.data.get('service_afternoon_hour_from')
                     service_afternoon_hour_to = request.data.get('service_afternoon_hour_to')
+                    if service_afternoon_hour_from == 'null':
+                        service_afternoon_hour_from = None
+                    if service_afternoon_hour_to == 'null':
+                        service_afternoon_hour_to = None
                     service_zone_by = request.data.get('service_zone_by')
                     service_price_by = request.data.get('service_price_by')
                     service_longitude = request.data.get('service_longitude')
@@ -1026,11 +1034,12 @@ class ShopOfferViewV2(APIView):
                 description = request.data.get('description', '')
                 price = request.data.get('price', '')
                 # Temp product PUT serializer
-                made_in_label = request.data.get('made_in_label')
-                try:
-                    made_in_label = Country.objects.get(name_fr=made_in_label)
-                except Country.DoesNotExist:
-                    made_in_label = None
+                made_in_label = request.data.get('made_in_label', None)
+                if made_in_label is not None:
+                    try:
+                        made_in_label = Country.objects.get(name_fr=made_in_label)
+                    except Country.DoesNotExist:
+                        pass
                 offer_serializer = BaseTempOfferPutSerializer(data={
                     'title': title,
                     'picture_1': picture_1 if picture_1 != 'null' else None,
@@ -1077,6 +1086,10 @@ class ShopOfferViewV2(APIView):
                         service_morning_hour_to = request.data.get('service_morning_hour_to', '')
                         service_afternoon_hour_from = request.data.get('service_afternoon_hour_from', '')
                         service_afternoon_hour_to = request.data.get('service_afternoon_hour_to', '')
+                        if service_afternoon_hour_from == 'null':
+                            service_afternoon_hour_from = None
+                        if service_afternoon_hour_to == 'null':
+                            service_afternoon_hour_to = None
                         service_zone_by = request.data.get('service_zone_by', '')
                         service_price_by = request.data.get('service_price_by', '')
                         service_longitude = request.data.get('service_longitude', '')
@@ -1114,8 +1127,8 @@ class ShopOfferViewV2(APIView):
                             'picture_4_thumb': updated_offer.get_absolute_picture_4_thumbnail,
                             'description': updated_offer.description,
                             'made_in_label': {
-                                'name': updated_offer.made_in_label.name_fr,
-                                'code': updated_offer.made_in_label.code,
+                                'name': updated_offer.made_in_label.name_fr if updated_offer.made_in_label else None,
+                                'code': updated_offer.made_in_label.code if updated_offer.made_in_label else None,
                             },
                             'price': updated_offer.price
                         }
@@ -1374,8 +1387,8 @@ class ShopOfferViewV2(APIView):
                                 service_availability_days_list.append(
                                     {
                                         "pk": availability_day.pk,
-                                        "code_day": availability_day.code_size,
-                                        "name_day": availability_day.name_size
+                                        "code_day": availability_day.code_day,
+                                        "name_day": availability_day.name_day
                                     }
                                 )
                             data['service_availability_days'] = service_availability_days_list
@@ -1530,13 +1543,14 @@ class ShopOfferViewV2(APIView):
                 title = request.data.get('title', '')
                 description = request.data.get('description', '')
                 price = request.data.get('price', '')
-                made_in_label = request.data.get('made_in_label')
-                try:
-                    made_in_label = Country.objects.get(name_fr=made_in_label)
-                except City.DoesNotExist:
-                    made_in_label = None
+                made_in_label = request.data.get('made_in_label', None)
+                if made_in_label is not None:
+                    try:
+                        made_in_label = Country.objects.get(name_fr=made_in_label)
+                    except Country.DoesNotExist:
+                        pass
                 if offer.auth_shop.creator:
-                    creator_label = request.data.get('creator_label')
+                    creator_label = request.data.get('creator_label', False)
                 else:
                     creator_label = False
                 # Product PUT serializer
@@ -1587,6 +1601,10 @@ class ShopOfferViewV2(APIView):
                         service_morning_hour_to = request.data.get('service_morning_hour_to', '')
                         service_afternoon_hour_from = request.data.get('service_afternoon_hour_from', '')
                         service_afternoon_hour_to = request.data.get('service_afternoon_hour_to', '')
+                        if service_afternoon_hour_from == 'null':
+                            service_afternoon_hour_from = None
+                        if service_afternoon_hour_to == 'null':
+                            service_afternoon_hour_to = None
                         service_zone_by = request.data.get('service_zone_by', '')
                         service_price_by = request.data.get('service_price_by', '')
                         service_longitude = request.data.get('service_longitude', '')
@@ -1625,8 +1643,8 @@ class ShopOfferViewV2(APIView):
                             'description': updated_offer.description,
                             'creator_label': updated_offer.creator_label,
                             'made_in_label': {
-                                'name': updated_offer.made_in_label.name_fr,
-                                'code': updated_offer.made_in_label.code,
+                                'name': updated_offer.made_in_label.name_fr if updated_offer.made_in_label else None,
+                                'code': updated_offer.made_in_label.code if updated_offer.made_in_label else None,
                             },
                             'price': updated_offer.price
                         }
@@ -1885,8 +1903,8 @@ class ShopOfferViewV2(APIView):
                                 service_availability_days_list.append(
                                     {
                                         "pk": availability_day.pk,
-                                        "code_day": availability_day.code_size,
-                                        "name_day": availability_day.name_size
+                                        "code_day": availability_day.code_day,
+                                        "name_day": availability_day.name_day
                                     }
                                 )
                             data['service_availability_days'] = service_availability_days_list
@@ -1921,8 +1939,6 @@ class ShopOfferViewV2(APIView):
             unique_id = kwargs.get('unique_id')
             try:
                 offer = TempOffers.objects.get(pk=offer_pk)
-                print(str(unique_id))
-                print(offer.auth_shop.unique_id)
                 if offer.auth_shop.unique_id != str(unique_id):
                     errors = {"error": ["Offer not yours to delete."]}
                     raise ValidationError(errors)
@@ -2115,13 +2131,22 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
             labels_query = self.get_filter_by_labels(queryset)
             maroc_query = self.get_filter_by_maroc(queryset)
             cities_query = self.get_filter_by_cities(queryset)
+            services_query = self.get_filter_by_services(queryset)
             final_query = (categories_query | colors_query | sizes_query | for_whom_query |
-                           solder_query | labels_query | maroc_query | cities_query).distinct()
+                           solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
             if final_query:
                 return final_query
             return queryset
         except AuthShop.DoesNotExist:
             return None
+
+    def get_filter_by_services(self, queryset: QuerySet) -> QuerySet:
+        categories: Union[str, None] = self.request.query_params.get('categories', None)
+        if categories:
+            service = categories.split(',')
+            if 'Services' in service:
+                return queryset.filter(offer_type='S')
+        return Offers.objects.none()
 
     def get_filter_by_categories(self, queryset: QuerySet) -> QuerySet:
         categories: Union[str, None] = self.request.query_params.get('categories', None)
@@ -2173,13 +2198,22 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
             return (q_one | q_two).distinct()
         return Offers.objects.none()
 
+    # def custom_paginate_queryset(self, queryset):
+    #     """
+    #     Return a single page of results, or `None` if pagination is disabled.
+    #     """
+    #     if self.paginator is None:
+    #         return None
+    #     return self.paginator.paginate_queryset(queryset.order_by('-pinned'), self.request, view=self)
+
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if queryset is None:
             errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
         filter_queryset: QuerySet = self.filter_queryset(queryset)
-        page: Union[list, None] = self.paginate_queryset(filter_queryset)
+        # page = self.custom_paginate_queryset(filter_queryset)
+        page = self.paginate_queryset(filter_queryset)
         if page is not None:
             serializer: BaseOffersListSerializer = self.get_serializer(page, many=True)
             response = self.get_paginated_response(serializer.data)
@@ -2213,13 +2247,22 @@ class GetTempShopOffersListView(ListAPIView, PaginationMixinBy5):
             # labels_query = self.get_filter_by_labels(queryset)
             maroc_query = self.get_filter_by_maroc(queryset)
             cities_query = self.get_filter_by_cities(queryset)
+            services_query = self.get_filter_by_services(queryset)
             final_query = (categories_query | colors_query | sizes_query | for_whom_query |
-                           solder_query | maroc_query | cities_query).distinct()
+                           solder_query | maroc_query | cities_query | services_query).distinct()
             if final_query:
                 return final_query
             return queryset
         except AuthShop.DoesNotExist:
             return None
+
+    def get_filter_by_services(self, queryset: QuerySet) -> QuerySet:
+        categories: Union[str, None] = self.request.query_params.get('categories', None)
+        if categories:
+            service = categories.split(',')
+            if 'Services' in service:
+                return queryset.filter(offer_type='S')
+        return Offers.objects.none()
 
     def get_filter_by_categories(self, queryset: QuerySet) -> QuerySet:
         categories: Union[str, None] = self.request.query_params.get('categories', None)
@@ -2300,6 +2343,7 @@ class GetShopOffersFiltersListView(APIView):
         available_labels = False
         available_made_in_maroc = False
         available_cities = set()
+        available_services = False
         try:
             auth_shop_obj = AuthShop.objects.get(pk=auth_shop)
             offers = Offers.objects \
@@ -2346,7 +2390,10 @@ class GetShopOffersFiltersListView(APIView):
                     available_labels = labels
                     available_made_in_maroc = made_in_maroc
                     for i in cities:
-                        available_cities.add(i)
+                        if i is not None:
+                            available_cities.add(i)
+                elif offer.offer_type == 'S':
+                    available_services = True
             data = {
                 'available_categories': available_categories,
                 'available_colors': available_colors,
@@ -2356,6 +2403,7 @@ class GetShopOffersFiltersListView(APIView):
                 'available_labels': available_labels,
                 'available_made_in_maroc': available_made_in_maroc,
                 'available_cities': available_cities,
+                'available_services': available_services,
             }
             return Response(data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
@@ -2375,6 +2423,7 @@ class GetTempShopTempOffersFiltersListView(APIView):
         available_solder = False
         available_made_in_maroc = False
         available_cities = set()
+        available_services = False
         try:
             auth_shop_obj = TempShop.objects.get(unique_id=unique_id)
             offers = TempOffers.objects \
@@ -2418,7 +2467,10 @@ class GetTempShopTempOffersFiltersListView(APIView):
                     available_solder = solder
                     available_made_in_maroc = made_in_maroc
                     for i in cities:
-                        available_cities.add(i)
+                        if i is not None:
+                            available_cities.add(i)
+                elif tempOffer.offer_type == 'S':
+                    available_services = True
             data = {
                 'available_categories': available_categories,
                 'available_colors': available_colors,
@@ -2428,6 +2480,7 @@ class GetTempShopTempOffersFiltersListView(APIView):
                 'available_labels': False,
                 'available_made_in_maroc': available_made_in_maroc,
                 'available_cities': available_cities,
+                'available_services': available_services,
             }
             return Response(data, status=status.HTTP_200_OK)
         except TempShop.DoesNotExist:
@@ -3367,6 +3420,25 @@ class GetLastUsedLocalisationView(APIView):
             except AuthShop.DoesNotExist:
                 errors = {"error": ["Shop not found."]}
                 raise ValidationError(errors)
+
+
+class GetServicesAvailabilityDays(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        availability_days = request.data.get('availability_days')
+        availability_days_list = str(availability_days).split(',')
+        service_days = ServiceDays.objects.filter(code_day__in=availability_days_list)
+        result = []
+        for service_day in service_days:
+            result_obj = {
+                'pk': service_day.pk,
+                'code_day': service_day.code_day,
+                'name_day': service_day.name_day,
+            }
+            result.append(result_obj)
+        return Response(data=result, status=status.HTTP_200_OK)
 
 
 class GetOfferTagsView(ListAPIView):

@@ -34,7 +34,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
                 "message": {
                     "type": "SHOP_AVATAR",
                     "pk": object_.user.pk,
-                    "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
+                    "avatar": object_.get_absolute_avatar_img,
                 }
             }
             channel_layer = get_channel_layer()
@@ -45,7 +45,7 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
                 "message": {
                     "type": "USER_AVATAR",
                     "pk": object_.pk,
-                    "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
+                    "avatar": object_.get_absolute_avatar_img,
                 }
             }
             channel_layer = get_channel_layer()

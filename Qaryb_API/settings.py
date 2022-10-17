@@ -19,6 +19,7 @@ SECURE_PROXY_SSL_HEADER = (config('SECURE_PROXY_SSL_HEADER_1'),
                            config('SECURE_PROXY_SSL_HEADER_2'))
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -169,6 +170,7 @@ JWT_AUTH_RETURN_EXPIRATION = config('JWT_AUTH_RETURN_EXPIRATION', cast=bool)
 JWT_AUTH_COOKIE = config('JWT_AUTH_COOKIE')
 JWT_AUTH_REFRESH_COOKIE = config('JWT_AUTH_REFRESH_COOKIE')
 REST_AUTH_TOKEN_MODEL = None
+OLD_PASSWORD_FIELD_ENABLED = True
 
 # Logging
 LOGGING = {

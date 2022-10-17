@@ -11,6 +11,7 @@ from uuid import uuid4
 from Qaryb_API.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
+from base64 import b64encode
 
 
 def get_avatar_path(instance, filename):
@@ -30,8 +31,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='', blank=True, null=True)
     birth_date = models.DateField(verbose_name="Date of birth", blank=True, null=True)
-    city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL,
-                             related_name='city_custom_user')
+    # city = models.ForeignKey(City, verbose_name='City', blank=True, null=True, on_delete=models.SET_NULL,
+    #                          related_name='city_custom_user')
+    city = models.CharField(verbose_name='City', max_length=30,
+                            default=None, blank=True, null=True)
     country = models.ForeignKey(Country, verbose_name='Country', blank=True, null=True,
                                 related_name='country_custom_user',
                                 on_delete=models.SET_NULL, limit_choices_to={'type': PlaceType.COUNTRY})
@@ -74,6 +77,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if self.avatar:
             return "{0}/media{1}".format(API_URL, self.avatar.url)
         return None
+
+    @property
+    def get_absolute_avatar_img_base64(self):
+        if self.avatar:
+            _, file_extension = path.splitext(self.avatar.path)
+            encoded_string = b64encode(self.avatar.file.read())
+            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                    str(encoded_string).lstrip("b'").rstrip("'"))
 
     @property
     def get_absolute_avatar_thumbnail(self):

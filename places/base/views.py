@@ -66,7 +66,7 @@ class CitiesListView(PlaceLanguageMixin, ListAPIView):
     """
     List of countries
     """
-
+    permission_classes = (permissions.AllowAny,)
     queryset = City.objects.all()
     serializer_class = BaseCitySerializer
     filterset_class = CityFilterSet

@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from allauth.account.models import EmailAddress
 from offers.base.serializers import BaseShopCitySerializer
 from places.base.serializers import BaseCountriesSerializer
+from places.models import Country
 from shop.base.utils import Base64ImageField
 
 
@@ -100,7 +101,12 @@ class BaseUserEmailSerializer(serializers.ModelSerializer):
 
 class BaseProfilePutSerializer(serializers.ModelSerializer):
     avatar = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
+    country = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
+        required=False,
+        queryset=Country.objects.all(),
     )
 
     class Meta:
@@ -109,11 +115,13 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
 
 
 class BaseProfileGETSerializer(serializers.ModelSerializer):
-    avatar_thumbnail = serializers.CharField(source='get_absolute_avatar_thumbnail')
-    city = BaseShopCitySerializer(read_only=True)
+    avatar = serializers.CharField(source='get_absolute_avatar_img_base64')
+    # city = BaseShopCitySerializer(read_only=True)
+    # city = serializers.CharField()
     country = BaseCountriesSerializer(read_only=True)
     gender = serializers.SerializerMethodField()
-    date_joined = serializers.DateTimeField(format='%Y-%m-%d')
+    # birth_date = serializers.DateField(format='%d/%m/%Y')
+    date_joined = serializers.DateTimeField(format='%d/%m/%Y')
 
     @staticmethod
     def get_gender(instance):
@@ -123,8 +131,25 @@ class BaseProfileGETSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['pk', 'avatar', 'avatar_thumbnail', 'first_name', 'last_name', 'gender',
+        fields = ['pk', 'avatar', 'first_name', 'last_name', 'gender',
                   'birth_date', 'city', 'country', 'date_joined']
+
+
+class BaseProfileGETProfilByUserIDSerializer(serializers.ModelSerializer):
+    avatar = serializers.CharField(source='get_absolute_avatar_img')
+    # city = serializers.CharField(source='city')
+    country = serializers.SerializerMethodField()
+    date_joined = serializers.DateTimeField(format='%Y')
+
+    @staticmethod
+    def get_country(instance):
+        if instance.country is not None:
+            return instance.country.name_fr
+        return None
+
+    class Meta:
+        model = CustomUser
+        fields = ['pk', 'avatar', 'first_name', 'last_name', 'city', 'country', 'date_joined']
 
 
 # class BaseBlockedUsersListSerializer(serializers.Serializer):

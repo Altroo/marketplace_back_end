@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
+from django.db.models import Count
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
@@ -24,15 +25,17 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseBlockedUsersListSerializer, BaseReportPostsSerializer, BaseUserAddresseDetailSerializer, \
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
     BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer, \
-    BaseRegistrationEmailAddressSerializer, BaseDeletedAccountsSerializer
+    BaseRegistrationEmailAddressSerializer, BaseDeletedAccountsSerializer, \
+    BaseProfileGETProfilByUserIDSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read, \
     base_delete_user_media_files, base_send_email
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
+from offers.base.serializers import BaseOffersMiniProfilListSerializer
 from shop.models import AuthShop
 from shop.base.tasks import base_generate_avatar_thumbnail
 from account.base.tasks import base_start_deleting_expired_codes
-from offers.models import Offers
+from offers.models import Offers, OffersTotalVues
 from places.models import City, Country
 from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.views import LoginView as Dj_rest_login
@@ -469,16 +472,52 @@ class LogoutView(Dj_rest_logout):
 
 
 class GetProfileView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny, )
 
     @staticmethod
     def get(request, *args, **kwargs):
+        print(request.META.get('HTTP_AUTHORIZATION', None))
         user_pk = kwargs.get('user_pk')
-        # TODO missing shop name, offer categories, offer products, ratings (buys, sells)
+        # TODO missing ratings (buys, sells)
+        shop_data = {
+            'shop_pk': None,
+            'shop_name': None,
+            'shop_link': None,
+        }
+        offers_data_to_serialize = []
+        available_categories = set()
+        available_services = False
         try:
             user = CustomUser.objects.get(pk=user_pk)
-            user_serializer = BaseProfileGETSerializer(user)
-            return Response(user_serializer.data, status=status.HTTP_200_OK)
+            user_serializer = BaseProfileGETProfilByUserIDSerializer(user)
+            try:
+                auth_shop = AuthShop.objects.get(user=user)
+                shop_data['shop_pk'] = auth_shop.pk
+                shop_data['shop_name'] = auth_shop.shop_name
+                shop_data['shop_link'] = auth_shop.qaryb_link
+                offers = Offers.objects \
+                    .select_related('offer_products', 'offer_services', 'offer_solder') \
+                    .prefetch_related('offer_categories').filter(auth_shop=auth_shop)
+                for count, offer in enumerate(offers):
+                    if offer.offer_type == 'V':
+                        product_categories = offer.offer_categories.values_list('code_category', flat=True).all()
+                        for i in product_categories:  # type: str
+                            available_categories.add(i)
+                    elif offer.offer_type == 'S':
+                        available_services = True
+                    if count <= 3:
+                        offers_data_to_serialize.append(offer)
+            except AuthShop.DoesNotExist:
+                pass
+            offers_serializer = BaseOffersMiniProfilListSerializer(offers_data_to_serialize, many=True)
+            data = {
+                **user_serializer.data,
+                **shop_data,
+                'available_categories': available_categories,
+                'available_services': available_services,
+                'offers': offers_serializer.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             errors = {"error": ["User Doesn't exist!"]}
             raise ValidationError(errors)
@@ -500,22 +539,28 @@ class ProfileView(APIView):
     @staticmethod
     def patch(request, *args, **kwargs):
         user = CustomUser.objects.get(pk=request.user.pk)
-        city_pk = request.data.get('city_pk')
-        country_pk = request.data.get('country_pk')
-        try:
-            city = City.objects.get(pk=city_pk)
-            country = Country.objects.get(pk=country_pk)
-        except (City.DoesNotExist, Country.DoesNotExist):
-            errors = {"error": ["City or Country is invalid."]}
-            raise ValidationError(errors)
+        # city_pk = request.data.get('city_pk')
+        country_name = request.data.get('country')
+        country = None
+        if country_name is not None or str(country_name) != 'null' or len(str(country_name)) > 0:
+            try:
+                # city = City.objects.get(pk=city_pk)
+                country = Country.objects.get(name_fr=country_name)
+            # except (City.DoesNotExist, Country.DoesNotExist):
+            except Country.DoesNotExist:
+                pass
+                # errors = {"error": ["City or Country is invalid."]}
+                # errors = {"error": ["Country is invalid."]}
+                # raise ValidationError(errors)
+
         data = {
-            'avatar': request.data.get('avatar', None),
+            'avatar': request.data.get('avatar'),
             'first_name': request.data.get('first_name'),
             'last_name': request.data.get('last_name'),
             'gender': request.data.get('gender', ''),
             'birth_date': request.data.get('birth_date'),
-            'city': city_pk,
-            'country': country_pk,
+            'city': request.data.get('city'),
+            'country': country.pk if country is not None else None,
         }
         serializer = BaseProfilePutSerializer(user, data=data, partial=True)
         if serializer.is_valid():
@@ -535,15 +580,16 @@ class ProfileView(APIView):
             base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
             data['pk'] = user.pk
             data['avatar'] = user.get_absolute_avatar_img
-            data['avatar_thumbnail'] = user.get_absolute_avatar_thumbnail
-            data['city'] = {
-                'pk': city.pk,
-                'name': city.name_fr,
-            }
+            # data['avatar_thumbnail'] = user.get_absolute_avatar_thumbnail
+            # data['city'] = {
+            #     'pk': city.pk,
+            #     'name': city.name_fr,
+            # }
+            data['city'] = user.city
             data['country'] = {
                 'pk': country.pk,
                 'name': country.name_fr,
-            }
+            } if country is not None else None,
             data['date_joined'] = user.date_joined
             return Response(data, status=status.HTTP_200_OK)
         raise ValidationError(serializer.errors)
@@ -796,7 +842,7 @@ class ChangeEmailHasPasswordAccountView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         user = request.user
-        new_email = request.data.get('new_email')
+        new_email = request.data.get('email')
         try:
             CustomUser.objects.get(email=new_email)
             errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
@@ -815,7 +861,10 @@ class ChangeEmailHasPasswordAccountView(APIView):
                     email_address.email = new_email
                     email_address.verified = False
                     email_address.save()
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    data = {
+                        'email': new_email,
+                    }
+                    return Response(data=data, status=status.HTTP_200_OK)
                 raise ValidationError(serializer.errors)
 
 
@@ -825,22 +874,22 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
     @staticmethod
     def put(request, *args, **kwargs):
         user = request.user
-        new_email = request.data.get('new_email')
+        new_email = request.data.get('email')
         try:
             CustomUser.objects.get(email=new_email)
             errors = {"email": ["Un utilisateur avec ce champ adresse électronique existe déjà."]}
             raise ValidationError(errors)
         except CustomUser.DoesNotExist:
             # Require email & to set a new password
-            new_password = request.data.get("new_password")
+            new_password1 = request.data.get("new_password1")
             new_password2 = request.data.get("new_password2")
-            if new_password != new_password2:
+            if new_password1 != new_password2:
                 errors = {"new_password2": ["Ces mot de passes ne correspond pas."]}
                 raise ValidationError(errors)
-            if new_password is not None and new_password2 is not None:
-                if len(new_password) < 8 and len(new_password2) < 8:
+            if new_password1 is not None and new_password2 is not None:
+                if len(new_password1) < 8 and len(new_password2) < 8:
                     errors = {"error": {
-                        "new_password": [
+                        "new_password1": [
                             "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."
                         ],
                         "new_password2": [
@@ -848,8 +897,8 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
                         ],
                     }}
                     raise ValidationError(errors)
-                elif len(new_password) < 8:
-                    errors = {"error": {"new_password": [
+                elif len(new_password1) < 8:
+                    errors = {"error": {"new_password1": [
                         "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."]}}
                     raise ValidationError(errors)
                 elif len(new_password2) < 8:
@@ -859,18 +908,21 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
                 serializer = BaseEmailPutSerializer(data={'email': new_email})
                 if serializer.is_valid():
                     serializer.update(request.user, serializer.validated_data)
-                    user.set_password(new_password)
+                    user.set_password(new_password1)
                     user.save()
                     email_address = EmailAddress.objects.get(user=user)
                     email_address.email = new_email
                     email_address.verified = False
                     email_address.save()
-                    return Response(status=status.HTTP_204_NO_CONTENT)
+                    data = {
+                        'email': new_email,
+                    }
+                    return Response(data=data, status=status.HTTP_200_OK)
                 raise ValidationError(serializer.errors)
             else:
-                if new_password is None and new_password2 is None:
+                if new_password1 is None and new_password2 is None:
                     errors = {"error": {
-                        "new_password": [
+                        "new_password1": [
                             "Ce champ est obligatoire."
                         ],
                         "new_password2": [
@@ -878,14 +930,49 @@ class ChangeEmailNotHasPasswordAccountView(APIView):
                         ],
                     }}
                     raise ValidationError(errors)
-                elif new_password is None:
-                    errors = {"error": {"new_password": [
+                elif new_password1 is None:
+                    errors = {"error": {"new_password1": [
                         "Ce champ est obligatoire."]}}
                     raise ValidationError(errors)
                 elif new_password2 is None:
                     errors = {"error": {"new_password2": [
                         "Ce champ est obligatoire."]}}
                     raise ValidationError(errors)
+
+
+class CreatePasswordAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        user = request.user
+        new_password1 = request.data.get("new_password1")
+        new_password2 = request.data.get("new_password2")
+        if new_password1 != new_password2:
+            errors = {"new_password2": ["Ces mot de passes ne correspond pas."]}
+            raise ValidationError(errors)
+        if new_password1 is not None and new_password2 is not None:
+            if len(new_password1) < 8 and len(new_password2) < 8:
+                errors = {"error": {
+                    "new_password1": [
+                        "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."
+                    ],
+                    "new_password2": [
+                        "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."
+                    ],
+                }}
+                raise ValidationError(errors)
+            elif len(new_password1) < 8:
+                errors = {"error": {"new_password": [
+                    "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."]}}
+                raise ValidationError(errors)
+            elif len(new_password2) < 8:
+                errors = {"error": {"new_password2": [
+                    "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères."]}}
+                raise ValidationError(errors)
+        user.set_password(new_password1)
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SetFacebookEmailAccountView(APIView):
@@ -951,6 +1038,7 @@ class CheckAccountView(APIView):
 
 
 class DeleteAccountView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -1022,3 +1110,107 @@ class DeleteAccountView(APIView):
             logout(request)
             return Response(status=status.HTTP_204_NO_CONTENT)
         raise ValidationError(serializer.errors)
+
+
+class DashboardView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get_vues_month_and_pourcentage(auth_shop):
+        now = datetime.datetime.now()
+        this_month = datetime.datetime.now().month
+        last_month = now.month - 1 if now.month > 1 else 12
+        month_to_delete = now.month - 2 if now.month > 1 else 12
+        # Always Delete the month before the previous one
+        try:
+            OffersTotalVues.objects.get(auth_shop=auth_shop, date=month_to_delete).delete()
+        except OffersTotalVues.DoesNotExist:
+            pass
+        try:
+            this_month_total_vues = OffersTotalVues.objects.get(auth_shop=auth_shop, date=this_month).nbr_total_vue
+        except OffersTotalVues.DoesNotExist:
+            this_month_total_vues = 0
+        try:
+            last_month_total_vues = OffersTotalVues.objects.get(auth_shop=auth_shop, date=last_month).nbr_total_vue
+        except OffersTotalVues.DoesNotExist:
+            last_month_total_vues = 0
+        if last_month_total_vues != 0 and this_month_total_vues != 0:
+            pourcentage = int((this_month_total_vues - last_month_total_vues) / last_month_total_vues * 100)
+            if pourcentage > 0:
+                pourcentage = '+' + str(pourcentage) + '%'
+            else:
+                pourcentage = '-' + str(pourcentage) + '%'
+        else:
+            pourcentage = '0%'
+        return {
+            'this_month': this_month,
+            'pourcentage': pourcentage,
+        }
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        shop_url = is_creator = shop_name = shop_avatar = has_messages = has_notifications = has_orders = \
+            check_verified = has_shop = False
+        total_offers_count = total_offers_vue_count = total_sells_count = global_rating = indexed_articles_count = \
+            slots_available_count = 0
+        total_sells_month = total_vue_month = datetime.datetime.now().month
+        total_vue_pourcentage = total_sells_pourcentage = '0%'
+        try:
+            check_verified = EmailAddress.objects.get(user=user).verified
+        except EmailAddress.DoesNotExist:
+            pass
+        try:
+            auth_shop = AuthShop.objects.get(user=user)
+            has_shop = True
+            shop_offers = Offers.objects.filter(auth_shop=auth_shop).select_related('offer_vues').annotate(
+                nbr_total_vue=Count('offer_vues__nbr_total_vue'))
+            shop_url = auth_shop.qaryb_link
+            is_creator = auth_shop.creator
+            shop_name = auth_shop.shop_name
+            shop_avatar = auth_shop.get_absolute_avatar_img
+            nbr_messages = MessageModel.objects.filter(recipient=user).order_by('created').count()
+            if nbr_messages > 0:
+                has_messages = True
+            has_notifications = False
+            has_orders = False
+            total_offers_count = Offers.objects.filter(auth_shop=auth_shop).count()
+            total_offers_vue_count = sum(
+                filter(None, shop_offers.values_list('offer_vues__nbr_total_vue', flat=True)))
+            vues_month_and_pourcentage = self.get_vues_month_and_pourcentage(auth_shop)
+            total_vue_month = vues_month_and_pourcentage.get('this_month')
+            total_vue_pourcentage = vues_month_and_pourcentage.get('pourcentage')
+            # Missing
+            # global_rating = 4.8
+            # total_sells_count = 0
+            # total_sells_pourcentage = 0
+            # total_sells_month = 0
+            # articles_referencer = 0
+            # slots_available = 0
+        except AuthShop.DoesNotExist:
+            pass
+        data = {
+            "pk": user.pk,
+            "email": user.email,  # for resend code card
+            "avatar": user.get_absolute_avatar_img,
+            "is_verified": check_verified,  # for resend code card
+            "is_subscribed": False,  # for subscribe card - missing
+            "is_creator": is_creator,  # for creator card
+            "has_shop": has_shop,
+            "shop_avatar": shop_avatar,
+            "shop_name": shop_name,
+            "shop_url": shop_url,  # for gerer ma boutique button
+            "global_rating": global_rating,  # missing
+            "has_messages": has_messages,
+            "has_notifications": has_notifications,  # missing
+            "has_orders": has_orders,  # missing
+            "indexed_articles_count": indexed_articles_count,  # missing
+            "slots_available_count": slots_available_count,  # missing
+            "total_offers_count": total_offers_count,
+            "total_offers_vue_count": total_offers_vue_count,
+            "total_vue_month": total_vue_month,
+            "total_vue_pourcentage": total_vue_pourcentage,
+            "total_sells_count": total_sells_count,  # missing
+            "total_sells_pourcentage": total_sells_pourcentage,  # missing
+            "total_sells_month": total_sells_month,  # missing
+        }
+        return Response(data=data, status=status.HTTP_200_OK)

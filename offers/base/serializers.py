@@ -99,6 +99,7 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     tags = BaseOfferTagsSerializer(many=True, read_only=True)
+    creator_label = serializers.BooleanField(required=False, allow_null=True, default=False)
 
     class Meta:
         model = Offers
@@ -119,6 +120,10 @@ class BaseShopProductSerializer(serializers.ModelSerializer):
 # Global Service serializer
 class BaseShopServiceSerializer(serializers.ModelSerializer):
     service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
+    service_morning_hour_from = serializers.TimeField(format='%H:%M')
+    service_morning_hour_to = serializers.TimeField(format='%H:%M')
+    service_afternoon_hour_from = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+    service_afternoon_hour_to = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
 
     class Meta:
         model = Services
@@ -342,17 +347,49 @@ class BaseOffersListSerializer(serializers.Serializer):
     solder_value = serializers.FloatField(source='offer_solder.solder_value')
     creator_label = serializers.BooleanField()
     # details_offer = serializers.SerializerMethodField()
+    offer_type = serializers.CharField()
     pinned = serializers.BooleanField()
     # TODO add ratings once available
 
+    # @staticmethod
+    # def get_details_offer(instance):
+    #     if instance.offer_type == 'V':
+    #         details_product = BaseDetailsProductSerializer(instance.offer_products)
+    #         return details_product.data
+    #     if instance.offer_type == 'S':
+    #         details_service = BaseDetailsServiceSerializer(instance.offer_services)
+    #         return details_service.data
+
     @staticmethod
-    def get_details_offer(instance):
-        if instance.offer_type == 'V':
-            details_product = BaseDetailsProductSerializer(instance.offer_products)
-            return details_product.data
-        if instance.offer_type == 'S':
-            details_service = BaseDetailsServiceSerializer(instance.offer_services)
-            return details_service.data
+    def get_thumbnail(instance):
+        if instance.picture_1:
+            return instance.get_absolute_picture_1_img
+        elif instance.picture_2:
+            return instance.get_absolute_picture_2_img
+        elif instance.picture_3:
+            return instance.get_absolute_picture_3_img
+        elif instance.picture_4:
+            return instance.get_absolute_picture_4_img
+        else:
+            return None
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+
+class BaseOffersMiniProfilListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    thumbnail = serializers.SerializerMethodField()
+    title = serializers.CharField()
+    price = serializers.FloatField()
+    solder_type = serializers.CharField(source='offer_solder.solder_type')
+    solder_value = serializers.FloatField(source='offer_solder.solder_value')
+    creator_label = serializers.BooleanField()
+    offer_type = serializers.CharField()
+    pinned = serializers.BooleanField()
 
     @staticmethod
     def get_thumbnail(instance):
@@ -425,6 +462,11 @@ class BaseProductPutSerializer(serializers.ModelSerializer):
 
 
 class BaseServicePutSerializer(serializers.ModelSerializer):
+    service_morning_hour_from = serializers.TimeField(format='%H:%M')
+    service_morning_hour_to = serializers.TimeField(format='%H:%M')
+    service_afternoon_hour_from = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+    service_afternoon_hour_to = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+
     class Meta:
         model = Services
         fields = ['service_morning_hour_from', 'service_morning_hour_to',
@@ -584,6 +626,10 @@ class BaseTempShopProductSerializer(serializers.ModelSerializer):
 # Global Service serializer
 class BaseTempShopServiceSerializer(serializers.ModelSerializer):
     service_availability_days = BaseServiceAvailabilityDaysSerializer(many=True, read_only=True)
+    service_morning_hour_from = serializers.TimeField(format='%H:%M')
+    service_morning_hour_to = serializers.TimeField(format='%H:%M')
+    service_afternoon_hour_from = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+    service_afternoon_hour_to = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
 
     class Meta:
         model = TempServices
@@ -844,6 +890,11 @@ class BaseTempProductPutSerializer(serializers.ModelSerializer):
 
 
 class BaseTempServicePutSerializer(serializers.ModelSerializer):
+    service_morning_hour_from = serializers.TimeField(format='%H:%M')
+    service_morning_hour_to = serializers.TimeField(format='%H:%M')
+    service_afternoon_hour_from = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+    service_afternoon_hour_to = serializers.TimeField(format='%H:%M', allow_null=True, default=None, required=False)
+
     class Meta:
         model = TempServices
         fields = ['service_morning_hour_from', 'service_morning_hour_to',

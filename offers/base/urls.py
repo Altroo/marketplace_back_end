@@ -2,13 +2,15 @@ from django.urls import path
 from .views import GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
     GetLastThreeDeliveriesView, GetLastUsedLocalisationView, GetLastThreeDeliveriesViewV2, \
     GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2, ShopOfferPinUnpinView, \
-    GetShopOffersListView, GetShopOffersFiltersListView, GetTempShopOffersListView, GetTempShopTempOffersFiltersListView
+    GetShopOffersListView, GetShopOffersFiltersListView, \
+    GetTempShopOffersListView, GetTempShopTempOffersFiltersListView, GetServicesAvailabilityDays
 
 app_name = 'offer'
 
 urlpatterns = [
     # GET : List of available tags : (autocomplete param : ?name_tag=A)
     path('tags/', GetOfferTagsView.as_view()),
+    path('get_services_days/', GetServicesAvailabilityDays.as_view()),
     # GET : shop last three deliveries
     path('deliveries/', GetLastThreeDeliveriesView.as_view()),
     path('deliveries/<uuid:unique_id>/', GetLastThreeDeliveriesViewV2.as_view()),

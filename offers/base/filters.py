@@ -3,10 +3,10 @@ from django.db.models.constants import LOOKUP_SEP
 from django_filters import BaseInFilter
 from django_filters import rest_framework as django_filters
 from django_filters.rest_framework import FilterSet, CharFilter, \
-    OrderingFilter, BooleanFilter
+    OrderingFilter
 from django_filters.constants import EMPTY_VALUES
 
-from offers.models import OfferTags, Offers
+from offers.models import OfferTags, Offers, TempOffers
 
 
 # class BaseSearchFilter(FilterSet):
@@ -435,3 +435,18 @@ class BaseOffersListSortByPrice(FilterSet):
     sort_by = OrderingFilter(fields=(
         ('price', 'price'),
     ))
+    # , method='filter_price'
+    # @staticmethod
+    # def filter_price(queryset, name, value):
+    #     if not value:
+    #         return queryset
+    #     else:
+    #         if value == ['price']:
+    #             print('in price')
+    #             return queryset.order_by('price').order_by('pinned')
+    #         elif value == ['-price']:
+    #             print('in -price')
+    #             return queryset.order_by('-price').order_by('pinned')
+    #         else:
+    #             # case wrong value
+    #             return queryset
