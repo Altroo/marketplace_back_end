@@ -19,12 +19,12 @@ SECURE_PROXY_SSL_HEADER = (config('SECURE_PROXY_SSL_HEADER_1'),
                            config('SECURE_PROXY_SSL_HEADER_2'))
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.postgres',

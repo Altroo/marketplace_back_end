@@ -36,3 +36,5 @@ offers/base/__pycache__
 offers/migrations
 version/__pycache__
 version/migrations
+subscription/__pycache__
+subscription/migrations

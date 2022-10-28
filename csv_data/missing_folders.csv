@@ -6,5 +6,6 @@ media,shop_avatars
 media,shop_offers
 media,shop_qrcodes
 media,user_avatars
+media,files
 logs,debug.log
 logs,ws_debug.log

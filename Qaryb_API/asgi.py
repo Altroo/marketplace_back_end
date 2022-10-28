@@ -1,5 +1,5 @@
 import os
-# # Avoid daphne apps not loaded yet
+# Avoid daphne apps not loaded yet
 import django
 django.setup()
 from django.core.asgi import get_asgi_application
@@ -17,14 +17,3 @@ application = ProtocolTypeRouter({
         )
     ),
 })
-
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Qaryb_API.settings')
-#
-# application = ProtocolTypeRouter({
-#     "http": get_asgi_application(),
-#     "websocket": SimpleJwtTokenAuthMiddleware(
-#         URLRouter(
-#             websocket_urlpatterns
-#         )
-#     ),
-# })

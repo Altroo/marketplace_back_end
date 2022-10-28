@@ -28,7 +28,7 @@ class InsertVirementData:
                         pass
 
         else:
-            print('Version object already exists !')
+            print('Virement object already exists !')
 
 
 class Command(BaseCommand):
