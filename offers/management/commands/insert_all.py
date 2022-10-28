@@ -2,13 +2,14 @@ import sys
 from django.core.management import BaseCommand
 from offers.models import Categories, Colors, ServiceDays, ForWhom, Sizes
 from shop.models import AuthShopDays, PhoneCodes
+from subscription.models import AvailableSubscription
 from csv import reader
 from os import path, mkdir
 from django.db.utils import IntegrityError
 from allauth.socialaccount.models import SocialApp
 from decouple import config
 from django.contrib.sites.models import Site
-from version.models import Version
+from version.models import Version, VirementData
 
 
 class InsertAll:
@@ -96,6 +97,40 @@ class InsertAll:
                     for site in sites:
                         social.sites.add(site.pk)
                         social.save()
+
+        with open(self.parent_file_dir + '/csv_data/subscriptions.csv', 'r+', encoding='UTF8') as f:
+            csv_reader = reader(f, delimiter=',')
+            for row in csv_reader:
+                try:
+                    AvailableSubscription.objects.create(
+                        nbr_article=int(row[0]),
+                        prix_ht=int(row[1]),
+                        prix_ttc=int(row[2]),
+                        prix_unitaire_ht=int(row[3]),
+                        prix_unitaire_ttc=int(row[4]),
+                        pourcentage=int(row[5]),
+                    )
+                except IntegrityError:
+                    continue
+
+        virement_data = VirementData.objects.all().first()
+        if not virement_data:
+            with open(self.parent_file_dir + '/csv_data/virement_data.csv', 'r+', encoding='UTF8') as f:
+                csv_reader = reader(f, delimiter=',')
+                for row in csv_reader:
+                    try:
+                        VirementData.objects.create(
+                            email=row[0],
+                            domiciliation=row[1],
+                            numero_de_compte=row[2],
+                            titulaire_du_compte=row[3],
+                            numero_rib=row[4],
+                            identifiant_swift=row[5],
+                        )
+                    except IntegrityError:
+                        pass
+        else:
+            print('Virement object already exists !')
 
         with open(self.parent_file_dir + '/csv_data/missing_folders.csv', 'r+', encoding='UTF8') as f:
             csv_reader = reader(f, delimiter=',')
