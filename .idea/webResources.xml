@@ -22,6 +22,8 @@
             <path value="file://$PROJECT_DIR$/media/media/fallback_user_avatars" />
             <path value="file://$PROJECT_DIR$/media/media/shop_avatars" />
             <path value="file://$PROJECT_DIR$/media/media/shop_offers" />
+            <path value="file://$PROJECT_DIR$/media/files" />
+            <path value="file://$PROJECT_DIR$/media/media/user_avatars" />
           </resourceRoots>
         </entryData>
       </entry>

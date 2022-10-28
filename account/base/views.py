@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
+from django.core.mail import EmailMessage
 from django.db.models import Count
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
@@ -19,6 +20,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from Qaryb_API.settings import SIMPLE_JWT
 from celery import current_app
 from datetime import timedelta, timezone
+from django.utils import timezone as dj_timezone
 import datetime
 from account.base.serializers import BaseRegistrationSerializer, BasePasswordResetSerializer, \
     BaseUserEmailSerializer, BaseProfilePutSerializer, BaseProfileGETSerializer, BaseBlockUserSerializer, \
@@ -43,6 +45,7 @@ from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
 from decouple import config
+from subscription.models import SubscribedUsers, IndexedArticles
 
 
 class FacebookLoginView(SocialLoginView):
@@ -1006,6 +1009,7 @@ class CheckAccountView(APIView):
         is_new = False
         shop_url = False
         is_creator = False
+        is_subscribed = False
         if not user.last_login:
             is_new = True
         try:
@@ -1017,6 +1021,13 @@ class CheckAccountView(APIView):
             has_shop = True
             shop_url = shop.qaryb_link
             is_creator = shop.creator
+            try:
+                subscription = SubscribedUsers.objects.get(original_request__auth_shop=shop.pk)
+                present = dj_timezone.now()
+                if present < subscription.expiration_date:
+                    is_subscribed = True
+            except SubscribedUsers.DoesNotExist:
+                pass
         except AuthShop.DoesNotExist:
             has_shop = False
         data = {
@@ -1029,9 +1040,11 @@ class CheckAccountView(APIView):
             "has_shop": has_shop,
             "shop_url": shop_url,
             "is_new": is_new,
-            "is_subscribed": False,
+            "is_subscribed": is_subscribed,
             "is_creator": is_creator,
             "picture": user.get_absolute_avatar_thumbnail,
+            "city": user.city,
+            "country": user.country.name_fr if user.country else None
         }
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -1146,12 +1159,24 @@ class DashboardView(APIView):
             'pourcentage': pourcentage,
         }
 
+    @staticmethod
+    def get_is_subscribed_and_slots(user_pk, already_indexed_count):
+        try:
+            subscription = SubscribedUsers.objects.get(original_request__auth_shop__user__pk=user_pk)
+            available_slots = subscription.available_slots
+            present = dj_timezone.now()
+            if present < subscription.expiration_date:
+                return True, available_slots - already_indexed_count, available_slots
+            return False, 0, 0
+        except SubscribedUsers.DoesNotExist:
+            return False, 0, 0
+
     def get(self, request, *args, **kwargs):
         user = request.user
         shop_url = is_creator = shop_name = shop_avatar = has_messages = has_notifications = has_orders = \
-            check_verified = has_shop = False
+            check_verified = has_shop = is_subscribed = False
         total_offers_count = total_offers_vue_count = total_sells_count = global_rating = indexed_articles_count = \
-            slots_available_count = 0
+            remaining_slots_count = all_slots_count = 0
         total_sells_month = total_vue_month = datetime.datetime.now().month
         total_vue_pourcentage = total_sells_pourcentage = '0%'
         try:
@@ -1185,14 +1210,19 @@ class DashboardView(APIView):
             # total_sells_month = 0
             # articles_referencer = 0
             # slots_available = 0
+            indexed_articles_count = IndexedArticles.objects.filter(offer__auth_shop__user=user).count()
+            is_subscribed, remaining_slots_count, all_slots_count = self.get_is_subscribed_and_slots(
+                user.pk, indexed_articles_count
+            )
         except AuthShop.DoesNotExist:
             pass
+
         data = {
             "pk": user.pk,
             "email": user.email,  # for resend code card
             "avatar": user.get_absolute_avatar_img,
             "is_verified": check_verified,  # for resend code card
-            "is_subscribed": False,  # for subscribe card - missing
+            "is_subscribed": is_subscribed,  # for subscribe card
             "is_creator": is_creator,  # for creator card
             "has_shop": has_shop,
             "shop_avatar": shop_avatar,
@@ -1202,8 +1232,9 @@ class DashboardView(APIView):
             "has_messages": has_messages,
             "has_notifications": has_notifications,  # missing
             "has_orders": has_orders,  # missing
-            "indexed_articles_count": indexed_articles_count,  # missing
-            "slots_available_count": slots_available_count,  # missing
+            "indexed_articles_count": indexed_articles_count,
+            "remaining_slots_count": remaining_slots_count,
+            "all_slots_count": all_slots_count,
             "total_offers_count": total_offers_count,
             "total_offers_vue_count": total_offers_vue_count,
             "total_vue_month": total_vue_month,
