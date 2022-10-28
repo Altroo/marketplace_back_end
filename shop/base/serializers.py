@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from shop.models import TempShop, AuthShop, AskForCreatorLabel, ModeVacance, AuthShopDays
 from shop.base.utils import Base64ImageField
+from subscription.models import SubscribedUsers
+from django.utils import timezone
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
@@ -54,10 +56,16 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     afternoon_hour_to = serializers.TimeField(format='%H:%M')
     is_subscribed = serializers.SerializerMethodField()
 
-    # TODO just a placeholder for now
     @staticmethod
     def get_is_subscribed(instance):
-        return False
+        try:
+            subscription = SubscribedUsers.objects.get(original_request__auth_shop=instance.pk)
+            present = timezone.now()
+            if present < subscription.expiration_date:
+                return True
+            return False
+        except SubscribedUsers.DoesNotExist:
+            return False
 
     # @staticmethod
     # def get_opening_days(instance):

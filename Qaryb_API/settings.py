@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'order.apps.OrderConfig',
     'ratings.apps.RatingsConfig',
     'places.apps.PlacesConfig',
+    'subscription.apps.SubscriptionConfig',
     'version.apps.VersionConfig'
 ]
 
@@ -239,6 +240,8 @@ CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND')
 EMAIL_BACKEND = config('EMAIL_BACKEND')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+# DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+# SERVER_EMAIL = config('DEFAULT_FROM_EMAIL')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT')

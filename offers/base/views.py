@@ -2528,23 +2528,20 @@ class ShopOfferPinUnpinView(APIView):
 
 class GetOffersVuesListView(APIView, GetMyVuesPagination):
     permission_classes = (permissions.IsAuthenticated,)
-    page_size = 10
+    page_size = 5
 
     def get(self, request, *args, **kwargs):
         user = request.user
         try:
             auth_shop = AuthShop.objects.get(user=user)
-            shop_offers = Offers.objects.filter(auth_shop=auth_shop).select_related('offer_vues').annotate(
+            shop_offers = Offers.objects.filter(auth_shop=auth_shop).select_related('offer_vues')\
+                .order_by(F('offer_vues__nbr_total_vue').desc(nulls_last=True)).annotate(
                 nbr_total_vue=Count('offer_vues__nbr_total_vue'))
-            page = self.paginate_queryset(request=request, queryset=shop_offers)
-            # Replace None with zero
             total_vues = sum(filter(None, shop_offers.values_list('offer_vues__nbr_total_vue', flat=True)))
+            page = self.paginate_queryset(request=request, queryset=shop_offers)
             if page is not None:
                 serializer = BaseOffersVuesListSerializer(instance=page, many=True)
-                response = sorted(list(serializer.data), reverse=True,
-                                  key=lambda key_needed: key_needed['nbr_total_vue'])
-                return self.get_paginated_response_custom(response, total_vues=total_vues, auth_shop=auth_shop)
-            return Response(status=status.HTTP_204_NO_CONTENT)
+                return self.get_paginated_response_custom(serializer.data, total_vues=total_vues, auth_shop=auth_shop)
         except AuthShop.DoesNotExist:
             errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
