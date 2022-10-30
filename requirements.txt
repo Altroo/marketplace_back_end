@@ -6,7 +6,7 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 django-cors-headers==3.13.0
 django-colorfield==0.7.2
-Pillow==9.2.0
+Pillow==9.3.0
 django-filter==22.1
 aiohttp==3.8.3
 celery==5.2.7

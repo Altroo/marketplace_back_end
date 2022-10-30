@@ -1,9 +1,7 @@
 from os import remove
-from uuid import uuid4
 from celery import current_app
 from django.core.exceptions import SuspiciousFileOperation
 from rest_framework.exceptions import ValidationError
-from django.db import IntegrityError
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from rest_framework import status, permissions
@@ -15,15 +13,10 @@ from shop.base.serializers import BaseShopSerializer, BaseShopAvatarPutSerialize
     BaseShopContactPutSerializer, BaseShopAddressPutSerializer, BaseShopColorPutSerializer, \
     BaseShopFontPutSerializer, BaseGETShopInfoSerializer, BaseShopPhoneContactPutSerializer, \
     BaseShopAskForCreatorLabelSerializer, \
-    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer, \
-    BaseTempShopAvatarPutSerializer, BaseTempShopNamePutSerializer, \
-    BaseTempShopBioPutSerializer, BaseTempShopAvailabilityPutSerializer, BaseTempShopContactPutSerializer, \
-    BaseTempShopPhoneContactPutSerializer, BaseTempShopAddressPutSerializer, \
-    BaseTempShopColorPutSerializer, BaseTempShopFontPutSerializer, BaseGETTempShopInfoSerializer, \
-    BaseTempShopSerializer
-from shop.models import TempShop, AuthShop, AuthShopDays, AskForCreatorLabel, PhoneCodes
+    BaseShopModeVacanceSerializer, BaseShopModeVacancePUTSerializer
+from shop.models import AuthShop, AuthShopDays, AskForCreatorLabel, PhoneCodes
 from os import path
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import qrcode.image.svg
@@ -32,10 +25,7 @@ from shop.base.utils import ImageProcessor
 import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
-from shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mode_vacance_obj, \
-    base_start_deleting_expired_shops
-from offers.models import Offers, Products, Services, Solder, \
-    Delivery, TempOffers, TempSolder, TempDelivery
+from shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mode_vacance_obj
 
 
 class ShopView(APIView):
@@ -51,263 +41,264 @@ class ShopView(APIView):
         border = request.data.get('border')
         icon_color = request.data.get('icon_color')
         font_name = request.data.get('font_name')
-        unique_id = uuid4()
-        # Temp shop
-        if user.is_anonymous:
-            serializer = BaseTempShopSerializer(data={
-                'shop_name': shop_name,
-                'avatar': avatar,
-                'color_code': color_code,
-                'bg_color_code': bg_color_code,
-                'border': border,
-                'icon_color': icon_color,
-                'font_name': font_name,
-                'unique_id': str(unique_id),
-            })
-            if serializer.is_valid():
-                auth_shop = serializer.save()
-                qaryb_link = unique_slugify(instance=auth_shop, value=auth_shop.shop_name, slug_field_name='qaryb_link')
-                auth_shop.qaryb_link = qaryb_link
-                auth_shop.save()
-                # shift = datetime.utcnow() + timedelta(hours=24)
-                shift = datetime.utcnow() + timedelta(days=60)
-                data = {
-                    'unique_id': unique_id,
-                    'shop_name': auth_shop.shop_name,
-                    'avatar': auth_shop.get_absolute_avatar_img,
-                    'color_code': auth_shop.color_code,
-                    'bg_color_code': auth_shop.bg_color_code,
-                    'border': auth_shop.border,
-                    'icon_color': auth_shop.icon_color,
-                    'font_name': auth_shop.font_name,
-                    'qaryb_link': qaryb_link,
-                    'expiration_date': shift
-                }
-                # Generate thumbnail
-                base_generate_avatar_thumbnail.apply_async((auth_shop.pk, 'TempShop'), )
-                task_id = base_start_deleting_expired_shops.apply_async((auth_shop.pk,), eta=shift)
-                auth_shop.task_id = str(task_id)
-                auth_shop.save()
-                return Response(data=data, status=status.HTTP_200_OK)
-            raise ValidationError(serializer.errors)
+        # unique_id = uuid4()
+        # # Temp shop
+        # if user.is_anonymous:
+        #     serializer = BaseTempShopSerializer(data={
+        #         'shop_name': shop_name,
+        #         'avatar': avatar,
+        #         'color_code': color_code,
+        #         'bg_color_code': bg_color_code,
+        #         'border': border,
+        #         'icon_color': icon_color,
+        #         'font_name': font_name,
+        #         'unique_id': str(unique_id),
+        #     })
+        #     if serializer.is_valid():
+        #         auth_shop = serializer.save()
+        #         qaryb_link = unique_slugify(instance=auth_shop,
+        #         value=auth_shop.shop_name, slug_field_name='qaryb_link')
+        #         auth_shop.qaryb_link = qaryb_link
+        #         auth_shop.save()
+        #         # shift = datetime.utcnow() + timedelta(hours=24)
+        #         shift = datetime.utcnow() + timedelta(days=60)
+        #         data = {
+        #             'unique_id': unique_id,
+        #             'shop_name': auth_shop.shop_name,
+        #             'avatar': auth_shop.get_absolute_avatar_img,
+        #             'color_code': auth_shop.color_code,
+        #             'bg_color_code': auth_shop.bg_color_code,
+        #             'border': auth_shop.border,
+        #             'icon_color': auth_shop.icon_color,
+        #             'font_name': auth_shop.font_name,
+        #             'qaryb_link': qaryb_link,
+        #             'expiration_date': shift
+        #         }
+        #         # Generate thumbnail
+        #         base_generate_avatar_thumbnail.apply_async((auth_shop.pk, 'TempShop'), )
+        #         task_id = base_start_deleting_expired_shops.apply_async((auth_shop.pk,), eta=shift)
+        #         auth_shop.task_id = str(task_id)
+        #         auth_shop.save()
+        #         return Response(data=data, status=status.HTTP_200_OK)
+        #     raise ValidationError(serializer.errors)
         # Auth shop
-        else:
-            serializer = BaseShopSerializer(data={
-                'user': user.pk,
-                'shop_name': shop_name,
-                'avatar': avatar,
-                'color_code': color_code,
-                'bg_color_code': bg_color_code,
-                'border': border,
-                'icon_color': icon_color,
-                'font_name': font_name,
+        # else:
+        serializer = BaseShopSerializer(data={
+            'user': user.pk,
+            'shop_name': shop_name,
+            'avatar': avatar,
+            'color_code': color_code,
+            'bg_color_code': bg_color_code,
+            'border': border,
+            'icon_color': icon_color,
+            'font_name': font_name,
+            'creator': False,
+        })
+        if serializer.is_valid():
+            shop = serializer.save()
+            qaryb_link = unique_slugify(instance=shop, value=shop.shop_name, slug_field_name='qaryb_link')
+            shop.qaryb_link = qaryb_link
+            shop.save()
+            data = {
+                'pk': shop.pk,
+                'shop_name': shop.shop_name,
+                'avatar': shop.get_absolute_avatar_img,
+                'color_code': shop.color_code,
+                'bg_color_code': shop.bg_color_code,
+                'border': shop.border,
+                'icon_color': shop.icon_color,
+                'font_name': shop.font_name,
                 'creator': False,
-            })
-            if serializer.is_valid():
-                shop = serializer.save()
-                qaryb_link = unique_slugify(instance=shop, value=shop.shop_name, slug_field_name='qaryb_link')
-                shop.qaryb_link = qaryb_link
-                shop.save()
-                data = {
-                    'pk': shop.pk,
-                    'shop_name': shop.shop_name,
-                    'avatar': shop.get_absolute_avatar_img,
-                    'color_code': shop.color_code,
-                    'bg_color_code': shop.bg_color_code,
-                    'border': shop.border,
-                    'icon_color': shop.icon_color,
-                    'font_name': shop.font_name,
-                    'creator': False,
-                    'qaryb_link': qaryb_link
-                }
-                # Generate thumbnail
-                base_generate_avatar_thumbnail.apply_async((shop.pk, 'AuthShop'), )
-                return Response(data=data, status=status.HTTP_200_OK)
-            raise ValidationError(serializer.errors)
+                'qaryb_link': qaryb_link
+            }
+            # Generate thumbnail
+            base_generate_avatar_thumbnail.apply_async((shop.pk, 'AuthShop'), )
+            return Response(data=data, status=status.HTTP_200_OK)
+        raise ValidationError(serializer.errors)
 
     @staticmethod
     def get(request, *args, **kwargs):
         user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = kwargs.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    shop_details_serializer = BaseGETTempShopInfoSerializer(auth_shop)
-                    return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
-                except TempShop.DoesNotExist:
-                    data = {"errors": ["Shop not found."]}
-                    raise ValidationError(data)
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = kwargs.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             shop_details_serializer = BaseGETTempShopInfoSerializer(auth_shop)
+        #             return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
+        #         except TempShop.DoesNotExist:
+        #             data = {"errors": ["Shop not found."]}
+        #             raise ValidationError(data)
+        #     else:
+        #         shop_link = kwargs.get('shop_link')
+        #         if shop_link:
+        #             auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
+        #             shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
+        #             return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
+        #         data = {"errors": ["Shop not found."]}
+        #         raise ValidationError(data)
+        # # Auth shop
+        # else:
+        shop_link = kwargs.get('shop_link')
+        try:
+            if shop_link:
+                auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
             else:
-                shop_link = kwargs.get('shop_link')
-                if shop_link:
-                    auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
-                    shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
-                    return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
-                data = {"errors": ["Shop not found."]}
-                raise ValidationError(data)
-        # Auth shop
-        else:
-            shop_link = kwargs.get('shop_link')
-            try:
-                if shop_link:
-                    auth_shop = AuthShop.objects.get(qaryb_link=shop_link)
-                else:
-                    auth_shop = AuthShop.objects.get(user=user)
-                shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
-                return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
+                auth_shop = AuthShop.objects.get(user=user)
+            shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
+            return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopAvatarPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def patch(request, *args, **kwargs):
         user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvatarPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        if auth_shop.avatar:
-                            try:
-                                remove(auth_shop.avatar.path)
-                            except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                                pass
-                        if auth_shop.avatar_thumbnail:
-                            try:
-                                remove(auth_shop.avatar_thumbnail.path)
-                            except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                                pass
-                        # new_avatar = serializer.update(temp_shop, serializer.validated_data)
-                        new_avatar = serializer.save()
-                        # Generate new avatar thumbnail
-                        base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
-                        data = {
-                            'avatar': auth_shop.get_absolute_avatar_img,
-                        }
-                        return Response(data=data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAvatarPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    if shop.avatar:
-                        try:
-                            remove(shop.avatar.path)
-                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                            pass
-                    if shop.avatar_thumbnail:
-                        try:
-                            remove(shop.avatar_thumbnail.path)
-                        except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                            pass
-                    # new_avatar = serializer.update(shop, serializer.validated_data)
-                    new_avatar = serializer.save()
-                    # Generate new avatar thumbnail
-                    base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
-                    data = {
-                        'avatar': shop.get_absolute_avatar_img,
-                    }
-                    return Response(data=data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopAvatarPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 if auth_shop.avatar:
+        #                     try:
+        #                         remove(auth_shop.avatar.path)
+        #                     except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+        #                         pass
+        #                 if auth_shop.avatar_thumbnail:
+        #                     try:
+        #                         remove(auth_shop.avatar_thumbnail.path)
+        #                     except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+        #                         pass
+        #                 # new_avatar = serializer.update(temp_shop, serializer.validated_data)
+        #                 new_avatar = serializer.save()
+        #                 # Generate new avatar thumbnail
+        #                 base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'TempShop'), )
+        #                 data = {
+        #                     'avatar': auth_shop.get_absolute_avatar_img,
+        #                 }
+        #                 return Response(data=data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopAvatarPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                if shop.avatar:
+                    try:
+                        remove(shop.avatar.path)
+                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                        pass
+                if shop.avatar_thumbnail:
+                    try:
+                        remove(shop.avatar_thumbnail.path)
+                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                        pass
+                # new_avatar = serializer.update(shop, serializer.validated_data)
+                new_avatar = serializer.save()
+                # Generate new avatar thumbnail
+                base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
+                data = {
+                    'avatar': shop.get_absolute_avatar_img,
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopNamePutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def patch(request, *args, **kwargs):
         user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopNamePutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopNamePutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopNamePutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopNamePutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopBioPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def patch(request, *args, **kwargs):
         user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopBioPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopBioPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopBioPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopBioPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopAvailabilityPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def patch(request, *args, **kwargs):
@@ -318,435 +309,435 @@ class ShopAvailabilityPutView(APIView):
         afternoon_hour_to = request.data.get('afternoon_hour_to', '')
         opening_days = str(request.data.get('opening_days')).split(',')
         opening_days = AuthShopDays.objects.filter(code_day__in=opening_days)
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAvailabilityPutSerializer(auth_shop, data={
-                        'morning_hour_from': morning_hour_from,
-                        'morning_hour_to': morning_hour_to,
-                        'afternoon_hour_from': afternoon_hour_from,
-                        'afternoon_hour_to': afternoon_hour_to,
-                    }, partial=True)
-                    if serializer.is_valid():
-                        # new_availability = serializer.update(temp_shop, serializer.validated_data)
-                        new_availability = serializer.save()
-                        new_availability.opening_days.clear()
-                        days_list = []
-                        for day in opening_days:
-                            new_availability.opening_days.add(day.pk)
-                            days_list.append({
-                                'pk': day.pk,
-                                'code_day': day.code_day,
-                                'name_day': day.name_day
-                            })
-                        data = {
-                            'opening_days': days_list,
-                            'morning_hour_from': serializer.data.get('morning_hour_from'),
-                            'morning_hour_to': serializer.data.get('morning_hour_to'),
-                            'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
-                            'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
-                        }
-                        return Response(data=data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAvailabilityPutSerializer(shop, data={
-                    'morning_hour_from': morning_hour_from,
-                    'morning_hour_to': morning_hour_to,
-                    'afternoon_hour_from': afternoon_hour_from,
-                    'afternoon_hour_to': afternoon_hour_to,
-                }, partial=True)
-                if serializer.is_valid():
-                    # new_availability = serializer.update(shop, serializer.validated_data)
-                    new_availability = serializer.save()
-                    new_availability.opening_days.clear()
-                    days_list = []
-                    for day in opening_days:
-                        new_availability.opening_days.add(day.pk)
-                        days_list.append({
-                            'pk': day.pk,
-                            'code_day': day.code_day,
-                            'name_day': day.name_day
-                        })
-                    data = {
-                        'opening_days': days_list,
-                        'morning_hour_from': serializer.data.get('morning_hour_from'),
-                        'morning_hour_to': serializer.data.get('morning_hour_to'),
-                        'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
-                        'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
-                    }
-                    return Response(data=data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopAvailabilityPutSerializer(auth_shop, data={
+        #                 'morning_hour_from': morning_hour_from,
+        #                 'morning_hour_to': morning_hour_to,
+        #                 'afternoon_hour_from': afternoon_hour_from,
+        #                 'afternoon_hour_to': afternoon_hour_to,
+        #             }, partial=True)
+        #             if serializer.is_valid():
+        #                 # new_availability = serializer.update(temp_shop, serializer.validated_data)
+        #                 new_availability = serializer.save()
+        #                 new_availability.opening_days.clear()
+        #                 days_list = []
+        #                 for day in opening_days:
+        #                     new_availability.opening_days.add(day.pk)
+        #                     days_list.append({
+        #                         'pk': day.pk,
+        #                         'code_day': day.code_day,
+        #                         'name_day': day.name_day
+        #                     })
+        #                 data = {
+        #                     'opening_days': days_list,
+        #                     'morning_hour_from': serializer.data.get('morning_hour_from'),
+        #                     'morning_hour_to': serializer.data.get('morning_hour_to'),
+        #                     'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
+        #                     'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
+        #                 }
+        #                 return Response(data=data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopAvailabilityPutSerializer(shop, data={
+                'morning_hour_from': morning_hour_from,
+                'morning_hour_to': morning_hour_to,
+                'afternoon_hour_from': afternoon_hour_from,
+                'afternoon_hour_to': afternoon_hour_to,
+            }, partial=True)
+            if serializer.is_valid():
+                # new_availability = serializer.update(shop, serializer.validated_data)
+                new_availability = serializer.save()
+                new_availability.opening_days.clear()
+                days_list = []
+                for day in opening_days:
+                    new_availability.opening_days.add(day.pk)
+                    days_list.append({
+                        'pk': day.pk,
+                        'code_day': day.code_day,
+                        'name_day': day.name_day
+                    })
+                data = {
+                    'opening_days': days_list,
+                    'morning_hour_from': serializer.data.get('morning_hour_from'),
+                    'morning_hour_to': serializer.data.get('morning_hour_to'),
+                    'afternoon_hour_from': serializer.data.get('afternoon_hour_from'),
+                    'afternoon_hour_to': serializer.data.get('afternoon_hour_to'),
+                }
+                return Response(data=data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class ShopContactPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def patch(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopContactPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopContactPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
-
-
-class ShopPhoneContactPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def patch(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopPhoneContactPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopPhoneContactPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
-
-
-class ShopAddressPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def patch(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopAddressPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopAddressPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
-
-
-class ShopColorPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def patch(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopColorPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopColorPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
-
-
-class ShopFontPutView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def patch(request, *args, **kwargs):
-        user = request.user
-        # Temp shop
-        if user.is_anonymous:
-            unique_id = request.data.get('unique_id')
-            if unique_id:
-                try:
-                    auth_shop = TempShop.objects.get(unique_id=unique_id)
-                    serializer = BaseTempShopFontPutSerializer(auth_shop, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        # serializer.update(temp_shop, serializer.validated_data)
-                        serializer.save()
-                        return Response(data=serializer.data, status=status.HTTP_200_OK)
-                    raise ValidationError(serializer.errors)
-                except TempShop.DoesNotExist:
-                    errors = {"errors": ["Shop not found."]}
-                    raise ValidationError(errors)
-            data = {"errors": ["Shop not found."]}
-            raise ValidationError(data)
-        # Auth shop
-        else:
-            try:
-                shop = AuthShop.objects.get(user=user)
-                serializer = BaseShopFontPutSerializer(shop, data=request.data, partial=True)
-                if serializer.is_valid():
-                    # serializer.update(shop, serializer.validated_data)
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
-            except AuthShop.DoesNotExist:
-                errors = {"errors": ["Shop not found."]}
-                raise ValidationError(errors)
-
-
-class TempShopToAuthShopView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
-    def post(request, *args, **kwargs):
-        unique_id = request.data.get('unique_id')
+    def patch(request, *args, **kwargs):
         user = request.user
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopContactPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # Auth shop
+        # else:
         try:
-            temp_shop = TempShop.objects.get(unique_id=unique_id)
-            # transfer temp shop data
-            try:
-                auth_shop = AuthShop.objects.create(
-                    user=user,
-                    shop_name=temp_shop.shop_name,
-                    avatar=temp_shop.avatar,
-                    avatar_thumbnail=temp_shop.avatar_thumbnail,
-                    color_code=temp_shop.color_code,
-                    bg_color_code=temp_shop.bg_color_code,
-                    border=temp_shop.border,
-                    icon_color=temp_shop.icon_color,
-                    font_name=temp_shop.font_name,
-                    bio=temp_shop.bio,
-                    morning_hour_from=temp_shop.morning_hour_from,
-                    morning_hour_to=temp_shop.morning_hour_to,
-                    afternoon_hour_from=temp_shop.afternoon_hour_from,
-                    afternoon_hour_to=temp_shop.afternoon_hour_to,
-                    contact_phone_code=temp_shop.contact_phone_code,
-                    contact_phone=temp_shop.contact_phone,
-                    contact_whatsapp_code=temp_shop.contact_whatsapp_code,
-                    contact_whatsapp=temp_shop.contact_whatsapp,
-                    contact_mode=temp_shop.contact_mode,
-                    phone=temp_shop.phone,
-                    contact_email=temp_shop.contact_email,
-                    website_link=temp_shop.website_link,
-                    facebook_link=temp_shop.facebook_link,
-                    twitter_link=temp_shop.twitter_link,
-                    instagram_link=temp_shop.instagram_link,
-                    whatsapp=temp_shop.whatsapp,
-                    zone_by=temp_shop.zone_by,
-                    longitude=temp_shop.longitude,
-                    latitude=temp_shop.latitude,
-                    address_name=temp_shop.address_name,
-                    km_radius=temp_shop.km_radius,
-                    qaryb_link=temp_shop.qaryb_link,
-                )
-                auth_shop.save()
-                # revoke 24h periodic task
-                task_id = temp_shop.task_id
-                current_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
-                temp_shop.task_id = None
-                temp_shop.save()
-                # Auth shop opening days
-                opening_days = temp_shop.opening_days.all()
-                for opening_day in opening_days:
-                    auth_shop.opening_days.add(opening_day.pk)
-                # Offers
-                temp_offers = TempOffers.objects.filter(auth_shop=temp_shop.pk) \
-                    .select_related('temp_offer_products') \
-                    .select_related('temp_offer_services') \
-                    .select_related('temp_offer_solder') \
-                    .prefetch_related('temp_offer_delivery')
-                for temp_offer in temp_offers:
-                    offer = Offers.objects.create(
-                        auth_shop=auth_shop,
-                        offer_type=temp_offer.offer_type,
-                        # Offer categories
-                        title=temp_offer.title,
-                        # May lead to a db error picture not found (we'll see)
-                        picture_1=temp_offer.picture_1,
-                        picture_2=temp_offer.picture_2,
-                        picture_3=temp_offer.picture_3,
-                        picture_4=temp_offer.picture_4,
-                        picture_1_thumbnail=temp_offer.picture_1_thumbnail,
-                        picture_2_thumbnail=temp_offer.picture_2_thumbnail,
-                        picture_3_thumbnail=temp_offer.picture_3_thumbnail,
-                        picture_4_thumbnail=temp_offer.picture_4_thumbnail,
-                        description=temp_offer.description,
-                        # For whom
-                        # Tags
-                        made_in_label=temp_offer.made_in_label,
-                        price=temp_offer.price,
-                    )
-                    offer.save()
-                    temp_categories = temp_offer.offer_categories.all()
-                    for temp_categorie in temp_categories:
-                        offer.offer_categories.add(temp_categorie.pk)
-                    for_whoms = temp_offer.for_whom.all()
-                    for for_whom in for_whoms:
-                        offer.for_whom.add(for_whom.pk)
-                    tags = temp_offer.tags.all()
-                    for tag in tags:
-                        offer.tags.add(tag.pk)
-                    if temp_offer.offer_type == 'V':
-                        product = Products.objects.create(
-                            offer=offer,
-                            # product_colors
-                            # product_sizes
-                            product_quantity=temp_offer.temp_offer_products.product_quantity,
-                            product_price_by=temp_offer.temp_offer_products.product_price_by,
-                            product_longitude=temp_offer.temp_offer_products.product_longitude,
-                            product_latitude=temp_offer.temp_offer_products.product_latitude,
-                            product_address=temp_offer.temp_offer_products.product_address
-                        )
-                        product.save()
-                        # product_colors
-                        product_colors = temp_offer.temp_offer_products.product_colors.all()
-                        for product_color in product_colors:
-                            product.product_colors.add(product_color.pk)
-                        # product_sizes
-                        product_sizes = temp_offer.temp_offer_products.product_sizes.all()
-                        for product_size in product_sizes:
-                            product.product_sizes.add(product_size.pk)
-                    elif temp_offer.offer_type == 'S':
-                        service = Services.objects.create(
-                            offer=offer,
-                            # service_availability_days
-                            service_morning_hour_from=temp_offer.temp_offer_services.service_morning_hour_from,
-                            service_morning_hour_to=temp_offer.temp_offer_services.service_morning_hour_to,
-                            service_afternoon_hour_from=temp_offer.temp_offer_services.service_afternoon_hour_from,
-                            service_afternoon_hour_to=temp_offer.temp_offer_services.service_afternoon_hour_to,
-                            service_zone_by=temp_offer.temp_offer_services.service_zone_by,
-                            service_price_by=temp_offer.temp_offer_services.service_price_by,
-                            service_longitude=temp_offer.temp_offer_services.service_longitude,
-                            service_latitude=temp_offer.temp_offer_services.service_latitude,
-                            service_address=temp_offer.temp_offer_services.service_address,
-                            service_km_radius=temp_offer.temp_offer_services.service_km_radius
-                        )
-                        service.save()
-                        # service_availability_days
-                        service_availability_days = temp_offer.temp_offer_services.service_availability_days.all()
-                        for service_availability_day in service_availability_days:
-                            service.service_availability_days.add(service_availability_day.pk)
-                    # Transfer solder
-                    try:
-                        temp_solder = TempSolder.objects.get(offer=temp_offer.pk)
-                        solder = Solder.objects.create(
-                            offer=offer.pk,
-                            solder_type=temp_solder.solder_type,
-                            solder_value=temp_solder.solder_value
-                        )
-                        solder.save()
-                    except TempSolder.DoesNotExist:
-                        pass
-                    # Transfer deliveries
-                    temp_deliveries = TempDelivery.objects.filter(offer=temp_offer.pk)
-                    for temp_delivery in temp_deliveries:
-                        delivery = Delivery.objects.create(
-                            offer=offer.pk,
-                            # delivery_city
-                            all_cities=temp_delivery.all_cities,
-                            delivery_price=temp_delivery.delivery_price,
-                            delivery_days=temp_delivery.delivery_days,
-                        )
-                        delivery.save()
-                        temp_delivery_cities = temp_delivery.delivery_city.all()
-                        for temp_delivery_city in temp_delivery_cities:
-                            delivery.delivery_city.add(temp_delivery_city.pk)
-                temp_shop.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            except IntegrityError:
-                errors = {"errors": ["You already own a shop."]}
-                raise ValidationError(errors)
-        except TempShop.DoesNotExist:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopContactPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
             errors = {"errors": ["Shop not found."]}
             raise ValidationError(errors)
+
+
+class ShopPhoneContactPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopPhoneContactPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopPhoneContactPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
+
+
+class ShopAddressPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopAddressPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopAddressPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
+
+
+class ShopColorPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopColorPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopColorPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
+
+
+class ShopFontPutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def patch(request, *args, **kwargs):
+        user = request.user
+        # # Temp shop
+        # if user.is_anonymous:
+        #     unique_id = request.data.get('unique_id')
+        #     if unique_id:
+        #         try:
+        #             auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #             serializer = BaseTempShopFontPutSerializer(auth_shop, data=request.data, partial=True)
+        #             if serializer.is_valid():
+        #                 # serializer.update(temp_shop, serializer.validated_data)
+        #                 serializer.save()
+        #                 return Response(data=serializer.data, status=status.HTTP_200_OK)
+        #             raise ValidationError(serializer.errors)
+        #         except TempShop.DoesNotExist:
+        #             errors = {"errors": ["Shop not found."]}
+        #             raise ValidationError(errors)
+        #     data = {"errors": ["Shop not found."]}
+        #     raise ValidationError(data)
+        # # Auth shop
+        # else:
+        try:
+            shop = AuthShop.objects.get(user=user)
+            serializer = BaseShopFontPutSerializer(shop, data=request.data, partial=True)
+            if serializer.is_valid():
+                # serializer.update(shop, serializer.validated_data)
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"errors": ["Shop not found."]}
+            raise ValidationError(errors)
+
+
+# class TempShopToAuthShopView(APIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     @staticmethod
+#     def post(request, *args, **kwargs):
+#         unique_id = request.data.get('unique_id')
+#         user = request.user
+#         try:
+#             temp_shop = TempShop.objects.get(unique_id=unique_id)
+#             # transfer temp shop data
+#             try:
+#                 auth_shop = AuthShop.objects.create(
+#                     user=user,
+#                     shop_name=temp_shop.shop_name,
+#                     avatar=temp_shop.avatar,
+#                     avatar_thumbnail=temp_shop.avatar_thumbnail,
+#                     color_code=temp_shop.color_code,
+#                     bg_color_code=temp_shop.bg_color_code,
+#                     border=temp_shop.border,
+#                     icon_color=temp_shop.icon_color,
+#                     font_name=temp_shop.font_name,
+#                     bio=temp_shop.bio,
+#                     morning_hour_from=temp_shop.morning_hour_from,
+#                     morning_hour_to=temp_shop.morning_hour_to,
+#                     afternoon_hour_from=temp_shop.afternoon_hour_from,
+#                     afternoon_hour_to=temp_shop.afternoon_hour_to,
+#                     contact_phone_code=temp_shop.contact_phone_code,
+#                     contact_phone=temp_shop.contact_phone,
+#                     contact_whatsapp_code=temp_shop.contact_whatsapp_code,
+#                     contact_whatsapp=temp_shop.contact_whatsapp,
+#                     contact_mode=temp_shop.contact_mode,
+#                     phone=temp_shop.phone,
+#                     contact_email=temp_shop.contact_email,
+#                     website_link=temp_shop.website_link,
+#                     facebook_link=temp_shop.facebook_link,
+#                     twitter_link=temp_shop.twitter_link,
+#                     instagram_link=temp_shop.instagram_link,
+#                     whatsapp=temp_shop.whatsapp,
+#                     zone_by=temp_shop.zone_by,
+#                     longitude=temp_shop.longitude,
+#                     latitude=temp_shop.latitude,
+#                     address_name=temp_shop.address_name,
+#                     km_radius=temp_shop.km_radius,
+#                     qaryb_link=temp_shop.qaryb_link,
+#                 )
+#                 auth_shop.save()
+#                 # revoke 24h periodic task
+#                 task_id = temp_shop.task_id
+#                 current_app.control.revoke(task_id, terminate=True, signal='SIGKILL')
+#                 temp_shop.task_id = None
+#                 temp_shop.save()
+#                 # Auth shop opening days
+#                 opening_days = temp_shop.opening_days.all()
+#                 for opening_day in opening_days:
+#                     auth_shop.opening_days.add(opening_day.pk)
+#                 # Offers
+#                 temp_offers = TempOffers.objects.filter(auth_shop=temp_shop.pk) \
+#                     .select_related('temp_offer_products') \
+#                     .select_related('temp_offer_services') \
+#                     .select_related('temp_offer_solder') \
+#                     .prefetch_related('temp_offer_delivery')
+#                 for temp_offer in temp_offers:
+#                     offer = Offers.objects.create(
+#                         auth_shop=auth_shop,
+#                         offer_type=temp_offer.offer_type,
+#                         # Offer categories
+#                         title=temp_offer.title,
+#                         # May lead to a db error picture not found (we'll see)
+#                         picture_1=temp_offer.picture_1,
+#                         picture_2=temp_offer.picture_2,
+#                         picture_3=temp_offer.picture_3,
+#                         picture_4=temp_offer.picture_4,
+#                         picture_1_thumbnail=temp_offer.picture_1_thumbnail,
+#                         picture_2_thumbnail=temp_offer.picture_2_thumbnail,
+#                         picture_3_thumbnail=temp_offer.picture_3_thumbnail,
+#                         picture_4_thumbnail=temp_offer.picture_4_thumbnail,
+#                         description=temp_offer.description,
+#                         # For whom
+#                         # Tags
+#                         made_in_label=temp_offer.made_in_label,
+#                         price=temp_offer.price,
+#                     )
+#                     offer.save()
+#                     temp_categories = temp_offer.offer_categories.all()
+#                     for temp_categorie in temp_categories:
+#                         offer.offer_categories.add(temp_categorie.pk)
+#                     for_whoms = temp_offer.for_whom.all()
+#                     for for_whom in for_whoms:
+#                         offer.for_whom.add(for_whom.pk)
+#                     tags = temp_offer.tags.all()
+#                     for tag in tags:
+#                         offer.tags.add(tag.pk)
+#                     if temp_offer.offer_type == 'V':
+#                         product = Products.objects.create(
+#                             offer=offer,
+#                             # product_colors
+#                             # product_sizes
+#                             product_quantity=temp_offer.temp_offer_products.product_quantity,
+#                             product_price_by=temp_offer.temp_offer_products.product_price_by,
+#                             product_longitude=temp_offer.temp_offer_products.product_longitude,
+#                             product_latitude=temp_offer.temp_offer_products.product_latitude,
+#                             product_address=temp_offer.temp_offer_products.product_address
+#                         )
+#                         product.save()
+#                         # product_colors
+#                         product_colors = temp_offer.temp_offer_products.product_colors.all()
+#                         for product_color in product_colors:
+#                             product.product_colors.add(product_color.pk)
+#                         # product_sizes
+#                         product_sizes = temp_offer.temp_offer_products.product_sizes.all()
+#                         for product_size in product_sizes:
+#                             product.product_sizes.add(product_size.pk)
+#                     elif temp_offer.offer_type == 'S':
+#                         service = Services.objects.create(
+#                             offer=offer,
+#                             # service_availability_days
+#                             service_morning_hour_from=temp_offer.temp_offer_services.service_morning_hour_from,
+#                             service_morning_hour_to=temp_offer.temp_offer_services.service_morning_hour_to,
+#                             service_afternoon_hour_from=temp_offer.temp_offer_services.service_afternoon_hour_from,
+#                             service_afternoon_hour_to=temp_offer.temp_offer_services.service_afternoon_hour_to,
+#                             service_zone_by=temp_offer.temp_offer_services.service_zone_by,
+#                             service_price_by=temp_offer.temp_offer_services.service_price_by,
+#                             service_longitude=temp_offer.temp_offer_services.service_longitude,
+#                             service_latitude=temp_offer.temp_offer_services.service_latitude,
+#                             service_address=temp_offer.temp_offer_services.service_address,
+#                             service_km_radius=temp_offer.temp_offer_services.service_km_radius
+#                         )
+#                         service.save()
+#                         # service_availability_days
+#                         service_availability_days = temp_offer.temp_offer_services.service_availability_days.all()
+#                         for service_availability_day in service_availability_days:
+#                             service.service_availability_days.add(service_availability_day.pk)
+#                     # Transfer solder
+#                     try:
+#                         temp_solder = TempSolder.objects.get(offer=temp_offer.pk)
+#                         solder = Solder.objects.create(
+#                             offer=offer.pk,
+#                             solder_type=temp_solder.solder_type,
+#                             solder_value=temp_solder.solder_value
+#                         )
+#                         solder.save()
+#                     except TempSolder.DoesNotExist:
+#                         pass
+#                     # Transfer deliveries
+#                     temp_deliveries = TempDelivery.objects.filter(offer=temp_offer.pk)
+#                     for temp_delivery in temp_deliveries:
+#                         delivery = Delivery.objects.create(
+#                             offer=offer.pk,
+#                             # delivery_city
+#                             all_cities=temp_delivery.all_cities,
+#                             delivery_price=temp_delivery.delivery_price,
+#                             delivery_days=temp_delivery.delivery_days,
+#                         )
+#                         delivery.save()
+#                         temp_delivery_cities = temp_delivery.delivery_city.all()
+#                         for temp_delivery_city in temp_delivery_cities:
+#                             delivery.delivery_city.add(temp_delivery_city.pk)
+#                 temp_shop.delete()
+#                 return Response(status=status.HTTP_204_NO_CONTENT)
+#             except IntegrityError:
+#                 errors = {"errors": ["You already own a shop."]}
+#                 raise ValidationError(errors)
+#         except TempShop.DoesNotExist:
+#             errors = {"errors": ["Shop not found."]}
+#             raise ValidationError(errors)
 
 
 class ShopAskBecomeCreator(APIView):

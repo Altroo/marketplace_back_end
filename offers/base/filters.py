@@ -1,12 +1,8 @@
-from django.db.models import Q
-from django.db.models.constants import LOOKUP_SEP
 from django_filters import BaseInFilter
-from django_filters import rest_framework as django_filters
 from django_filters.rest_framework import FilterSet, CharFilter, \
     OrderingFilter
-from django_filters.constants import EMPTY_VALUES
 
-from offers.models import OfferTags, Offers, TempOffers
+from offers.models import OfferTags
 
 
 # class BaseSearchFilter(FilterSet):

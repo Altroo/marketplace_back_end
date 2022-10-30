@@ -4,8 +4,8 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
-from offers.models import Offers, OfferVue, TempOffers
-from shop.models import AuthShop, TempShop, ModeVacance
+from offers.models import Offers, OfferVue
+from shop.models import AuthShop, ModeVacance
 from account.models import CustomUser
 from shop.base.utils import ImageProcessor
 
@@ -25,11 +25,8 @@ def start_generating_thumbnail(img_path, duplicate):
 
 
 @app.task(bind=True)
-def base_generate_offer_thumbnails(self, product_pk, which):
-    if which == 'Offers':
-        offer = Offers.objects.get(pk=product_pk)
-    else:
-        offer = TempOffers.objects.get(pk=product_pk)
+def base_generate_offer_thumbnails(self, product_pk):
+    offer = Offers.objects.get(pk=product_pk)
     offer_picture_1 = offer.picture_1.url if offer.picture_1 else None
     if offer_picture_1 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_1.url
@@ -67,14 +64,9 @@ def base_generate_offer_thumbnails(self, product_pk, which):
 
 
 @app.task(bind=True)
-def base_duplicate_offer_images(self, offer_pk, new_offer_pk, which):
-    if which == 'Offers':
-        offer = Offers.objects.get(pk=offer_pk)
-        new_offer = Offers.objects.get(pk=new_offer_pk)
-    else:
-        offer = TempOffers.objects.get(pk=offer_pk)
-        new_offer = TempOffers.objects.get(pk=new_offer_pk)
-
+def base_duplicate_offer_images(self, offer_pk, new_offer_pk):
+    offer = Offers.objects.get(pk=offer_pk)
+    new_offer = Offers.objects.get(pk=new_offer_pk)
     if offer.picture_1:
         picture_1 = start_generating_thumbnail(offer.picture_1.path, True)
         new_offer.save_image('picture_1', picture_1)
@@ -148,11 +140,8 @@ def base_duplicate_offervue_images(self, offer_pk):
 def base_generate_avatar_thumbnail(self, object_pk, which):
     if which == 'AuthShop':
         object_ = AuthShop.objects.get(pk=object_pk)
-    elif which == 'CustomUser':
-        object_ = CustomUser.objects.get(pk=object_pk)
     else:
-        # TempShop
-        object_ = TempShop.objects.get(pk=object_pk)
+        object_ = CustomUser.objects.get(pk=object_pk)
     shop_avatar = object_.avatar.url if object_.avatar else None
     if shop_avatar is not None:
         avatar_path = parent_file_dir + '/media' + object_.avatar.url
@@ -202,72 +191,72 @@ def base_delete_shop_media_files(self, media_paths_list):
             pass
 
 
-@app.task(bind=True)
-def base_start_deleting_expired_shops(self, shop_pk):
-    auth_shop = TempShop.objects.get(pk=shop_pk)
-    if auth_shop.unique_id is not None:
-        # Delete avatar image
-        try:
-            avatar_img = auth_shop.avatar.path
-            remove(avatar_img)
-        except (FileNotFoundError, ValueError, AttributeError):
-            pass
-        # Delete avatar thumbnail
-        try:
-            avatar_thumbnail_img = auth_shop.avatar_thumbnail.path
-            remove(avatar_thumbnail_img)
-        except (FileNotFoundError, ValueError, AttributeError):
-            pass
-        # Delete temp product images
-        products = TempOffers.objects.filter(auth_shop=auth_shop.pk)
-        for product in products:
-            # Picture 1
-            try:
-                picture_1 = product.picture_1.path
-                remove(picture_1)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 1 thumbnail
-            try:
-                picture_1_thumbnail = product.picture_1_thumbnail.path
-                remove(picture_1_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 2
-            try:
-                picture_2 = product.picture_2.path
-                remove(picture_2)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 2 thumbnail
-            try:
-                picture_2_thumbnail = product.picture_2_thumbnail.path
-                remove(picture_2_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 3
-            try:
-                picture_3 = product.picture_3.path
-                remove(picture_3)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 3 thumbnail
-            try:
-                picture_3_thumbnail = product.picture_3_thumbnail.path
-                remove(picture_3_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 4
-            try:
-                picture_4 = product.picture_4.path
-                remove(picture_4)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-            # Picture 4 thumbnail
-            try:
-                picture_4_thumbnail = product.picture_4_thumbnail.path
-                remove(picture_4_thumbnail)
-            except (FileNotFoundError, ValueError, AttributeError):
-                pass
-        # Delete object
-        auth_shop.delete()
+# @app.task(bind=True)
+# def base_start_deleting_expired_shops(self, shop_pk):
+#     auth_shop = TempShop.objects.get(pk=shop_pk)
+#     if auth_shop.unique_id is not None:
+#         # Delete avatar image
+#         try:
+#             avatar_img = auth_shop.avatar.path
+#             remove(avatar_img)
+#         except (FileNotFoundError, ValueError, AttributeError):
+#             pass
+#         # Delete avatar thumbnail
+#         try:
+#             avatar_thumbnail_img = auth_shop.avatar_thumbnail.path
+#             remove(avatar_thumbnail_img)
+#         except (FileNotFoundError, ValueError, AttributeError):
+#             pass
+#         # Delete temp product images
+#         products = TempOffers.objects.filter(auth_shop=auth_shop.pk)
+#         for product in products:
+#             # Picture 1
+#             try:
+#                 picture_1 = product.picture_1.path
+#                 remove(picture_1)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 1 thumbnail
+#             try:
+#                 picture_1_thumbnail = product.picture_1_thumbnail.path
+#                 remove(picture_1_thumbnail)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 2
+#             try:
+#                 picture_2 = product.picture_2.path
+#                 remove(picture_2)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 2 thumbnail
+#             try:
+#                 picture_2_thumbnail = product.picture_2_thumbnail.path
+#                 remove(picture_2_thumbnail)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 3
+#             try:
+#                 picture_3 = product.picture_3.path
+#                 remove(picture_3)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 3 thumbnail
+#             try:
+#                 picture_3_thumbnail = product.picture_3_thumbnail.path
+#                 remove(picture_3_thumbnail)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 4
+#             try:
+#                 picture_4 = product.picture_4.path
+#                 remove(picture_4)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#             # Picture 4 thumbnail
+#             try:
+#                 picture_4_thumbnail = product.picture_4_thumbnail.path
+#                 remove(picture_4_thumbnail)
+#             except (FileNotFoundError, ValueError, AttributeError):
+#                 pass
+#         # Delete object
+#         auth_shop.delete()

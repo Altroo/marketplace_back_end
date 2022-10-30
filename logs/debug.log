@@ -47964,3 +47964,7 @@ Not Found: /favicon.ico
 Not Found: /
 [33mHTTP GET / 404 [0.02, 127.0.0.1:50300][0m
 Not Found: /favicon.ico
+Bad Request: /api/1.0.0/account/check_email/
+[31;1mHTTP POST /api/1.0.0/account/check_email/ 400 [0.08, 127.0.0.1:50818][0m
+Bad Request: /api/1.0.0/account/login/
+[31;1mHTTP POST /api/1.0.0/account/login/ 400 [0.23, 127.0.0.1:50818][0m
