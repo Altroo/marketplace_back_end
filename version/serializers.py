@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from version.models import Version, VirementData
+from version.models import Version, VirementData, NewsLetter
 
 
 class VersionSerializer(serializers.ModelSerializer):
@@ -21,3 +21,9 @@ class VirementDataSerializer(serializers.ModelSerializer):
         model = VirementData
         fields = ['email', 'domiciliation', 'numero_de_compte',
                   'titulaire_du_compte', 'numero_rib', 'identifiant_swift']
+
+
+class NewsLetterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsLetter
+        fields = ['email']
