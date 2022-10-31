@@ -30,9 +30,6 @@ class CustomNewsLetter(ModelAdmin):
     date_hierarchy = 'created_date'
     ordering = ('-pk',)
 
-    def has_delete_permission(self, *args, **kwargs):
-        return False
-
     def has_add_permission(self, request):
         return False
 

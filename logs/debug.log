@@ -47971,3 +47971,8 @@ Bad Request: /api/1.0.0/account/login/
 Not Found: /
 [33mHTTP GET / 404 [0.02, 127.0.0.1:52030][0m
 Not Found: /favicon.ico
+Not Found: /api/undefined
+[33mHTTP POST /api/undefined 404 [0.05, 127.0.0.1:50712][0m
+Not Found: /api/undefined
+[33mHTTP POST /api/undefined 404 [0.01, 127.0.0.1:50774][0m
+Not Found: /favicon.ico
