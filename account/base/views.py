@@ -1042,7 +1042,7 @@ class CheckAccountView(APIView):
             "is_new": is_new,
             "is_subscribed": is_subscribed,
             "is_creator": is_creator,
-            "picture": user.get_absolute_avatar_thumbnail,
+            "picture": user.get_absolute_avatar_img,
             "city": user.city,
             "country": user.country.name_fr if user.country else None
         }
