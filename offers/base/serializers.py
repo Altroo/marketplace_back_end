@@ -97,7 +97,7 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
     for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
-    tags = BaseOfferTagsSerializer(many=True, read_only=True)
+    # tags = BaseOfferTagsSerializer(many=True, read_only=True)
     creator_label = serializers.BooleanField(required=False, allow_null=True, default=False)
 
     class Meta:
@@ -105,7 +105,7 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'for_whom', 'creator_label', 'made_in_label',
-                  'tags', 'price']
+                  'price']
 
 
 # Global Product serializer
@@ -284,11 +284,11 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     deliveries = BaseShopDeliverySerializer(many=True, read_only=True, source='offer_delivery')
     exist_in_cart = serializers.SerializerMethodField()
     pinned = serializers.BooleanField()
-    tags = serializers.SerializerMethodField()
+    # tags = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_tags(instance):
-        return instance.tags.values_list('name_tag', flat=True).all()
+    # @staticmethod
+    # def get_tags(instance):
+    #     return instance.tags.values_list('name_tag', flat=True).all()
     # @staticmethod
     # def get_for_whom(instance):
     #     return instance.for_whom.values_list('code_for_whom', flat=True).all()

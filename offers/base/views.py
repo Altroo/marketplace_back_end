@@ -605,28 +605,28 @@ class ShopOfferViewV2(APIView):
             data['for_whom'] = offer_for_whom_list
             # Offer Tags
             # if Tags not choosen don't send the key.
-            if request.data.get('tags') is not None:
-                tags = str(request.data.get('tags')).split(',')
-                for tag in tags:
-                    try:
-                        OfferTags.objects.create(name_tag=tag)
-                    except IntegrityError:
-                        pass
-                tags = OfferTags.objects.filter(name_tag__in=tags)
-                tags_list = []
-                for tag in tags:
-                    offer.tags.add(tag.pk)
-                    # tags_list.append(tag.name_tag)
-                    tags_list.append(
-                        {
-                            "pk": tag.pk,
-                            "name_tag": tag.name_tag,
-                        }
-                    )
-                data['tags'] = tags_list
-            else:
-                # Return empty tags
-                data['tags'] = []
+            # if request.data.get('tags') is not None:
+            #     tags = str(request.data.get('tags')).split(',')
+            #     for tag in tags:
+            #         try:
+            #             OfferTags.objects.create(name_tag=tag)
+            #         except IntegrityError:
+            #             pass
+            #     tags = OfferTags.objects.filter(name_tag__in=tags)
+            #     tags_list = []
+            #     for tag in tags:
+            #         offer.tags.add(tag.pk)
+            #         # tags_list.append(tag.name_tag)
+            #         tags_list.append(
+            #             {
+            #                 "pk": tag.pk,
+            #                 "name_tag": tag.name_tag,
+            #             }
+            #         )
+            #     data['tags'] = tags_list
+            # else:
+            #     # Return empty tags
+            #     data['tags'] = []
             # IF OFFER TYPE == V (VENTE) ; S (SERVICE)
             if offer_type == 'V':
                 product_quantity = request.data.get('product_quantity')
