@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Version, VirementData
+from .models import Version, VirementData, NewsLetter
 from django.contrib.admin import ModelAdmin
 
 
@@ -24,5 +24,19 @@ class CustomVirementData(ModelAdmin):
         return False
 
 
+class CustomNewsLetter(ModelAdmin):
+    list_display = ('email', 'created_date',)
+    search_fields = ('email', )
+    date_hierarchy = 'created_date'
+    ordering = ('-pk',)
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+
 admin.site.register(Version, CustomVersionAdmin)
 admin.site.register(VirementData, CustomVirementData)
+admin.site.register(NewsLetter, CustomNewsLetter)

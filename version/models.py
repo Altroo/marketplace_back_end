@@ -65,3 +65,18 @@ class VirementData(Model):
         verbose_name = 'Virement admin data'
         verbose_name_plural = 'Virement admin data'
         ordering = ('-pk',)
+
+
+class NewsLetter(Model):
+    email = models.EmailField(verbose_name='Email address', blank=False, null=False, max_length=255)
+    created_date = models.DateTimeField(verbose_name='Created date',
+                                        editable=False, auto_now_add=True,
+                                        db_index=True)
+
+    def __str__(self):
+        return '{} - {}'.format(self.email, self.created_date)
+
+    class Meta:
+        verbose_name = 'News letter'
+        verbose_name_plural = 'News letters'
+        ordering = ('-pk',)
