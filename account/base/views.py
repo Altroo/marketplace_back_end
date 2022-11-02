@@ -1221,6 +1221,8 @@ class DashboardView(APIView):
             "pk": user.pk,
             "email": user.email,  # for resend code card
             "avatar": user.get_absolute_avatar_img,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "is_verified": check_verified,  # for resend code card
             "is_subscribed": is_subscribed,  # for subscribe card
             "is_creator": is_creator,  # for creator card
