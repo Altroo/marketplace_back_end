@@ -48398,3 +48398,14 @@ AssertionError: The field 'tags' was declared on serializer BaseShopOfferSeriali
 [35;1mHTTP POST /api/1.0.0/offer/ 500 [0.20, 127.0.0.1:55645][0m
 Bad Request: /api/1.0.0/offer/
 [31;1mHTTP POST /api/1.0.0/offer/ 400 [0.06, 127.0.0.1:55654][0m
+Bad Request: /api/1.0.0/account/check_email/
+[31;1mHTTP POST /api/1.0.0/account/check_email/ 400 [0.02, 127.0.0.1:50806][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/account/login/
+[31;1mHTTP POST /api/1.0.0/account/login/ 400 [0.49, 127.0.0.1:55004][0m
+Not Found: /accounts/profile/
+[33mHTTP GET /accounts/profile/ 404 [0.01, 127.0.0.1:61521][0m
