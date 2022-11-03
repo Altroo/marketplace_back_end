@@ -215,7 +215,7 @@ class RegistrationView(APIView):
                 shift = date_now + timedelta(hours=24)
                 task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
                 user.task_id_activation = str(task_id_activation)
-                user.save()
+                user.save(update_fields=['task_id_activation'])
                 # Generate user avatar and thumbnail
                 base_generate_user_thumbnail.apply_async((user.pk,), )
                 return Response(data=data, status=status.HTTP_200_OK)
