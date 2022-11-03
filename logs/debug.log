@@ -48639,3 +48639,153 @@ ValueError: The 'avatar' attribute has no file associated with it.
 [35;1mHTTP POST /api/1.0.0/account/register/ 500 [0.26, 127.0.0.1:55030][0m
 Bad Request: /api/1.0.0/account/register/
 [31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.14, 127.0.0.1:55105][0m
+Not Found: /favicon.ico
+Internal Server Error: /api/1.0.0/account/register/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 39, in _reraise_errors
+    yield
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 210, in dumps
+    payload = encoder(data)
+              ^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/utils/json.py", line 68, in dumps
+    return _dumps(s, cls=cls or _default_encoder,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/utils/json.py", line 58, in default
+    return super().default(o)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type CustomUser is not JSON serializable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 435, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/tasks.py", line 442, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 476, in thread_handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 103, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/account/base/views.py", line 186, in post
+    base_generate_user_thumbnail.apply_async((user,), )
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/celery/app/task.py", line 575, in apply_async
+    return app.send_task(
+           ^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/celery/app/base.py", line 788, in send_task
+    amqp.send_task_message(P, name, message, **options)
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/celery/app/amqp.py", line 510, in send_task_message
+    ret = producer.publish(
+          ^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/messaging.py", line 166, in publish
+    body, content_type, content_encoding = self._prepare(
+                                           ^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/messaging.py", line 254, in _prepare
+    body) = dumps(body, serializer=serializer)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 209, in dumps
+    with _reraise_errors(EncodeError):
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py", line 155, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 43, in _reraise_errors
+    reraise(wrapper, wrapper(exc), sys.exc_info()[2])
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/exceptions.py", line 21, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 39, in _reraise_errors
+    yield
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/serialization.py", line 210, in dumps
+    payload = encoder(data)
+              ^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/utils/json.py", line 68, in dumps
+    return _dumps(s, cls=cls or _default_encoder,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/kombu/utils/json.py", line 58, in default
+    return super().default(o)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+kombu.exceptions.EncodeError: Object of type CustomUser is not JSON serializable
+[35;1mHTTP POST /api/1.0.0/account/register/ 500 [0.29, 127.0.0.1:55334][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.42, 127.0.0.1:55374][0m
+Not Found: /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.14, 127.0.0.1:55384][0m
+Not Found: /media/media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.01, 127.0.0.1:55384][0m
+Not Found: /media/media/media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/media/media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.01, 127.0.0.1:55384][0m
+Not Found: /user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.01, 127.0.0.1:55384][0m
+Not Found: /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.02, 127.0.0.1:55408][0m
+Not Found: /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.02, 127.0.0.1:55408][0m
+Not Found: /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg
+[33mHTTP GET /media/user_avatars/60262328-e33b-4b63-a6cd-778d5f00757a.jpg 404 [0.01, 127.0.0.1:55408][0m
+Not Found: /user_avatars/4f01f2e8-975d-4095-b6f7-03b95406d5c4.jpg
+[33mHTTP GET /user_avatars/4f01f2e8-975d-4095-b6f7-03b95406d5c4.jpg 404 [0.02, 127.0.0.1:55430][0m
+Not Found: /user_avatars/cec12f0e-5f69-4ec1-9f1f-bded43dffb6a.jpg
+[33mHTTP GET /user_avatars/cec12f0e-5f69-4ec1-9f1f-bded43dffb6a.jpg 404 [0.01, 127.0.0.1:55430][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /user_avatars/fdb6c01c-2dfc-424f-90cc-cc1f2fd830cd.jpg
+[33mHTTP GET /user_avatars/fdb6c01c-2dfc-424f-90cc-cc1f2fd830cd.jpg 404 [0.05, 127.0.0.1:55487][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /user_avatars/ebfc495a-5378-435f-9416-1c10aeddbb38.jpg
+[33mHTTP GET /user_avatars/ebfc495a-5378-435f-9416-1c10aeddbb38.jpg 404 [0.01, 127.0.0.1:55543][0m
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
