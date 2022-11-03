@@ -48835,3 +48835,98 @@ Traceback (most recent call last):
     ^^^^^^^^^^^
 AttributeError: 'CustomUser' object has no attribute 'update'
 [35;1mHTTP POST /api/1.0.0/account/register/ 500 [0.31, 127.0.0.1:55892][0m
+Not Found: /media/media/user_avatars/aa2fb77a-aa5f-467c-87e4-72e21c9d793f.png
+[33mHTTP GET /media/media/user_avatars/aa2fb77a-aa5f-467c-87e4-72e21c9d793f.png 404 [0.04, 127.0.0.1:56397][0m
+Not Found: /media/media/shop_avatars/30c33897-867f-40ca-ac0c-45aca3386b18.jpg
+[33mHTTP GET /media/media/shop_avatars/30c33897-867f-40ca-ac0c-45aca3386b18.jpg 404 [0.01, 127.0.0.1:56397][0m
+Not Found: /media/media/shop_offers/d4ee7cd1-4783-4d41-a095-208e7f469c73.png
+[33mHTTP GET /media/media/shop_offers/d4ee7cd1-4783-4d41-a095-208e7f469c73.png 404 [0.02, 127.0.0.1:56397][0m
+Not Found: /media/media/shop_offers/64381941-225a-4112-a08e-a7007a2d0a9a.jpg
+[33mHTTP GET /media/media/shop_offers/64381941-225a-4112-a08e-a7007a2d0a9a.jpg 404 [0.04, 127.0.0.1:56413][0m
+Not Found: /media/media/shop_offers/01d49422-117a-4d6c-9ea2-1e5ed1f655a0.jpg
+[33mHTTP GET /media/media/shop_offers/01d49422-117a-4d6c-9ea2-1e5ed1f655a0.jpg 404 [0.04, 127.0.0.1:56415][0m
+Not Found: /media/media/shop_offers/5ee02adc-1c4c-4c94-9699-009133933644.png
+Not Found: /media/media/shop_offers/902d2c47-6561-45f3-ba50-308bc75ee7c8.png
+[33mHTTP GET /media/media/shop_offers/5ee02adc-1c4c-4c94-9699-009133933644.png 404 [0.04, 127.0.0.1:56414][0m
+[33mHTTP GET /media/media/shop_offers/902d2c47-6561-45f3-ba50-308bc75ee7c8.png 404 [0.04, 127.0.0.1:56416][0m
+Not Found: /favicon.ico
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56416][0m
+Not Found: /media/media/shop_avatars/682b446a-9171-4042-8322-5115054a84f3.png
+[33mHTTP GET /media/media/shop_avatars/682b446a-9171-4042-8322-5115054a84f3.png 404 [0.01, 127.0.0.1:56416][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56416][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56416][0m
+Not Found: /media/media/shop_offers/d9c5da80-a56c-4815-bd80-5154f35a5660.png
+Not Found: /media/media/shop_offers/5931595d-5fe0-4d30-a618-c0128abfd192.jpg
+[33mHTTP GET /media/media/shop_offers/d9c5da80-a56c-4815-bd80-5154f35a5660.png 404 [0.03, 127.0.0.1:56416][0m
+[33mHTTP GET /media/media/shop_offers/5931595d-5fe0-4d30-a618-c0128abfd192.jpg 404 [0.03, 127.0.0.1:56494][0m
+Not Found: /media/media/shop_offers/75a9ad3f-096c-46f1-952d-b8c6796ae887.png
+Not Found: /media/media/shop_offers/e6c1739e-2ad7-4a80-afda-d31c0d95ac32.jpg
+Not Found: /media/media/shop_offers/25d363d6-975e-45b3-a610-7041049829ba.jpg
+[33mHTTP GET /media/media/shop_offers/75a9ad3f-096c-46f1-952d-b8c6796ae887.png 404 [0.03, 127.0.0.1:56497][0m
+[33mHTTP GET /media/media/shop_offers/e6c1739e-2ad7-4a80-afda-d31c0d95ac32.jpg 404 [0.03, 127.0.0.1:56496][0m
+[33mHTTP GET /media/media/shop_offers/25d363d6-975e-45b3-a610-7041049829ba.jpg 404 [0.03, 127.0.0.1:56495][0m
+Not Found: /media/media/shop_offers/7bf53b3d-080a-4de4-bf68-7f97ca4f566b.png
+[33mHTTP GET /media/media/shop_offers/7bf53b3d-080a-4de4-bf68-7f97ca4f566b.png 404 [0.04, 127.0.0.1:56495][0m
+Not Found: /media/media/shop_offers/1dae04f6-cf3b-4c05-9be6-3fd6bf0bda0e.jpg
+Not Found: /media/media/shop_offers/375a93bd-96a6-432b-9a0f-f7b3ca5ebc3b.jpg
+Not Found: /media/media/shop_offers/59a69b69-73d6-4b26-bdca-986aec51fe07.png
+[33mHTTP GET /media/media/shop_offers/1dae04f6-cf3b-4c05-9be6-3fd6bf0bda0e.jpg 404 [0.04, 127.0.0.1:56416][0m
+Not Found: /media/media/shop_offers/234b005f-bf42-49b3-8e75-2fa291662045.png
+[33mHTTP GET /media/media/shop_offers/375a93bd-96a6-432b-9a0f-f7b3ca5ebc3b.jpg 404 [0.05, 127.0.0.1:56496][0m
+[33mHTTP GET /media/media/shop_offers/59a69b69-73d6-4b26-bdca-986aec51fe07.png 404 [0.05, 127.0.0.1:56497][0m
+[33mHTTP GET /media/media/shop_offers/234b005f-bf42-49b3-8e75-2fa291662045.png 404 [0.05, 127.0.0.1:56494][0m
+Not Found: /media/media/shop_offers/0bef8a39-b573-4896-bdc2-adcc9552af4b.png
+Not Found: /media/media/shop_offers/300ccf4a-d941-4312-8f33-692a89d254ad.jpg
+Not Found: /media/media/shop_offers/5fe622a5-8a1c-4e6e-91d7-b781b44b49f7.jpg
+Not Found: /media/media/shop_offers/99b02dc3-9135-4dc7-9817-5204963ad64c.png
+[33mHTTP GET /media/media/shop_offers/0bef8a39-b573-4896-bdc2-adcc9552af4b.png 404 [0.04, 127.0.0.1:56494][0m
+[33mHTTP GET /media/media/shop_offers/300ccf4a-d941-4312-8f33-692a89d254ad.jpg 404 [0.04, 127.0.0.1:56497][0m
+[33mHTTP GET /media/media/shop_offers/5fe622a5-8a1c-4e6e-91d7-b781b44b49f7.jpg 404 [0.04, 127.0.0.1:56495][0m
+[33mHTTP GET /media/media/shop_offers/99b02dc3-9135-4dc7-9817-5204963ad64c.png 404 [0.04, 127.0.0.1:56496][0m
+Not Found: /media/media/shop_offers/02f0b3a5-b8b7-41f7-b8c2-20a83261e7a9.jpg
+[33mHTTP GET /media/media/shop_offers/02f0b3a5-b8b7-41f7-b8c2-20a83261e7a9.jpg 404 [0.05, 127.0.0.1:56416][0m
+Not Found: /media/media/shop_offers/176385f7-68b3-4815-a0fc-7badc88438ea.jpg
+Not Found: /media/media/shop_offers/34233da0-cc5f-4a45-9a8d-62f438dcb93c.jpg
+Not Found: /media/media/shop_offers/f2ce0295-f5f2-4938-9edf-a8882738a62c.jpg
+[33mHTTP GET /media/media/shop_offers/176385f7-68b3-4815-a0fc-7badc88438ea.jpg 404 [0.03, 127.0.0.1:56496][0m
+[33mHTTP GET /media/media/shop_offers/34233da0-cc5f-4a45-9a8d-62f438dcb93c.jpg 404 [0.03, 127.0.0.1:56416][0m
+Not Found: /media/media/shop_offers/8b27d18a-22d4-4374-bbaa-fa0ba3a5b926.jpg
+[33mHTTP GET /media/media/shop_offers/f2ce0295-f5f2-4938-9edf-a8882738a62c.jpg 404 [0.03, 127.0.0.1:56495][0m
+[33mHTTP GET /media/media/shop_offers/8b27d18a-22d4-4374-bbaa-fa0ba3a5b926.jpg 404 [0.03, 127.0.0.1:56497][0m
+Bad Request: /api/1.0.0/shop/nature-co-2/
+[31;1mHTTP GET /api/1.0.0/shop/nature-co-2/ 400 [0.02, 127.0.0.1:56526][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56497][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56497][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.02, 127.0.0.1:56497][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56497][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.06, 127.0.0.1:56687][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56687][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.08, 127.0.0.1:56792][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.02, 127.0.0.1:56792][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56792][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56805][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56793][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:56793][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.02, 127.0.0.1:56848][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.02, 127.0.0.1:57207][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.03, 127.0.0.1:57358][0m
+Not Found: /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png
+[33mHTTP GET /media/media/user_avatars/4be007ac-b2e8-403f-b04f-e25bb6b03f93.png 404 [0.01, 127.0.0.1:57358][0m
