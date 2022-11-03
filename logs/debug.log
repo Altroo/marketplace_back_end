@@ -48415,3 +48415,10 @@ Bad Request: /api/1.0.0/account/check_email/
 [31;1mHTTP POST /api/1.0.0/account/check_email/ 400 [0.04, 127.0.0.1:50709][0m
 Bad Request: /api/1.0.0/account/login/
 [31;1mHTTP POST /api/1.0.0/account/login/ 400 [0.36, 127.0.0.1:50455][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.08, 127.0.0.1:53559][0m
+Bad Request: /api/1.0.0/account/register/
+[31;1mHTTP POST /api/1.0.0/account/register/ 400 [0.12, 127.0.0.1:53764][0m
+Not Found: /favicon.ico
+Not Found: /media/user_avatars/25f130bd-15ef-43d4-841c-463ae7eecea3.WEBP
+[33mHTTP GET /media/user_avatars/25f130bd-15ef-43d4-841c-463ae7eecea3.WEBP 404 [0.04, 127.0.0.1:53843][0m
