@@ -56,8 +56,7 @@ def get_text_fill_color(bg_color):
 
 def from_img_to_io(image, format_):
     bytes_io = BytesIO()
-    image.save(File(bytes_io), format=format_, save=False)
-    print(image)
+    image.save(File(bytes_io), format=format_, save=True)
     bytes_io.seek(0)
     return bytes_io
 

@@ -12,6 +12,8 @@ from Qaryb_API.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
 from base64 import b64encode
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 
 
 def get_avatar_path(instance, filename):
@@ -104,6 +106,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         getattr(self, field_name).save(f'{str(uuid4())}.jpg',
                                        ContentFile(image.getvalue()),
                                        save=True)
+
+
+@receiver(pre_save, sender=CustomUser)
+def my_handler_one(sender, instance, **kwargs):
+    print('pre Saved : ', instance.avatar)
+
+
+@receiver(post_save, sender=CustomUser)
+def my_handler_two(sender, instance, **kwargs):
+    print('post Saved : ', instance.avatar)
 
 
 class BlockedUsers(Model):
