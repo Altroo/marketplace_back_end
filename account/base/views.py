@@ -212,12 +212,12 @@ class RegistrationView(APIView):
                     "access_token_expiration": (date_now + SIMPLE_JWT['ACCESS_TOKEN_LIFETIME']),
                     "refresh_token_expiration": (date_now + SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'])
                 }
-                # shift = date_now + timedelta(hours=24)
-                # task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
-                # user.task_id_activation = str(task_id_activation)
-                # user.save()
                 # Generate user avatar and thumbnail
                 base_generate_user_thumbnail.apply_async((user.pk,), )
+                shift = date_now + timedelta(hours=24)
+                task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
+                user.task_id_activation = str(task_id_activation)
+                user.save()
                 return Response(data=data, status=status.HTTP_200_OK)
             raise ValidationError(email_address_serializer.errors)
         raise ValidationError(serializer.errors)

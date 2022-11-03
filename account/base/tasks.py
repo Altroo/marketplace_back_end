@@ -98,8 +98,10 @@ def base_generate_user_thumbnail(self, user_pk):
     last_name = str(user.last_name[0]).upper()
     first_name = str(user.first_name[0]).upper()
     avatar, thumbnail = start_generating_avatar_and_thumbnail(last_name, first_name)
-    avatar_ = from_img_to_io(avatar, 'WEBP')
-    thumbnail_ = from_img_to_io(thumbnail, 'WEBP')
+    avatar_ = from_img_to_io(avatar, 'PNG')
+    logger.log('FATAL', avatar_)
+    thumbnail_ = from_img_to_io(thumbnail, 'PNG')
+    logger.log('FATAL', thumbnail_)
     user.save_image('avatar', avatar_)
     user.save_image('avatar_thumbnail', thumbnail_)
 

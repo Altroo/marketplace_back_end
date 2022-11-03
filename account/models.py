@@ -101,7 +101,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.WEBP',
+        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
                                        ContentFile(image.getvalue()),
                                        save=True)
 
