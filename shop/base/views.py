@@ -808,7 +808,7 @@ class ShopQrCodeView(APIView):
             image_processor = ImageProcessor()
             loaded_img = image_processor.load_image(icon_path)
             resized_img = image_processor.image_resize(loaded_img, width=1000, height=1000)
-            img_thumbnail = self.from_img_to_io(resized_img, 'PNG', 'input')
+            img_thumbnail = self.from_img_to_io(resized_img, 'WEBP', 'input')
             logo = Image.open(img_thumbnail)
             basewidth = 100
             wpercent = (basewidth / float(logo.size[0]))
@@ -843,7 +843,7 @@ class ShopQrCodeView(APIView):
             pos_for_text = ((qr_img.size[0] - drawn_text_img._image.width) // 2,
                             (qr_img.size[1] - drawn_text_img._image.height - 20))
             qr_img.paste(drawn_text_img._image, pos_for_text)
-            qr_code_img = self.from_img_to_io(qr_img, 'PNG', 'output')
+            qr_code_img = self.from_img_to_io(qr_img, 'WEBP', 'output')
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             # Delete old qr code before generating new one
             try:

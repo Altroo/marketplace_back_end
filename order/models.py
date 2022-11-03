@@ -86,7 +86,7 @@ class Order(Model):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+        getattr(self, field_name).save(f'{str(uuid4())}.WEBP',
                                        ContentFile(image.getvalue()),
                                        save=True)
 
@@ -230,6 +230,6 @@ class OrderDetails(Model):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+        getattr(self, field_name).save(f'{str(uuid4())}.WEBP',
                                        ContentFile(image.getvalue()),
                                        save=True)

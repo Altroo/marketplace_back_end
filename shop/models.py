@@ -177,14 +177,14 @@ class AuthShop(Model):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+        getattr(self, field_name).save(f'{str(uuid4())}.WEBP',
                                        ContentFile(image.getvalue()),
                                        save=True)
 
     def save_qr_code(self, field_name, image, uid):
         if not isinstance(image, BytesIO):
             return
-        getattr(self, field_name).save(f'{str(uid)}.jpg',
+        getattr(self, field_name).save(f'{str(uid)}.WEBP',
                                        ContentFile(image.getvalue()),
                                        save=True)
 

@@ -157,7 +157,7 @@ def test():
 
 
 if __name__ == '__main__':
-    text = "أسرع وأجدد hello"
+    # text = "أسرع وأجدد hello"
     # latin_from_arabic(text)
     generate_qr_code()
     # test()

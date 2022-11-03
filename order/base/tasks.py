@@ -18,7 +18,7 @@ def start_generating_thumbnail(img_path, duplicate):
         resized_thumb = image_processor.image_resize(loaded_img)
     else:
         resized_thumb = image_processor.image_resize(loaded_img, width=300, height=300)
-    img_thumbnail = image_processor.from_img_to_io(resized_thumb, 'PNG')
+    img_thumbnail = image_processor.from_img_to_io(resized_thumb, 'WEBP')
     return img_thumbnail
 
 

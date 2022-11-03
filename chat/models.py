@@ -75,7 +75,7 @@ class MessageModel(Model):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.jpeg',
+        getattr(self, field_name).save(f'{str(uuid4())}.webp',
                                        ContentFile(image.getvalue()),
                                        save=True)
 
@@ -103,7 +103,7 @@ def create_thumbnail(sender, instance, created, raw, using, update_fields, **kwa
         image_processor = ImageProcessor()
         loaded_img = image_processor.load_image(instance.attachment.path)
         resized_thumb = image_processor.image_resize(loaded_img, width=300, height=300)
-        img_thumbnail = image_processor.from_img_to_io(resized_thumb, 'JPEG')
+        img_thumbnail = image_processor.from_img_to_io(resized_thumb, 'WEBP')
         instance.save_image('attachment_thumbnail', img_thumbnail)
 
 
