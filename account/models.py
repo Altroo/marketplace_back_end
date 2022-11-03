@@ -18,7 +18,7 @@ from django.dispatch import receiver
 
 def get_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('user_avatars/', str(uuid4()) + file_extension)
+    return path.join('media/user_avatars/', str(uuid4()) + file_extension)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -103,19 +103,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if not isinstance(image, BytesIO):
             return
 
-        getattr(self, field_name).save(f'{str(uuid4())}.jpg',
+        getattr(self, field_name).save(f'{str(uuid4())}.webp',
                                        ContentFile(image.getvalue()),
                                        save=True)
-
-
-@receiver(pre_save, sender=CustomUser)
-def my_handler_one(sender, instance, **kwargs):
-    print('pre Saved : ', instance.avatar)
-
-
-@receiver(post_save, sender=CustomUser)
-def my_handler_two(sender, instance, **kwargs):
-    print('post Saved : ', instance.avatar)
 
 
 class BlockedUsers(Model):
