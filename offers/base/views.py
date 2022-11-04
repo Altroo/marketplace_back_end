@@ -766,11 +766,6 @@ class ShopOfferViewV2(APIView):
                 delivery_city_1 = request.data.get('delivery_city_1')
                 delivery_cities_1_pk = []
                 delivery_cities_1 = []
-                print('all_cities_1 : ', all_cities_1)
-                print('delivery_city_1 : ', delivery_city_1)
-                print('delivery_price_1 : ', delivery_price_1)
-                print('delivery_days_1 : ', delivery_days_1)
-                print('delivery_days_1 : ', delivery_days_1)
                 if delivery_city_1 is not None and delivery_city_1 != 'null' and delivery_city_1 != '':
                     cities_str = str(delivery_city_1).split(',')
                     cities = []

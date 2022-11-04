@@ -190,10 +190,13 @@ class Offers(Model):
     @property
     def get_absolute_picture_1_img_base64(self):
         if self.picture_1:
-            _, file_extension = path.splitext(self.picture_1.path)
-            encoded_string = b64encode(self.picture_1.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_1.path)
+                encoded_string = b64encode(self.picture_1.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
         return None
 
     @property
@@ -205,10 +208,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_1_thumbnail_base64(self):
         if self.picture_1_thumbnail:
-            _, file_extension = path.splitext(self.picture_1_thumbnail.path)
-            encoded_string = b64encode(self.picture_1_thumbnail.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_1_thumbnail.path)
+                encoded_string = b64encode(self.picture_1_thumbnail.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_2_img(self):
@@ -219,10 +226,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_2_img_base64(self):
         if self.picture_2:
-            _, file_extension = path.splitext(self.picture_2.path)
-            encoded_string = b64encode(self.picture_2.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_2.path)
+                encoded_string = b64encode(self.picture_2.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_2_thumbnail(self):
@@ -233,10 +244,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_2_thumbnail_base64(self):
         if self.picture_2_thumbnail:
-            _, file_extension = path.splitext(self.picture_2_thumbnail.path)
-            encoded_string = b64encode(self.picture_2_thumbnail.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_2_thumbnail.path)
+                encoded_string = b64encode(self.picture_2_thumbnail.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_3_img(self):
@@ -247,10 +262,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_3_img_base64(self):
         if self.picture_3:
-            _, file_extension = path.splitext(self.picture_3.path)
-            encoded_string = b64encode(self.picture_3.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_3.path)
+                encoded_string = b64encode(self.picture_3.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_3_thumbnail(self):
@@ -261,10 +280,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_3_thumbnail_base64(self):
         if self.picture_3_thumbnail:
-            _, file_extension = path.splitext(self.picture_3_thumbnail.path)
-            encoded_string = b64encode(self.picture_3_thumbnail.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_3_thumbnail.path)
+                encoded_string = b64encode(self.picture_3_thumbnail.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_4_img(self):
@@ -275,10 +298,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_4_img_base64(self):
         if self.picture_4:
-            _, file_extension = path.splitext(self.picture_4.path)
-            encoded_string = b64encode(self.picture_4.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_4.path)
+                encoded_string = b64encode(self.picture_4.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_picture_4_thumbnail(self):
@@ -289,10 +316,14 @@ class Offers(Model):
     @property
     def get_absolute_picture_4_thumbnail_base64(self):
         if self.picture_4_thumbnail:
-            _, file_extension = path.splitext(self.picture_4_thumbnail.path)
-            encoded_string = b64encode(self.picture_4_thumbnail.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.picture_4_thumbnail.path)
+                encoded_string = b64encode(self.picture_4_thumbnail.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     def save_image(self, field_name, image):
         if not isinstance(image, BytesIO):

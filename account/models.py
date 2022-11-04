@@ -83,10 +83,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def get_absolute_avatar_img_base64(self):
         if self.avatar:
-            _, file_extension = path.splitext(self.avatar.path)
-            encoded_string = b64encode(self.avatar.file.read())
-            return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                    str(encoded_string).lstrip("b'").rstrip("'"))
+            try:
+                _, file_extension = path.splitext(self.avatar.path)
+                encoded_string = b64encode(self.avatar.file.read())
+                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+                                                        str(encoded_string).lstrip("b'").rstrip("'"))
+            except FileNotFoundError:
+                return None
+        return None
 
     @property
     def get_absolute_avatar_thumbnail(self):
