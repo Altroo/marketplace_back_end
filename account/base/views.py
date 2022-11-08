@@ -242,7 +242,7 @@ class VerifyAccountView(APIView):
                 if task_id_activation:
                     current_app.control.revoke(task_id_activation, terminate=True, signal='SIGKILL')
                     user.task_id_activation = None
-                    user.activation_code = ''
+                    user.activation_code = None
                     user.save()
                 user_email.verified = True
                 user_email.save()
@@ -1220,7 +1220,7 @@ class DashboardView(APIView):
         data = {
             "pk": user.pk,
             "email": user.email,  # for resend code card
-            "avatar": user.get_absolute_avatar_img,
+            "avatar": shop_avatar if shop_avatar else user.get_absolute_avatar_img,
             "first_name": user.first_name,
             "last_name": user.last_name,
             "is_verified": check_verified,  # for resend code card
