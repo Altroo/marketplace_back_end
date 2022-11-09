@@ -50261,3 +50261,17 @@ Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
 Not Found: /favicon.ico
+Not Found: /media/user_avatars/58c940a2-cd06-439e-bc94-46d83f5db808.webp
+[33mHTTP GET /media/user_avatars/58c940a2-cd06-439e-bc94-46d83f5db808.webp 404 [0.02, 127.0.0.1:50164][0m
+Not Found: /media/user_avatars/268ee480-8e07-4178-8ef3-ec96acfe006e.webp
+[33mHTTP GET /media/user_avatars/268ee480-8e07-4178-8ef3-ec96acfe006e.webp 404 [0.01, 127.0.0.1:50164][0m
+Bad Request: /api/1.0.0/offer/solder/57/
+[31;1mHTTP POST /api/1.0.0/offer/solder/57/ 400 [0.02, 127.0.0.1:50554][0m
+Bad Request: /api/1.0.0/offer/solder/57/
+[31;1mHTTP POST /api/1.0.0/offer/solder/57/ 400 [0.04, 127.0.0.1:50749][0m
+Bad Request: /api/1.0.0/offer/solder/57/
+[31;1mHTTP POST /api/1.0.0/offer/solder/57/ 400 [0.22, 127.0.0.1:50859][0m
+Not Found: /media/shop_offers/3c6ef387-ec1f-4bd2-a546-684154acff92.WEBP
+[33mHTTP GET /media/shop_offers/3c6ef387-ec1f-4bd2-a546-684154acff92.WEBP 404 [0.02, 127.0.0.1:52208][0m
+Not Found: /media/shop_offers/b88930fe-d3df-47ae-8ea7-14de44934953.png
+[33mHTTP GET /media/shop_offers/b88930fe-d3df-47ae-8ea7-14de44934953.png 404 [0.01, 127.0.0.1:52208][0m

@@ -24,6 +24,14 @@ def start_generating_thumbnail(img_path, duplicate):
     return img_thumbnail
 
 
+def resize_images(img_path):
+    image_processor = ImageProcessor()
+    loaded_img = image_processor.load_image(img_path)
+    resized_img = image_processor.image_resize(loaded_img)
+    img = image_processor.from_img_to_io(resized_img, 'WEBP')
+    return img
+
+
 @app.task(bind=True)
 def base_generate_offer_thumbnails(self, product_pk):
     offer = Offers.objects.get(pk=product_pk)
@@ -31,7 +39,9 @@ def base_generate_offer_thumbnails(self, product_pk):
     if offer_picture_1 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_1.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
+        img = resize_images(picture_path)
         offer.save_image('picture_1_thumbnail', img_thumbnail)
+        offer.save_image('picture_1', img)
         # Send offer images (generated offer image)
         event = {
             "type": "recieve_group_message",
@@ -48,19 +58,25 @@ def base_generate_offer_thumbnails(self, product_pk):
     if offer_picture_2 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_2.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
+        img = resize_images(picture_path)
         offer.save_image('picture_2_thumbnail', img_thumbnail)
+        offer.save_image('picture_2', img)
 
     offer_picture_3 = offer.picture_3.path if offer.picture_3 else None
     if offer_picture_3 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_3.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
+        img = resize_images(picture_path)
         offer.save_image('picture_3_thumbnail', img_thumbnail)
+        offer.save_image('picture_3', img)
 
     offer_picture_4 = offer.picture_4.path if offer.picture_4 else None
     if offer_picture_4 is not None:
         picture_path = parent_file_dir + '/media' + offer.picture_4.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
+        img = resize_images(picture_path)
         offer.save_image('picture_4_thumbnail', img_thumbnail)
+        offer.save_image('picture_4', img)
 
 
 @app.task(bind=True)
@@ -146,7 +162,9 @@ def base_generate_avatar_thumbnail(self, object_pk, which):
     if shop_avatar is not None:
         avatar_path = parent_file_dir + '/media' + object_.avatar.url
         avatar_thumbnail = start_generating_thumbnail(avatar_path, False)
+        avatar = resize_images(avatar_path)
         object_.save_image('avatar_thumbnail', avatar_thumbnail)
+        object_.save_image('avatar', avatar)
         if which == 'AuthShop':
             event = {
                 "type": "recieve_group_message",

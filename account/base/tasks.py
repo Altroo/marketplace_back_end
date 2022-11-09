@@ -26,7 +26,6 @@ def random_color_picker():
         "#F3D8E1",
         "#EBD2AD",
         "#E2E4E2",
-        "#FFFFFF",
         "#FFA826",
         "#FED301",
         "#07CBAD",
@@ -45,7 +44,7 @@ def get_text_fill_color(bg_color):
     # black 0, 0, 0
     match bg_color:
         case ("#F3DCDC" | "#FFD9A2" | "#F8F2DA" | "#DBF4EA" | "#DBE8F4" | "#D5CEEE" | "#F3D8E1" | "#EBD2AD"
-              | "#E2E4E2" | "#FFFFFF" | "#FFA826" | "#FED301" | "#07CBAD" | "#FF9DBF" | "#CEB186"):
+              | "#E2E4E2" | "#FFA826" | "#FED301" | "#07CBAD" | "#FF9DBF" | "#CEB186"):
             return 0, 0, 0
         case ("#FF5D6B" | "#0274D7" | "#8669FB" | "#878E88" | "#0D070B"):
             return 255, 255, 255
