@@ -133,6 +133,11 @@ class BaseShopBioPutSerializer(serializers.ModelSerializer):
 
 
 class BaseShopAvailabilityPutSerializer(serializers.ModelSerializer):
+    morning_hour_from = serializers.TimeField(format='%H:%M', required=False, allow_null=True, default=None)
+    morning_hour_to = serializers.TimeField(format='%H:%M', required=False, allow_null=True, default=None)
+    afternoon_hour_from = serializers.TimeField(format='%H:%M', required=False, allow_null=True, default=None)
+    afternoon_hour_to = serializers.TimeField(format='%H:%M', required=False, allow_null=True, default=None)
+
     class Meta:
         model = AuthShop
         fields = ['morning_hour_from', 'morning_hour_to',

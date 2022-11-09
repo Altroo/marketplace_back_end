@@ -50275,3 +50275,79 @@ Not Found: /media/shop_offers/3c6ef387-ec1f-4bd2-a546-684154acff92.WEBP
 [33mHTTP GET /media/shop_offers/3c6ef387-ec1f-4bd2-a546-684154acff92.WEBP 404 [0.02, 127.0.0.1:52208][0m
 Not Found: /media/shop_offers/b88930fe-d3df-47ae-8ea7-14de44934953.png
 [33mHTTP GET /media/shop_offers/b88930fe-d3df-47ae-8ea7-14de44934953.png 404 [0.01, 127.0.0.1:52208][0m
+Not Found: /favicon.ico
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.10, 127.0.0.1:53291][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.11, 127.0.0.1:53481][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.08, 127.0.0.1:53599][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.08, 127.0.0.1:53610][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.05, 127.0.0.1:53619][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.03, 127.0.0.1:53619][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:53619][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:53619][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:53633][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:53633][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.01, 127.0.0.1:53633][0m
+Internal Server Error: /api/1.0.0/shop/availability/
+Traceback (most recent call last):
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 472, in thread_handler
+    raise exc_info[1]
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 435, in __call__
+    ret = await asyncio.wait_for(future, timeout=None)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/tasks.py", line 442, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/asgiref/sync.py", line 476, in thread_handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/django/views/generic/base.py", line 103, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/shop/base/views.py", line 360, in patch
+    print(serializer.data)
+          ^^^^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/serializers.py", line 555, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "/Users/youness/Desktop/Qaryb_API/venv/lib/python3.11/site-packages/rest_framework/serializers.py", line 249, in data
+    raise AssertionError(msg)
+AssertionError: When a serializer is passed a `data` keyword argument you must call `.is_valid()` before attempting to access the serialized `.data` representation.
+You should either call `.is_valid()` first, or access `.initial_data` instead.
+[35;1mHTTP PATCH /api/1.0.0/shop/availability/ 500 [0.21, 127.0.0.1:53639][0m
+Bad Request: /api/1.0.0/shop/availability/
+[31;1mHTTP PATCH /api/1.0.0/shop/availability/ 400 [0.02, 127.0.0.1:53651][0m
