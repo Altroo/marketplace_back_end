@@ -6,27 +6,23 @@ from django.utils import timezone
 
 
 class BaseShopSerializer(serializers.ModelSerializer):
-    avatar = Base64ImageField(
-        max_length=None, use_url=True,
-    )
+    # avatar = Base64ImageField(
+    #     max_length=None, use_url=True,
+    # )
 
     class Meta:
         model = AuthShop
         fields = [
             'user',
             'shop_name',
-            'avatar', 'color_code', 'bg_color_code', 'border', 'icon_color',
+            'color_code', 'bg_color_code', 'border', 'icon_color',
             'font_name',
             'creator']
-        extra_kwargs = {
-            'avatar': {'required': True},
-        }
 
     def save(self):
         shop = AuthShop(
             user=self.validated_data['user'],
             shop_name=self.validated_data['shop_name'],
-            avatar=self.validated_data['avatar'],
             color_code=self.validated_data['color_code'],
             bg_color_code=self.validated_data['bg_color_code'],
             border=self.validated_data['border'],

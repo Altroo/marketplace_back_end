@@ -1,6 +1,9 @@
 from os import remove
+from asgiref.sync import async_to_sync
 from celery import current_app
+from channels.layers import get_channel_layer
 from django.core.exceptions import SuspiciousFileOperation
+from django.core.files.base import ContentFile
 from rest_framework.exceptions import ValidationError
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -8,7 +11,7 @@ from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from shop.base.utils import unique_slugify
-from shop.base.serializers import BaseShopSerializer, BaseShopAvatarPutSerializer, \
+from shop.base.serializers import BaseShopSerializer, \
     BaseShopNamePutSerializer, BaseShopBioPutSerializer, BaseShopAvailabilityPutSerializer, \
     BaseShopContactPutSerializer, BaseShopAddressPutSerializer, BaseShopColorPutSerializer, \
     BaseShopFontPutSerializer, BaseGETShopInfoSerializer, BaseShopPhoneContactPutSerializer, \
@@ -25,17 +28,32 @@ from shop.base.utils import ImageProcessor
 import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
-from shop.base.tasks import base_generate_avatar_thumbnail, base_delete_mode_vacance_obj
+from shop.base.tasks import base_delete_mode_vacance_obj
+from offers.base.tasks import generate_images_v2
 
 
 class ShopView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def post(request, *args, **kwargs):
+    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
+        object_ = AuthShop.objects.get(pk=object_pk)
+        if isinstance(avatar, BytesIO):
+            generate_images_v2(object_, avatar, 'avatar')
+            event = {
+                "type": "recieve_group_message",
+                "message": {
+                    "type": "SHOP_AVATAR",
+                    "pk": object_.user.pk,
+                    "avatar": object_.get_absolute_avatar_img,
+                }
+            }
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
+
+    def post(self, request, *args, **kwargs):
         user = request.user
         shop_name = request.data.get('shop_name')
-        avatar = request.data.get('avatar')
         color_code = request.data.get('color_code')
         bg_color_code = request.data.get('bg_color_code')
         border = request.data.get('border')
@@ -86,7 +104,6 @@ class ShopView(APIView):
         serializer = BaseShopSerializer(data={
             'user': user.pk,
             'shop_name': shop_name,
-            'avatar': avatar,
             'color_code': color_code,
             'bg_color_code': bg_color_code,
             'border': border,
@@ -99,6 +116,15 @@ class ShopView(APIView):
             qaryb_link = unique_slugify(instance=shop, value=shop.shop_name, slug_field_name='qaryb_link')
             shop.qaryb_link = qaryb_link
             shop.save()
+            # Generate new avatar thumbnail
+            avatar = request.data.get('avatar')
+            # Generate new avatar thumbnail
+            image_processor = ImageProcessor()
+            avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
+            self.base_generate_avatar_thumbnail(
+                shop.pk,
+                avatar_file.file if isinstance(avatar_file, ContentFile) else None
+            )
             data = {
                 'pk': shop.pk,
                 'shop_name': shop.shop_name,
@@ -111,8 +137,6 @@ class ShopView(APIView):
                 'creator': False,
                 'qaryb_link': qaryb_link
             }
-            # Generate thumbnail
-            base_generate_avatar_thumbnail.apply_async((shop.pk, 'AuthShop'), )
             return Response(data=data, status=status.HTTP_200_OK)
         raise ValidationError(serializer.errors)
 
@@ -157,7 +181,22 @@ class ShopAvatarPutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
-    def patch(request, *args, **kwargs):
+    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
+        object_ = AuthShop.objects.get(pk=object_pk)
+        if isinstance(avatar, BytesIO):
+            generate_images_v2(object_, avatar, 'avatar')
+            event = {
+                "type": "recieve_group_message",
+                "message": {
+                    "type": "SHOP_AVATAR",
+                    "pk": object_.user.pk,
+                    "avatar": object_.get_absolute_avatar_img,
+                }
+            }
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
+
+    def patch(self, request, *args, **kwargs):
         user = request.user
         # # Temp shop
         # if user.is_anonymous:
@@ -195,27 +234,37 @@ class ShopAvatarPutView(APIView):
         # else:
         try:
             shop = AuthShop.objects.get(user=user)
-            serializer = BaseShopAvatarPutSerializer(shop, data=request.data, partial=True)
-            if serializer.is_valid():
+            # serializer = BaseShopAvatarPutSerializer(shop, data=request.data, partial=True)
+            # if serializer.is_valid():
+            avatar = request.data.get('avatar')
+            image_processor = ImageProcessor()
+            avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
+            if isinstance(avatar_file, ContentFile):
                 if shop.avatar:
                     try:
                         remove(shop.avatar.path)
-                    except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                        shop.avatar = None
+                        shop.save(update_fields=['avatar'])
+                    except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                         pass
                 if shop.avatar_thumbnail:
                     try:
                         remove(shop.avatar_thumbnail.path)
+                        shop.avatar_thumbnail = None
+                        shop.save(update_fields=['avatar_thumbnail'])
                     except (ValueError, SuspiciousFileOperation, FileNotFoundError):
                         pass
                 # new_avatar = serializer.update(shop, serializer.validated_data)
-                new_avatar = serializer.save()
                 # Generate new avatar thumbnail
-                base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'AuthShop'), )
+                self.base_generate_avatar_thumbnail(shop.pk,
+                                                    avatar_file.file
+                                                    if isinstance(avatar_file, ContentFile) else None)
+
                 data = {
                     'avatar': shop.get_absolute_avatar_img,
                 }
                 return Response(data=data, status=status.HTTP_200_OK)
-            raise ValidationError(serializer.errors)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except AuthShop.DoesNotExist:
             errors = {"errors": ["Shop not found."]}
             raise ValidationError(errors)

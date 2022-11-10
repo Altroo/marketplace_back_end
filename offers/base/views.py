@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Union
 from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.db.models import Count, F, QuerySet
 from rest_framework.exceptions import ValidationError
@@ -22,12 +22,12 @@ from offers.base.serializers import BaseShopOfferSerializer, \
 from offers.base.filters import TagsFilterSet, BaseOffersListSortByPrice
 from os import path, remove
 from Qaryb_API.settings import API_URL
-from offers.base.tasks import base_generate_offer_thumbnails, base_duplicate_offer_images, \
-    base_duplicate_offervue_images
+from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images
 from offers.mixins import PaginationMixinBy5
 from places.models import City, Country
 from offers.base.pagination import GetMyVuesPagination
 from datetime import datetime
+from shop.base.utils import ImageProcessor
 
 
 class ShopOfferViewV2(APIView):
@@ -526,19 +526,22 @@ class ShopOfferViewV2(APIView):
             creator_label = request.data.get('creator_label', False)
         else:
             creator_label = False
-        picture_1 = request.data.get('picture_1')
-        picture_2 = request.data.get('picture_2')
-        picture_3 = request.data.get('picture_3')
-        picture_4 = request.data.get('picture_4')
+
+        image_processor = ImageProcessor()
+        picture_1_file: ContentFile | None = image_processor.data_url_to_uploaded_file(request.data.get('picture_1'))
+        picture_2_file: ContentFile | None = image_processor.data_url_to_uploaded_file(request.data.get('picture_2'))
+        picture_3_file: ContentFile | None = image_processor.data_url_to_uploaded_file(request.data.get('picture_3'))
+        picture_4_file: ContentFile | None = image_processor.data_url_to_uploaded_file(request.data.get('picture_4'))
+
         offer_serializer = BaseShopOfferSerializer(data={
             'auth_shop': auth_shop.pk,
             'offer_type': offer_type,
             # Categories
             'title': title,
-            'picture_1': picture_1 if picture_1 != 'null' else None,
-            'picture_2': picture_2 if picture_2 != 'null' else None,
-            'picture_3': picture_3 if picture_3 != 'null' else None,
-            'picture_4': picture_4 if picture_4 != 'null' else None,
+            'picture_1': None,
+            'picture_2': None,
+            'picture_3': None,
+            'picture_4': None,
             'description': description,
             'creator_label': creator_label,
             'made_in_label': made_in_label.pk if made_in_label else None,
@@ -552,7 +555,14 @@ class ShopOfferViewV2(APIView):
             offer = offer_serializer.save()
             offer_pk = offer.pk
             # Generate thumbnails
-            base_generate_offer_thumbnails.apply_async((offer_pk, ), )
+            # base_generate_offer_thumbnails.apply_async((offer_pk, ), )
+            base_resize_offer_images.apply_async((
+                offer_pk,
+                picture_1_file.file if isinstance(picture_1_file, ContentFile) else None,
+                picture_2_file.file if isinstance(picture_2_file, ContentFile) else None,
+                picture_3_file.file if isinstance(picture_3_file, ContentFile) else None,
+                picture_4_file.file if isinstance(picture_4_file, ContentFile) else None,
+            ), )
             data = {
                 'pk': offer_pk,
                 'offer_type': offer_type,
@@ -1409,12 +1419,18 @@ class ShopOfferViewV2(APIView):
         # # Real offers
         # else:
         try:
-            offer = Offers.objects.get(pk=offer_pk, auth_shop__user=user)
+            offer: Union[QuerySet, Offers] = Offers.objects.get(pk=offer_pk, auth_shop__user=user)
             offer_pk = offer.pk
             picture_1 = request.data.get('picture_1')
             picture_2 = request.data.get('picture_2')
             picture_3 = request.data.get('picture_3')
             picture_4 = request.data.get('picture_4')
+
+            image_processor = ImageProcessor()
+            picture_1_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_1)
+            picture_2_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_2)
+            picture_3_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_3)
+            picture_4_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_4)
 
             previous_images = list()
             previous_images.append(API_URL + '/media' + offer.picture_1.url
@@ -1426,18 +1442,24 @@ class ShopOfferViewV2(APIView):
             previous_images.append(API_URL + '/media' + offer.picture_4.url
                                    if offer.picture_4 else False)
 
-            if isinstance(picture_1, InMemoryUploadedFile):
+            # shop.avatar_thumbnail = None
+            # shop.save(update_fields=['avatar_thumbnail'])
+            if isinstance(picture_1_file, ContentFile):
                 try:
                     picture_1_path = self.parent_file_dir + offer.picture_1.url
-                    picture_1_thumb_path = self.parent_file_dir + offer.picture_1_thumbnail.url
                     remove(picture_1_path)
-                    remove(picture_1_thumb_path)
+                    offer.picture_1 = None
+                    offer.save(update_fields=['picture_1'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                offer.picture_1 = None
-                offer.save()
+                try:
+                    picture_1_thumb_path = self.parent_file_dir + offer.picture_1_thumbnail.url
+                    remove(picture_1_thumb_path)
+                    offer.picture_1_thumbnail = None
+                    offer.save(update_fields=['picture_1_thumbnail'])
+                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                    pass
             else:
-
                 if picture_1 in previous_images:
                     try:
                         img_1_index = previous_images.index(picture_1)
@@ -1453,16 +1475,21 @@ class ShopOfferViewV2(APIView):
                     except ValueError:
                         picture_1 = None
 
-            if isinstance(picture_2, InMemoryUploadedFile):
+            if isinstance(picture_2_file, ContentFile):
                 try:
                     picture_2_path = self.parent_file_dir + offer.picture_2.url
-                    picture_2_thumb_path = self.parent_file_dir + offer.picture_2_thumbnail.url
                     remove(picture_2_path)
-                    remove(picture_2_thumb_path)
+                    offer.picture_2 = None
+                    offer.save(update_fields=['picture_2'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                offer.picture_2 = None
-                offer.save()
+                try:
+                    picture_2_thumb_path = self.parent_file_dir + offer.picture_2_thumbnail.url
+                    remove(picture_2_thumb_path)
+                    offer.picture_2_thumbnail = None
+                    offer.save(update_fields=['picture_2_thumbnail'])
+                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                    pass
             else:
                 # src
                 if picture_2 in previous_images:
@@ -1480,16 +1507,21 @@ class ShopOfferViewV2(APIView):
                     except ValueError:
                         picture_2 = None
 
-            if isinstance(picture_3, InMemoryUploadedFile):
+            if isinstance(picture_3_file, ContentFile):
                 try:
                     picture_3_path = self.parent_file_dir + offer.picture_3.url
-                    picture_3_thumb_path = self.parent_file_dir + offer.picture_3_thumbnail.url
                     remove(picture_3_path)
-                    remove(picture_3_thumb_path)
+                    offer.picture_3 = None
+                    offer.save(update_fields=['picture_3'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                offer.picture_3 = None
-                offer.save()
+                try:
+                    picture_3_thumb_path = self.parent_file_dir + offer.picture_3_thumbnail.url
+                    remove(picture_3_thumb_path)
+                    offer.picture_3_thumbnail = None
+                    offer.save(update_fields=['picture_3_thumbnail'])
+                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                    pass
             else:
                 # src
                 if picture_3 in previous_images:
@@ -1506,16 +1538,21 @@ class ShopOfferViewV2(APIView):
                     # None wasn't sent
                     except ValueError:
                         picture_3 = None
-            if isinstance(picture_4, InMemoryUploadedFile):
+            if isinstance(picture_4_file, ContentFile):
                 try:
                     picture_4_path = self.parent_file_dir + offer.picture_4.url
-                    picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
                     remove(picture_4_path)
-                    remove(picture_4_thumb_path)
+                    offer.picture_4 = None
+                    offer.save(update_fields=['picture_4'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
-                offer.picture_4 = None
-                offer.save()
+                try:
+                    picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
+                    remove(picture_4_thumb_path)
+                    offer.picture_4_thumbnail = None
+                    offer.save(update_fields=['picture_4_thumbnail'])
+                except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
+                    pass
             else:
                 # src
                 if picture_4 in previous_images:
@@ -1557,7 +1594,7 @@ class ShopOfferViewV2(APIView):
                 'creator_label': creator_label,
                 'made_in_label': made_in_label.pk if made_in_label else None,
                 'price': price,
-            })
+            }, partial=True)
             if offer_serializer.is_valid():
                 offer_type = offer.offer_type
                 product_valid = False
@@ -1566,8 +1603,6 @@ class ShopOfferViewV2(APIView):
                 service_serializer_errors = None
                 product_serializer = None
                 service_serializer = None
-                # Generate thumbnails
-                base_generate_offer_thumbnails.apply_async((offer_pk, ), )
                 if offer.offer_type == 'V':
                     product_quantity = request.data.get('product_quantity', '')
                     product_price_by = request.data.get('product_price_by', '')
@@ -1621,6 +1656,14 @@ class ShopOfferViewV2(APIView):
                 if product_valid or service_valid:
                     # UPDATE OFFER TABLE
                     updated_offer = offer_serializer.update(offer, offer_serializer.validated_data)
+                    # Regenerate images
+                    base_resize_offer_images.apply_async((
+                        offer_pk,
+                        picture_1_file.file if isinstance(picture_1_file, ContentFile) else None,
+                        picture_2_file.file if isinstance(picture_2_file, ContentFile) else None,
+                        picture_3_file.file if isinstance(picture_3_file, ContentFile) else None,
+                        picture_4_file.file if isinstance(picture_4_file, ContentFile) else None,
+                    ), )
                     data = {
                         'pk': updated_offer.pk,
                         'offer_type': updated_offer.offer_type,
@@ -2746,7 +2789,7 @@ class ShopOfferDuplicateView(APIView):
                 # Duplicate offer
                 offer_serializer = offer_serializer.save()
                 # Duplicate pictures
-                base_duplicate_offer_images.apply_async((offer.pk, offer_serializer.pk, ), )
+                base_duplicate_offer_images.apply_async((offer.pk, offer_serializer.pk,), )
                 # Solder
                 try:
                     product_solder = offer.offer_solder

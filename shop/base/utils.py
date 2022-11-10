@@ -1,6 +1,7 @@
 from re import sub, escape
 from django.template.defaultfilters import slugify
-from cv2 import imread, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
+from cv2 import imread, imdecode, resize, INTER_AREA, cvtColor, COLOR_BGR2RGB
+from numpy import uint8, frombuffer
 from PIL import Image
 from io import BytesIO
 from rest_framework import serializers
@@ -65,9 +66,12 @@ def _slug_strip(value, separator='-'):
 class ImageProcessor:
 
     @staticmethod
-    def load_image(img_path):
-        loaded_img = cvtColor(imread(img_path), COLOR_BGR2RGB)
-        return loaded_img
+    def load_image(img_path: str):
+        return cvtColor(imread(img_path), COLOR_BGR2RGB)
+
+    @staticmethod
+    def load_image_from_io(bytes_: BytesIO):
+        return cvtColor(imdecode(frombuffer(bytes_.read(), uint8), 1), COLOR_BGR2RGB)
 
     @staticmethod
     def image_resize(image, width=None, height=None, inter=INTER_AREA):
@@ -94,6 +98,26 @@ class ImageProcessor:
         image.save(bytes_io, format=format_)
         bytes_io.seek(0)
         return bytes_io
+
+    @staticmethod
+    def data_url_to_uploaded_file(data):
+        if isinstance(data, string_types):
+            # Check if the base64 string is in the "data:" format
+            if 'data:' in data and ';base64,' in data:
+                # Break out the header from the base64 content
+                header, data = data.split(';base64,')
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = b64decode(data)
+                # Generate file name:
+                file_name = str(uuid4())
+                # Get the file name extension:
+                file_extension = Base64ImageField.get_file_extension(file_name, decoded_file)
+                complete_file_name = "%s.%s" % (file_name, file_extension,)
+                data = ContentFile(decoded_file, name=complete_file_name)
+                return data
+            except TypeError:
+                return None
 
 
 class Base64ImageField(serializers.ImageField):
@@ -127,7 +151,6 @@ class Base64ImageField(serializers.ImageField):
         extension = "jpg" if extension == "jpeg" else extension
 
         return extension
-
 
 # def api_exception_handler_v2(exc: Exception, context: dict[str, list | Any]) -> Response:
 #     """Custom API exception handler."""

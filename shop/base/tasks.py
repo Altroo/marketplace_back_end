@@ -1,53 +1,11 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
-from shop.models import AuthShop, ModeVacance
-from offers.base.tasks import start_generating_thumbnail
+from shop.models import ModeVacance
 from os import path
-from account.models import CustomUser
 
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
-
-
-@app.task(bind=True)
-def base_generate_avatar_thumbnail(self, object_pk, which):
-    if which == 'AuthShop':
-        object_ = AuthShop.objects.get(pk=object_pk)
-    else:
-        object_ = CustomUser.objects.get(pk=object_pk)
-    shop_avatar = object_.avatar.url if object_.avatar else None
-    if shop_avatar is not None:
-        avatar_path = parent_file_dir + '/media' + object_.avatar.url
-        avatar_thumbnail = start_generating_thumbnail(avatar_path, False)
-        object_.save_image('avatar_thumbnail', avatar_thumbnail)
-        if which == 'AuthShop':
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "SHOP_AVATAR",
-                    "pk": object_.user.pk,
-                    "avatar": object_.get_absolute_avatar_img,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
-        elif which == 'CustomUser':
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "USER_AVATAR",
-                    "pk": object_.pk,
-                    "avatar": object_.get_absolute_avatar_img,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
-        else:
-            # No event for TempShop user is not known yet.
-            pass
 
 
 @app.task(bind=True)

@@ -84,7 +84,7 @@ class BaseShopOfferDuplicateSerializer(serializers.ModelSerializer):
 # Global Offer serializer
 class BaseShopOfferSerializer(serializers.ModelSerializer):
     picture_1 = Base64ImageField(
-        max_length=None, use_url=True, required=True,
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     picture_2 = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
@@ -106,6 +106,13 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
                   'picture_1', 'picture_2', 'picture_3', 'picture_4',
                   'description', 'for_whom', 'creator_label', 'made_in_label',
                   'price']
+
+    extra_kwargs = {
+        'picture_1': {'required': False},
+        'picture_2': {'required': False},
+        'picture_3': {'required': False},
+        'picture_4': {'required': False},
+    }
 
 
 # Global Product serializer
@@ -430,19 +437,6 @@ class BaseOfferPutSerializer(serializers.ModelSerializer):
             'picture_3': {'required': False},
             'picture_4': {'required': False},
         }
-
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.picture_1 = validated_data.get('picture_1', instance.picture_1)
-        instance.picture_2 = validated_data.get('picture_2', instance.picture_2)
-        instance.picture_3 = validated_data.get('picture_3', instance.picture_3)
-        instance.picture_4 = validated_data.get('picture_4', instance.picture_4)
-        instance.description = validated_data.get('description', instance.description)
-        instance.creator_label = validated_data.get('creator_label', instance.creator_label)
-        instance.made_in_label = validated_data.get('made_in_label', instance.made_in_label)
-        instance.price = validated_data.get('price', instance.price)
-        instance.save()
-        return instance
 
 
 class BaseProductPutSerializer(serializers.ModelSerializer):

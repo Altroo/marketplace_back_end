@@ -1,3 +1,4 @@
+from io import BytesIO
 from random import choice
 from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -9,7 +10,7 @@ from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
-from django.core.mail import EmailMessage
+from django.core.files.base import ContentFile
 from django.db.models import Count
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
@@ -30,14 +31,13 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseRegistrationEmailAddressSerializer, BaseDeletedAccountsSerializer, \
     BaseProfileGETProfilByUserIDSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read, \
-    base_delete_user_media_files, base_send_email
+    base_delete_user_media_files, base_send_email, base_start_deleting_expired_codes
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
 from offers.base.serializers import BaseOffersMiniProfilListSerializer
-from shop.models import AuthShop
-from shop.base.tasks import base_generate_avatar_thumbnail
-from account.base.tasks import base_start_deleting_expired_codes
 from offers.models import Offers, OffersTotalVues
+from offers.base.tasks import generate_images_v2
+from shop.models import AuthShop
 from places.models import City, Country
 from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.views import LoginView as Dj_rest_login
@@ -46,6 +46,7 @@ from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
 from decouple import config
 from subscription.models import SubscribedUsers, IndexedArticles
+from shop.base.utils import ImageProcessor
 
 
 class FacebookLoginView(SocialLoginView):
@@ -475,7 +476,7 @@ class LogoutView(Dj_rest_logout):
 
 
 class GetProfileView(APIView):
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
     @staticmethod
     def get(request, *args, **kwargs):
@@ -540,8 +541,23 @@ class ProfileView(APIView):
             raise ValidationError(errors)
 
     @staticmethod
-    def patch(request, *args, **kwargs):
-        user = CustomUser.objects.get(pk=request.user.pk)
+    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
+        object_ = CustomUser.objects.get(pk=object_pk)
+        if isinstance(avatar, BytesIO):
+            generate_images_v2(object_, avatar, 'avatar')
+            event = {
+                "type": "recieve_group_message",
+                "message": {
+                    "type": "USER_AVATAR",
+                    "pk": object_.pk,
+                    "avatar": object_.get_absolute_avatar_img,
+                }
+            }
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
+
+    def patch(self, request, *args, **kwargs):
+        user = request.user
         # city_pk = request.data.get('city_pk')
         country_name = request.data.get('country')
         country = None
@@ -555,9 +571,27 @@ class ProfileView(APIView):
                 # errors = {"error": ["City or Country is invalid."]}
                 # errors = {"error": ["Country is invalid."]}
                 # raise ValidationError(errors)
+        avatar = request.data.get('avatar')
+        image_processor = ImageProcessor()
+        avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
+
+        if isinstance(avatar_file, ContentFile):
+            if user.avatar:
+                try:
+                    remove(user.avatar.path)
+                    user.avatar = None
+                    user.save(update_fields=['avatar'])
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
+            if user.avatar_thumbnail:
+                try:
+                    remove(user.avatar_thumbnail.path)
+                    user.avatar_thumbnail = None
+                    user.save(update_fields=['avatar_thumbnail'])
+                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
+                    pass
 
         data = {
-            'avatar': request.data.get('avatar'),
             'first_name': request.data.get('first_name'),
             'last_name': request.data.get('last_name'),
             'gender': request.data.get('gender', ''),
@@ -565,34 +599,22 @@ class ProfileView(APIView):
             'city': request.data.get('city'),
             'country': country.pk if country is not None else None,
         }
-        serializer = BaseProfilePutSerializer(user, data=data, partial=True)
+        serializer = BaseProfilePutSerializer(data=data, partial=True)
         if serializer.is_valid():
-            if user.avatar:
-                try:
-                    remove(user.avatar.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            if user.avatar_thumbnail:
-                try:
-                    remove(user.avatar_thumbnail.path)
-                except (ValueError, SuspiciousFileOperation, FileNotFoundError):
-                    pass
-            # new_avatar = serializer.update(user, serializer.validated_data)
-            new_avatar = serializer.save()
+            updated_account = serializer.update(user, serializer.validated_data)
             # Generate new avatar thumbnail
-            base_generate_avatar_thumbnail.apply_async((new_avatar.pk, 'CustomUser'), )
-            data['pk'] = user.pk
-            data['avatar'] = user.get_absolute_avatar_img
-            # data['avatar_thumbnail'] = user.get_absolute_avatar_thumbnail
-            # data['city'] = {
-            #     'pk': city.pk,
-            #     'name': city.name_fr,
-            # }
-            data['city'] = user.city
+            user_pk = updated_account.pk
+            # Generate new avatar thumbnail
+            self.base_generate_avatar_thumbnail(user_pk,
+                                                avatar_file.file if isinstance(avatar_file, ContentFile)
+                                                else None)
+            data['pk'] = user_pk
+            data['avatar'] = updated_account.get_absolute_avatar_img
+            data['city'] = updated_account.city
             data['country'] = {
-                'pk': country.pk,
-                'name': country.name_fr,
-            } if country is not None else None,
+                                  'pk': country.pk,
+                                  'name': country.name_fr,
+                              } if country is not None else None,
             data['date_joined'] = user.date_joined
             return Response(data, status=status.HTTP_200_OK)
         raise ValidationError(serializer.errors)

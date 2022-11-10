@@ -5,7 +5,6 @@ from allauth.account.models import EmailAddress
 from offers.base.serializers import BaseShopCitySerializer
 from places.base.serializers import BaseCountriesSerializer
 from places.models import Country
-from shop.base.utils import Base64ImageField
 
 
 class BaseSocialAccountSerializer(serializers.Serializer):
@@ -100,9 +99,6 @@ class BaseUserEmailSerializer(serializers.ModelSerializer):
 
 
 class BaseProfilePutSerializer(serializers.ModelSerializer):
-    avatar = Base64ImageField(
-        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
-    )
     country = serializers.PrimaryKeyRelatedField(
         allow_null=True,
         required=False,
@@ -111,7 +107,7 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['avatar', 'first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
+        fields = ['first_name', 'last_name', 'gender', 'birth_date', 'city', 'country']
 
 
 class BaseProfileGETSerializer(serializers.ModelSerializer):

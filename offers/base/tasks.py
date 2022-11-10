@@ -1,4 +1,6 @@
+from io import BytesIO
 from os import path, remove
+from typing import Tuple
 from django.core.exceptions import SuspiciousFileOperation
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -117,7 +119,81 @@ def base_duplicate_offer_images(self, offer_pk, new_offer_pk):
         new_offer.save_image('picture_4_thumbnail', picture_4_thumbnail)
 
 
+def resize_images_v2(bytes_) -> Tuple[BytesIO, BytesIO]:
+    image_processor = ImageProcessor()
+    loaded_img = image_processor.load_image_from_io(bytes_)
+    resized_img = image_processor.image_resize(loaded_img)
+    resized_thumb = image_processor.image_resize(loaded_img, width=300, height=300)
+    img = image_processor.from_img_to_io(resized_img, 'WEBP')
+    thumb = image_processor.from_img_to_io(resized_thumb, 'WEBP')
+    return img, thumb
+
+
+def send_ws_image(user_pk: int, offer_pk: int, url: str):
+    event = {
+        "type": "recieve_group_message",
+        "message": {
+            "type": "OFFER_THUMBNAIL",
+            "pk": offer_pk,
+            "offer_thumbnail": url,
+        }
+    }
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("%s" % user_pk, event)
+
+
+def generate_images_v2(query_, picture: BytesIO, picture_name: str):
+    img, thumb = resize_images_v2(picture)
+    query_.save_image(picture_name, img)
+    # match picture_name:
+    #     case 'picture_1':
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_1_img)
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_1_thumbnail)
+    #     case 'picture_2':
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_2_img)
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_2_thumbnail)
+    #     case 'picture_3':
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_3_img)
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_3_thumbnail)
+    #     case 'picture_4':
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_4_img)
+    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_4_thumbnail)
+    query_.save_image('{}_thumbnail'.format(picture_name), thumb)
+
+
+# @app.task(bind=True)
+# def base_resize_offer_images(self, offer_pk: int,
+#                              picture_1: str | None,
+#                              picture_2: str | None,
+#                              picture_3: str | None,
+#                              picture_4: str | None):
+#     offer = Offers.objects.get(pk=offer_pk)
+#     if isinstance(picture_1, str):
+#         generate_images_v2(offer, BytesIO(bytes(picture_1)), 'picture_1')
+#     if isinstance(picture_2, str):
+#         generate_images_v2(offer, BytesIO(bytes(picture_2)), 'picture_2')
+#     if isinstance(picture_3, str):
+#         generate_images_v2(offer, BytesIO(bytes(picture_3)), 'picture_3')
+#     if isinstance(picture_4, str):
+#         generate_images_v2(offer, BytesIO(bytes(picture_4)), 'picture_4')
 @app.task(bind=True)
+def base_resize_offer_images(self, offer_pk: int,
+                             picture_1: BytesIO | None,
+                             picture_2: BytesIO | None,
+                             picture_3: BytesIO | None,
+                             picture_4: BytesIO | None):
+    offer = Offers.objects.get(pk=offer_pk)
+    if isinstance(picture_1, BytesIO):
+        generate_images_v2(offer, picture_1, 'picture_1')
+    if isinstance(picture_2, BytesIO):
+        generate_images_v2(offer, picture_2, 'picture_2')
+    if isinstance(picture_3, BytesIO):
+        generate_images_v2(offer, picture_3, 'picture_3')
+    if isinstance(picture_4, BytesIO):
+        generate_images_v2(offer, picture_4, 'picture_4')
+
+
+@app.task(bind=True, serializer='pickle')
 def base_duplicate_offervue_images(self, offer_pk):
     offer = Offers.objects.get(pk=offer_pk)
     offer_vue = OfferVue.objects.get(offer=offer_pk)
@@ -207,7 +283,6 @@ def base_delete_shop_media_files(self, media_paths_list):
             remove(media_path)
         except (ValueError, SuspiciousFileOperation, FileNotFoundError):
             pass
-
 
 # @app.task(bind=True)
 # def base_start_deleting_expired_shops(self, shop_pk):
