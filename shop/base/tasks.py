@@ -1,14 +1,54 @@
+from io import BytesIO
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
-from shop.models import ModeVacance
+from shop.models import AuthShop, ModeVacance
+from offers.base.tasks import generate_images_v2
 from os import path
+from account.models import CustomUser
 
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='pickle')
+def base_resize_avatar_thumbnail(self, object_pk: int, which: str, avatar: BytesIO | None):
+    if which == 'AuthShop':
+        object_ = AuthShop.objects.get(pk=object_pk)
+    else:
+        object_ = CustomUser.objects.get(pk=object_pk)
+    if isinstance(avatar, BytesIO):
+        generate_images_v2(object_, avatar, 'avatar')
+        if which == 'AuthShop':
+            event = {
+                "type": "recieve_group_message",
+                "message": {
+                    "type": "SHOP_AVATAR",
+                    "pk": object_.user.pk,
+                    "avatar": object_.get_absolute_avatar_img,
+                }
+            }
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
+        elif which == 'CustomUser':
+            event = {
+                "type": "recieve_group_message",
+                "message": {
+                    "type": "USER_AVATAR",
+                    "pk": object_.pk,
+                    "avatar": object_.get_absolute_avatar_img,
+                }
+            }
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
+        else:
+            # No event for TempShop user is not known yet.
+            pass
+
+
+@app.task(bind=True, serializer='json')
 def base_delete_mode_vacance_obj(self, auth_shop_pk):
     try:
         ModeVacance.objects.get(auth_shop=auth_shop_pk).delete()

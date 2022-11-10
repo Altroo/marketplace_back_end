@@ -111,7 +111,7 @@ class BaseProfilePutSerializer(serializers.ModelSerializer):
 
 
 class BaseProfileGETSerializer(serializers.ModelSerializer):
-    avatar = serializers.CharField(source='get_absolute_avatar_img_base64')
+    avatar = serializers.CharField(source='get_absolute_avatar_img')
     # city = BaseShopCitySerializer(read_only=True)
     # city = serializers.CharField()
     country = BaseCountriesSerializer(read_only=True)

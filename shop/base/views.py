@@ -1,7 +1,5 @@
 from os import remove
-from asgiref.sync import async_to_sync
 from celery import current_app
-from channels.layers import get_channel_layer
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.base import ContentFile
 from rest_framework.exceptions import ValidationError
@@ -28,30 +26,14 @@ from shop.base.utils import ImageProcessor
 import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
-from shop.base.tasks import base_delete_mode_vacance_obj
-from offers.base.tasks import generate_images_v2
+from shop.base.tasks import base_delete_mode_vacance_obj, base_resize_avatar_thumbnail
 
 
 class ShopView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     @staticmethod
-    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
-        object_ = AuthShop.objects.get(pk=object_pk)
-        if isinstance(avatar, BytesIO):
-            generate_images_v2(object_, avatar, 'avatar')
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "SHOP_AVATAR",
-                    "pk": object_.user.pk,
-                    "avatar": object_.get_absolute_avatar_img,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
-
-    def post(self, request, *args, **kwargs):
+    def post(request, *args, **kwargs):
         user = request.user
         shop_name = request.data.get('shop_name')
         color_code = request.data.get('color_code')
@@ -121,10 +103,12 @@ class ShopView(APIView):
             # Generate new avatar thumbnail
             image_processor = ImageProcessor()
             avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
-            self.base_generate_avatar_thumbnail(
+            base_resize_avatar_thumbnail((
                 shop.pk,
+                'AuthShop',
                 avatar_file.file if isinstance(avatar_file, ContentFile) else None
-            )
+            ),)
+
             data = {
                 'pk': shop.pk,
                 'shop_name': shop.shop_name,
@@ -181,22 +165,7 @@ class ShopAvatarPutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
-    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
-        object_ = AuthShop.objects.get(pk=object_pk)
-        if isinstance(avatar, BytesIO):
-            generate_images_v2(object_, avatar, 'avatar')
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "SHOP_AVATAR",
-                    "pk": object_.user.pk,
-                    "avatar": object_.get_absolute_avatar_img,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
-
-    def patch(self, request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # # Temp shop
         # if user.is_anonymous:
@@ -256,9 +225,11 @@ class ShopAvatarPutView(APIView):
                         pass
                 # new_avatar = serializer.update(shop, serializer.validated_data)
                 # Generate new avatar thumbnail
-                self.base_generate_avatar_thumbnail(shop.pk,
-                                                    avatar_file.file
-                                                    if isinstance(avatar_file, ContentFile) else None)
+                base_resize_avatar_thumbnail.apply_async((
+                    shop.pk,
+                    'AuthShop',
+                    avatar_file.file if isinstance(avatar_file, ContentFile) else None
+                ),)
 
                 data = {
                     'avatar': shop.get_absolute_avatar_img,

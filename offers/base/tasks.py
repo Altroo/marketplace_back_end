@@ -34,7 +34,7 @@ def resize_images(img_path):
     return img
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_generate_offer_thumbnails(self, product_pk):
     offer = Offers.objects.get(pk=product_pk)
     offer_picture_1 = offer.picture_1.url if offer.picture_1 else None
@@ -81,7 +81,7 @@ def base_generate_offer_thumbnails(self, product_pk):
         offer.save_image('picture_4', img)
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_duplicate_offer_images(self, offer_pk, new_offer_pk):
     offer = Offers.objects.get(pk=offer_pk)
     new_offer = Offers.objects.get(pk=new_offer_pk)
@@ -176,7 +176,7 @@ def generate_images_v2(query_, picture: BytesIO, picture_name: str):
 #         generate_images_v2(offer, BytesIO(bytes(picture_3)), 'picture_3')
 #     if isinstance(picture_4, str):
 #         generate_images_v2(offer, BytesIO(bytes(picture_4)), 'picture_4')
-@app.task(bind=True)
+@app.task(bind=True, serializer='pickle')
 def base_resize_offer_images(self, offer_pk: int,
                              picture_1: BytesIO | None,
                              picture_2: BytesIO | None,
@@ -193,7 +193,7 @@ def base_resize_offer_images(self, offer_pk: int,
         generate_images_v2(offer, picture_4, 'picture_4')
 
 
-@app.task(bind=True, serializer='pickle')
+@app.task(bind=True, serializer='json')
 def base_duplicate_offervue_images(self, offer_pk):
     offer = Offers.objects.get(pk=offer_pk)
     offer_vue = OfferVue.objects.get(offer=offer_pk)
@@ -228,47 +228,47 @@ def base_duplicate_offervue_images(self, offer_pk):
             break
 
 
-@app.task(bind=True)
-def base_generate_avatar_thumbnail(self, object_pk, which):
-    if which == 'AuthShop':
-        object_ = AuthShop.objects.get(pk=object_pk)
-    else:
-        object_ = CustomUser.objects.get(pk=object_pk)
-    shop_avatar = object_.avatar.url if object_.avatar else None
-    if shop_avatar is not None:
-        avatar_path = parent_file_dir + '/media' + object_.avatar.url
-        avatar_thumbnail = start_generating_thumbnail(avatar_path, False)
-        avatar = resize_images(avatar_path)
-        object_.save_image('avatar_thumbnail', avatar_thumbnail)
-        object_.save_image('avatar', avatar)
-        if which == 'AuthShop':
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "SHOP_AVATAR",
-                    "pk": object_.user.pk,
-                    "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
-        elif which == 'CustomUser':
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "USER_AVATAR",
-                    "pk": object_.pk,
-                    "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
-        else:
-            # No event for TempShop user is not known yet.
-            pass
+# @app.task(bind=True, serializer='json')
+# def base_generate_avatar_thumbnail(self, object_pk, which):
+#     if which == 'AuthShop':
+#         object_ = AuthShop.objects.get(pk=object_pk)
+#     else:
+#         object_ = CustomUser.objects.get(pk=object_pk)
+#     shop_avatar = object_.avatar.url if object_.avatar else None
+#     if shop_avatar is not None:
+#         avatar_path = parent_file_dir + '/media' + object_.avatar.url
+#         avatar_thumbnail = start_generating_thumbnail(avatar_path, False)
+#         avatar = resize_images(avatar_path)
+#         object_.save_image('avatar_thumbnail', avatar_thumbnail)
+#         object_.save_image('avatar', avatar)
+#         if which == 'AuthShop':
+#             event = {
+#                 "type": "recieve_group_message",
+#                 "message": {
+#                     "type": "SHOP_AVATAR",
+#                     "pk": object_.user.pk,
+#                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
+#                 }
+#             }
+#             channel_layer = get_channel_layer()
+#             async_to_sync(channel_layer.group_send)("%s" % object_.user.pk, event)
+#         elif which == 'CustomUser':
+#             event = {
+#                 "type": "recieve_group_message",
+#                 "message": {
+#                     "type": "USER_AVATAR",
+#                     "pk": object_.pk,
+#                     "avatar_thumbnail": object_.get_absolute_avatar_thumbnail,
+#                 }
+#             }
+#             channel_layer = get_channel_layer()
+#             async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
+#         else:
+#             # No event for TempShop user is not known yet.
+#             pass
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_delete_mode_vacance_obj(self, auth_shop_pk):
     try:
         ModeVacance.objects.get(auth_shop=auth_shop_pk).delete()
@@ -276,7 +276,7 @@ def base_delete_mode_vacance_obj(self, auth_shop_pk):
         pass
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_delete_shop_media_files(self, media_paths_list):
     for media_path in media_paths_list:
         try:

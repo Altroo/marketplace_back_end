@@ -22,7 +22,7 @@ def start_generating_thumbnail(img_path, duplicate):
     return img_thumbnail
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_duplicate_order_images(self, buyer_pk, seller_pk, offer_pk, which):
     if which == 'buyer_avatar_thumbnail':
         buyer = CustomUser.objects.get(pk=buyer_pk)

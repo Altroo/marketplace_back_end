@@ -1,4 +1,3 @@
-from io import BytesIO
 from random import choice
 from string import digits
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -36,8 +35,9 @@ from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
 from offers.base.serializers import BaseOffersMiniProfilListSerializer
 from offers.models import Offers, OffersTotalVues
-from offers.base.tasks import generate_images_v2
 from shop.models import AuthShop
+from shop.base.utils import ImageProcessor
+from shop.base.tasks import base_resize_avatar_thumbnail
 from places.models import City, Country
 from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.views import LoginView as Dj_rest_login
@@ -46,7 +46,6 @@ from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
 from decouple import config
 from subscription.models import SubscribedUsers, IndexedArticles
-from shop.base.utils import ImageProcessor
 
 
 class FacebookLoginView(SocialLoginView):
@@ -480,7 +479,6 @@ class GetProfileView(APIView):
 
     @staticmethod
     def get(request, *args, **kwargs):
-        print(request.META.get('HTTP_AUTHORIZATION', None))
         user_pk = kwargs.get('user_pk')
         # TODO missing ratings (buys, sells)
         shop_data = {
@@ -541,22 +539,7 @@ class ProfileView(APIView):
             raise ValidationError(errors)
 
     @staticmethod
-    def base_generate_avatar_thumbnail(object_pk: int, avatar: BytesIO | None):
-        object_ = CustomUser.objects.get(pk=object_pk)
-        if isinstance(avatar, BytesIO):
-            generate_images_v2(object_, avatar, 'avatar')
-            event = {
-                "type": "recieve_group_message",
-                "message": {
-                    "type": "USER_AVATAR",
-                    "pk": object_.pk,
-                    "avatar": object_.get_absolute_avatar_img,
-                }
-            }
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)("%s" % object_.pk, event)
-
-    def patch(self, request, *args, **kwargs):
+    def patch(request, *args, **kwargs):
         user = request.user
         # city_pk = request.data.get('city_pk')
         country_name = request.data.get('country')
@@ -604,10 +587,12 @@ class ProfileView(APIView):
             updated_account = serializer.update(user, serializer.validated_data)
             # Generate new avatar thumbnail
             user_pk = updated_account.pk
-            # Generate new avatar thumbnail
-            self.base_generate_avatar_thumbnail(user_pk,
-                                                avatar_file.file if isinstance(avatar_file, ContentFile)
-                                                else None)
+            base_resize_avatar_thumbnail.apply_async((
+                user_pk,
+                'CustomUser',
+                avatar_file.file if isinstance(avatar_file, ContentFile)
+                else None
+            ),)
             data['pk'] = user_pk
             data['avatar'] = updated_account.get_absolute_avatar_img
             data['city'] = updated_account.city

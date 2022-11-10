@@ -1446,15 +1446,13 @@ class ShopOfferViewV2(APIView):
             # shop.save(update_fields=['avatar_thumbnail'])
             if isinstance(picture_1_file, ContentFile):
                 try:
-                    picture_1_path = self.parent_file_dir + offer.picture_1.url
-                    remove(picture_1_path)
+                    remove(offer.picture_1.path)
                     offer.picture_1 = None
                     offer.save(update_fields=['picture_1'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
                 try:
-                    picture_1_thumb_path = self.parent_file_dir + offer.picture_1_thumbnail.url
-                    remove(picture_1_thumb_path)
+                    remove(offer.picture_1_thumbnail.path)
                     offer.picture_1_thumbnail = None
                     offer.save(update_fields=['picture_1_thumbnail'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
@@ -1477,15 +1475,13 @@ class ShopOfferViewV2(APIView):
 
             if isinstance(picture_2_file, ContentFile):
                 try:
-                    picture_2_path = self.parent_file_dir + offer.picture_2.url
-                    remove(picture_2_path)
+                    remove(offer.picture_2.path)
                     offer.picture_2 = None
                     offer.save(update_fields=['picture_2'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
                 try:
-                    picture_2_thumb_path = self.parent_file_dir + offer.picture_2_thumbnail.url
-                    remove(picture_2_thumb_path)
+                    remove(offer.picture_2_thumbnail.path)
                     offer.picture_2_thumbnail = None
                     offer.save(update_fields=['picture_2_thumbnail'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
@@ -1509,15 +1505,13 @@ class ShopOfferViewV2(APIView):
 
             if isinstance(picture_3_file, ContentFile):
                 try:
-                    picture_3_path = self.parent_file_dir + offer.picture_3.url
-                    remove(picture_3_path)
+                    remove(offer.picture_3.path)
                     offer.picture_3 = None
                     offer.save(update_fields=['picture_3'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
                 try:
-                    picture_3_thumb_path = self.parent_file_dir + offer.picture_3_thumbnail.url
-                    remove(picture_3_thumb_path)
+                    remove(offer.picture_3_thumbnail.path)
                     offer.picture_3_thumbnail = None
                     offer.save(update_fields=['picture_3_thumbnail'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
@@ -1540,15 +1534,13 @@ class ShopOfferViewV2(APIView):
                         picture_3 = None
             if isinstance(picture_4_file, ContentFile):
                 try:
-                    picture_4_path = self.parent_file_dir + offer.picture_4.url
-                    remove(picture_4_path)
+                    remove(offer.picture_4.path)
                     offer.picture_4 = None
                     offer.save(update_fields=['picture_4'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):
                     pass
                 try:
-                    picture_4_thumb_path = self.parent_file_dir + offer.picture_4_thumbnail.url
-                    remove(picture_4_thumb_path)
+                    remove(offer.picture_4_thumbnail.path)
                     offer.picture_4_thumbnail = None
                     offer.save(update_fields=['picture_4_thumbnail'])
                 except (FileNotFoundError, SuspiciousFileOperation, ValueError, AttributeError):

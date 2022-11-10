@@ -23,6 +23,6 @@ app.autodiscover_tasks(
 )
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def debug_task(self):
     print(f'Request: {self.request!r}')

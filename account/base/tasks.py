@@ -76,7 +76,7 @@ def start_generating_avatar_and_thumbnail(last_name, first_name):
     return avatar, thumbnail
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_send_email(self, user_pk, email_, mail_subject, message, code, type_):
     user = CustomUser.objects.get(pk=user_pk)
     email = EmailMessage(
@@ -92,7 +92,7 @@ def base_send_email(self, user_pk, email_, mail_subject, message, code, type_):
         user.save(update_fields=['password_reset_code'])
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_generate_user_thumbnail(self, user_pk):
     user = CustomUser.objects.get(pk=user_pk)
     last_name = str(user.last_name[0]).upper()
@@ -104,7 +104,7 @@ def base_generate_user_thumbnail(self, user_pk):
     user.save_image('avatar_thumbnail', thumbnail_)
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_mark_every_messages_as_read(self, user_blocked_pk, user_pk):
     msgs_sent = MessageModel.objects.filter(user=user_pk, recipient=user_blocked_pk)
     msgs_received = MessageModel.objects.filter(user=user_blocked_pk, recipient=user_pk)
@@ -126,7 +126,7 @@ def base_mark_every_messages_as_read(self, user_blocked_pk, user_pk):
 #     user.save()
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_delete_user_media_files(self, media_paths_list):
     for media_path in media_paths_list:
         try:
@@ -135,7 +135,7 @@ def base_delete_user_media_files(self, media_paths_list):
             pass
 
 
-@app.task(bind=True)
+@app.task(bind=True, serializer='json')
 def base_start_deleting_expired_codes(self, user_pk, type_):
     user = CustomUser.objects.get(pk=user_pk)
     if type_ == 'activation':
