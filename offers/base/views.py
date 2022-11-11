@@ -3080,104 +3080,7 @@ class ShopOfferDuplicateView(APIView):
             raise ValidationError(errors)
 
 
-class GetLastThreeDeliveriesView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def get(request, *args, **kwargs):
-        user = request.user
-        # # Temp offers
-        # if user.is_anonymous:
-        #     unique_id = kwargs.get('unique_id')
-        #     try:
-        #         auth_shop = TempShop.objects.get(unique_id=unique_id)
-        #         offers = TempOffers.objects \
-        #             .select_related('temp_offer_products') \
-        #             .prefetch_related('temp_offer_delivery') \
-        #             .filter(auth_shop=auth_shop).order_by('-created_date')
-        #         data = defaultdict(list)
-        #         for offer in offers:
-        #             deliveries = offer.temp_offer_delivery.all().order_by('-pk')
-        #             for delivery in deliveries:
-        #                 delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
-        #                 delivery_city = []
-        #                 for i in delivery_cities:
-        #                     delivery_obj = {'pk': '', 'name': ''}
-        #                     for k, v in i.items():
-        #                         if k == 'name_':
-        #                             delivery_obj['name'] = v
-        #                         else:
-        #                             delivery_obj[k] = v
-        #                     delivery_city.append(delivery_obj)
-        #                 deliveries_list = {
-        #                     'pk': '',
-        #                     'delivery_city': '',
-        #                     'all_cities': False,
-        #                     'delivery_price': '',
-        #                     'delivery_days': '',
-        #                 }
-        #                 dict_title = "deliveries"
-        #                 deliveries_list['pk'] = delivery.pk
-        #                 deliveries_list['delivery_city'] = delivery_city
-        #                 deliveries_list['all_cities'] = delivery.all_cities
-        #                 deliveries_list['delivery_price'] = delivery.delivery_price
-        #                 deliveries_list['delivery_days'] = delivery.delivery_days
-        #                 data[dict_title].append(deliveries_list)
-        #                 if len(data['deliveries']) == 3:
-        #                     break
-        #             if len(data['deliveries']) == 3:
-        #                 break
-        #         return Response(data, status=status.HTTP_200_OK)
-        #     except TempShop.DoesNotExist:
-        #         errors = {"error": ["Shop not found."]}
-        #         raise ValidationError(errors)
-        # # Real offers
-        # else:
-        try:
-            auth_shop = AuthShop.objects.get(user=user)
-            offers = Offers.objects \
-                .select_related('offer_products') \
-                .prefetch_related('offer_delivery') \
-                .filter(auth_shop=auth_shop).order_by('-created_date')
-            data = defaultdict(list)
-            for offer in offers:
-                deliveries = offer.offer_delivery.all().order_by('-pk')
-                for delivery in deliveries:
-                    delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
-                    delivery_city = []
-                    for i in delivery_cities:
-                        delivery_obj = {'pk': '', 'name': ''}
-                        for k, v in i.items():
-                            if k == 'name_':
-                                delivery_obj['name'] = v
-                            else:
-                                delivery_obj[k] = v
-                        delivery_city.append(delivery_obj)
-                    deliveries_list = {
-                        'pk': '',
-                        'delivery_city': '',
-                        'all_cities': False,
-                        'delivery_price': '',
-                        'delivery_days': '',
-                    }
-                    dict_title = "deliveries"
-                    deliveries_list['pk'] = delivery.pk
-                    deliveries_list['delivery_city'] = delivery_city
-                    deliveries_list['all_cities'] = delivery.all_cities
-                    deliveries_list['delivery_price'] = delivery.delivery_price
-                    deliveries_list['delivery_days'] = delivery.delivery_days
-                    data[dict_title].append(deliveries_list)
-                    if len(data['deliveries']) == 3:
-                        break
-                if len(data['deliveries']) == 3:
-                    break
-            return Response(data, status=status.HTTP_200_OK)
-        except AuthShop.DoesNotExist:
-            errors = {"error": ["Shop not found."]}
-            raise ValidationError(errors)
-
-
-# class GetLastThreeDeliveriesViewV2(APIView):
+# class GetLastThreeDeliveriesView(APIView):
 #     permission_classes = (permissions.IsAuthenticated,)
 #
 #     @staticmethod
@@ -3193,84 +3096,38 @@ class GetLastThreeDeliveriesView(APIView):
 #         #             .prefetch_related('temp_offer_delivery') \
 #         #             .filter(auth_shop=auth_shop).order_by('-created_date')
 #         #         data = defaultdict(list)
-#         #         result_deliveries = {
-#         #             'delivery_city_1': '',
-#         #             'all_cities_1': False,
-#         #             'delivery_price_1': '',
-#         #             'delivery_days_1': '',
-#         #             'delivery_city_2': '',
-#         #             'all_cities_2': False,
-#         #             'delivery_price_2': '',
-#         #             'delivery_days_2': '',
-#         #             'delivery_city_3': '',
-#         #             'all_cities_3': False,
-#         #             'delivery_price_3': '',
-#         #             'delivery_days_3': '',
-#         #         }
 #         #         for offer in offers:
 #         #             deliveries = offer.temp_offer_delivery.all().order_by('-pk')
 #         #             for delivery in deliveries:
-#         #                 single_delivery = {'delivery_city': delivery.delivery_city.all().values_
-#         #                 list('name_fr', flat=True),
-#         #                                    'all_cities': delivery.all_cities,
-#         #                                    'delivery_price': delivery.delivery_price,
-#         #                                    'delivery_days': delivery.delivery_days}
-#         #                 data["deliveries"].append(single_delivery)
-#         #
-#         #                 # delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
-#         #                 # delivery_city = []
-#         #                 # for i in delivery_cities:
-#         #                 #     delivery_obj = {'pk': '', 'name': ''}
-#         #                 #     for k, v in i.items():
-#         #                 #         if k == 'name_':
-#         #                 #             delivery_obj['name'] = v
-#         #                 #         else:
-#         #                 #             delivery_obj[k] = v
-#         #                 #     delivery_city.append(delivery_obj)
-#         #                 # deliveries_list = {
-#         #                 #     'pk': '',
-#         #                 #     'delivery_city': '',
-#         #                 #     'all_cities': False,
-#         #                 #     'delivery_price': '',
-#         #                 #     'delivery_days': '',
-#         #                 # }
-#         #                 # dict_title = "deliveries"
-#         #                 # deliveries_list['pk'] = delivery.pk
-#         #                 # deliveries_list['delivery_city'] = delivery_city
-#         #                 # deliveries_list['all_cities'] = delivery.all_cities
-#         #                 # deliveries_list['delivery_price'] = delivery.delivery_price
-#         #                 # deliveries_list['delivery_days'] = delivery.delivery_days
-#         #                 # data[dict_title].append(deliveries_list)
+#         #                 delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
+#         #                 delivery_city = []
+#         #                 for i in delivery_cities:
+#         #                     delivery_obj = {'pk': '', 'name': ''}
+#         #                     for k, v in i.items():
+#         #                         if k == 'name_':
+#         #                             delivery_obj['name'] = v
+#         #                         else:
+#         #                             delivery_obj[k] = v
+#         #                     delivery_city.append(delivery_obj)
+#         #                 deliveries_list = {
+#         #                     'pk': '',
+#         #                     'delivery_city': '',
+#         #                     'all_cities': False,
+#         #                     'delivery_price': '',
+#         #                     'delivery_days': '',
+#         #                 }
+#         #                 dict_title = "deliveries"
+#         #                 deliveries_list['pk'] = delivery.pk
+#         #                 deliveries_list['delivery_city'] = delivery_city
+#         #                 deliveries_list['all_cities'] = delivery.all_cities
+#         #                 deliveries_list['delivery_price'] = delivery.delivery_price
+#         #                 deliveries_list['delivery_days'] = delivery.delivery_days
+#         #                 data[dict_title].append(deliveries_list)
 #         #                 if len(data['deliveries']) == 3:
 #         #                     break
 #         #             if len(data['deliveries']) == 3:
-#         #                 for count, final_delivery in enumerate(data['deliveries']):
-#         #                     if count == 0:
-#         #                         result_deliveries['delivery_city_1'] = ','.join(final_delivery.get('delivery_city'))
-#         #                         result_deliveries['all_cities_1'] = final_delivery.get('all_cities')
-#         #                         result_deliveries['delivery_days_1'] = final_delivery.get('delivery_days')
-#         #                         result_deliveries['delivery_price_1'] = final_delivery.get('delivery_price')
-#         #                         continue
-#         #                     elif count == 1:
-#         #                         if result_deliveries['delivery_city_1'] == ','.join(final_delivery
-#         #                                                                                     .get('delivery_city')):
-#         #                             continue
-#         #                         result_deliveries['delivery_city_2'] = ','.join(final_delivery.get('delivery_city'))
-#         #                         result_deliveries['all_cities_2'] = final_delivery.get('all_cities')
-#         #                         result_deliveries['delivery_days_2'] = final_delivery.get('delivery_days')
-#         #                         result_deliveries['delivery_price_2'] = final_delivery.get('delivery_price')
-#         #                         continue
-#         #                     elif count == 2:
-#         #                         if (result_deliveries['delivery_city_1'] or result_deliveries['delivery_city_2']) \
-#         #                                 == ','.join(final_delivery.get('delivery_city')):
-#         #                             continue
-#         #                         result_deliveries['delivery_city_3'] = ','.join(final_delivery.get('delivery_city'))
-#         #                         result_deliveries['all_cities_3'] = final_delivery.get('all_cities')
-#         #                         result_deliveries['delivery_days_3'] = final_delivery.get('delivery_days')
-#         #                         result_deliveries['delivery_price_3'] = final_delivery.get('delivery_price')
-#         #                         continue
 #         #                 break
-#         #         return Response(result_deliveries, status=status.HTTP_200_OK)
+#         #         return Response(data, status=status.HTTP_200_OK)
 #         #     except TempShop.DoesNotExist:
 #         #         errors = {"error": ["Shop not found."]}
 #         #         raise ValidationError(errors)
@@ -3283,85 +3140,204 @@ class GetLastThreeDeliveriesView(APIView):
 #                 .prefetch_related('offer_delivery') \
 #                 .filter(auth_shop=auth_shop).order_by('-created_date')
 #             data = defaultdict(list)
-#             result_deliveries = {
-#                 'delivery_city_1': '',
-#                 'all_cities_1': False,
-#                 'delivery_price_1': '',
-#                 'delivery_days_1': '',
-#                 'delivery_city_2': '',
-#                 'all_cities_2': False,
-#                 'delivery_price_2': '',
-#                 'delivery_days_2': '',
-#                 'delivery_city_3': '',
-#                 'all_cities_3': False,
-#                 'delivery_price_3': '',
-#                 'delivery_days_3': '',
-#             }
 #             for offer in offers:
 #                 deliveries = offer.offer_delivery.all().order_by('-pk')
 #                 for delivery in deliveries:
-#                     single_delivery = {
-#                         'delivery_city': delivery.delivery_city.all().values_list('name_fr', flat=True),
-#                         'all_cities': delivery.all_cities,
-#                         'delivery_price': delivery.delivery_price,
-#                         'delivery_days': delivery.delivery_days}
-#                     data["deliveries"].append(single_delivery)
-#                     # delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
-#                     # delivery_city = []
-#                     # for i in delivery_cities:
-#                     #     delivery_obj = {'pk': '', 'name': ''}
-#                     #     for k, v in i.items():
-#                     #         if k == 'name_':
-#                     #             delivery_obj['name'] = v
-#                     #         else:
-#                     #             delivery_obj[k] = v
-#                     #     delivery_city.append(delivery_obj)
-#                     # deliveries_list = {
-#                     #     'pk': '',
-#                     #     'delivery_city': '',
-#                     #     'all_cities': False,
-#                     #     'delivery_price': '',
-#                     #     'delivery_days': '',
-#                     # }
-#                     # dict_title = "deliveries"
-#                     # deliveries_list['pk'] = delivery.pk
-#                     # deliveries_list['delivery_city'] = delivery_city
-#                     # deliveries_list['all_cities'] = delivery.all_cities
-#                     # deliveries_list['delivery_price'] = delivery.delivery_price
-#                     # deliveries_list['delivery_days'] = delivery.delivery_days
-#                     # data[dict_title].append(deliveries_list)
+#                     delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
+#                     delivery_city = []
+#                     for i in delivery_cities:
+#                         delivery_obj = {'pk': '', 'name': ''}
+#                         for k, v in i.items():
+#                             if k == 'name_':
+#                                 delivery_obj['name'] = v
+#                             else:
+#                                 delivery_obj[k] = v
+#                         delivery_city.append(delivery_obj)
+#                     deliveries_list = {
+#                         'pk': '',
+#                         'delivery_city': '',
+#                         'all_cities': False,
+#                         'delivery_price': '',
+#                         'delivery_days': '',
+#                     }
+#                     dict_title = "deliveries"
+#                     deliveries_list['pk'] = delivery.pk
+#                     deliveries_list['delivery_city'] = delivery_city
+#                     deliveries_list['all_cities'] = delivery.all_cities
+#                     deliveries_list['delivery_price'] = delivery.delivery_price
+#                     deliveries_list['delivery_days'] = delivery.delivery_days
+#                     data[dict_title].append(deliveries_list)
 #                     if len(data['deliveries']) == 3:
 #                         break
 #                 if len(data['deliveries']) == 3:
-#                     for count, final_delivery in enumerate(data['deliveries']):
-#                         if count == 0:
-#                             result_deliveries['delivery_city_1'] = ','.join(final_delivery.get('delivery_city'))
-#                             result_deliveries['all_cities_1'] = final_delivery.get('all_cities')
-#                             result_deliveries['delivery_days_1'] = final_delivery.get('delivery_days')
-#                             result_deliveries['delivery_price_1'] = final_delivery.get('delivery_price')
-#                             continue
-#                         elif count == 1:
-#                             if result_deliveries['delivery_city_1'] == ','.join(final_delivery.get('delivery_city')):
-#                                 continue
-#                             result_deliveries['delivery_city_2'] = ','.join(final_delivery.get('delivery_city'))
-#                             result_deliveries['all_cities_2'] = final_delivery.get('all_cities')
-#                             result_deliveries['delivery_days_2'] = final_delivery.get('delivery_days')
-#                             result_deliveries['delivery_price_2'] = final_delivery.get('delivery_price')
-#                             continue
-#                         elif count == 2:
-#                             if (result_deliveries['delivery_city_1'] or result_deliveries['delivery_city_2']) \
-#                                     == ','.join(final_delivery.get('delivery_city')):
-#                                 continue
-#                             result_deliveries['delivery_city_3'] = ','.join(final_delivery.get('delivery_city'))
-#                             result_deliveries['all_cities_3'] = final_delivery.get('all_cities')
-#                             result_deliveries['delivery_days_3'] = final_delivery.get('delivery_days')
-#                             result_deliveries['delivery_price_3'] = final_delivery.get('delivery_price')
-#                             continue
 #                     break
-#             return Response(result_deliveries, status=status.HTTP_200_OK)
+#             return Response(data, status=status.HTTP_200_OK)
 #         except AuthShop.DoesNotExist:
 #             errors = {"error": ["Shop not found."]}
 #             raise ValidationError(errors)
+
+
+class GetLastThreeDeliveriesViewV2(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        user = request.user
+        # # Temp offers
+        # if user.is_anonymous:
+        #     unique_id = kwargs.get('unique_id')
+        #     try:
+        #         auth_shop = TempShop.objects.get(unique_id=unique_id)
+        #         offers = TempOffers.objects \
+        #             .select_related('temp_offer_products') \
+        #             .prefetch_related('temp_offer_delivery') \
+        #             .filter(auth_shop=auth_shop).order_by('-created_date')
+        #         data = defaultdict(list)
+        #         result_deliveries = {
+        #             'delivery_city_1': '',
+        #             'all_cities_1': False,
+        #             'delivery_price_1': '',
+        #             'delivery_days_1': '',
+        #             'delivery_city_2': '',
+        #             'all_cities_2': False,
+        #             'delivery_price_2': '',
+        #             'delivery_days_2': '',
+        #             'delivery_city_3': '',
+        #             'all_cities_3': False,
+        #             'delivery_price_3': '',
+        #             'delivery_days_3': '',
+        #         }
+        #         for offer in offers:
+        #             deliveries = offer.temp_offer_delivery.all().order_by('-pk')
+        #             for delivery in deliveries:
+        #                 single_delivery = {'delivery_city': delivery.delivery_city.all().values_
+        #                 list('name_fr', flat=True),
+        #                                    'all_cities': delivery.all_cities,
+        #                                    'delivery_price': delivery.delivery_price,
+        #                                    'delivery_days': delivery.delivery_days}
+        #                 data["deliveries"].append(single_delivery)
+        #
+        #                 # delivery_cities = delivery.delivery_city.all().values('pk', name_=F('name_fr'))
+        #                 # delivery_city = []
+        #                 # for i in delivery_cities:
+        #                 #     delivery_obj = {'pk': '', 'name': ''}
+        #                 #     for k, v in i.items():
+        #                 #         if k == 'name_':
+        #                 #             delivery_obj['name'] = v
+        #                 #         else:
+        #                 #             delivery_obj[k] = v
+        #                 #     delivery_city.append(delivery_obj)
+        #                 # deliveries_list = {
+        #                 #     'pk': '',
+        #                 #     'delivery_city': '',
+        #                 #     'all_cities': False,
+        #                 #     'delivery_price': '',
+        #                 #     'delivery_days': '',
+        #                 # }
+        #                 # dict_title = "deliveries"
+        #                 # deliveries_list['pk'] = delivery.pk
+        #                 # deliveries_list['delivery_city'] = delivery_city
+        #                 # deliveries_list['all_cities'] = delivery.all_cities
+        #                 # deliveries_list['delivery_price'] = delivery.delivery_price
+        #                 # deliveries_list['delivery_days'] = delivery.delivery_days
+        #                 # data[dict_title].append(deliveries_list)
+        #                 if len(data['deliveries']) == 3:
+        #                     break
+        #             if len(data['deliveries']) == 3:
+        #                 for count, final_delivery in enumerate(data['deliveries']):
+        #                     if count == 0:
+        #                         result_deliveries['delivery_city_1'] = ','.join(final_delivery.get('delivery_city'))
+        #                         result_deliveries['all_cities_1'] = final_delivery.get('all_cities')
+        #                         result_deliveries['delivery_days_1'] = final_delivery.get('delivery_days')
+        #                         result_deliveries['delivery_price_1'] = final_delivery.get('delivery_price')
+        #                         continue
+        #                     elif count == 1:
+        #                         if result_deliveries['delivery_city_1'] == ','.join(final_delivery
+        #                                                                                     .get('delivery_city')):
+        #                             continue
+        #                         result_deliveries['delivery_city_2'] = ','.join(final_delivery.get('delivery_city'))
+        #                         result_deliveries['all_cities_2'] = final_delivery.get('all_cities')
+        #                         result_deliveries['delivery_days_2'] = final_delivery.get('delivery_days')
+        #                         result_deliveries['delivery_price_2'] = final_delivery.get('delivery_price')
+        #                         continue
+        #                     elif count == 2:
+        #                         if (result_deliveries['delivery_city_1'] or result_deliveries['delivery_city_2']) \
+        #                                 == ','.join(final_delivery.get('delivery_city')):
+        #                             continue
+        #                         result_deliveries['delivery_city_3'] = ','.join(final_delivery.get('delivery_city'))
+        #                         result_deliveries['all_cities_3'] = final_delivery.get('all_cities')
+        #                         result_deliveries['delivery_days_3'] = final_delivery.get('delivery_days')
+        #                         result_deliveries['delivery_price_3'] = final_delivery.get('delivery_price')
+        #                         continue
+        #                 break
+        #         return Response(result_deliveries, status=status.HTTP_200_OK)
+        #     except TempShop.DoesNotExist:
+        #         errors = {"error": ["Shop not found."]}
+        #         raise ValidationError(errors)
+        # # Real offers
+        # else:
+        try:
+            auth_shop = AuthShop.objects.get(user=user)
+            offers = Offers.objects \
+                .select_related('offer_products') \
+                .prefetch_related('offer_delivery') \
+                .filter(auth_shop=auth_shop).order_by('-created_date')
+            data = defaultdict(list)
+            result_deliveries = {
+                'delivery_city_1': '',
+                'all_cities_1': False,
+                'delivery_price_1': '',
+                'delivery_days_1': '',
+                'delivery_city_2': '',
+                'all_cities_2': False,
+                'delivery_price_2': '',
+                'delivery_days_2': '',
+                'delivery_city_3': '',
+                'all_cities_3': False,
+                'delivery_price_3': '',
+                'delivery_days_3': '',
+            }
+            for offer in offers:
+                deliveries = offer.offer_delivery.all().order_by('-pk')
+                for delivery in deliveries:
+                    single_delivery = {
+                        'delivery_city': delivery.delivery_city.all().values_list('name_fr', flat=True),
+                        'all_cities': delivery.all_cities,
+                        'delivery_price': delivery.delivery_price,
+                        'delivery_days': delivery.delivery_days}
+                    data["deliveries"].append(single_delivery)
+                    if len(data['deliveries']) == 3:
+                        break
+                if len(data['deliveries']) == 3:
+                    for count, final_delivery in enumerate(data['deliveries']):
+                        if count == 0:
+                            result_deliveries['delivery_city_1'] = ','.join(final_delivery.get('delivery_city'))
+                            result_deliveries['all_cities_1'] = final_delivery.get('all_cities')
+                            result_deliveries['delivery_days_1'] = final_delivery.get('delivery_days')
+                            result_deliveries['delivery_price_1'] = final_delivery.get('delivery_price')
+                            continue
+                        elif count == 1:
+                            if result_deliveries['delivery_city_1'] == ','.join(final_delivery.get('delivery_city')):
+                                continue
+                            result_deliveries['delivery_city_2'] = ','.join(final_delivery.get('delivery_city'))
+                            result_deliveries['all_cities_2'] = final_delivery.get('all_cities')
+                            result_deliveries['delivery_days_2'] = final_delivery.get('delivery_days')
+                            result_deliveries['delivery_price_2'] = final_delivery.get('delivery_price')
+                            continue
+                        elif count == 2:
+                            if (result_deliveries['delivery_city_1'] or result_deliveries['delivery_city_2']) \
+                                    == ','.join(final_delivery.get('delivery_city')):
+                                continue
+                            result_deliveries['delivery_city_3'] = ','.join(final_delivery.get('delivery_city'))
+                            result_deliveries['all_cities_3'] = final_delivery.get('all_cities')
+                            result_deliveries['delivery_days_3'] = final_delivery.get('delivery_days')
+                            result_deliveries['delivery_price_3'] = final_delivery.get('delivery_price')
+                            continue
+                    break
+            return Response(result_deliveries, status=status.HTTP_200_OK)
+        except AuthShop.DoesNotExist:
+            errors = {"error": ["Shop not found."]}
+            raise ValidationError(errors)
 
 
 class GetLastUsedLocalisationView(APIView):

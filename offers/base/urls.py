@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import GetMyShopOffersListView, ShopOfferSolderView, ShopOfferDuplicateView, \
-    GetLastThreeDeliveriesView, GetLastUsedLocalisationView, \
+    GetLastThreeDeliveriesViewV2, GetLastUsedLocalisationView, \
     GetOfferTagsView, GetOffersVuesListView, ShopOfferViewV2, ShopOfferPinUnpinView, \
     GetShopOffersListView, GetShopOffersFiltersListView, GetServicesAvailabilityDays
 
@@ -11,7 +11,7 @@ urlpatterns = [
     path('tags/', GetOfferTagsView.as_view()),
     path('get_services_days/', GetServicesAvailabilityDays.as_view()),
     # GET : shop last three deliveries
-    path('deliveries/', GetLastThreeDeliveriesView.as_view()),
+    path('deliveries/', GetLastThreeDeliveriesViewV2.as_view()),
     # path('deliveries/<uuid:unique_id>/', GetLastThreeDeliveriesViewV2.as_view()),
     # GET : Last used localisation (lon, lat + localisation name)
     path('localisation/<str:offer_type>/', GetLastUsedLocalisationView.as_view()),
