@@ -290,7 +290,7 @@ class ResendVerificationCodeView(APIView):
             })
             # base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
             email = EmailMessage(
-                mail_subject, message, to=(email,)
+                mail_subject, message, to=(email,), from_email='no-reply@qaryb.com',
             )
             email.content_subtype = "html"
             email.send(fail_silently=False)
