@@ -10,6 +10,7 @@ from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
 from django.db.models import Count
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
@@ -196,7 +197,14 @@ class RegistrationView(APIView):
                     'first_name': user.first_name,
                     'code': code
                 })
-                base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
+                # base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
+                email = EmailMessage(
+                    mail_subject, message, to=(email,)
+                )
+                email.content_subtype = "html"
+                email.send(fail_silently=False)
+                user.activation_code = code
+                user.save(update_fields=['activation_code'])
                 # Generate refresh token
                 refresh = RefreshToken.for_user(user)
                 date_now = datetime.datetime.now(timezone.utc)
