@@ -1172,9 +1172,9 @@ class DashboardView(APIView):
         if last_month_total_vues != 0 and this_month_total_vues != 0:
             pourcentage = int((this_month_total_vues - last_month_total_vues) / last_month_total_vues * 100)
             if pourcentage > 0:
-                pourcentage = '+' + str(pourcentage) + '%'
+                pourcentage = '+' + str(pourcentage).replace('+', '') + '%'
             else:
-                pourcentage = '-' + str(pourcentage) + '%'
+                pourcentage = '-' + str(pourcentage).replace('-', '') + '%'
         else:
             pourcentage = '0%'
         return {
