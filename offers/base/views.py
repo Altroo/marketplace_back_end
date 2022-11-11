@@ -39,7 +39,7 @@ class ShopOfferViewV2(APIView):
         offer_pk = kwargs.get('offer_pk')
         shop_link = kwargs.get('shop_link')
         user = request.user
-        # Temp offers
+        # with the link
         if shop_link:
             try:
                 shop = AuthShop.objects.get(qaryb_link=shop_link)
@@ -88,7 +88,7 @@ class ShopOfferViewV2(APIView):
         #     except TempOffers.DoesNotExist:
         #         errors = {"error": ["Offer not found."]}
         #         raise ValidationError(errors)
-        # # Real offers
+        # with the user
         else:
             try:
                 offer = Offers.objects \
@@ -905,7 +905,8 @@ class ShopOfferViewV2(APIView):
                     raise ValidationError(service_serializer_errors)
         raise ValidationError(offer_serializer.errors)
 
-    def put(self, request, *args, **kwargs):
+    @staticmethod
+    def put(request, *args, **kwargs):
         offer_pk = request.data.get('offer_pk')
         user = request.user
         # if user.is_anonymous:
@@ -1427,10 +1428,18 @@ class ShopOfferViewV2(APIView):
             picture_4 = request.data.get('picture_4')
 
             image_processor = ImageProcessor()
-            picture_1_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_1)
-            picture_2_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_2)
-            picture_3_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_3)
-            picture_4_file: ContentFile | None = image_processor.data_url_to_uploaded_file(picture_4)
+            picture_1_file: ContentFile | None = image_processor.data_url_to_uploaded_file(
+                picture_1 if not str(picture_1).startswith('http') else None
+            )
+            picture_2_file: ContentFile | None = image_processor.data_url_to_uploaded_file(
+                picture_2 if not str(picture_2).startswith('http') else None
+            )
+            picture_3_file: ContentFile | None = image_processor.data_url_to_uploaded_file(
+                picture_3 if not str(picture_3).startswith('http') else None
+            )
+            picture_4_file: ContentFile | None = image_processor.data_url_to_uploaded_file(
+                picture_4 if not str(picture_4).startswith('http') else None
+            )
 
             previous_images = list()
             previous_images.append(API_URL + '/media' + offer.picture_1.url
@@ -1578,10 +1587,10 @@ class ShopOfferViewV2(APIView):
             # Product PUT serializer
             offer_serializer = BaseOfferPutSerializer(data={
                 'title': title,
-                'picture_1': picture_1 if picture_1 != 'null' else None,
-                'picture_2': picture_2 if picture_2 != 'null' else None,
-                'picture_3': picture_3 if picture_3 != 'null' else None,
-                'picture_4': picture_4 if picture_4 != 'null' else None,
+                # 'picture_1': picture_1 if picture_1 != 'null' else None,
+                # 'picture_2': picture_2 if picture_2 != 'null' else None,
+                # 'picture_3': picture_3 if picture_3 != 'null' else None,
+                # 'picture_4': picture_4 if picture_4 != 'null' else None,
                 'description': description,
                 'creator_label': creator_label,
                 'made_in_label': made_in_label.pk if made_in_label else None,

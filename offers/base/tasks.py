@@ -129,13 +129,13 @@ def resize_images_v2(bytes_) -> Tuple[BytesIO, BytesIO]:
     return img, thumb
 
 
-def send_ws_image(user_pk: int, offer_pk: int, url: str):
+def send_ws_image(user_pk: int, offer_pk: int, url: str, type_: str):
     event = {
         "type": "recieve_group_message",
         "message": {
-            "type": "OFFER_THUMBNAIL",
+            "type": type_,
             "pk": offer_pk,
-            "offer_thumbnail": url,
+            "offer_picture": url,
         }
     }
     channel_layer = get_channel_layer()
@@ -145,21 +145,22 @@ def send_ws_image(user_pk: int, offer_pk: int, url: str):
 def generate_images_v2(query_, picture: BytesIO, picture_name: str):
     img, thumb = resize_images_v2(picture)
     query_.save_image(picture_name, img)
-    # match picture_name:
-    #     case 'picture_1':
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_1_img)
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_1_thumbnail)
-    #     case 'picture_2':
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_2_img)
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_2_thumbnail)
-    #     case 'picture_3':
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_3_img)
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_3_thumbnail)
-    #     case 'picture_4':
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_4_img)
-    #         send_ws_image(offer.auth_shop.user.pk, offer.pk, offer.get_absolute_picture_4_thumbnail)
     query_.save_image('{}_thumbnail'.format(picture_name), thumb)
-
+    user_pk = query_.auth_shop.user.pk
+    query_pk = query_.pk
+    match picture_name:
+        case 'picture_1':
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_img, 'OFFER_PICTURE_1')
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_thumbnail, 'OFFER_PICTURE_1_THUMB')
+        case 'picture_2':
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_img, 'OFFER_PICTURE_2')
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_thumbnail, 'OFFER_PICTURE_2_THUMB')
+        case 'picture_3':
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_img, 'OFFER_PICTURE_3')
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_thumbnail, 'OFFER_PICTURE_3_THUMB')
+        case 'picture_4':
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_img, 'OFFER_PICTURE_4')
+            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_thumbnail, 'OFFER_PICTURE_4_THUMB')
 
 # @app.task(bind=True)
 # def base_resize_offer_images(self, offer_pk: int,
@@ -176,6 +177,8 @@ def generate_images_v2(query_, picture: BytesIO, picture_name: str):
 #         generate_images_v2(offer, BytesIO(bytes(picture_3)), 'picture_3')
 #     if isinstance(picture_4, str):
 #         generate_images_v2(offer, BytesIO(bytes(picture_4)), 'picture_4')
+
+
 @app.task(bind=True, serializer='pickle')
 def base_resize_offer_images(self, offer_pk: int,
                              picture_1: BytesIO | None,

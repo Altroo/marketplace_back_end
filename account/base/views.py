@@ -555,6 +555,7 @@ class ProfileView(APIView):
                 # errors = {"error": ["Country is invalid."]}
                 # raise ValidationError(errors)
         avatar = request.data.get('avatar')
+
         image_processor = ImageProcessor()
         avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
 

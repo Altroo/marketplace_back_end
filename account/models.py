@@ -11,9 +11,6 @@ from uuid import uuid4
 from Qaryb_API.settings import API_URL
 from io import BytesIO
 from django.core.files.base import ContentFile
-from base64 import b64encode
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
 
 
 def get_avatar_path(instance, filename):
@@ -80,17 +77,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             return "{0}/media{1}".format(API_URL, self.avatar.url)
         return None
 
-    @property
-    def get_absolute_avatar_img_base64(self):
-        if self.avatar:
-            try:
-                _, file_extension = path.splitext(self.avatar.path)
-                encoded_string = b64encode(self.avatar.file.read())
-                return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
-                                                        str(encoded_string).lstrip("b'").rstrip("'"))
-            except FileNotFoundError:
-                return None
-        return None
+    # @property
+    # def get_absolute_avatar_img_base64(self):
+    #     if self.avatar:
+    #         try:
+    #             _, file_extension = path.splitext(self.avatar.path)
+    #             encoded_string = b64encode(self.avatar.file.read())
+    #             return 'data:image/{};base64,{}'.format(str(file_extension).replace('.', ''),
+    #                                                     str(encoded_string).lstrip("b'").rstrip("'"))
+    #         except FileNotFoundError:
+    #             return None
+    #     return None
 
     @property
     def get_absolute_avatar_thumbnail(self):

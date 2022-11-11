@@ -116,8 +116,9 @@ class ImageProcessor:
                 complete_file_name = "%s.%s" % (file_name, file_extension,)
                 data = ContentFile(decoded_file, name=complete_file_name)
                 return data
-            except TypeError:
+            except Exception:
                 return None
+        return None
 
 
 class Base64ImageField(serializers.ImageField):

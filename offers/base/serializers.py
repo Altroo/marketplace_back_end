@@ -269,14 +269,14 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     offer_categories = serializers.SerializerMethodField()
     # shop_name
     shop_name = serializers.CharField(source='auth_shop.shop_name')
-    picture_1 = serializers.CharField(source='get_absolute_picture_1_img_base64')
-    picture_1_thumb = serializers.CharField(source='get_absolute_picture_1_thumbnail_base64')
-    picture_2 = serializers.CharField(source='get_absolute_picture_2_img_base64')
-    picture_2_thumb = serializers.CharField(source='get_absolute_picture_2_thumbnail_base64')
-    picture_3 = serializers.CharField(source='get_absolute_picture_3_img_base64')
-    picture_3_thumb = serializers.CharField(source='get_absolute_picture_3_thumbnail_base64')
-    picture_4 = serializers.CharField(source='get_absolute_picture_4_img_base64')
-    picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail_base64')
+    picture_1 = serializers.CharField(source='get_absolute_picture_1_img')
+    picture_1_thumb = serializers.CharField(source='get_absolute_picture_1_thumbnail')
+    picture_2 = serializers.CharField(source='get_absolute_picture_2_img')
+    picture_2_thumb = serializers.CharField(source='get_absolute_picture_2_thumbnail')
+    picture_3 = serializers.CharField(source='get_absolute_picture_3_img')
+    picture_3_thumb = serializers.CharField(source='get_absolute_picture_3_thumbnail')
+    picture_4 = serializers.CharField(source='get_absolute_picture_4_img')
+    picture_4_thumb = serializers.CharField(source='get_absolute_picture_4_thumbnail')
     description = serializers.CharField()
     # for_whom = BaseOfferForWhomSerializer(many=True, read_only=True)
     for_whom = serializers.SerializerMethodField()
@@ -418,25 +418,24 @@ class BaseOffersMiniProfilListSerializer(serializers.Serializer):
 
 
 class BaseOfferPutSerializer(serializers.ModelSerializer):
-    picture_1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
-                                 allow_null=True)
-    picture_2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
-                                 allow_null=True)
-    picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
-                                 allow_null=True)
-    picture_4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
-                                 allow_null=True)
+    # picture_1 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+    #                              allow_null=True)
+    # picture_2 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+    #                              allow_null=True)
+    # picture_3 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+    #                              allow_null=True)
+    # picture_4 = Base64ImageField(max_length=None, use_url=True, required=False, allow_empty_file=True, default=None,
+    #                              allow_null=True)
 
     class Meta:
         model = Offers
-        fields = ['title', 'picture_1', 'picture_2', 'picture_3', 'picture_4',
-                  'description', 'creator_label', 'made_in_label', 'price']
-        extra_kwargs = {
-            'picture_1': {'required': False},
-            'picture_2': {'required': False},
-            'picture_3': {'required': False},
-            'picture_4': {'required': False},
-        }
+        fields = ['title', 'description', 'creator_label', 'made_in_label', 'price']
+        # extra_kwargs = {
+        #     'picture_1': {'required': False},
+        #     'picture_2': {'required': False},
+        #     'picture_3': {'required': False},
+        #     'picture_4': {'required': False},
+        # }
 
 
 class BaseProductPutSerializer(serializers.ModelSerializer):

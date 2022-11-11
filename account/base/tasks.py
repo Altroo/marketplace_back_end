@@ -1,3 +1,6 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from PIL import Image, ImageDraw, ImageFont
@@ -102,6 +105,16 @@ def base_generate_user_thumbnail(self, user_pk):
     thumbnail_ = from_img_to_io(thumbnail, 'WEBP')
     user.save_image('avatar', avatar_)
     user.save_image('avatar_thumbnail', thumbnail_)
+    event = {
+        "type": "recieve_group_message",
+        "message": {
+            "type": "USER_AVATAR",
+            "pk": user.pk,
+            "avatar": user.get_absolute_avatar_img,
+        }
+    }
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)("%s" % user.pk, event)
 
 
 @app.task(bind=True, serializer='json')
