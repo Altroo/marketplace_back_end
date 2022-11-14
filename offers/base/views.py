@@ -2169,8 +2169,10 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
             maroc_query = self.get_filter_by_maroc(queryset)
             cities_query = self.get_filter_by_cities(queryset)
             services_query = self.get_filter_by_services(queryset)
-            final_query = (categories_query | colors_query | sizes_query | for_whom_query |
-                           solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
+            final_query = categories_query.union(colors_query, sizes_query, for_whom_query, solder_query, labels_query,
+                                                 maroc_query, cities_query, services_query)
+            # final_query = (categories_query | colors_query | sizes_query | for_whom_query |
+            #                solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
             if final_query:
                 return final_query
             return queryset
