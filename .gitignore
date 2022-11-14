@@ -34,7 +34,8 @@ ratings/__pycache__
 offers/__pycache__
 offers/base/__pycache__
 offers/migrations
+subscription/__pycache__
+subscription/base/__pycache__
+subscription/migrations
 version/__pycache__
 version/migrations
-subscription/__pycache__
-subscription/migrations
