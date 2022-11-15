@@ -1481,6 +1481,8 @@ class ShopOfferViewV2(APIView):
                     # None wasn't sent
                     except ValueError:
                         picture_1 = None
+                    offer.picture_1 = picture_1
+                    offer.save(update_fields=['picture_1'])
 
             if isinstance(picture_2_file, ContentFile):
                 try:
@@ -1511,6 +1513,8 @@ class ShopOfferViewV2(APIView):
                     # None wasn't
                     except ValueError:
                         picture_2 = None
+                    offer.picture_2 = picture_2
+                    offer.save(update_fields=['picture_2'])
 
             if isinstance(picture_3_file, ContentFile):
                 try:
@@ -1541,6 +1545,8 @@ class ShopOfferViewV2(APIView):
                     # None wasn't sent
                     except ValueError:
                         picture_3 = None
+                    offer.picture_3 = picture_3
+                    offer.save(update_fields=['picture_3'])
             if isinstance(picture_4_file, ContentFile):
                 try:
                     remove(offer.picture_4.path)
@@ -1570,6 +1576,8 @@ class ShopOfferViewV2(APIView):
                     # None wasn't sent
                     except ValueError:
                         picture_4 = None
+                    offer.picture_4 = picture_4
+                    offer.save(update_fields=['picture_4'])
 
             title = request.data.get('title', '')
             description = request.data.get('description', '')
