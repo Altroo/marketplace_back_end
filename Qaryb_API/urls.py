@@ -51,6 +51,8 @@ urlpatterns = [
     path('api/1.0.0/places/', include('places.base.urls', namespace='1.0.0')),
     # Subscription
     path('api/1.0.0/subscription/', include('subscription.base.urls', namespace='1.0.0')),
+    # Notifications
+    path('api/1.0.0/notification/', include('notifications.base.urls', namespace='1.0.0')),
     # Version
     path('api/version/', include('version.urls', namespace='1.0.0')),
     # Admin

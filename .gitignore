@@ -37,5 +37,8 @@ offers/migrations
 subscription/__pycache__
 subscription/base/__pycache__
 subscription/migrations
+notifications/__pycache__
+notifications/base/__pycache__
+notifications/migrations
 version/__pycache__
 version/migrations

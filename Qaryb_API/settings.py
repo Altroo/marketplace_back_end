@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'ratings.apps.RatingsConfig',
     'places.apps.PlacesConfig',
     'subscription.apps.SubscriptionConfig',
+    'notifications.apps.NotificationsConfig',
     'version.apps.VersionConfig'
 ]
 
@@ -161,7 +162,6 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (config('REST_FRAMEWORK_DEFAULT_RENDERER_CLASSES'),),
     'DEFAULT_SCHEMA_CLASS': config('REST_FRAMEWORK_DEFAULT_SCHEMA_CLASS'),
     'DEFAULT_FILTER_BACKENDS': (config('REST_FRAMEWORK_DEFAULT_FILTER_BACKENDS'),),
-    # 'EXCEPTION_HANDLER': 'Qaryb_API.Qaryb_API.custom_exception.custom_exception_handler',
     'EXCEPTION_HANDLER': 'shop.base.utils.api_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
 }
