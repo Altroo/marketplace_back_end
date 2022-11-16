@@ -27,21 +27,10 @@ class Notifications(Model):
     def __str__(self):
         return '{} - {}'.format(self.user.first_name, self.user.last_name)
 
-    # def save(self, *args, **kwargs):
-    #     super(Notifications, self).save(*args, **kwargs)
-    #     channel_layer = get_channel_layer()
-    #     event = {
-    #         "type": "recieve_group_message",
-    #         "message": {
-    #             "type": "NOTIFICATION",
-    #             "pk": self.id,
-    #             "body": self.body,
-    #             "type_": self.type,
-    #             "viewed": self.viewed,
-    #             "created_date": self.created_date,
-    #         }
-    #     }
-    #     async_to_sync(channel_layer.group_send)("%s" % self.user.id, event)
+    @property
+    def get_created_date(self):
+        created_date = self.created_date.isoformat()
+        return created_date[:-6] + 'Z'
 
     async def ws_notification_async(self):
         channel_layer = get_channel_layer()
@@ -49,11 +38,11 @@ class Notifications(Model):
             "type": "recieve_group_message",
             "message": {
                 "type": "NOTIFICATION",
-                "pk": self.id,
+                "pk": self.pk,
                 "body": self.body,
                 "type_": self.type,
                 "viewed": self.viewed,
-                "created_date": self.created_date,
+                "created_date": self.get_created_date,
             }
         }
         await channel_layer.group_send("%s" % self.user.id, event)
@@ -64,11 +53,11 @@ class Notifications(Model):
             "type": "recieve_group_message",
             "message": {
                 "type": "NOTIFICATION",
-                "pk": self.id,
+                "pk": self.pk,
                 "body": self.body,
                 "type_": self.type,
                 "viewed": self.viewed,
-                "created_date": self.created_date,
+                "created_date": self.get_created_date,
             }
         }
         async_to_sync(channel_layer.group_send)("%s" % self.user.id, event)
@@ -82,20 +71,7 @@ class Notifications(Model):
 @receiver(post_save, sender=Notifications)
 def send_notification_ws(sender, instance, created, raw, using, update_fields, **kwargs):
     if created:
-        channel_layer = get_channel_layer()
-        created_date = instance.created_date.isoformat()
-        if created_date.endswith('+00:00'):
-            created_date = created_date[:-6] + 'Z'
-
-        event = {
-            "type": "recieve_group_message",
-            "message": {
-                "type": "NOTIFICATION",
-                "pk": instance.pk,
-                "body": instance.body,
-                "type_": instance.type,
-                "viewed": instance.viewed,
-                "created_date": created_date,
-            }
-        }
-        async_to_sync(channel_layer.group_send)("%s" % instance.user.pk, event)
+        try:
+            instance.ws_notification_sync()
+        except RuntimeError:
+            instance.ws_notification_async()
