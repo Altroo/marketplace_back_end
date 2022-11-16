@@ -83,6 +83,10 @@ class Notifications(Model):
 def send_notification_ws(sender, instance, created, raw, using, update_fields, **kwargs):
     if created:
         channel_layer = get_channel_layer()
+        created_date = instance.created_date.isoformat()
+        if created_date.endswith('+00:00'):
+            created_date = created_date[:-6] + 'Z'
+
         event = {
             "type": "recieve_group_message",
             "message": {
@@ -91,7 +95,7 @@ def send_notification_ws(sender, instance, created, raw, using, update_fields, *
                 "body": instance.body,
                 "type_": instance.type,
                 "viewed": instance.viewed,
-                "created_date": instance.created_date,
+                "created_date": created_date,
             }
         }
         async_to_sync(channel_layer.group_send)("%s" % instance.user.pk, event)
