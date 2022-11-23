@@ -1,12 +1,20 @@
 from datetime import timedelta
+from typing import Union
+from uuid import uuid4
+
 from django.db import models
-from django.db.models import Model
+from django.db.models import Model, QuerySet
+from fpdf import FPDF
+
 from places.models import Country
 from shop.models import AuthShop
 from offers.models import Offers
 from django.utils import timezone
 from os import path
 from Qaryb_API.settings import API_URL
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from notifications.models import Notifications
 
 
 def get_facture_path():
@@ -64,7 +72,7 @@ class PromoCodes(Model):
                                        choices=SubscriptionChoices.PROMO_CODE_TYPES,
                                        default='P')
     usage_unique = models.BooleanField(verbose_name='Usage unique', default=False)
-    value = models.PositiveIntegerField(verbose_name="-% price or nbr (depend on type)",
+    value = models.PositiveIntegerField(verbose_name="% price or nbr (depend on type)",
                                         blank=True, null=True, default=None)
     promo_code_status = models.CharField(verbose_name='Promo code status', max_length=1,
                                          choices=SubscriptionChoices.PROMO_CODE_STATUS,
@@ -117,10 +125,64 @@ class RequestedSubscriptions(Model):
     def __str__(self):
         return '{} - {}'.format(self.auth_shop.shop_name, self.subscription.nbr_article)
 
+    @property
+    def generate_pdf(self):
+        parent_file_dir = path.abspath(path.join(path.dirname(__file__), ".."))
+        # generate pdf
+        pdf = FPDF()
+        pdf.add_page()
+        # pdf.add_font('sysfont', '', r"c:\WINDOWS\Fonts\arial.ttf", uni=True)
+        # unicode_font = ImageFont.truetype(parent_file_dir + '/static/fonts/Changa-Regular.ttf', 20)
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(200, 10, txt='Nom boutique : ' + self.auth_shop.shop_name, ln=1, align='L')
+        pdf.cell(200, 10, txt='Reference number : ' + self.reference_number, ln=2, align='L')
+        base_path = get_facture_path()
+        pdf_output_path = "{}{}.{}".format(base_path, uuid4(), 'pdf')
+        pdf.output(pdf_output_path)
+        return pdf_output_path
+
     class Meta:
         verbose_name = 'Requested subscription'
         verbose_name_plural = 'Requested subscriptions'
         ordering = ('-pk',)
+
+
+@receiver(post_save, sender=RequestedSubscriptions)
+def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscriptions], created, raw, using, update_fields,
+                         **kwargs):
+    if not created and instance.status == 'A':
+        try:
+            # TODO - missing upgreade case
+            # Upgrade subscription case
+            SubscribedUsers.objects.get(pk=instance.pk)
+            Notifications.objects.create(user=instance.auth_shop.user, type='SA')
+            print('SubscribedUsers try created via signal')
+        except SubscribedUsers.DoesNotExist:
+            print('SubscribedUsers catch created via signal')
+            # Manual subscription case
+            total_paid = instance.subscription.prix_ttc
+            available_slots = instance.subscription.nbr_article
+            promo_code_obj = instance.promo_code
+            if promo_code_obj:
+                if promo_code_obj.promo_code_status == 'E':
+                    return
+                elif promo_code_obj.type_promo_code == 'S' and promo_code_obj.value is not None:
+                    total_paid = 0
+                    available_slots = promo_code_obj.value
+                elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
+                    total_paid = round(total_paid - promo_code_obj.value)
+            pdf_output_path = instance.generate_pdf
+            subscription_created = SubscribedUsers.objects.create(
+                original_request=instance,
+                available_slots=available_slots,
+                total_paid=total_paid,
+                facture=pdf_output_path,
+            )
+            if subscription_created:
+                Notifications.objects.create(user=instance.auth_shop.user, type='SA')
+                if promo_code_obj and not promo_code_obj.usage_unique and total_paid == 0:
+                    promo_code_obj.promo_code_status = 'E'
+                    promo_code_obj.save()
 
 
 def get_expiration_date():

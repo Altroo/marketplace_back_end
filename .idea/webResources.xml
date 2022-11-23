@@ -24,6 +24,7 @@
             <path value="file://$PROJECT_DIR$/media/media/shop_offers" />
             <path value="file://$PROJECT_DIR$/media/files" />
             <path value="file://$PROJECT_DIR$/media/media/user_avatars" />
+            <path value="file://$PROJECT_DIR$/static/mail" />
           </resourceRoots>
         </entryData>
       </entry>

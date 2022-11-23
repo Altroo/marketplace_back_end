@@ -191,7 +191,7 @@ class RegistrationView(APIView):
             if email_address_serializer.is_valid():
                 email_address_serializer.save()
                 mail_subject = 'Vérifiez votre compte'
-                mail_template = 'activate_account.html'
+                mail_template = 'verify_account.html'
                 code = self.generate_random_code()
                 message = render_to_string(mail_template, {
                     'first_name': user.first_name,
@@ -279,23 +279,13 @@ class ResendVerificationCodeView(APIView):
                 user.task_id_activation = None
                 user.save()
             mail_subject = 'Vérifiez votre compte'
-            mail_template = 'activate_account.html'
-            # if user.activation_code:
-            #    code = user.activation_code
-            # else:
+            mail_template = 'verify_account.html'
             code = self.generate_random_code()
             message = render_to_string(mail_template, {
                 'first_name': user.first_name,
                 'code': code,
             })
-            # base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
-            email = EmailMessage(
-                mail_subject, message, to=(email,),
-            )
-            email.content_subtype = "html"
-            email.send(fail_silently=False)
-            user.activation_code = code
-            user.save(update_fields=['activation_code'])
+            base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
             date_now = datetime.datetime.now(timezone.utc)
             shift = date_now + timedelta(hours=24)
             task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)

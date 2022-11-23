@@ -17,6 +17,7 @@ from subscription.base.serializers import BaseGETAvailableSubscriptionsSerialize
 from shop.models import AuthShop
 from places.models import Country
 from offers.models import Offers
+from notifications.models import Notifications
 from fpdf import FPDF
 from uuid import uuid4
 
@@ -121,32 +122,29 @@ class SubscriptionView(APIView):
                         total_paid = 0
                         available_slots = promo_code_obj.value
                     elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
-                        total_paid = round(nbr_articles_obj.prix_ttc - promo_code_obj.value)
+                        total_paid = round(total_paid - promo_code_obj.value)
                 pdf_output_path = self.generate_pdf(auth_shop, validated_data)
                 if total_paid == 0:
                     requested_subscription.status = 'A'
-                    requested_subscription.save()
+                    # .save calls dispatch signal pre_save
+                    requested_subscription.save(update_fields=['status'])
+                    data = {
+                        'reference_number': validated_data.get('reference_number'),
+                        'total_paid': total_paid,
+                    }
+                    return Response(data=data, status=status.HTTP_200_OK)
+                else:
                     subscribe_user_serializer = BasePOSTSubscribedUsersSerializer(data={
-                        'original_request': requested_subscription.pk,
+                        'original_request': requested_subscription,
                         'available_slots': available_slots,
                         'total_paid': total_paid,
                         'facture': pdf_output_path,
                     })
                     if subscribe_user_serializer.is_valid():
                         subscribe_user_serializer.save()
-                        if promo_code_obj:
+                        if promo_code_obj and not promo_code_obj.usage_unique:
                             promo_code_obj.promo_code_status = 'E'
                             promo_code_obj.save()
-                        data = {
-                            'reference_number': validated_data.get('reference_number'),
-                            'total_paid': total_paid,
-                        }
-                        return Response(data=data, status=status.HTTP_200_OK)
-                    else:
-                        requested_subscription.delete()
-                        raise ValidationError(subscribe_user_serializer.errors)
-                else:
-                    requested_subscription.save()
                     data = {
                         'reference_number': validated_data.get('reference_number'),
                         'total_paid': total_paid,
@@ -231,7 +229,7 @@ class SubscriptionView(APIView):
                 if subscribe_user_serializer.is_valid():
                     subscribe_user_serializer.save()
                     requested_subscription.status = 'P'
-                    requested_subscription.save()
+                    requested_subscription.save(update_fields=['status'])
                     # TODO : enable once test is done
                     # if promo_code_obj:
                     #     promo_code_obj.promo_code_status = 'E'
