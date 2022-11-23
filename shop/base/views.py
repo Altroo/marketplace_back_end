@@ -103,7 +103,7 @@ class ShopView(APIView):
             # Generate new avatar thumbnail
             image_processor = ImageProcessor()
             avatar_file: ContentFile | None = image_processor.data_url_to_uploaded_file(avatar)
-            base_resize_avatar_thumbnail((
+            base_resize_avatar_thumbnail.apply_async((
                 shop.pk,
                 'AuthShop',
                 avatar_file.file if isinstance(avatar_file, ContentFile) else None

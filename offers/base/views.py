@@ -2180,7 +2180,7 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
             final_query = categories_query.union(colors_query, sizes_query, for_whom_query, solder_query, labels_query,
                                                  maroc_query, cities_query, services_query)
             # final_query = (categories_query | colors_query | sizes_query | for_whom_query |
-            #                solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
+            #               solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
             if final_query:
                 return final_query
             return queryset
