@@ -2179,8 +2179,8 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
             services_query = self.get_filter_by_services(queryset)
             final_query = categories_query.union(colors_query, sizes_query, for_whom_query, solder_query, labels_query,
                                                  maroc_query, cities_query, services_query)
-            # final_query = (categories_query | colors_query | sizes_query | for_whom_query |
-            #               solder_query | labels_query | maroc_query | cities_query | services_query).distinct()
+            # final_query = (categories_query | colors_query | sizes_query | for_whom_query | solder_query |
+            #                labels_query | maroc_query | cities_query | services_query).distinct()
             if final_query:
                 return final_query
             return queryset
@@ -2240,9 +2240,9 @@ class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
     def get_filter_by_cities(self, queryset: QuerySet) -> QuerySet:
         cities = self.request.query_params.get('cities', None)
         if cities:
-            q_one: QuerySet = queryset.filter(offer_delivery__delivery_city__name_fr__in=cities.split(','))
-            q_two: QuerySet = queryset.filter(offer_delivery__all_cities=True)
-            return (q_one | q_two).distinct()
+            q_one: QuerySet = queryset.filter(offer_delivery__delivery_city__name_fr__in=cities.split(','),
+                                              offer_delivery__all_cities=True)
+            return q_one
         return Offers.objects.none()
 
     # def custom_paginate_queryset(self, queryset):
