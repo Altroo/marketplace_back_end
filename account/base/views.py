@@ -74,10 +74,10 @@ class FacebookLoginView(SocialLoginView):
         result_msg_user = MessageModel.objects.filter(user=self.user.pk)
         result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
         for i in result_msg_user:
-            if i != self.user.pk:
+            if i.recipient is not None and i != self.user.pk:
                 my_set.add(i.recipient.pk)
         for i in result_msg_recipient:
-            if i != self.user.pk:
+            if i.user is not None and i != self.user.pk:
                 my_set.add(i.user.pk)
         for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
                 .exclude(is_active=False).values_list('id', flat=True):
@@ -120,10 +120,10 @@ class GoogleLoginView(SocialLoginView):
         result_msg_user = MessageModel.objects.filter(user=self.user.pk)
         result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
         for i in result_msg_user:
-            if i != self.user.pk:
+            if i.recipient is not None and i != self.user.pk:
                 my_set.add(i.recipient.pk)
         for i in result_msg_recipient:
-            if i != self.user.pk:
+            if i.user is not None and i != self.user.pk:
                 my_set.add(i.user.pk)
         for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
                 .exclude(is_active=False).values_list('id', flat=True):
@@ -183,6 +183,8 @@ class RegistrationView(APIView):
         })
         if serializer.is_valid():
             user = serializer.save()
+            # Generate user avatar and thumbnail
+            base_generate_user_thumbnail.apply_async((user.pk,), )
             email_address_serializer = BaseRegistrationEmailAddressSerializer(data={
                 'user': user.pk,
                 'email': email,
@@ -197,14 +199,7 @@ class RegistrationView(APIView):
                     'first_name': user.first_name,
                     'code': code
                 })
-                # base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
-                email = EmailMessage(
-                    mail_subject, message, to=(email,)
-                )
-                email.content_subtype = "html"
-                email.send(fail_silently=False)
-                user.activation_code = code
-                user.save(update_fields=['activation_code'])
+                base_send_email.apply_async((user.pk, email, mail_subject, message, code, 'activation_code'), )
                 # Generate refresh token
                 refresh = RefreshToken.for_user(user)
                 date_now = datetime.datetime.now(timezone.utc)
@@ -224,8 +219,6 @@ class RegistrationView(APIView):
                 task_id_activation = base_start_deleting_expired_codes.apply_async((user.pk, 'activation'), eta=shift)
                 user.task_id_activation = str(task_id_activation)
                 user.save(update_fields=['task_id_activation'])
-                # Generate user avatar and thumbnail
-                base_generate_user_thumbnail.apply_async((user.pk,), )
                 return Response(data=data, status=status.HTTP_200_OK)
             raise ValidationError(email_address_serializer.errors)
         raise ValidationError(serializer.errors)
@@ -422,10 +415,10 @@ class LoginView(Dj_rest_login):
         result_msg_user = MessageModel.objects.filter(user=self.user.pk)
         result_msg_recipient = MessageModel.objects.filter(recipient=self.user.pk)
         for i in result_msg_user:
-            if i != self.user.pk:
+            if i.recipient is not None and i != self.user.pk:
                 my_set.add(i.recipient.pk)
         for i in result_msg_recipient:
-            if i != self.user.pk:
+            if i.user is not None and i != self.user.pk:
                 my_set.add(i.user.pk)
         for user_pk in CustomUser.objects.filter(id__in=my_set, status__online=True) \
                 .exclude(is_active=False).values_list('id', flat=True):
@@ -458,11 +451,12 @@ class LogoutView(Dj_rest_logout):
         result_msg_user = MessageModel.objects.filter(user=request.user.pk)
         result_msg_recipient = MessageModel.objects.filter(recipient=request.user.pk)
         for i in result_msg_user:
-            if i != request.user.pk:
+            if i.recipient is not None and i != request.user.pk:
                 my_set.add(i.recipient.pk)
         for i in result_msg_recipient:
-            if i != request.user.pk:
+            if i.user is not None and i != request.user.pk:
                 my_set.add(i.user.pk)
+
         for user_id in CustomUser.objects.filter(id__in=my_set, status__online=True) \
                 .exclude(is_active=False).values_list('id', flat=True):
             if Status.objects.filter(user__id=user_id).exists() and Status.objects.get(user__id=user_id).online:

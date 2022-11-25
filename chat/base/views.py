@@ -80,10 +80,10 @@ class BaseChatUserModelViewSet(ModelViewSet):
         result_msg_user = MessageModel.objects.filter(user=self.request.user)
         result_msg_recipient = MessageModel.objects.filter(recipient=self.request.user)
         for i in result_msg_user:
-            if i != self.request.user.pk:
+            if i.recipient is not None and i != self.request.user.pk:
                 my_set.add(i.recipient.pk)
         for i in result_msg_recipient:
-            if i != self.request.user.pk:
+            if i.user is not None and i != self.request.user.pk:
                 my_set.add(i.user.pk)
 
         def get_blocked_users():

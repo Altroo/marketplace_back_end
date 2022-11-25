@@ -1,10 +1,22 @@
+from allauth.account.utils import perform_login
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 import logging
-
+from account.models import CustomUser
 logger = logging.getLogger(__name__)
 
 
 class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
+    def pre_social_login(self, request, sociallogin):
+        user = sociallogin.user
+        if user.id:
+            return
+        try:
+            customer = CustomUser.objects.get(email=user.email)
+            sociallogin.state['process'] = 'connect'
+            perform_login(request, customer, 'none')
+        except CustomUser.DoesNotExist:
+            pass
+
     def get_app(self, request, provider):
         # NOTE: Avoid loading models at top due to registry boot...
         from allauth.socialaccount.models import SocialApp
