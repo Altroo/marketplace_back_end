@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<style>
+    @font-face {
+        font-family: "Poppins";
+        src: url("https://api.qaryb.com/static/fonts/Poppins-Regular.ttf") format('truetype');
+    }
+
+    @font-face {
+        font-family: "Poppins-Bold";
+        src: url("https://api.qaryb.com/static/fonts/Poppins-Bold.ttf") format('truetype');
+    }
+    @font-face {
+        font-family: "Poppins-Medium";
+        src: url("https://api.qaryb.com/static/fonts/Poppins-Medium.ttf") format('truetype');
+    }
+    @font-face {
+        font-family: "Poppins-ExtraBold";
+        src: url("https://api.qaryb.com/static/fonts/Poppins-ExtraBold.ttf") format('truetype');
+    }
+
+    h1 {
+		    font-family: 'Poppins-ExtraBold', monospace !important;
+    }
+
+    h2 {
+        font-family: 'Poppins-Bold', monospace !important;
+    }
+
+    h3 {
+		    font-family: 'Poppins-Medium', monospace !important;
+    }
+
+    span, h4, td {
+		    font-family: 'Poppins', monospace !important;
+    }
+		.summary {
+      border-collapse: collapse;
+		}
+		.summary td, .summary th {
+		  border: 1px solid rgb(162, 168, 171);
+		}
+		.summary tr td:first-child, td:nth-child(2) {
+		  border-top: 0;
+		}
+		.summary tr:last-child td {
+		  border-bottom: 0;
+		}
+		.summary tr td:first-child,
+		.summary tr th:first-child {
+		  border-left: 0;
+		}
+		.summary tr td:last-child,
+		.summary tr th:last-child {
+		  border-right: 0;
+		}
+</style>
+<body>
+<main style="background-color: #FFFFFF;margin: 30px;width: 670px;display: flex;flex-direction: column;">
+	<div style="display: flex; flex-direction: row;justify-content: space-between">
+		<h1 style="font-size: 40px;font-weight: bold;">WeFind</h1>
+		<div style="display: flex;flex-direction: column;font-size: 15px;text-align: end">
+			<h2 style="font-weight: bold;margin-bottom: 0;">WeFind</h2>
+			<span>Mahaj Ryad Center</span>
+			<span>Imm 8, 5e Étage</span>
+			<span>Hay Ryad</span>
+			<span>Rabat</span>
+		</div>
+	</div>
+	<h3 style="font-size: 32px;margin: 0;">Facture</h3>
+	<table style="width: 300px;">
+		<tr>
+			<td>
+				<h2 style="font-size: 16px;margin-top: 20px;">Détails</h2>
+			</td>
+		</tr>
+		<tr style="color: rgb(162, 168, 171);">
+			<td>
+				<span style="color: rgb(162, 168, 171);">Facture numéro : </span>
+			</td>
+			<td style="text-align: start">
+				<span style="color: #000000">MQ8016-10122</span>
+			</td>
+		</tr>
+		<tr style="color: rgb(162, 168, 171);">
+			<td>
+				<span style="color: rgb(162, 168, 171);">Commande numéro : </span>
+			</td>
+			<td>
+				<span style="color: #000000">MQ1716</span>
+			</td>
+		</tr>
+		<tr style="color: rgb(162, 168, 171);">
+			<td>
+				<span style="color: rgb(162, 168, 171);">Date : </span>
+			</td>
+			<td>
+				<span style="color: #000000">16/11/2022</span>
+			</td>
+		</tr>
+	</table>
+	<div style="margin-top: 50px;"></div>
+	<div style="display: flex; flex-direction: column;">
+		<h2 style="font-weight: bold;font-size: 16px;margin-top: 0;">Facturé à</h2>
+		<span style="font-size: 16px;">Nom prénom Société</span>
+		<span style="font-size: 16px;">ICE: 0000039039303930</span>
+		<span style="font-size: 16px;">20 Rue Mekka appartement 2, Rabat, Maroc</span>
+	</div>
+	<div style="margin-top: 50px;"></div>
+	<table style="font-size: 16px;" class="summary">
+		<tr>
+			<td style="color: rgb(162, 168, 171);">
+				Abonnement Qaryb 18 articles
+			</td>
+			<td style="color: #000000;text-align: end;">
+				MAD 3.300,00
+			</td>
+		</tr>
+		<tr>
+			<td style="color: rgb(162, 168, 171);">
+				Sous-total HT
+			</td>
+			<td style="color: #000000;text-align: end;">
+				MAD 3.300,00
+			</td>
+		</tr>
+		<tr>
+			<td style="color: rgb(162, 168, 171);">
+				20,00%
+			</td>
+			<td style="color: #000000;text-align: end;">
+				MAD 660,00
+			</td>
+		</tr>
+		<tr>
+			<td style="color: rgb(162, 168, 171);">
+				Total TTC
+			</td>
+			<td style="color: #000000;text-align: end;">
+				MAD 3.960,00
+			</td>
+		</tr>
+	</table>
+	<div style="margin-top: 50px;border-bottom: 2px solid black;margin-bottom: 20px;"></div>
+	<div style="display: flex;flex-direction: column;align-items: center;text-align: center">
+		<h3 style="color: rgb(162, 168, 171);font-size: 14px;margin-bottom: 7px;">WEFIND - SARL</h3>
+		<h3 style="color: rgb(162, 168, 171);font-size: 14px;margin-top: 0;padding-top: 0;">RC: 156047, IF: 50651854, TP: 25709226, ICE: 002916937000008</h3>
+	</div>
+</main>
+</body>
+</html>
