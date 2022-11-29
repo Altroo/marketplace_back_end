@@ -83,7 +83,10 @@ class CitiesListView(PlaceLanguageMixin, ListAPIView):
         data = []
         for obj in serializer.data:
             for k, v in obj.items():
-                data.append(v)
+                if v == 'Tout le maroc':
+                    data.insert(0, v)
+                else:
+                    data.append(v)
         # return Response({'name_tag': data})
         return Response(data=data, status=status.HTTP_200_OK)
 
