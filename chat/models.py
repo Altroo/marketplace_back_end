@@ -15,7 +15,7 @@ from shop.base.utils import ImageProcessor
 
 def chat_img_directory_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/chat/', str(uuid4()) + file_extension)
+    return path.join('chat/', str(uuid4()) + file_extension)
 
 
 # TODO change to just Message

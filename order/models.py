@@ -13,17 +13,17 @@ from io import BytesIO
 
 def get_fallback_shop_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/fallback_shop_avatars/', str(uuid4()) + file_extension)
+    return path.join('fallback_shop_avatars/', str(uuid4()) + file_extension)
 
 
 def get_fallback_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/fallback_shop_offers/', str(uuid4()) + file_extension)
+    return path.join('fallback_shop_offers/', str(uuid4()) + file_extension)
 
 
 def get_fallback_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/fallback_user_avatars/', str(uuid4()) + file_extension)
+    return path.join('fallback_user_avatars/', str(uuid4()) + file_extension)
 
 
 class Order(Model):

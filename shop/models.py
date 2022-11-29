@@ -12,12 +12,12 @@ from account.models import CustomUser
 
 def get_shop_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/shop_avatars/', str(uuid4()) + file_extension)
+    return path.join('shop_avatars/', str(uuid4()) + file_extension)
 
 
 def get_shop_qr_code_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/shop_qrcodes/', str(uuid4()) + file_extension)
+    return path.join('shop_qrcodes/', str(uuid4()) + file_extension)
 
 
 class ShopChoices:

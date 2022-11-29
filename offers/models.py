@@ -13,12 +13,12 @@ from places.models import City, Country
 
 def get_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/shop_offers/', str(uuid4()) + file_extension)
+    return path.join('shop_offers/', str(uuid4()) + file_extension)
 
 
 def get_fallback_shop_offers_path(instance, filename):
     filename, file_extension = path.splitext(filename)
-    return path.join('media/fallback_shop_offers/', str(uuid4()) + file_extension)
+    return path.join('fallback_shop_offers/', str(uuid4()) + file_extension)
 
 
 class OfferChoices:
