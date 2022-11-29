@@ -1029,6 +1029,7 @@ class CheckAccountView(APIView):
             shop_url = shop.qaryb_link
             is_creator = shop.creator
             try:
+                # TODO fix duplicate
                 subscription = SubscribedUsers.objects.get(original_request__auth_shop=shop.pk)
                 present = dj_timezone.now()
                 if present < subscription.expiration_date:
@@ -1169,6 +1170,7 @@ class DashboardView(APIView):
     @staticmethod
     def get_is_subscribed_and_slots(user_pk, already_indexed_count):
         try:
+            # TODO fix duplicate
             subscription = SubscribedUsers.objects.get(original_request__auth_shop__user__pk=user_pk)
             available_slots = subscription.available_slots
             present = dj_timezone.now()

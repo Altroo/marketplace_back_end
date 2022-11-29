@@ -15,10 +15,10 @@ class CustomAvailableSubscriptionAdmin(ModelAdmin):
 class CustomRequestedSubscriptionAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'subscription',
                     'first_name',
-                    'last_name', 'reference_number',
+                    'last_name', 'reference_number', 'facture_number',
                     'status', 'created_date', 'updated_date')
     search_fields = ('pk', 'auth_shop', 'subscription',
-                     'reference_number', 'company', 'ice', 'first_name',
+                     'reference_number', 'facture_number', 'company', 'ice', 'first_name',
                      'last_name', 'adresse', 'city', 'code_postal',
                      'country__name_fr', 'promo_code__promo_code',
                      'status', 'created_date', 'updated_date')

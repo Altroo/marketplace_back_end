@@ -21,7 +21,25 @@ class BasePOSTRequestSubscriptionSerializer(serializers.ModelSerializer):
         fields = ['auth_shop', 'subscription',
                   'company', 'ice', 'first_name', 'last_name',
                   'adresse', 'city', 'code_postal', 'country',
-                  'promo_code', 'payment_type', 'reference_number']
+                  'promo_code', 'payment_type', 'reference_number', 'facture_number']
+        extra_kwargs = {
+            'pk': {'read_only': True},
+        }
+
+
+class BasePOSTAsPutRequestSubscriptionSerializer(serializers.ModelSerializer):
+    company = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    ice = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+
+    class Meta:
+        model = RequestedSubscriptions
+        fields = ['auth_shop', 'subscription',
+                  'company', 'ice', 'first_name', 'last_name',
+                  'adresse', 'city', 'code_postal', 'country',
+                  'promo_code', 'payment_type', 'reference_number', 'facture_number', 'remaining_to_pay']
+        extra_kwargs = {
+            'pk': {'read_only': True},
+        }
 
 
 class BasePUTRequestSubscriptionSerializer(serializers.ModelSerializer):
@@ -33,20 +51,25 @@ class BasePUTRequestSubscriptionSerializer(serializers.ModelSerializer):
         fields = ['subscription',
                   'company', 'ice', 'first_name', 'last_name',
                   'adresse', 'city', 'code_postal', 'country',
-                  'promo_code', 'payment_type']
+                  'promo_code', 'payment_type', 'reference_number', 'facture_number']
+        extra_kwargs = {
+            'pk': {'read_only': True},
+        }
 
 
 class BasePOSTSubscribedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribedUsers
-        fields = ['original_request', 'available_slots',
-                  'total_paid', 'facture']
+        fields = ['pk', 'original_request', 'available_slots', 'total_paid']
+        extra_kwargs = {
+            'pk': {'read_only': True},
+        }
 
 
 class BasePUTSubscribedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribedUsers
-        fields = ['available_slots', 'total_paid', 'facture', 'expiration_date']
+        fields = ['available_slots', 'total_paid', 'expiration_date']
 
 
 class BaseGETCurrentUserSubscription(serializers.Serializer):

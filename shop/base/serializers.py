@@ -55,6 +55,7 @@ class BaseGETShopInfoSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_is_subscribed(instance):
         try:
+            # TODO fix duplicate
             subscription = SubscribedUsers.objects.get(original_request__auth_shop=instance.pk)
             present = timezone.now()
             if present < subscription.expiration_date:

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Facture</title>
+	<title>Title</title>
 </head>
 <style>
     @font-face {
@@ -96,7 +96,7 @@
 		</tr>
 	</table>
 	<h3 style="font-size: 32px;margin: 0;">Facture</h3>
-	<table style="width: 400px;">
+	<table style="width: 300px;">
 		<tr>
 			<td>
 				<h2 style="font-size: 16px;margin-top: 20px;">Détails</h2>
@@ -107,7 +107,7 @@
 				<span style="color: rgb(162, 168, 171);">Facture numéro : </span>
 			</td>
 			<td style="text-align: start">
-				<span style="color: #000000">{{facture_numero}}</span>
+				<span style="color: #000000">MQ8016-10122</span>
 			</td>
 		</tr>
 		<tr style="color: rgb(162, 168, 171);">
@@ -115,7 +115,7 @@
 				<span style="color: rgb(162, 168, 171);">Commande numéro : </span>
 			</td>
 			<td>
-				<span style="color: #000000">{{reference_number}}</span>
+				<span style="color: #000000">MQ1716</span>
 			</td>
 		</tr>
 		<tr style="color: rgb(162, 168, 171);">
@@ -123,7 +123,7 @@
 				<span style="color: rgb(162, 168, 171);">Date : </span>
 			</td>
 			<td>
-				<span style="color: #000000">{{created_date}}</span>
+				<span style="color: #000000">16/11/2022</span>
 			</td>
 		</tr>
 	</table>
@@ -136,17 +136,17 @@
 		</tr>
 		<tr>
 			<td>
-				<span style="font-size: 16px;">{{first_name}} {{last_name}} {{company}}</span>
+				<span style="font-size: 16px;">Nom prénom Société</span>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<span style="font-size: 16px;">ICE: {{ice}}</span>
+				<span style="font-size: 16px;">ICE: 0000039039303930</span>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<span style="font-size: 16px;">{{adresse}} {{code_postal}}, {{city}}, {{country}}</span>
+				<span style="font-size: 16px;">20 Rue Mekka appartement 2, Rabat, Maroc</span>
 			</td>
 		</tr>
 	</table>
@@ -154,10 +154,10 @@
 	<table style="font-size: 16px;width: 100%" class="summary">
 		<tr>
 			<td style="color: rgb(162, 168, 171);">
-				Abonnement Qaryb {{nbr_article}} article(s)
+				Abonnement Qaryb 18 articles
 			</td>
 			<td style="color: #000000;text-align: end;">
-				MAD {{prix_ht}}
+				MAD 3.300,00
 			</td>
 		</tr>
 		<tr>
@@ -165,7 +165,7 @@
 				Sous-total HT
 			</td>
 			<td style="color: #000000;text-align: end;">
-				MAD {{prix_ht}}
+				MAD 3.300,00
 			</td>
 		</tr>
 		<tr>
@@ -173,7 +173,7 @@
 				20,00%
 			</td>
 			<td style="color: #000000;text-align: end;">
-				MAD {{tva}}
+				MAD 660,00
 			</td>
 		</tr>
 		<tr>
@@ -181,7 +181,7 @@
 				Total TTC
 			</td>
 			<td style="color: #000000;text-align: end;">
-				MAD {{prix_ttc}}
+				MAD 3.960,00
 			</td>
 		</tr>
 	</table>
