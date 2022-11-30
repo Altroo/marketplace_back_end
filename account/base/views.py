@@ -10,7 +10,6 @@ from dj_rest_auth.registration.views import SocialLoginView
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousFileOperation
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMessage
 from django.db.models import Count
 from django.template.loader import render_to_string
 from rest_framework import permissions, status
@@ -29,7 +28,7 @@ from account.base.serializers import BaseRegistrationSerializer, BasePasswordRes
     BaseUserAddressSerializer, BaseUserAddressesListSerializer, BaseUserAddressPutSerializer, \
     BaseSocialAccountSerializer, BaseEnclosedAccountsSerializer, BaseEmailPutSerializer, \
     BaseRegistrationEmailAddressSerializer, BaseDeletedAccountsSerializer, \
-    BaseProfileGETProfilByUserIDSerializer
+    BaseProfileGETProfilByUserIDSerializer, BaseChangePasswordSerializer
 from account.base.tasks import base_generate_user_thumbnail, base_mark_every_messages_as_read, \
     base_delete_user_media_files, base_send_email, base_start_deleting_expired_codes
 from account.models import CustomUser, BlockedUsers, UserAddress
@@ -40,8 +39,7 @@ from shop.models import AuthShop
 from shop.base.utils import ImageProcessor
 from shop.base.tasks import base_resize_avatar_thumbnail
 from places.models import City, Country
-from dj_rest_auth.views import PasswordChangeView
-from dj_rest_auth.views import LoginView as Dj_rest_login
+from dj_rest_auth.views import LoginView as Dj_rest_login, PasswordChangeView
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
@@ -154,11 +152,39 @@ class GetSocialAccountListView(SocialAccountListView):
     pagination_class = None
 
 
-class ChangePasswordView(PasswordChangeView):
+# class ChangePasswordView(PasswordChangeView):
+#     # TODO override default view with custom view
+#     def post(self, request, *args, **kwargs):
+#         super(ChangePasswordView, self).post(request, *args, **kwargs)
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def post(self, request, *args, **kwargs):
-        super(ChangePasswordView, self).post(request, *args, **kwargs)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ChangePasswordView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    @staticmethod
+    def put(request, *args, **kwargs):
+        serializer = BaseChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            # Check old password
+            old_password = serializer.data.get("old_password")
+            new_password = serializer.data.get("new_password")
+            new_password2 = serializer.data.get("new_password2")
+            user = request.user
+            if not user.check_password(old_password):
+                errors = {"old_password": ["Votre mot de passe est invalide."]}
+                raise ValidationError(errors)
+            if new_password != new_password2:
+                errors = {"new_password2": ["Les mots de passe ne correspondent pas."]}
+                raise ValidationError(errors)
+            if len(new_password) < 8:
+                errors = {"new_password": ["Ce mot de passe est trop court. Il doit contenir au moins 8 caractères."]}
+                raise ValidationError(errors)
+            # set_password also hashes the password that the user will get
+            user.set_password(serializer.data.get("new_password"))
+            user.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        raise ValidationError(serializer.errors)
 
 
 class RegistrationView(APIView):
@@ -592,7 +618,7 @@ class ProfileView(APIView):
                 'CustomUser',
                 avatar_file.file if isinstance(avatar_file, ContentFile)
                 else None
-            ),)
+            ), )
             data['pk'] = user_pk
             data['avatar'] = updated_account.get_absolute_avatar_img
             data['city'] = updated_account.city

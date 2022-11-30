@@ -7,6 +7,23 @@ from places.base.serializers import BaseCountriesSerializer
 from places.models import Country
 
 
+class BaseChangePasswordSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    new_password2 = serializers.CharField(required=True)
+
+    @staticmethod
+    def validate_new_password(value):
+        validate_password(value)
+        return value
+
+
 class BaseSocialAccountSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     provider = serializers.CharField()
