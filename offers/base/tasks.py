@@ -7,8 +7,7 @@ from channels.layers import get_channel_layer
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from offers.models import Offers, OfferVue
-from shop.models import AuthShop, ModeVacance
-from account.models import CustomUser
+from shop.models import ModeVacance
 from shop.base.utils import ImageProcessor
 
 logger = get_task_logger(__name__)
@@ -146,21 +145,22 @@ def generate_images_v2(query_, picture: BytesIO, picture_name: str):
     img, thumb = resize_images_v2(picture)
     query_.save_image(picture_name, img)
     query_.save_image('{}_thumbnail'.format(picture_name), thumb)
-    user_pk = query_.auth_shop.user.pk
-    query_pk = query_.pk
-    match picture_name:
-        case 'picture_1':
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_img, 'OFFER_PICTURE_1')
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_thumbnail, 'OFFER_PICTURE_1_THUMB')
-        case 'picture_2':
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_img, 'OFFER_PICTURE_2')
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_thumbnail, 'OFFER_PICTURE_2_THUMB')
-        case 'picture_3':
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_img, 'OFFER_PICTURE_3')
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_thumbnail, 'OFFER_PICTURE_3_THUMB')
-        case 'picture_4':
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_img, 'OFFER_PICTURE_4')
-            send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_thumbnail, 'OFFER_PICTURE_4_THUMB')
+    if picture_name != 'avatar':
+        user_pk = query_.auth_shop.user.pk
+        query_pk = query_.pk
+        match picture_name:
+            case 'picture_1':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_img, 'OFFER_PICTURE_1')
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_thumbnail, 'OFFER_PICTURE_1_THUMB')
+            case 'picture_2':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_img, 'OFFER_PICTURE_2')
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_thumbnail, 'OFFER_PICTURE_2_THUMB')
+            case 'picture_3':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_img, 'OFFER_PICTURE_3')
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_thumbnail, 'OFFER_PICTURE_3_THUMB')
+            case 'picture_4':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_img, 'OFFER_PICTURE_4')
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_thumbnail, 'OFFER_PICTURE_4_THUMB')
 
 # @app.task(bind=True)
 # def base_resize_offer_images(self, offer_pk: int,

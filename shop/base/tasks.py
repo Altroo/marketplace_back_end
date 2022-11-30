@@ -7,7 +7,7 @@ from shop.models import AuthShop, ModeVacance
 from offers.base.tasks import generate_images_v2
 from os import path
 from account.models import CustomUser
-
+from time import sleep
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))

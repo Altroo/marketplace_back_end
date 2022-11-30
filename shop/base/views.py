@@ -229,7 +229,7 @@ class ShopAvatarPutView(APIView):
                     shop.pk,
                     'AuthShop',
                     avatar_file.file if isinstance(avatar_file, ContentFile) else None
-                ),)
+                ), )
 
                 data = {
                     'avatar': shop.get_absolute_avatar_img,
