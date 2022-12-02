@@ -39,7 +39,7 @@ from shop.models import AuthShop
 from shop.base.utils import ImageProcessor
 from shop.base.tasks import base_resize_avatar_thumbnail
 from places.models import City, Country
-from dj_rest_auth.views import LoginView as Dj_rest_login, PasswordChangeView
+from dj_rest_auth.views import LoginView as Dj_rest_login
 from dj_rest_auth.views import LogoutView as Dj_rest_logout
 from chat.models import Status, MessageModel
 from dj_rest_auth.registration.views import SocialConnectView, SocialAccountListView
@@ -1182,10 +1182,12 @@ class DashboardView(APIView):
             last_month_total_vues = 0
         if last_month_total_vues != 0 and this_month_total_vues != 0:
             pourcentage = int((this_month_total_vues - last_month_total_vues) / last_month_total_vues * 100)
-            if pourcentage > 0:
-                pourcentage = '+' + str(pourcentage).replace('+', '') + '%'
+            if pourcentage == 0:
+                pourcentage = '0%'
+            elif pourcentage > 0:
+                pourcentage = f'+{pourcentage}%'
             else:
-                pourcentage = '-' + str(pourcentage).replace('-', '') + '%'
+                pourcentage = f'-{pourcentage}%'
         else:
             pourcentage = '0%'
         return {

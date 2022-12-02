@@ -27,10 +27,12 @@ class GetMyVuesPagination(PageNumberPagination):
             last_month_total_vues = 0
         if last_month_total_vues != 0 and this_month_total_vues != 0:
             pourcentage = int((this_month_total_vues - last_month_total_vues) / last_month_total_vues * 100)
-            if pourcentage > 0:
-                pourcentage = '+' + str(pourcentage).replace('+', '') + '%'
+            if pourcentage == 0:
+                pourcentage = '0%'
+            elif pourcentage > 0:
+                pourcentage = f'+{pourcentage}%'
             else:
-                pourcentage = '-' + str(pourcentage).replace('-', '') + '%'
+                pourcentage = f'-{pourcentage}%'
         else:
             pourcentage = '0%'
 
