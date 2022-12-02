@@ -12,7 +12,7 @@ ALLOWED_HOSTS = [
     'localhost',
     config('API_IP'),
     config('API_DOMAIN'),
-    config('FRONT_IP'),
+    # config('FRONT_IP'),
 ]
 
 # SSL secure proxy config
@@ -77,7 +77,7 @@ CORS_ORIGIN_WHITELIST = (
     'https://dev.qaryb.com',
     'https://qaryb.com',
     'https://www.qaryb.com',
-    'http://91.121.63.229:3000',
+    # 'http://91.121.63.229:3000',
 )
 
 # Root url, asgi & wsgi config
