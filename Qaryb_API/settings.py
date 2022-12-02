@@ -12,7 +12,7 @@ ALLOWED_HOSTS = [
     'localhost',
     config('API_IP'),
     config('API_DOMAIN'),
-    config('FRONT_IP'),
+    # config('FRONT_IP'),
 ]
 
 # SSL secure proxy config
