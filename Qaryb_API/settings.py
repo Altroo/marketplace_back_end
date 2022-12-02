@@ -76,7 +76,8 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
     'https://dev.qaryb.com',
     'https://qaryb.com',
-    # 'http://141.94.243.141:3000',
+    'https://www.qaryb.com',
+    'http://91.121.63.229:3000',
 )
 
 # Root url, asgi & wsgi config
