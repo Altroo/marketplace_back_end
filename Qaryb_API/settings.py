@@ -72,9 +72,9 @@ MIDDLEWARE = [
 # CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
-    'https://localhost:3000',
+    # 'https://localhost:3000',
     'http://localhost:3000',
-    'https://dev.qaryb.com',
+    # 'https://dev.qaryb.com',
     'https://qaryb.com',
     'https://www.qaryb.com',
     # 'http://91.121.63.229:3000',
