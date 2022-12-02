@@ -11,15 +11,13 @@ from subscription.models import AvailableSubscription, \
     PromoCodes, SubscribedUsers, get_facture_path, IndexedArticles
 from subscription.base.serializers import BaseGETAvailableSubscriptionsSerializer, \
     BasePOSTRequestSubscriptionSerializer, BasePOSTSubscribedUsersSerializer, \
-    BaseGETCurrentUserSubscription, BasePUTRequestSubscriptionSerializer, \
-    BasePUTSubscribedUsersSerializer, BaseGETIndexedArticlesList, BaseGETAvailableArticlesList, \
+    BaseGETCurrentUserSubscription, \
+    BaseGETIndexedArticlesList, BaseGETAvailableArticlesList, \
     BasePOSTIndexArticlesSerializer
 from shop.models import AuthShop
 from places.models import Country
 from offers.models import Offers
 from notifications.models import Notifications
-from fpdf import FPDF
-from uuid import uuid4
 from subscription.base.tasks import base_generate_pdf
 
 
@@ -58,18 +56,18 @@ class SubscriptionView(APIView):
     #     pdf.output(pdf_output_path)
     #     return pdf_output_path
 
-    @staticmethod
-    def update_pdf(auth_shop, db_data):
-        # generate pdf
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font('Arial', 'B', 16)
-        pdf.cell(200, 10, txt='Nom boutique : ' + auth_shop.shop_name, ln=1, align='L')
-        pdf.cell(200, 10, txt='Reference number : ' + db_data.reference_number, ln=2, align='L')
-        base_path = get_facture_path()
-        pdf_output_path = "{}{}.{}".format(base_path, uuid4(), 'pdf')
-        pdf.output(pdf_output_path)
-        return pdf_output_path
+    # @staticmethod
+    # def update_pdf(auth_shop, db_data):
+    #     # generate pdf
+    #     pdf = FPDF()
+    #     pdf.add_page()
+    #     pdf.set_font('Arial', 'B', 16)
+    #     pdf.cell(200, 10, txt='Nom boutique : ' + auth_shop.shop_name, ln=1, align='L')
+    #     pdf.cell(200, 10, txt='Reference number : ' + db_data.reference_number, ln=2, align='L')
+    #     base_path = get_facture_path()
+    #     pdf_output_path = "{}{}.{}".format(base_path, uuid4(), 'pdf')
+    #     pdf.output(pdf_output_path)
+    #     return pdf_output_path
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -105,7 +103,26 @@ class SubscriptionView(APIView):
             payment_type = request.data.get('payment_type')
             reference_number = self.generate_reference_number(auth_shop.pk)
             facture_number = self.generate_facture_number(user.pk)
+
+            # calculate price
+            total_paid = nbr_articles_obj.prix_ttc
+            available_slots = nbr_articles_obj.nbr_article
+            if promo_code_obj:
+                if promo_code_obj.promo_code_status == 'E':
+                    return
+                elif promo_code_obj.type_promo_code == 'S' and promo_code_obj.value is not None:
+                    total_paid = 0
+                    available_slots = promo_code_obj.value
+                elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
+                    total_paid = round(total_paid - promo_code_obj.value)
+
+            subscription_status = 'P'
+            if total_paid == 0:
+                # Auto accept
+                subscription_status = 'A'
+
             requested_subscription_serializer = BasePOSTRequestSubscriptionSerializer(data={
+                'status': subscription_status,
                 'auth_shop': auth_shop.pk,
                 'subscription': nbr_articles_obj.pk,
                 'company': company,
@@ -121,21 +138,9 @@ class SubscriptionView(APIView):
                 'reference_number': reference_number,
                 'facture_number': facture_number,
             })
+
             if requested_subscription_serializer.is_valid():
                 requested_subscription = requested_subscription_serializer.save()
-                validated_data = requested_subscription_serializer.validated_data
-                # calculate price
-                total_paid = nbr_articles_obj.prix_ttc
-                available_slots = nbr_articles_obj.nbr_article
-                if promo_code_obj:
-                    if promo_code_obj.promo_code_status == 'E':
-                        return
-                    elif promo_code_obj.type_promo_code == 'S' and promo_code_obj.value is not None:
-                        total_paid = 0
-                        available_slots = promo_code_obj.value
-                    elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
-                        total_paid = round(total_paid - promo_code_obj.value)
-
                 free_data = {
                     'facture_numero': facture_number,
                     'reference_number': reference_number,
@@ -155,10 +160,6 @@ class SubscriptionView(APIView):
                 }
                 # subscribed using promo code slots, free
                 if total_paid == 0:
-                    # auto accept
-                    requested_subscription.status = 'A'
-                    # .save calls dispatch signal post_save
-                    requested_subscription.save(update_fields=['status'])
                     subscribe_user_serializer = BasePOSTSubscribedUsersSerializer(data={
                         'original_request': requested_subscription.pk,
                         'available_slots': available_slots,
@@ -174,32 +175,99 @@ class SubscriptionView(APIView):
                             promo_code_obj.save()
                         Notifications.objects.create(user=user, type='SA')
                         output_data = {
-                            'reference_number': validated_data.get('reference_number'),
+                            'reference_number': reference_number,
                             'total_paid': total_paid,
                         }
                         return Response(data=output_data, status=status.HTTP_200_OK)
                     # requested_subscription.delete()
                     raise ValidationError(subscribe_user_serializer.errors)
+                # Subscribed via virement
                 else:
-                    # subscribe_user_serializer = BasePOSTSubscribedUsersSerializer(data={
-                    #     'original_request': requested_subscription.pk,
-                    #     'available_slots': available_slots,
-                    #     'total_paid': total_paid,
-                    # })
-                    # if subscribe_user_serializer.is_valid():
-                    #     subscribe_user_serializer.save()
-                    #     subscription_pk = subscribe_user_serializer.data.get('pk')
-                    #     base_generate_pdf.apply_async((user.pk, data, subscription_pk), )
-                    #     if promo_code_obj and not promo_code_obj.usage_unique:
-                    #         promo_code_obj.promo_code_status = 'E'
-                    #         promo_code_obj.save()
+                    # Rest of cases handled on post_receive
                     output_data = {
-                        'reference_number': validated_data.get('reference_number'),
+                        'reference_number': reference_number,
                         'total_paid': total_paid,
                     }
                     return Response(data=output_data, status=status.HTTP_200_OK)
-                    # requested_subscription.delete()
-                    # raise ValidationError(subscribe_user_serializer.errors)
+            raise ValidationError(requested_subscription_serializer.errors)
+        except AuthShop.DoesNotExist:
+            errors = {"error": ["Shop not found."]}
+            raise ValidationError(errors)
+
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            auth_shop = AuthShop.objects.get(user=user)
+            nbr_article = request.data.get('nbr_article')
+            company = request.data.get('company', '')
+            ice = request.data.get('ice', '')
+            first_name = request.data.get('first_name', '')
+            last_name = request.data.get('last_name', '')
+            adresse = request.data.get('adresse', '')
+            city = request.data.get('city', '')
+            code_postal = request.data.get('code_postal', '')
+            country = request.data.get('country')
+            try:
+                country_obj = Country.objects.get(name_fr=country)
+            except Country.DoesNotExist:
+                country_obj = Country.objects.get(name_fr='Maroc')  # fallback
+            promo_code = request.data.get('promo_code')
+            promo_code_obj = None
+            try:
+                promo_code_obj = PromoCodes.objects.get(promo_code=promo_code)
+            except PromoCodes.DoesNotExist:
+                pass
+                # errors = {"error": ["Promo code non valid."]}
+                # raise ValidationError(errors)
+                # promo_code_obj = None
+            try:
+                nbr_articles_obj = AvailableSubscription.objects.get(nbr_article=nbr_article)
+            except AvailableSubscription.DoesNotExist:
+                errors = {"error": ["Cette formule n'existe pas."]}
+                raise ValidationError(errors)
+            payment_type = request.data.get('payment_type')
+            reference_number = self.generate_reference_number(auth_shop.pk)
+            facture_number = self.generate_facture_number(user.pk)
+            subscribed_user = SubscribedUsers.objects.get(original_request__auth_shop__user=user)
+            previous_expiration_date = subscribed_user.expiration_date
+            remaining_days = previous_expiration_date - timezone.now()
+            remaining_to_pay = round(remaining_days.days * (nbr_articles_obj.prix_ttc / 365))
+
+            # calculate price
+            if promo_code_obj:
+                if promo_code_obj.promo_code_status == 'E' or promo_code_obj.promo_code_status == 'S':
+                    return
+                elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
+                    remaining_to_pay = round(remaining_to_pay - promo_code_obj.value)
+
+            requested_subscription_serializer = BasePOSTRequestSubscriptionSerializer(data={
+                'status': 'P',  # Pending for new upgrade
+                'auth_shop': auth_shop.pk,
+                'subscription': nbr_articles_obj.pk,
+                'company': company,
+                'ice': ice,
+                'first_name': first_name,
+                'last_name': last_name,
+                'adresse': adresse,
+                'city': city,
+                'code_postal': code_postal,
+                'country': country_obj.pk,
+                'promo_code': promo_code_obj.pk if promo_code_obj else None,
+                'payment_type': payment_type,
+                'reference_number': reference_number,
+                'facture_number': facture_number,
+                'remaining_to_pay': remaining_to_pay,
+            })
+
+            if requested_subscription_serializer.is_valid():
+                requested_subscription_serializer.save()
+                # Subscribed via virement
+                # Rest of cases handled on post_receive
+                output_data = {
+                    'reference_number': reference_number,
+                    'total_paid': remaining_to_pay,
+                }
+                return Response(data=output_data, status=status.HTTP_200_OK)
             raise ValidationError(requested_subscription_serializer.errors)
         except AuthShop.DoesNotExist:
             errors = {"error": ["Shop not found."]}
@@ -210,6 +278,8 @@ class SubscriptionView(APIView):
     #     try:
     #         # TODO fix duplicate
     #         subscribed_user = SubscribedUsers.objects.get(original_request__auth_shop__user=user)
+    #         subscribed_user = SubscribedUsers.objects.filter(original_request__auth_shop__user=user).order_by(
+    #             'expiration_date').first()
     #         nbr_article = request.data.get('nbr_article')
     #         company = request.data.get('company', '')
     #         ice = request.data.get('ice', '')

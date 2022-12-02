@@ -117,8 +117,8 @@ class RequestedSubscriptions(Model):
     status = models.CharField(verbose_name='Status', max_length=1,
                               choices=SubscriptionChoices.SUBSCRIPTION_STATUS,
                               default='P')
-    # remaining_to_pay = models.PositiveIntegerField(verbose_name="Remaining to pay", blank=True, null=True,
-    #                                                default=0)
+    remaining_to_pay = models.PositiveIntegerField(verbose_name="Remaining to pay", blank=True, null=True,
+                                                   default=0)
     created_date = models.DateTimeField(verbose_name='Order date', editable=False,
                                         auto_now_add=True,
                                         db_index=True)
@@ -136,23 +136,84 @@ class RequestedSubscriptions(Model):
 @receiver(post_save, sender=RequestedSubscriptions)
 def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscriptions], created, raw, using, update_fields,
                          **kwargs):
-    print(sender)
-    print(instance)
-    print(created)
-    print(raw)
-    print(using)
-    print(update_fields)
-    print(kwargs)
-    print('pk : ', instance.pk)
-    if not created and instance.status == 'A' and update_fields is not None and 'status' not in update_fields:
+    manual_update = False
+    manual_upgrade = False
+    if not created:
+        user_original_subscription = SubscribedUsers.objects.filter(
+            original_request__auth_shop__user=instance.auth_shop.user,
+            original_request__status='A').count()
+        if instance.status == 'A':  # Accepted proceed to manual subscription (could be new or upgrade)
+            manual_update = True
+            if user_original_subscription > 0:
+                manual_update = False
+                manual_upgrade = True
+        elif instance.status == 'R':
+            manual_update = False  # Rejected !proceed to manual subscription
+            manual_upgrade = False
+        elif instance.status == 'P':
+            manual_update = False
+            manual_upgrade = False
+
+    # Checking if updating via admin panel
+    if manual_upgrade:
+        original_subscription = SubscribedUsers.objects.get(original_request__auth_shop__user=instance.auth_shop.user)
+        remaining_to_pay = instance.remaining_to_pay
+        available_slots = instance.subscription.nbr_article + original_subscription.available_slots
+        total_paid = round(original_subscription.total_paid + remaining_to_pay)
+        promo_code_obj = instance.promo_code
+        if promo_code_obj:
+            if promo_code_obj.promo_code_status == 'E' or promo_code_obj.promo_code_status == 'S':
+                return
+            elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
+                total_paid = round(remaining_to_pay - promo_code_obj.value) + \
+                             original_subscription.total_paid
+                remaining_to_pay = round(remaining_to_pay - promo_code_obj.value)
+
+        recalculated_ttc = remaining_to_pay
+        recalculate_tva = (remaining_to_pay * 20) / 100
+        recalculated_ht = recalculated_ttc - recalculate_tva
+
+        data = {
+            'facture_numero': instance.facture_number,
+            'reference_number': instance.reference_number,
+            'created_date': instance.created_date,
+            'first_name': instance.first_name,
+            'last_name': instance.last_name,
+            'company': instance.company if instance.company is not None else '',
+            'ice': instance.ice if instance.ice is not None else '',
+            'adresse': instance.adresse,
+            'code_postal': instance.code_postal,
+            'city': instance.city,
+            'country': instance.country.name_fr,
+            'nbr_article': instance.subscription.nbr_article,
+            'prix_ht': recalculated_ht,
+            'tva': recalculate_tva,
+            'prix_ttc': recalculated_ttc,
+        }
+        # Keep the old subscription request
+
+        original_subscription.original_request = instance  # one to one will delete old subscription
+        original_subscription.available_slots = available_slots
+        original_subscription.total_paid = total_paid
+
+        # Expiration date remains the same
+        original_subscription.save(
+            update_fields=['original_request',
+                           'available_slots',
+                           'total_paid']
+        )
+        # old_instance.delete()
+        base_generate_pdf.apply_async((instance.auth_shop.user.pk, data, original_subscription), )
+        Notifications.objects.create(user=instance.auth_shop.user, type='SA')  # Should be notification type upgrade
+        if promo_code_obj and promo_code_obj.usage_unique and promo_code_obj.type_promo_code == 'P':
+            promo_code_obj.promo_code_status = 'E'
+            promo_code_obj.save()
+
+    if manual_update:
         try:
-            # TODO - missing upgreade case
-            # Upgrade subscription case
             SubscribedUsers.objects.get(original_request=instance.pk)
             Notifications.objects.create(user=instance.auth_shop.user, type='SA')
-            print('SubscribedUsers try created via signal')
         except SubscribedUsers.DoesNotExist:
-            print('SubscribedUsers catch created via signal')
             # Manual subscription case
             total_paid = instance.subscription.prix_ttc
             available_slots = instance.subscription.nbr_article
@@ -165,10 +226,6 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
                     available_slots = promo_code_obj.value
                 elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
                     total_paid = round(total_paid - promo_code_obj.value)
-
-            # tva = ((instance.subscription.prix_ttc -
-            #         instance.subscription.prix_ht) -
-            #        promo_code_obj.value if promo_code_obj and promo_code_obj.value is not None else 0)
 
             tva = (instance.subscription.prix_ttc - instance.subscription.prix_ht) - (
                 promo_code_obj.value if (promo_code_obj and promo_code_obj.value) is not None else 0)

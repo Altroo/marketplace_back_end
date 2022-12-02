@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from subscription.models import AvailableSubscription, RequestedSubscriptions, \
     SubscribedUsers, IndexedArticles
-
+from django.utils import timezone
 
 class BaseGETAvailableSubscriptionsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,15 +15,18 @@ class BaseGETAvailableSubscriptionsSerializer(serializers.ModelSerializer):
 class BasePOSTRequestSubscriptionSerializer(serializers.ModelSerializer):
     company = serializers.CharField(allow_null=True, allow_blank=True, required=False)
     ice = serializers.CharField(allow_null=True, allow_blank=True, required=False)
+    created_date = serializers.DateTimeField(format="%d/%m/%Y %H:%M:%S", read_only=True)
 
     class Meta:
         model = RequestedSubscriptions
-        fields = ['auth_shop', 'subscription',
+        fields = ['pk', 'auth_shop', 'subscription',
                   'company', 'ice', 'first_name', 'last_name',
                   'adresse', 'city', 'code_postal', 'country',
-                  'promo_code', 'payment_type', 'reference_number', 'facture_number']
+                  'promo_code', 'payment_type', 'reference_number',
+                  'facture_number', 'created_date', 'status', 'remaining_to_pay']
         extra_kwargs = {
             'pk': {'read_only': True},
+            'created_date': {'read_only': True},
         }
 
 
@@ -39,6 +42,7 @@ class BasePOSTAsPutRequestSubscriptionSerializer(serializers.ModelSerializer):
                   'promo_code', 'payment_type', 'reference_number', 'facture_number', 'remaining_to_pay']
         extra_kwargs = {
             'pk': {'read_only': True},
+            'created_date': {'read_only': True},
         }
 
 
@@ -92,12 +96,18 @@ class BaseGETCurrentUserSubscription(serializers.Serializer):
     used_slots = serializers.SerializerMethodField()
     facture = serializers.CharField(source='get_absolute_facture_path')
     expiration_date = serializers.DateTimeField(format='%d/%m/%Y')
+    remaining_days = serializers.SerializerMethodField()
 
     @staticmethod
     def get_used_slots(instance):
         indexed_articles = IndexedArticles.objects.filter(offer__auth_shop__user=
                                                           instance.original_request.auth_shop.user).count()
         return indexed_articles
+
+    @staticmethod
+    def get_remaining_days(instance):
+        remaining_days = instance.expiration_date - timezone.now()
+        return round(remaining_days.days)
 
     def update(self, instance, validated_data):
         pass
