@@ -32,7 +32,7 @@ class GetMyVuesPagination(PageNumberPagination):
             elif pourcentage > 0:
                 pourcentage = f'+{pourcentage}%'
             else:
-                pourcentage = f'-{pourcentage}%'
+                pourcentage = f'{pourcentage}%'
         else:
             pourcentage = '0%'
 
