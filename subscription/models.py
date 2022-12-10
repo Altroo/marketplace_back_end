@@ -41,6 +41,12 @@ class SubscriptionChoices:
         ('V', 'Virement'),
     )
 
+    INDEXED_ARTICLES_STATUS = (
+        ('P', 'Processing'),
+        ('I', 'Indexed'),
+        ('U', 'Updated'),
+    )
+
 
 class AvailableSubscription(Model):
     nbr_article = models.PositiveIntegerField(verbose_name="Nombre d'article", blank=True, null=True, default=None)
@@ -276,11 +282,11 @@ class SubscribedUsers(Model):
                                              default=None)
     facture = models.FilePathField(verbose_name='Facture', path=get_facture_path(), blank=True, null=True, default=None)
     # by default + 1 year from now
-    expiration_date = models.DateTimeField(verbose_name='Expiration date',
+    expiration_date = models.DateTimeField(verbose_name="Date d'expiration Abo",
                                            default=get_expiration_date)
 
     def __str__(self):
-        return '{} - {}'.format(self.original_request.auth_shop.shop_name, self.expiration_date)
+        return '{}'.format(self.original_request.auth_shop.shop_name)
 
     @property
     def get_absolute_facture_path(self):
@@ -296,16 +302,34 @@ class SubscribedUsers(Model):
 
 class IndexedArticles(Model):
     subscription = models.ForeignKey(SubscribedUsers, on_delete=models.CASCADE,
-                                     verbose_name='Subscription',
+                                     verbose_name='Boutique Abonnée',
                                      related_name='subscription_indexed_articles')
     offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
-                                 verbose_name='Offer',
+                                 verbose_name='Article',
                                  related_name='subscription_offer')
+    status = models.CharField(verbose_name='Status', max_length=1,
+                              choices=SubscriptionChoices.INDEXED_ARTICLES_STATUS,
+                              default='P')
+    # Added/Updated Dates
+    created_date = models.DateTimeField(verbose_name='Date création', editable=False, auto_now_add=True, db_index=True)
+    updated_date = models.DateTimeField(verbose_name='Date mis à jour', editable=False, auto_now=True)
 
     def __str__(self):
-        return '{} - {}'.format(self.subscription.pk, self.offer.title)
+        return 'Article : {} - Status : {}'.format(self.offer.title,
+                                                   self.get_status_display())
 
     class Meta:
         verbose_name = 'Indexed article'
         verbose_name_plural = 'Indexed articles'
-        ordering = ('-pk',)
+        ordering = ('-updated_date', '-created_date')
+
+
+@receiver(post_save, sender=IndexedArticles)
+def check_if_article_updated(sender, instance: Union[QuerySet, IndexedArticles], created, raw, using, update_fields,
+                             **kwargs):
+    article = IndexedArticles.objects.get(pk=instance.pk)
+    # created has default status of "Processing"
+    # Check only for updated items with status "Indexed" & change to "Updated"
+    if not created and article.status == 'I':
+        article.status = 'U'
+        article.save(update_fields=['status'])

@@ -157,7 +157,7 @@ class ShopView(APIView):
             shop_details_serializer = BaseGETShopInfoSerializer(auth_shop)
             return Response(shop_details_serializer.data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -237,7 +237,7 @@ class ShopAvatarPutView(APIView):
                 return Response(data=data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -275,7 +275,7 @@ class ShopNamePutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -313,7 +313,7 @@ class ShopBioPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -399,7 +399,7 @@ class ShopAvailabilityPutView(APIView):
                 return Response(data=data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -437,7 +437,7 @@ class ShopContactPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -475,7 +475,7 @@ class ShopPhoneContactPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -513,7 +513,7 @@ class ShopAddressPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -551,7 +551,7 @@ class ShopColorPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -589,7 +589,7 @@ class ShopFontPutView(APIView):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -782,7 +782,7 @@ class ShopAskBecomeCreator(APIView):
                     return Response(status=status.HTTP_204_NO_CONTENT)
                 raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -878,7 +878,7 @@ class ShopQrCodeView(APIView):
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["User doesn't own a shop yet."]}
+            errors = {"error": ["User doesn't own a shop yet."]}
             raise ValidationError(errors)
 
     @staticmethod
@@ -891,7 +891,7 @@ class ShopQrCodeView(APIView):
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -917,7 +917,7 @@ class ShopVisitCardView(APIView):
             }
             return Response(data=data, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 
@@ -935,7 +935,7 @@ class ShopModeVacanceView(APIView):
             except auth_shop.auth_shop_mode_vacance.DoesNotExist:
                 return Response(data={}, status=status.HTTP_200_OK)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
     @staticmethod
@@ -946,7 +946,7 @@ class ShopModeVacanceView(APIView):
             date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
             date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
             if date_from > date_to:
-                errors = {"errors": ["Date from is > than date to."]}
+                errors = {"error": ["Date from is > than date to."]}
                 raise ValidationError(errors)
             else:
                 serializer = BaseShopModeVacanceSerializer(data={
@@ -968,7 +968,7 @@ class ShopModeVacanceView(APIView):
                     return Response(data=serializer.data, status=status.HTTP_200_OK)
                 raise ValidationError(serializer.errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
     @staticmethod
@@ -985,10 +985,10 @@ class ShopModeVacanceView(APIView):
                 auth_shop.save()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             except auth_shop.auth_shop_mode_vacance.DoesNotExist:
-                errors = {"errors": ["Mode vacance not found."]}
+                errors = {"error": ["Mode vacance not found."]}
                 raise ValidationError(errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
     @staticmethod
@@ -1000,7 +1000,7 @@ class ShopModeVacanceView(APIView):
                 date_from = datetime.strptime(request.data.get('date_from'), '%Y-%m-%d')
                 date_to = datetime.strptime(request.data.get('date_to'), '%Y-%m-%d')
                 if date_from > date_to:
-                    errors = {"errors": ["Date from is > than date to."]}
+                    errors = {"error": ["Date from is > than date to."]}
                     raise ValidationError(errors)
                 else:
                     serializer = BaseShopModeVacancePUTSerializer(auth_shop.auth_shop_mode_vacance,
@@ -1025,10 +1025,10 @@ class ShopModeVacanceView(APIView):
                         return Response(data=serializer.data, status=status.HTTP_200_OK)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             except auth_shop.auth_shop_mode_vacance.DoesNotExist:
-                errors = {"errors": ["Mode vacance not found."]}
+                errors = {"error": ["Mode vacance not found."]}
                 raise ValidationError(errors)
         except AuthShop.DoesNotExist:
-            errors = {"errors": ["Shop not found."]}
+            errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
 

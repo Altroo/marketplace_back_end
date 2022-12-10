@@ -53,3 +53,5 @@ notifications/base/__pycache__
 version/__pycache__
 #version/migrations
 #version/migrations/__pycache__
+seo_pages/__pycache__
+seo_pages/base/__pycache__

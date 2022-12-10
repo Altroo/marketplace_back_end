@@ -139,11 +139,13 @@
 				<span style="font-size: 16px;">{{first_name}} {{last_name}} {{company}}</span>
 			</td>
 		</tr>
+		{% if not ice == None %}
 		<tr>
 			<td>
 				<span style="font-size: 16px;">ICE: {{ice}}</span>
 			</td>
 		</tr>
+		{% endif %}
 		<tr>
 			<td>
 				<span style="font-size: 16px;">{{adresse}} {{code_postal}}, {{city}}, {{country}}</span>

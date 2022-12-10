@@ -4,7 +4,7 @@ from offers.models import Offers, Solder, Products, Services, \
     Categories, Colors, Sizes, ForWhom, ServiceDays, Delivery, OfferTags, OfferVue
 from places.models import City, Country
 from shop.base.utils import Base64ImageField
-
+from uuid import uuid4
 
 class BaseOfferCategoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -291,6 +291,7 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     deliveries = BaseShopDeliverySerializer(many=True, read_only=True, source='offer_delivery')
     exist_in_cart = serializers.SerializerMethodField()
     pinned = serializers.BooleanField()
+    unique_id = serializers.SerializerMethodField()
     # tags = serializers.SerializerMethodField()
 
     # @staticmethod
@@ -305,6 +306,10 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
     #     return instance.offer_categories.values_list('code_category', flat=True).all()
 
     @staticmethod
+    def get_unique_id(instance):
+        return uuid4()
+
+    @staticmethod
     def get_for_whom(instance):
         return instance.for_whom.values_list('code_for_whom', flat=True).all()
 
@@ -313,14 +318,14 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
         return instance.offer_categories.values_list('code_category', flat=True).all()
 
     def get_exist_in_cart(self, instance):
-        user = self.context.get("user")
-        try:
-            if user.is_anonymous:
+        unique_id = self.context.get("unique_id")
+        if unique_id is not None:
+            try:
+                Cart.objects.get(unique_id=unique_id, offer=instance.pk)
+                return True
+            except Cart.DoesNotExist:
                 return False
-            Cart.objects.get(user=user, offer=instance.pk)
-            return True
-        except Cart.DoesNotExist:
-            return False
+        return False
 
     @staticmethod
     def get_details_offer(instance):
@@ -355,6 +360,7 @@ class BaseOffersListSerializer(serializers.Serializer):
     # details_offer = serializers.SerializerMethodField()
     offer_type = serializers.CharField()
     pinned = serializers.BooleanField()
+    shop_url = serializers.SlugField(source='auth_shop.qaryb_link')
     # TODO add ratings once available
 
     # @staticmethod

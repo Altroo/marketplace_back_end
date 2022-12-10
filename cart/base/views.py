@@ -19,25 +19,25 @@ from collections import Counter
 
 
 class GetCartOffersDetailsView(APIView, GetCartOffersDetailsPagination):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
-        user = request.user
+        unique_id = kwargs.get('unique_id')
         shop_pk = kwargs.get('shop_pk')
-        cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk) \
+        cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk) \
             .order_by('-created_date', '-updated_date')
         total_price = GetCartPrices().calculate_total_price(cart_offers)
         page = self.paginate_queryset(request=request, queryset=cart_offers)
         if page is not None:
-            return self.get_paginated_response_custom(user, shop_pk, total_price)
+            return self.get_paginated_response_custom(unique_id, shop_pk, total_price)
 
 
 class CartOffersView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     @staticmethod
     def post(request, *args, **kwargs):
-        user_pk = request.user.pk
+        unique_id = request.data.get('unique_id')
         offer_pk = request.data.get('offer_pk')
         picked_color = request.data.get('picked_color', None)
         picked_size = request.data.get('picked_size', None)
@@ -45,37 +45,33 @@ class CartOffersView(APIView):
         picked_date = request.data.get('picked_date', None)
         picked_hour = request.data.get('picked_hour', None)
         try:
-            Offers.objects.get(pk=offer_pk, auth_shop__user_id=user_pk)
-            errors = {"error": ["Can't add your own offers to your cart!"]}
+            Cart.objects.get(unique_id=unique_id, offer_id=offer_pk)
+            errors = {"error": ["Already in cart!"]}
             raise ValidationError(errors)
-        except Offers.DoesNotExist:
-            try:
-                Cart.objects.get(user_id=user_pk, offer_id=offer_pk)
-                errors = {"error": ["Already in cart!"]}
-                raise ValidationError(errors)
-            except Cart.DoesNotExist:
-                # Check to not multiply by 0
-                if int(picked_quantity) <= 0 or picked_quantity is None:
-                    picked_quantity = 1
-                serializer = BaseCartOfferSerializer(data={
-                    "user": user_pk,
-                    "offer": offer_pk,
-                    "picked_color": picked_color,
-                    "picked_size": picked_size,
-                    "picked_quantity": picked_quantity,
-                    "picked_date": picked_date,
-                    "picked_hour": picked_hour,
-                })
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(data=serializer.data, status=status.HTTP_200_OK)
-                raise ValidationError(serializer.errors)
+        except Cart.DoesNotExist:
+            # Check to not multiply by 0
+            if int(picked_quantity) <= 0 or picked_quantity is None:
+                picked_quantity = 1
+            serializer = BaseCartOfferSerializer(data={
+                "unique_id": unique_id,
+                "offer": offer_pk,
+                "picked_color": picked_color,
+                "picked_size": picked_size,
+                "picked_quantity": picked_quantity,
+                "picked_date": picked_date,
+                "picked_hour": picked_hour,
+            })
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)
 
     @staticmethod
     def patch(request, *args, **kwargs):
-        user_pk = request.user
-        cart_pk = request.data.get('cart_pk')
-        cart_offer = Cart.objects.get(user=user_pk, pk=cart_pk)
+        unique_id = kwargs.get('unique_id')
+        # TODO - check changed from body to url param
+        cart_pk = kwargs.get('cart_pk')
+        cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
         serializer = BaseCartOfferPatchSerializer(cart_offer, data=request.data, partial=True)
         if serializer.is_valid():
             # serializer.update(cart_offer, serializer.validated_data)
@@ -93,10 +89,10 @@ class CartOffersView(APIView):
 
     @staticmethod
     def delete(request, *args, **kwargs):
-        user = request.user
+        unique_id = kwargs.get('unique_id')
         cart_pk = kwargs.get('cart_pk')
         try:
-            cart_offer = Cart.objects.get(user=user, pk=cart_pk)
+            cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
             cart_offer.delete()
             data = {'offer_pk': cart_offer.offer.pk}
             return Response(data=data, status=status.HTTP_200_OK)
@@ -106,11 +102,11 @@ class CartOffersView(APIView):
 
 
 class GetMyCartListView(APIView, GetMyCartPagination):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, *args, **kwargs):
-        user = request.user
-        cart_offers = Cart.objects.filter(user=user).order_by('-created_date', '-updated_date')
+        unique_id = kwargs.get('unique_id')
+        cart_offers = Cart.objects.filter(unique_id=unique_id).order_by('-created_date', '-updated_date')
         # Check how many shop ids exist on user cart
         # pk 1 = 2 times
         # pk 2 = 1 time
@@ -124,7 +120,7 @@ class GetMyCartListView(APIView, GetMyCartPagination):
 
 
 class ValidateCartOffersView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     @staticmethod
     def get_offer_price(instance, picked_quantity=1, delivery_price=0, solder=None):
@@ -139,10 +135,10 @@ class ValidateCartOffersView(APIView):
         return (instance.price * picked_quantity) + delivery_price
 
     def post(self, request, *args, **kwargs):
-        user = request.user
+        unique_id = kwargs.get('unique_id')
         shop_pk = request.data.get('shop_pk')
         note = request.data.get('note')
-        cart_offers = Cart.objects.filter(user=user, offer__auth_shop_id=shop_pk) \
+        cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop_id=shop_pk) \
             .order_by('-created_date', '-updated_date')
         if len(cart_offers) == 0:
             errors = {"error": ["Your cart is empty"]}
@@ -188,7 +184,7 @@ class ValidateCartOffersView(APIView):
                     user_address_pk = request.data.get('user_address_pk')
                     picked_click_and_collect = request.data.get('picked_click_and_collect', False)
                     picked_delivery = request.data.get('picked_delivery', False)
-                    user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
+                    # user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
                     product_details = Products.objects.get(offer=cart_offer.offer.pk)
                     delivery_price = 0
                     total_self_price = 0
@@ -222,14 +218,14 @@ class ValidateCartOffersView(APIView):
                         'product_address': product_details.product_address,
                         'picked_delivery': picked_delivery,
                         'delivery_price': delivery_price,
-                        'first_name': user_address.first_name,
-                        'last_name': user_address.last_name,
-                        'address': user_address.address,
-                        'city': user_address.city.name_fr,
-                        'zip_code': user_address.zip_code,
-                        'country': user_address.country.name_fr,
-                        'phone': user_address.phone,
-                        'email': user_address.email,
+                        # 'first_name': user_address.first_name,
+                        # 'last_name': user_address.last_name,
+                        # 'address': user_address.address,
+                        # 'city': user_address.city.name_fr,
+                        # 'zip_code': user_address.zip_code,
+                        # 'country': user_address.country.name_fr,
+                        # 'phone': user_address.phone,
+                        # 'email': user_address.email,
                         'picked_color': cart_offer.picked_color,
                         'picked_size': cart_offer.picked_size,
                         'picked_quantity': cart_offer.picked_quantity,
@@ -245,7 +241,7 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
-                        cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                        cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk)
                         cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     raise ValidationError(order_details_product_serializer.errors)
@@ -279,8 +275,8 @@ class ValidateCartOffersView(APIView):
                     if order_details_service_serializer.is_valid():
                         order_details_service_serializer.save()
                         # Override old phone in user model.
-                        user.phone = phone
-                        user.save()
+                        # user.phone = phone
+                        # user.save()
                         # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'buyer_avatar_thumbnail'), )
@@ -288,7 +284,7 @@ class ValidateCartOffersView(APIView):
                                                                  'seller_avatar_thumbnail'), )
                         base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                  'offer_thumbnail'), )
-                        cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                        cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk)
                         cart_offers.delete()
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     raise ValidationError(order_details_service_serializer.errors)
@@ -333,7 +329,7 @@ class ValidateCartOffersView(APIView):
                         delivery = Delivery.objects.get(pk=delivery_pk, offer__auth_shop_id=shop_pk)
                         product_details = Products.objects.get(offer=cart_offer[1].offer.pk)
                         user_address_pk = request.data.get('user_address_pk')
-                        user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
+                        # user_address = UserAddress.objects.get(user=user, pk=user_address_pk)
                         delivery_price = 0
                         total_self_price = 0
                         if check_picked_delivery or check_click_and_collect:
@@ -369,14 +365,14 @@ class ValidateCartOffersView(APIView):
                             'product_address': product_details.product_address,
                             'picked_delivery': check_picked_delivery[cart_offer[0]],
                             'delivery_price': delivery_price,
-                            'first_name': user_address.first_name,
-                            'last_name': user_address.last_name,
-                            'address': user_address.address,
-                            'city': user_address.city.name_fr,
-                            'zip_code': user_address.zip_code,
-                            'country': user_address.country.name_fr,
-                            'phone': user_address.phone,
-                            'email': user_address.email,
+                            # 'first_name': user_address.first_name,
+                            # 'last_name': user_address.last_name,
+                            # 'address': user_address.address,
+                            # 'city': user_address.city.name_fr,
+                            # 'zip_code': user_address.zip_code,
+                            # 'country': user_address.country.name_fr,
+                            # 'phone': user_address.phone,
+                            # 'email': user_address.email,
                             'picked_color': cart_offer[1].picked_color,
                             'picked_size': cart_offer[1].picked_size,
                             'picked_quantity': cart_offer[1].picked_quantity,
@@ -424,8 +420,8 @@ class ValidateCartOffersView(APIView):
                         if order_details_service_serializer.is_valid():
                             order_details_service_serializer.save()
                             # Override old phone in user model.
-                            user.phone = phone
-                            user.save()
+                            # user.phone = phone
+                            # user.save()
                             # Duplicate pictures for buyer avatar & seller avatar & offer thumbnail
                             base_duplicate_order_images.apply_async((buyer_pk, seller_pk, offer_pk,
                                                                      'buyer_avatar_thumbnail'), )
@@ -439,16 +435,16 @@ class ValidateCartOffersView(APIView):
             else:
                 raise ValidationError(order_serializer.errors)
             if order_valid:
-                cart_offers = Cart.objects.filter(user=user, offer__auth_shop=shop_pk)
+                cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk)
                 cart_offers.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class GetServicesCoordinates(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def get(request, *args, **kwargs):
-        user = request.user
-        services_coordinates = BaseGetServicesCoordinatesSerializer(user)
-        return Response(services_coordinates.data, status=status.HTTP_200_OK)
+# class GetServicesCoordinates(APIView):
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     @staticmethod
+#     def get(request, *args, **kwargs):
+#         user = request.user
+#         services_coordinates = BaseGetServicesCoordinatesSerializer(user)
+#         return Response(services_coordinates.data, status=status.HTTP_200_OK)

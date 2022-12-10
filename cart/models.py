@@ -5,11 +5,11 @@ from offers.models import Offers
 
 
 class Cart(Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
-                             verbose_name='User', related_name='cart_user')
+    unique_id = models.CharField(verbose_name='Cart unique ID',
+                                 default=None, null=True, blank=True,
+                                 max_length=50)
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
                               verbose_name='Offer', related_name='cart_offer')
-    # Product
     picked_color = models.CharField(verbose_name='Picked Color', max_length=255, default=None, null=True, blank=True)
     picked_size = models.CharField(verbose_name='Picked Size', max_length=255, default=None, null=True, blank=True)
     picked_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=1)
@@ -21,10 +21,10 @@ class Cart(Model):
     updated_date = models.DateTimeField(verbose_name='Updated date', editable=False, auto_now=True)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.user.email, self.offer.auth_shop.shop_name, self.offer.title)
+        return '{} - {} - {}'.format(self.unique_id, self.offer.auth_shop.shop_name, self.offer.title)
 
     class Meta:
-        unique_together = (('user', 'offer'),)
+        unique_together = (('unique_id', 'offer'),)
         verbose_name = 'Cart'
         verbose_name_plural = 'Carts'
         ordering = ('-created_date', '-updated_date')

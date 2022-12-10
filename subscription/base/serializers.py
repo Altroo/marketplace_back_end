@@ -3,6 +3,7 @@ from subscription.models import AvailableSubscription, RequestedSubscriptions, \
     SubscribedUsers, IndexedArticles
 from django.utils import timezone
 
+
 class BaseGETAvailableSubscriptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AvailableSubscription

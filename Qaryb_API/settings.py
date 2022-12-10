@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'places.apps.PlacesConfig',
     'subscription.apps.SubscriptionConfig',
     'notifications.apps.NotificationsConfig',
+    'seo_pages.apps.SeoPagesConfig',
     'version.apps.VersionConfig'
 ]
 

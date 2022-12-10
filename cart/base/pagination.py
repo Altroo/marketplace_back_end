@@ -131,10 +131,10 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
             else:
                 return instance.offer.price
 
-    def get_paginated_response_custom(self, user, shop_pk, total_price):
+    def get_paginated_response_custom(self, unique_id, shop_pk, total_price):
         results_list = []
         # Check for Lot 1
-        offer_pks = Cart.objects.filter(user=user, offer__auth_shop=shop_pk) \
+        offer_pks = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk) \
             .order_by('-created_date', '-updated_date') \
             .values_list("offer__pk", flat=True).all()
         # Excludings deliveries means getting only the ones with click & collect and only products

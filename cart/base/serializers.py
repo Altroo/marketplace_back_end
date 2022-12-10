@@ -239,7 +239,7 @@ class BaseCartOfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['pk', 'user', 'offer', 'picked_color',
+        fields = ['pk', 'unique_id', 'offer', 'picked_color',
                   'picked_size', 'picked_quantity',
                   'picked_date', 'picked_hour']
 

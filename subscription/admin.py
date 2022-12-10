@@ -45,11 +45,13 @@ class CustomSubscribedUsersAdmin(ModelAdmin):
 
 
 class CustomIndexedArticlesAdmin(ModelAdmin):
-    list_display = ('pk', 'subscription', 'available_slots',
-                    'expiration_date', 'offer', 'offer_title')
+    list_display = ('pk', 'subscription',
+                    'expiration_date', 'offer', 'offer_title',
+                    'created_date', 'updated_date', 'status')
     search_fields = ('pk', 'subscription__original_request__auth_shop__shop_name',
                      'offer__title',)
-    ordering = ('-pk',)
+    list_filter = ('status', 'created_date', 'updated_date')
+    date_hierarchy = 'updated_date'
 
     @staticmethod
     def available_slots(obj):

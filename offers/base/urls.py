@@ -50,6 +50,7 @@ urlpatterns = [
     path('', ShopOfferViewV2.as_view()),
     path('<int:offer_pk>/', ShopOfferViewV2.as_view()),
     path('<str:shop_link>/<int:offer_pk>/', ShopOfferViewV2.as_view()),
+    path('<str:shop_link>/<int:offer_pk>/<str:unique_id>/', ShopOfferViewV2.as_view()),
     # DELETE case only
     # path('uuid/<uuid:unique_id>/<int:offer_pk>/', ShopOfferViewV2.as_view()),
     # path('backup/', ShopOfferView.as_view()),

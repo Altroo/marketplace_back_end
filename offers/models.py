@@ -1,7 +1,6 @@
 from os import path
 from django.db import models
 from django.db.models import Model
-from base64 import b64encode
 from places.base.choices import PlaceType
 from shop.models import AuthShop, LonLatValidators
 from Qaryb_API.settings import API_URL
@@ -172,7 +171,12 @@ class Offers(Model):
         return (data[:50] + '..') if len(data) > 50 else data
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.offer_type,
+        offer_type = self.get_offer_type_display()
+        if offer_type == 'Sell':
+            offer_type = 'Produit'
+        else:
+            offer_type = 'Service'
+        return '{} - {} - {}'.format(offer_type,
                                      self.title,
                                      self.price)
 

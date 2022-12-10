@@ -53,6 +53,8 @@ urlpatterns = [
     path('api/1.0.0/subscription/', include('subscription.base.urls', namespace='1.0.0')),
     # Notifications
     path('api/1.0.0/notification/', include('notifications.base.urls', namespace='1.0.0')),
+    # Seo pages
+    path('api/1.0.0/seo_pages/', include('seo_pages.base.urls', namespace='1.0.0')),
     # Version
     path('api/version/', include('version.urls', namespace='1.0.0')),
     # Admin

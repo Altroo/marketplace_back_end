@@ -539,11 +539,11 @@ class SubscriptionView(APIView):
         nbr_article = kwargs.get('nbr_article')
         try:
             subscription = AvailableSubscription.objects.get(nbr_article=nbr_article)
+            serializer = BaseGETAvailableSubscriptionsSerializer(subscription)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
         except AvailableSubscription.DoesNotExist:
             data = {"error": ["Cette formule n'existe pas."]}
             raise ValidationError(data)
-        serializer = BaseGETAvailableSubscriptionsSerializer(subscription)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 # Create your views here.
