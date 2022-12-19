@@ -35,7 +35,7 @@ class GetSeoPageContent(APIView):
             serializer = BaseDefaultSeoPageSerializer(default_seo_page)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except DefaultSeoPage.DoesNotExist:
-            errors = {"errors": ["Collection not found."]}
+            errors = {"error": ["Collection not found."]}
             raise ValidationError(errors)
 
 

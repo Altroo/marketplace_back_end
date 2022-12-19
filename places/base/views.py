@@ -85,6 +85,8 @@ class CitiesListView(PlaceLanguageMixin, ListAPIView):
             for k, v in obj.items():
                 if v == 'Tout le maroc':
                     data.insert(0, v)
+                elif v == 'Les autres villes':
+                    data.insert(0, v)
                 else:
                     data.append(v)
         # return Response({'name_tag': data})

@@ -14,7 +14,12 @@ class CreateFolders:
                 if not path.exists(self.parent_file_dir + '/' + row[0] + '/' + row[1]):
                     if row[0] == 'media':
                         # create folder
+                        # 0 = media / 1 = files
                         mkdir(self.parent_file_dir + '/' + row[0] + '/' + row[1])
+                        continue
+                    if row[0] == 'sub':
+                        # 0 = sub / 1 = media / 2 = orders / 3 = buyers_avatars
+                        mkdir(self.parent_file_dir + '/' + row[1] + '/' + row[2] + '/' + row[3])
                         continue
                     if row[0] == 'logs':
                         # create file

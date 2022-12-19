@@ -1,89 +1,61 @@
+from typing import Union
+from django.db.models import QuerySet
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
+from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from order.base.pagination import GetMyOrderDetailsPagination
-from shop.models import AuthShop
-from order.models import Order, OrderDetails
-from order.base.serializers import BaseOrdersListSerializer
+from order.models import Order
+from order.base.serializers import BaseOrdersListSerializerV2
+from order.base.filters import OrderStatusFilterSet
+
+# class OrdersView(APIView, PageNumberPagination):
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def get(self, request, *args, **kwargs):
+#         user = request.user
+#         orders: Union[QuerySet, Order] = Order.objects.filter(seller__user=user) \
+#             .prefetch_related('order_details_order').order_by('-order_date')
+#         page = self.paginate_queryset(request=request, queryset=orders)
+#         if page is not None:
+#             serializer = BaseOrdersListSerializerV2(instance=page, many=True)
+#             return self.get_paginated_response(serializer.data)
 
 
-class GetMySellingOrdersListView(APIView, PageNumberPagination):
+class OrdersView(ListAPIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
+    filterset_class = OrderStatusFilterSet
+    serializer_class = BaseOrdersListSerializerV2
+    http_method_names = ('get',)
 
-    def get(self, request, *args, **kwargs):
-        user_pk = request.user
-        try:
-            auth_shop = AuthShop.objects.get(user=user_pk)
-            order = Order.objects.filter(seller=auth_shop)
-            page = self.paginate_queryset(request=request, queryset=order)
-            if page is not None:
-                serializer = BaseOrdersListSerializer(instance=page, many=True, context={'order_type': 'sell'})
-                return self.get_paginated_response(serializer.data)
-        except AuthShop.DoesNotExist:
-            errors = {"error": ["User doesn't own a shop yet."]}
-            raise ValidationError(errors)
+    def get_queryset(self) -> Union[QuerySet, Order]:
+        user = self.request.user
+        return Order.objects.filter(seller__user=user) \
+            .prefetch_related('order_details_order')
 
-
-class GetMyBuyingsOrdersListView(APIView, PageNumberPagination):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, *args, **kwargs):
-        user_pk = request.user
-        order = Order.objects.filter(buyer=user_pk)
-        page = self.paginate_queryset(request=request, queryset=order)
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        filter_queryset: QuerySet = self.filter_queryset(queryset)
+        page = self.paginate_queryset(filter_queryset)
         if page is not None:
-            serializer = BaseOrdersListSerializer(instance=page, many=True, context={'order_type': 'buy'})
+            serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
 
-class GetMyOrderDetailsView(APIView, GetMyOrderDetailsPagination):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        order_pk = kwargs.get('order_pk')
-        order_type = kwargs.get('order_type')
-        if order_type == 'buy':
-            order = Order.objects.get(pk=order_pk, buyer=user)
-        else:
-            order = Order.objects.get(pk=order_pk, seller__user=user)
-        order_details = OrderDetails.objects.filter(order=order)
-        total_price = 0
-        for order_detail in order_details:
-            total_price += order_detail.total_self_price
-        total_price += order.highest_delivery_price
-        page = self.paginate_queryset(request=request, queryset=order_details)
-        if page is not None:
-            return self.get_paginated_response_custom(order, order_details, total_price, order_type)
-
-
-class CancelOneOrderView(APIView):
+class GetOrderDetailsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
-    def post(request, *args, **kwargs):
+    def get(request, *args, **kwargs):
         user = request.user
-        order_details_pk = request.data.get('order_details_pk')
+        order_pk = kwargs.get('order_pk')
         try:
-            order_detail = OrderDetails.objects.get(pk=order_details_pk)
-            # Canceled by the buyer
-            if user == order_detail.order.buyer:
-                # Cancel only if order still not confirmed
-                if order_detail.order_status == 'TC':
-                    order_detail.order_status = 'CB'
-                    order_detail.save()
-            # Canceled by the seller
-            # TODO check when it's allowed for seller to cancel
-            elif user == order_detail.order.seller.user:
-                order_detail.seller_canceled_reason = request.data.get('seller_canceled_reason')
-                order_detail.seller_cancel_body = request.data.get('seller_cancel_body', None)
-                order_detail.order_status = 'CS'
-                order_detail.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except OrderDetails.DoesNotExist:
-            errors = {"error": ["Order doesn't exist!"]}
+            order = Order.objects.get(pk=order_pk, seller__user=user)
+            serializer = BaseOrdersListSerializerV2(instance=order)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            errors = {"errors": ["Order Doesn't exist!"]}
             raise ValidationError(errors)
 
 
@@ -95,24 +67,9 @@ class CancelAllView(APIView):
         user = request.user
         order_pk = request.data.get('order_pk')
         try:
-            order = Order.objects.get(pk=order_pk)
-            # Canceled by the buyer
-            if user == order.buyer:
-                order_details = OrderDetails.objects.filter(order=order)
-                for order_detail in order_details:
-                    # Cancel only if order still not confirmed
-                    if order_detail.order_status == 'TC':
-                        order_detail.order_status = 'CB'
-                        order_detail.save()
-            # Canceled by the seller
-            # TODO check when it's allowed for seller to cancel
-            elif user == order.seller.user:
-                order_details = OrderDetails.objects.filter(order=order)
-                for order_detail in order_details:
-                    order_detail.seller_canceled_reason = request.data.get('seller_canceled_reason')
-                    order_detail.seller_cancel_body = request.data.get('seller_cancel_body', None)
-                    order_detail.order_status = 'CS'
-                    order_detail.save()
+            order = Order.objects.get(pk=order_pk, seller__user=user)
+            order.order_status = 'CA'
+            order.save(update_fields=['order_status'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             errors = {"error": ["Order doesn't exist!"]}
@@ -128,115 +85,25 @@ class AcceptOrdersView(APIView):
         order_pk = request.data.get('order_pk')
         try:
             order = Order.objects.get(pk=order_pk, seller__user=user)
-            order_details = OrderDetails.objects.filter(order=order)
+            order_details = order.order_details_order.all()
+            # Reduce quantity of products.
+            # Case offer was deleted & no longer available
             for order_detail in order_details:
-                # Accept those with To confirm status only
-                if order_detail.order_status == 'TC':
-                    # A évaluer
-                    if order_detail.offer_type == 'S':
-                        # Mark as To evaluate
-                        order_detail.order_status = 'TE'
-                    # Preparation en cours
-                    else:
-                        # Mark as on going
-                        order_detail.order_status = 'OG'
-                        # Reduce quantity of products.
-                        # Case offer was deleted & no longer available
-                        try:
-                            product_quantity = order_detail.offer.offer_products.product_quantity
-                            # Check for selected positive quantity
-                            if isinstance(product_quantity, int) and product_quantity > 0:
-                                product_quantity -= 1
-                        except AttributeError:
-                            pass
-                    order_detail.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Order.DoesNotExist:
-            errors = {"error": ["Order doesn't exist!"]}
-            raise ValidationError(errors)
-
-
-class PatchOrderStatusView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    # TODO fuse patch order status
-    # upgrade status each time starting with TE (TO Evaluate)
-    @staticmethod
-    def post(request, *args, **kwargs):
-        user = request.user
-        order_pk = request.data.get('order_pk')
-        try:
-            order = Order.objects.get(pk=order_pk, seller__user=user)
-            order_details = OrderDetails.objects.filter(order=order)
-            for order_detail in order_details:
-                # Check orders with on going status
-                if order_detail.order_status == 'OG':
-                    # Prête
-                    if order_detail.picked_click_and_collect:
-                        # Mark as Ready = click & collect
-                        order_detail.order_status = 'RD'
-                    # Expidée
-                    elif order_detail.picked_delivery:
-                        # Mark as Shipped = delivery
-                        order_detail.order_status = 'SH'
-                    order_detail.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Order.DoesNotExist:
-            errors = {"error": ["Order doesn't exist!"]}
-            raise ValidationError(errors)
-
-
-class AdjustDeliveryPriceView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        user = request.user
-        order_pk = request.data.get('order_pk')
-        new_delivery_price = request.data.get('new_delivery_price')
-        try:
-            order = Order.objects.get(pk=order_pk, seller__user=user)
-            order_details = OrderDetails.objects.filter(order=order)
-            # Adjust delivery price to orders that only has To confirm status
-            # And those with deliveries
-            for order_detail in order_details:
-                if order_detail.order_status == 'TC' and order_detail.picked_delivery:
-                    order_detail.new_delivery_price_reason = request.data.get('new_delivery_price_reason')
-                    order_detail.new_delivery_price_body = request.data.get('new_delivery_price_body', None)
-                    order_detail.new_delivery_price = new_delivery_price
-                    order_detail.order_status = 'DP'
-                    order_detail.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Order.DoesNotExist:
-            errors = {"error": ["Order doesn't exist!"]}
-            raise ValidationError(errors)
-
-
-class AcceptNewAdjustedDeliveryPrice(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        user = request.user
-        order_pk = request.data.get('order_pk')
-        try:
-            order = Order.objects.get(pk=order_pk, buyer=user)
-            order_details = OrderDetails.objects.filter(order=order)
-            for order_detail in order_details:
-                # Accept those with Delivery Price adjusted status only
-                # And Those with picked delivery
-                if order_detail.order_status == 'DP' and order_detail.picked_delivery:
-                    order_detail.order_status = 'OG'
-                    # Reduce quantity of products.
-                    # Case offer was deleted & no longer available
+                if order_detail.offer_type == 'V':
                     try:
                         product_quantity = order_detail.offer.offer_products.product_quantity
                         # Check for selected positive quantity
                         if isinstance(product_quantity, int) and product_quantity > 0:
-                            product_quantity -= 1
+                            product_quantity -= order_detail.picked_quantity
+                            if product_quantity >= 0:
+                                order_detail.offer.offer_products.product_quantity = product_quantity
+                            else:
+                                order_detail.offer.offer_products.product_quantity = 0
+                            order_detail.offer.offer_products.save(update_fields=['product_quantity'])
                     except AttributeError:
                         pass
-                    order_detail.save()
+            order.order_status = 'CM'
+            order.save(update_fields=['order_status'])
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             errors = {"error": ["Order doesn't exist!"]}

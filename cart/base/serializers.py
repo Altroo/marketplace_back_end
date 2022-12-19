@@ -103,10 +103,10 @@ class BaseCartDeliverySerializer(serializers.ModelSerializer):
 
 
 class BaseCartDetailsProductSerializer(serializers.Serializer):
-    offer_max_quantity = serializers.IntegerField(source='offer.offer_products.product_quantity')
+    offer_max_quantity = serializers.IntegerField(source='offer.offer_products.product_quantity', allow_null=True)
     picked_color = serializers.CharField()
     picked_size = serializers.CharField()
-    picked_quantity = serializers.IntegerField()
+    picked_quantity = serializers.IntegerField(allow_null=True)
 
     def update(self, instance, validated_data):
         pass
@@ -117,7 +117,7 @@ class BaseCartDetailsProductSerializer(serializers.Serializer):
 
 class BaseCartDetailsServiceSerializer(serializers.Serializer):
     picked_date = serializers.DateField()
-    picked_hour = serializers.TimeField()
+    picked_hour = serializers.TimeField(format='%H:%M')
 
     def update(self, instance, validated_data):
         pass
@@ -130,6 +130,7 @@ class BaseCartDetailsServiceSerializer(serializers.Serializer):
 class BaseCartDetailsListSerializer(serializers.Serializer):
     cart_pk = serializers.IntegerField(source='pk')
     offer_pk = serializers.IntegerField(source='offer.pk')
+    offer_type = serializers.CharField(source='offer.offer_type')
     offer_picture = serializers.CharField(source='offer.get_absolute_picture_1_thumbnail')
     offer_title = serializers.CharField(source='offer.title')
     offer_price = serializers.SerializerMethodField()
@@ -157,10 +158,10 @@ class BaseCartDetailsListSerializer(serializers.Serializer):
 
 
 class BaseCartDetailsProductDeliveriesSerializer(serializers.Serializer):
-    offer_max_quantity = serializers.IntegerField(source='offer.offer_products.product_quantity')
+    offer_max_quantity = serializers.IntegerField(source='offer.offer_products.product_quantity', allow_null=True)
     picked_color = serializers.CharField()
     picked_size = serializers.CharField()
-    picked_quantity = serializers.IntegerField()
+    picked_quantity = serializers.IntegerField(allow_null=True)
     click_and_collect = serializers.SerializerMethodField()
     deliveries = serializers.SerializerMethodField()
 
@@ -187,7 +188,10 @@ class BaseCartDetailsProductDeliveriesSerializer(serializers.Serializer):
 
 
 class BaseSingleCartOneOrMultiOffersSerializer(serializers.Serializer):
-    offers_count = serializers.SerializerMethodField()
+    shop_pk = serializers.IntegerField(source='offer.auth_shop.pk')
+    desktop_shop_name = serializers.CharField(source='offer.auth_shop.shop_name')
+    shop_picture = serializers.CharField(source='offer.auth_shop.get_absolute_avatar_thumbnail')
+    shop_link = serializers.CharField(source='offer.auth_shop.qaryb_link')
     offers_total_price = serializers.SerializerMethodField()
     cart_details = serializers.SerializerMethodField()
     click_and_collect = serializers.SerializerMethodField()
@@ -197,6 +201,8 @@ class BaseSingleCartOneOrMultiOffersSerializer(serializers.Serializer):
     def get_deliveries(instance):
         delivery_instance = Delivery.objects.filter(offer=instance.offer.pk)
         deliveries = BaseCartDeliverySerializer(delivery_instance, many=True)
+        if len(deliveries.data) == 0:
+            return []
         return deliveries.data
 
     @staticmethod
@@ -204,9 +210,15 @@ class BaseSingleCartOneOrMultiOffersSerializer(serializers.Serializer):
         try:
             click_and_collect_instance = Products.objects.get(offer=instance.offer.pk)
             click_and_collect = BaseCartClickAndCollectSerializer(click_and_collect_instance)
-            return click_and_collect.data
+            product_longitude = click_and_collect.data.get('product_longitude', None)
+            product_latitude = click_and_collect.data.get('product_latitude', None)
+            product_address = click_and_collect.data.get('product_address', None)
+            if product_longitude and product_latitude and product_address:
+                return click_and_collect.data
+            else:
+                return {}
         except Products.DoesNotExist:
-            return {}
+            return None
 
     def get_offers_total_price(self, instance):
         return self.context.get("total_price")
@@ -244,35 +256,26 @@ class BaseCartOfferSerializer(serializers.ModelSerializer):
                   'picked_date', 'picked_hour']
 
 
-class BaseCartOfferPatchSerializer(serializers.ModelSerializer):
-    total_price = serializers.SerializerMethodField()
-
-    @staticmethod
-    def get_total_price(instance):
-        return GetCartPrices().get_offer_price(instance)
-
-    class Meta:
-        model = Cart
-        fields = [
-            'pk',
-            'picked_color',
-            'picked_size',
-            'picked_quantity',
-            'picked_date',
-            'picked_hour',
-            'total_price']
-        extra_kwargs = {
-            'total_price': {'read_only': True},
-        }
-
-    # def update(self, instance, validated_data):
-    #     instance.picked_color = validated_data.get('picked_color', instance.picked_color)
-    #     instance.picked_size = validated_data.get('picked_size', instance.picked_size)
-    #     instance.picked_quantity = validated_data.get('picked_quantity', instance.picked_quantity)
-    #     instance.picked_date = validated_data.get('picked_date', instance.picked_date)
-    #     instance.picked_hour = validated_data.get('picked_hour', instance.picked_hour)
-    #     instance.save()
-    #     return instance
+# class BaseCartOfferPatchSerializer(serializers.ModelSerializer):
+#     total_price = serializers.SerializerMethodField()
+#
+#     @staticmethod
+#     def get_total_price(instance):
+#         return GetCartPrices().get_offer_price(instance)
+#
+#     class Meta:
+#         model = Cart
+#         fields = [
+#             'pk',
+#             'picked_color',
+#             'picked_size',
+#             'picked_quantity',
+#             'picked_date',
+#             'picked_hour',
+#             'total_price']
+#         extra_kwargs = {
+#             'total_price': {'read_only': True},
+#         }
 
 
 class BaseGetServicesCoordinatesSerializer(serializers.ModelSerializer):

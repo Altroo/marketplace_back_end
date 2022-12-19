@@ -6,6 +6,7 @@ from shop.models import AuthShop
 from order.models import Order, OrderDetails
 from offers.models import Offers
 from shop.base.utils import ImageProcessor
+from account.base.tasks import start_generating_avatar_and_thumbnail, from_img_to_io
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
@@ -39,7 +40,25 @@ def base_duplicate_order_images(self, buyer_pk, seller_pk, offer_pk, which):
     # offer_thumbnail
     else:
         offer = Offers.objects.get(pk=offer_pk)
-        order_details = OrderDetails.objects.get(pk=offer)
+        order_details = OrderDetails.objects.get(offer=offer)
         if offer.picture_1_thumbnail:
             offer_thumbnail = start_generating_thumbnail(offer.picture_1_thumbnail.path, True)
             order_details.save_image('offer_thumbnail', offer_thumbnail)
+
+
+@app.task(bind=True, serializer='json')
+def base_generate_user_thumbnail(self, order_pk):
+    order = Order.objects.get(pk=order_pk)
+    avatar, thumbnail = start_generating_avatar_and_thumbnail(str(order.last_name)[0].upper(),
+                                                              str(order.first_name)[0].upper())
+    thumbnail_ = from_img_to_io(thumbnail, 'WEBP')
+    order.save_image('buyer_avatar_thumbnail', thumbnail_)
+
+
+@app.task(bind=True, serializer='json')
+def base_duplicate_order_offer_image(self, offer_pk, order_details_pk):
+    offer = Offers.objects.get(pk=offer_pk)
+    order_details = OrderDetails.objects.get(pk=order_details_pk)
+    if offer.picture_1_thumbnail:
+        offer_thumbnail = start_generating_thumbnail(offer.picture_1_thumbnail.path, True)
+        order_details.save_image('offer_thumbnail', offer_thumbnail)

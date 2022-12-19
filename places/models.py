@@ -69,7 +69,7 @@ class Country(AbstractPlaceCode, AbstractOverpassTurbo, AbstractCoordinates, Abs
     class Meta:
         verbose_name = _('Country')
         verbose_name_plural = _('Countries')
-        ordering = ('pk',)
+        ordering = ('-pk',)
 
     def __str__(self):
         return next(iter([self.name_en, self.name_fr, self.name_ar, self.name]))
@@ -102,7 +102,7 @@ class City(AbstractOverpassTurbo, AbstractCoordinates, AbstractInternationalizat
     class Meta:
         verbose_name = _('City')
         verbose_name_plural = _('Cities')
-        ordering = ('pk',)
+        ordering = ('-pk',)
 
     def __str__(self):
         return next(iter([self.name_en, self.name_fr, self.name_ar, self.name]))

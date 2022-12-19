@@ -57,7 +57,7 @@ class CustomServiceAdmin(ModelAdmin):
 class CustomCategoriesAdmin(ModelAdmin):
     list_display = ('pk', 'code_category', 'name_category',)
     search_fields = ('pk', 'code_category', 'name_category',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):
@@ -71,7 +71,7 @@ class CustomCategoriesAdmin(ModelAdmin):
 class CustomColorsAdmin(ModelAdmin):
     list_display = ('pk', 'code_color', 'name_color',)
     search_fields = ('pk', 'code_color', 'name_color',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):
@@ -85,7 +85,7 @@ class CustomColorsAdmin(ModelAdmin):
 class CustomSizesAdmin(ModelAdmin):
     list_display = ('pk', 'code_size', 'name_size',)
     search_fields = ('pk', 'code_size', 'name_size',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):
@@ -99,7 +99,7 @@ class CustomSizesAdmin(ModelAdmin):
 class CustomForWhomAdmin(ModelAdmin):
     list_display = ('pk', 'code_for_whom', 'name_for_whom',)
     search_fields = ('pk', 'code_for_whom', 'name_for_whom',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):
@@ -113,7 +113,7 @@ class CustomForWhomAdmin(ModelAdmin):
 class CustomServiceDaysAdmin(ModelAdmin):
     list_display = ('pk', 'code_day', 'name_day',)
     search_fields = ('pk', 'code_day', 'name_day',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):

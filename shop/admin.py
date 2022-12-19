@@ -2,19 +2,26 @@ from django.contrib import admin
 from shop.models import AuthShopDays, AuthShop, \
     PhoneCodes, AskForCreatorLabel, ModeVacance
 from django.contrib.admin import ModelAdmin
+from decouple import config
+from django.utils.html import format_html
 
 
 class CustomAuthShopAdmin(ModelAdmin):
-    list_display = ('pk', 'shop_name', 'user', 'creator')
+    list_display = ('pk', 'shop_name', 'user', 'get_qaryb_link', 'creator')
     search_fields = ('pk', 'shop_name', 'user')
     list_filter = ('creator',)
     ordering = ('-pk',)
+
+    @admin.display(description='Shop link')
+    def get_qaryb_link(self, obj):
+        html = f"<a href='{config('FRONT_DOMAIN')}/shop/{obj.qaryb_link}' target='_blank'>{obj.qaryb_link}</a>"
+        return format_html(html)
 
 
 class CustomDaysAdmin(ModelAdmin):
     list_display = ('pk', 'code_day', 'name_day',)
     search_fields = ('pk', 'code_day', 'name_day',)
-    ordering = ('pk',)
+    ordering = ('-pk',)
 
     # Add permission removed
     def has_add_permission(self, *args, **kwargs):

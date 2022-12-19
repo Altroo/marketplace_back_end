@@ -342,9 +342,9 @@ class Products(Model):
     offer = models.OneToOneField(Offers, on_delete=models.CASCADE,
                                  verbose_name='Offer', related_name='offer_products')
     product_colors = models.ManyToManyField(Colors, verbose_name='Product Colors',
-                                            related_name='product_colors')
+                                            related_name='product_colors', blank=True)
     product_sizes = models.ManyToManyField(Sizes, verbose_name='Product Sizes',
-                                           related_name='product_sizes')
+                                           related_name='product_sizes', blank=True)
     product_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=None, blank=True, null=True)
     product_price_by = models.CharField(verbose_name='Price by', choices=OfferChoices.PRODUCT_PRICE_BY_CHOICES,
                                         max_length=1)
@@ -405,7 +405,8 @@ class Delivery(Model):
                               related_name='offer_delivery')
     delivery_city = models.ManyToManyField(City, verbose_name='Delivery City',
                                            related_name='delivery_city')
-    all_cities = models.BooleanField(verbose_name='Tout le maroc ?', default=False)
+    all_cities = models.BooleanField(verbose_name='Tout le maroc ?', default=False,
+                                     help_text='NOT USED (using city_name instead)')
     delivery_price = models.FloatField(verbose_name='Delivery Price', default=0.0)
     delivery_days = models.PositiveIntegerField(verbose_name='Number of Days', default=0)
 

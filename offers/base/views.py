@@ -641,6 +641,8 @@ class ShopOfferViewV2(APIView):
             # IF OFFER TYPE == V (VENTE) ; S (SERVICE)
             if offer_type == 'V':
                 product_quantity = request.data.get('product_quantity')
+                if product_quantity == 'null':
+                    product_quantity = None
                 product_price_by = request.data.get('product_price_by')
                 product_longitude = request.data.get('product_longitude')
                 product_latitude = request.data.get('product_latitude')
@@ -1614,7 +1616,9 @@ class ShopOfferViewV2(APIView):
                 product_serializer = None
                 service_serializer = None
                 if offer.offer_type == 'V':
-                    product_quantity = request.data.get('product_quantity', '')
+                    product_quantity = request.data.get('product_quantity')
+                    if product_quantity == 'null':
+                        product_quantity = None
                     product_price_by = request.data.get('product_price_by', '')
                     product_longitude = request.data.get('product_longitude', '')
                     product_latitude = request.data.get('product_latitude', '')

@@ -12,7 +12,7 @@ class Cart(Model):
                               verbose_name='Offer', related_name='cart_offer')
     picked_color = models.CharField(verbose_name='Picked Color', max_length=255, default=None, null=True, blank=True)
     picked_size = models.CharField(verbose_name='Picked Size', max_length=255, default=None, null=True, blank=True)
-    picked_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=1)
+    picked_quantity = models.PositiveIntegerField(verbose_name='Quantity', default=None, null=True, blank=True)
     # Service
     picked_date = models.DateField(verbose_name='Picked Date', default=None, null=True, blank=True)
     picked_hour = models.TimeField(verbose_name='Picked Hour', default=None, null=True, blank=True)
@@ -27,4 +27,4 @@ class Cart(Model):
         unique_together = (('unique_id', 'offer'),)
         verbose_name = 'Cart'
         verbose_name_plural = 'Carts'
-        ordering = ('-created_date', '-updated_date')
+        ordering = ('-updated_date', '-created_date')

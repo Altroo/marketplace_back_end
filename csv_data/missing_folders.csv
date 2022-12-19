@@ -1,11 +1,10 @@
 media,chat
-media,fallback_shop_avatars
 media,fallback_shop_offers
-media,fallback_user_avatars
 media,shop_avatars
 media,shop_offers
 media,shop_qrcodes
 media,user_avatars
 media,files
+sub,media,orders,buyers_avatar
 logs,debug.log
 logs,ws_debug.log
