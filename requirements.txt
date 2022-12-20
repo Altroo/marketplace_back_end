@@ -24,7 +24,7 @@ websockets==10.4
 channels==4.0.0
 daphne==4.0.0
 channels-redis==4.0.0
-asgiref==3.5.2
+asgiref==3.6.0
 aioredis==2.0.1
 PyJWT==2.6.0
 fpdf==1.7.2
@@ -32,5 +32,5 @@ fpdf==1.7.2
 qrcode==7.3.1
 arabic-reshaper==2.1.4
 python-bidi==0.4.2
-numpy==1.23.5
+numpy==1.24.0
 pdfkit~=1.0.0

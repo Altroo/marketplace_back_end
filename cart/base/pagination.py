@@ -16,11 +16,10 @@ class GetMyCartPagination(PageNumberPagination):
         if shop_count > 1:
             results = []
             shop_pks = set()
-            print(datas)
             for cart_offer in datas:
                 results_dict = {}
                 details_list = []
-                shops = Cart.objects.filter(offer__auth_shop__pk=cart_offer.offer.auth_shop.pk)
+                shops = Cart.objects.filter(offer__auth_shop__pk=cart_offer.offer.auth_shop.pk, unique_id=unique_id)
                 results_dict['offers_count'] = shops.count()
                 results_dict['shop_pk'] = cart_offer.offer.auth_shop.pk
                 shop_pks.add(cart_offer.offer.auth_shop.pk)
