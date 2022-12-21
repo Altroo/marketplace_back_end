@@ -60,27 +60,26 @@ def base_inform_marketing_team(self, shop_pk: int):
     username = 'no-reply@qaryb.com'
     password = '24YAqua09'
     use_tls = True
-    connection = get_connection(host=host,
-                                port=port,
-                                username=username,
-                                password=password,
-                                use_tls=use_tls)
-
     mail_subject = f'New store : {shop.shop_name}'
     mail_template = 'inform_new_store.txt'
     message = render_to_string(mail_template, {
         'shop_name': shop.shop_name,
         'shop_link': f"{config('FRONT_DOMAIN')}/shop/{shop.qaryb_link}"
     })
-    email = EmailMessage(
-        mail_subject,
-        message,
-        to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
-        connection=connection,
-        from_email='no-reply@qaryb.com',
-    )
-    email.content_subtype = "html"
-    email.send(fail_silently=False)
+    with get_connection(host=host,
+                        port=port,
+                        username=username,
+                        password=password,
+                        use_tls=use_tls) as connection:
+        email = EmailMessage(
+            mail_subject,
+            message,
+            to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
+            connection=connection,
+            from_email='no-reply@qaryb.com',
+        )
+        email.content_subtype = "html"
+        email.send(fail_silently=False)
 
 
 @app.task(bind=True, serializer='json')
@@ -89,7 +88,6 @@ def base_delete_mode_vacance_obj(self, auth_shop_pk):
         ModeVacance.objects.get(auth_shop=auth_shop_pk).delete()
     except ModeVacance.DoesNotExist:
         pass
-
 
 # @app.task(bind=True)
 # def base_start_deleting_expired_shops(self, shop_pk):
