@@ -7,26 +7,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from order.models import Order
-from order.base.serializers import BaseOrdersListSerializerV2
+from order.base.serializers import BaseOrdersListSerializer
 from order.base.filters import OrderStatusFilterSet
-
-# class OrdersView(APIView, PageNumberPagination):
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     def get(self, request, *args, **kwargs):
-#         user = request.user
-#         orders: Union[QuerySet, Order] = Order.objects.filter(seller__user=user) \
-#             .prefetch_related('order_details_order').order_by('-order_date')
-#         page = self.paginate_queryset(request=request, queryset=orders)
-#         if page is not None:
-#             serializer = BaseOrdersListSerializerV2(instance=page, many=True)
-#             return self.get_paginated_response(serializer.data)
 
 
 class OrdersView(ListAPIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
     filterset_class = OrderStatusFilterSet
-    serializer_class = BaseOrdersListSerializerV2
+    serializer_class = BaseOrdersListSerializer
     http_method_names = ('get',)
 
     def get_queryset(self) -> Union[QuerySet, Order]:
@@ -52,7 +40,7 @@ class GetOrderDetailsView(APIView):
         order_pk = kwargs.get('order_pk')
         try:
             order = Order.objects.get(pk=order_pk, seller__user=user)
-            serializer = BaseOrdersListSerializerV2(instance=order)
+            serializer = BaseOrdersListSerializer(instance=order)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             errors = {"errors": ["Order Doesn't exist!"]}

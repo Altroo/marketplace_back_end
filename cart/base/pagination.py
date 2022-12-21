@@ -158,7 +158,7 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
             .order_by('-created_date', '-updated_date') \
             .values_list("offer__pk", flat=True).all()
         # Excludings deliveries means getting only the ones with click & collect and only products
-        product_offers = Cart.objects.filter(offer_id__in=offer_pks) \
+        product_offers = Cart.objects.filter(offer_id__in=offer_pks, unique_id=unique_id) \
             .order_by('-created_date', '-updated_date') \
             .exclude(offer__offer_type='S')
         click_and_collect_offers = product_offers.exclude(offer__offer_delivery__isnull=False)
@@ -337,14 +337,20 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
             results_list.append(details_dict)
         # Check for Lot 3
         # Excludings products
-        services_offers = Cart.objects.filter(offer_id__in=offer_pks) \
+        services_offers = Cart.objects.filter(offer_id__in=offer_pks, unique_id=unique_id) \
             .order_by('-created_date', '-updated_date') \
             .exclude(offer__offer_type='V')
         if services_offers:
             lot_3_list = []
             details_dict = {}
             offres_dict = {}
+            service_longitude = False
+            service_latitude = False
+            service_address = False
             for i in services_offers:
+                service_longitude = i.offer.offer_services.service_longitude
+                service_latitude = i.offer.offer_services.service_latitude
+                service_address = i.offer.offer_services.service_address
                 lot_3_dict = {
                     "cart_pk": i.pk,
                     "offer_pk": i.offer.pk,
@@ -361,7 +367,15 @@ class GetCartOffersDetailsPagination(PageNumberPagination):
                     }
                 }
                 lot_3_list.append(lot_3_dict)
-
+            if service_longitude and service_latitude and service_address:
+                service_coordonnee = {
+                    "service_longitude": service_longitude,
+                    "service_latitude": service_latitude,
+                    "service_address": service_address,
+                }
+                offres_dict['service_coordonnee'] = service_coordonnee
+            else:
+                offres_dict['service_coordonnee'] = {}
             offres_dict['cart_details'] = lot_3_list
             offres_dict['global_offer_type'] = 'S'
             # Append to Lot 1, 2, 3 if exists

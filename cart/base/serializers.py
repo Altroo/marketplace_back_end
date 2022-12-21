@@ -3,81 +3,8 @@ from cart.models import Cart
 from cart.base.utils import GetCartPrices
 from places.models import City
 from offers.models import Delivery, Products
-from order.models import Order, OrderDetails
 from account.models import CustomUser
 from offers.base.serializers import BaseShopCitySerializer
-
-
-class BaseNewOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ['buyer', 'seller',
-                  # Buyer fallback if deleted
-                  'first_name', 'last_name', 'buyer_avatar_thumbnail',
-                  # Seller fallback if deleted
-                  'shop_name', 'seller_avatar_thumbnail', 'note',
-                  'order_number', 'order_date', 'highest_delivery_price']
-
-
-class BaseNewOrderHighestDeliveryPrice(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ['highest_delivery_price']
-
-    def update(self, instance, validated_data):
-        instance.highest_delivery_price = validated_data.get('highest_delivery_price', instance.highest_delivery_price)
-        instance.save()
-        return instance
-
-
-class BaseOferDetailsProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetails
-        fields = [
-            'order',
-            # Order Fallback if deleted
-            # 'order_number', 'order_date', 'viewed_buyer', 'viewed_seller',
-            'offer',
-            # Offer Fallback if deleted
-            'offer_type', 'title', 'offer_thumbnail',
-            # Seller offer details
-            # Picked click and collect
-            'picked_click_and_collect',
-            'product_longitude', 'product_latitude', 'product_address',
-            # Picked delivery
-            'picked_delivery',
-            # 'delivery_city', 'delivery_price', 'delivery_days',
-            'delivery_price',
-            # Buyer coordinates
-            'first_name', 'last_name', 'address', 'city', 'zip_code', 'country', 'phone', 'email',
-            # Product
-            'picked_color', 'picked_size', 'picked_quantity',
-            # order_status
-            'total_self_price'
-        ]
-
-
-class BaseOfferDetailsServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetails
-        fields = [
-            'order',
-            # Offer Fallback if deleted
-            'offer',
-            'offer_type', 'title', 'offer_thumbnail',
-            'service_zone_by',
-            'service_longitude',
-            'service_latitude',
-            'service_address',
-            'service_km_radius',
-            # Buyer coordinates
-            'first_name', 'last_name',
-            # 'address', 'city', 'zip_code', 'country',
-            'phone', 'email',
-            # Srvices
-            'picked_date', 'picked_hour',
-            'total_self_price'
-        ]
 
 
 class BaseCartClickAndCollectSerializer(serializers.ModelSerializer):

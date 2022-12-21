@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import CartOffersView, ValidateCartOffersViewV2, \
+from .views import CartOffersView, ValidateCartOffersView, \
     GetCartOffersDetailsView, GetMyCartListView, GetCartCounterView, CartQuantityView
 
 app_name = 'cart'
 
 urlpatterns = [
     # POST : Validate my order. + Empty cart.
-    path('order/<str:unique_id>/', ValidateCartOffersViewV2.as_view()),
+    path('order/<str:unique_id>/', ValidateCartOffersView.as_view()),
     # GET : My cart list.
     path('all/<str:unique_id>/', GetMyCartListView.as_view()),
     path('get_cart_counter/<str:unique_id>/', GetCartCounterView.as_view()),

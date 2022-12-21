@@ -1,13 +1,17 @@
 from io import BytesIO
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from decouple import config
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.core.mail import get_connection
+
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from shop.models import AuthShop, ModeVacance
 from offers.base.tasks import generate_images_v2
 from os import path
 from account.models import CustomUser
-from time import sleep
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
@@ -46,6 +50,37 @@ def base_resize_avatar_thumbnail(self, object_pk: int, which: str, avatar: Bytes
         else:
             # No event for TempShop user is not known yet.
             pass
+
+
+@app.task(bind=True, serializer='json')
+def base_inform_marketing_team(self, shop_pk: int):
+    shop = AuthShop.objects.get(pk=shop_pk)
+    host = 'smtp.gmail.com'
+    port = 587
+    username = 'no-reply@qaryb.com'
+    password = '24YAqua09'
+    use_tls = True
+    connection = get_connection(host=host,
+                                port=port,
+                                username=username,
+                                password=password,
+                                use_tls=use_tls)
+
+    mail_subject = f'New store : {shop.shop_name}'
+    mail_template = 'inform_new_store.txt'
+    message = render_to_string(mail_template, {
+        'shop_name': shop.shop_name,
+        'shop_link': f"{config('FRONT_DOMAIN')}/shop/{shop.qaryb_link}"
+    })
+    email = EmailMessage(
+        mail_subject,
+        message,
+        to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
+        connection=connection,
+        from_email='no-reply@qaryb.com',
+    )
+    email.content_subtype = "html"
+    email.send(fail_silently=False)
 
 
 @app.task(bind=True, serializer='json')

@@ -59,7 +59,7 @@ class BaseDeliverySerializer(serializers.Serializer):
         pass
 
 
-class BaseOrderDetailsListSerializerV2(serializers.Serializer):
+class BaseOrderDetailsListSerializer(serializers.Serializer):
     offer_type = serializers.CharField()
     offer_title = serializers.CharField()
     offer_thumbnail = serializers.CharField(source='get_absolute_offer_thumbnail')
@@ -100,7 +100,7 @@ class BaseOrderDetailsListSerializerV2(serializers.Serializer):
         pass
 
 
-class BaseOrdersListSerializerV2(serializers.Serializer):
+class BaseOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
@@ -110,7 +110,7 @@ class BaseOrdersListSerializerV2(serializers.Serializer):
     articles_count = serializers.SerializerMethodField()
     order_status = serializers.CharField()
     total_price = serializers.FloatField()
-    order_details = BaseOrderDetailsListSerializerV2(many=True, source='order_details_order')
+    order_details = BaseOrderDetailsListSerializer(many=True, source='order_details_order')
     note = serializers.CharField()
     highest_delivery_price = serializers.FloatField()
 
