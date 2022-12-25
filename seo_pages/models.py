@@ -1,9 +1,11 @@
+from colorfield.fields import ColorField
 from django.db import models
 from typing import Union
 from django.db.models import Model, QuerySet
 from django.contrib.postgres.fields import ArrayField
 from subscription.models import IndexedArticles
 from django.db.models.signals import m2m_changed
+from shop.models import AuthShop
 
 
 class DefaultSeoPage(Model):
@@ -27,6 +29,25 @@ class DefaultSeoPage(Model):
     class Meta:
         verbose_name = 'Default seo page'
         verbose_name_plural = 'Default seo pages'
+        ordering = ('-pk',)
+
+
+class HomePage(Model):
+    coup_de_coeur_bg = ColorField(verbose_name='Coup de coeur background color', default='#FFFFFF')
+    coup_de_coeur = models.OneToOneField(AuthShop, on_delete=models.CASCADE,
+                                         verbose_name='Boutique coup de coeur',
+                                         related_name='authShop_coup_de_coeur')
+    new_shops = models.ManyToManyField(AuthShop,
+                                       verbose_name='New shops list',
+                                       related_name='authShop_shops_joint',
+                                       blank=True)
+
+    def __str__(self):
+        return '{}'.format(self.coup_de_coeur.shop_name)
+
+    class Meta:
+        verbose_name = 'Home page'
+        verbose_name_plural = 'Home page'
         ordering = ('-pk',)
 
 

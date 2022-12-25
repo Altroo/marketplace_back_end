@@ -9,8 +9,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from offers.base.filters import BaseOffersListSortByPrice
 from offers.models import Offers
-from seo_pages.base.serializers import BaseDefaultSeoPageSerializer, BaseDefaultSeoPageUrlsOnlySerializer
-from seo_pages.models import DefaultSeoPage
+from seo_pages.base.serializers import BaseDefaultSeoPageSerializer, BaseDefaultSeoPageUrlsOnlySerializer, \
+    BaseHomePageSerializer
+from seo_pages.models import DefaultSeoPage, HomePage
 from offers.base.serializers import BaseOffersListSerializer
 
 
@@ -231,3 +232,13 @@ class GetSeoPageArticlesListView(ListAPIView, PageNumberPagination):
             serializer = self.get_serializer(filter_queryset, many=True)
             response = self.get_paginated_response(serializer.data)
             return Response(response.data)
+
+
+class GetHomePageView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request, *args, **kwargs):
+        home_page = HomePage.objects.all().first()
+        serializer = BaseHomePageSerializer(home_page)
+        return Response(serializer.data, status=status.HTTP_200_OK)

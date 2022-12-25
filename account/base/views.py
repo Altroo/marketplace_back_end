@@ -33,6 +33,7 @@ from account.base.tasks import base_generate_user_thumbnail, base_mark_every_mes
     base_delete_user_media_files, base_send_email, base_start_deleting_expired_codes
 from account.models import CustomUser, BlockedUsers, UserAddress
 from os import remove
+from order.models import Order
 from offers.base.serializers import BaseOffersMiniProfilListSerializer
 from offers.models import Offers, OffersTotalVues
 from shop.models import AuthShop
@@ -623,9 +624,9 @@ class ProfileView(APIView):
             data['avatar'] = updated_account.get_absolute_avatar_img
             data['city'] = updated_account.city
             data['country'] = {
-                                  'pk': country.pk,
-                                  'name': country.name_fr,
-                              } if country is not None else None,
+                'pk': country.pk,
+                'name': country.name_fr,
+            } if country is not None else None,
             data['date_joined'] = user.date_joined
             return Response(data, status=status.HTTP_200_OK)
         raise ValidationError(serializer.errors)
@@ -1196,6 +1197,40 @@ class DashboardView(APIView):
         }
 
     @staticmethod
+    def get_order_month_and_pourcentage(auth_shop):
+        now = datetime.datetime.now()
+        this_year = now.year
+        this_month = now.month
+        last_month = now.month - 1 if now.month > 1 else 12
+        last_year = now.year - 1 if last_month == 12 else now.year
+
+        this_month_total = sum(Order.objects.filter(seller=auth_shop,
+                                                    order_date__month=this_month,
+                                                    order_date__year=this_year,
+                                                    order_status='CM')
+                               .values_list('total_price', flat=True))
+
+        last_month_total = sum(Order.objects.filter(seller=auth_shop,
+                                                    order_date__month=last_month,
+                                                    order_date__year=last_year,
+                                                    order_status='CM')
+                               .values_list('total_price', flat=True))
+        if last_month_total != 0 and this_month_total != 0:
+            pourcentage = int((this_month_total - last_month_total) / last_month_total * 100)
+            if pourcentage == 0:
+                pourcentage = '0%'
+            elif pourcentage > 0:
+                pourcentage = f'+{pourcentage}%'
+            else:
+                pourcentage = f'{pourcentage}%'
+        else:
+            pourcentage = '0%'
+        return {
+            'this_month': this_month,
+            'pourcentage': pourcentage,
+        }
+
+    @staticmethod
     def get_is_subscribed_and_slots(user_pk, already_indexed_count):
         try:
             # TODO fix duplicate
@@ -1210,12 +1245,14 @@ class DashboardView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        shop_url = is_creator = shop_name = shop_avatar = has_messages = has_notifications = has_orders = \
-            check_verified = has_shop = is_subscribed = False
+        shop_url = is_creator = shop_name = shop_avatar = has_messages = has_notifications = \
+            check_verified = has_shop = is_subscribed = has_new_orders = False
         total_offers_count = total_offers_vue_count = total_sells_count = global_rating = indexed_articles_count = \
             remaining_slots_count = all_slots_count = 0
         total_sells_month = total_vue_month = datetime.datetime.now().month
         total_vue_pourcentage = total_sells_pourcentage = '0%'
+        orders_list = []
+        sliced_orders_list = []
         try:
             check_verified = EmailAddress.objects.get(user=user).verified
         except EmailAddress.DoesNotExist:
@@ -1233,13 +1270,38 @@ class DashboardView(APIView):
             if nbr_messages > 0:
                 has_messages = True
             has_notifications = False
-            has_orders = False
             total_offers_count = Offers.objects.filter(auth_shop=auth_shop).count()
+            total_sells_count = sum(Order.objects.filter(seller=auth_shop,
+                                                         order_status='CM')
+                                    .values_list('total_price', flat=True))
+            orders_list = Order.objects.filter(seller=auth_shop)\
+                .prefetch_related('order_details_order').order_by('-order_date')
+
+            for index, order in enumerate(orders_list):
+                orders_len = order.order_details_order.all().count()
+                if order.order_status == 'IP':
+                    has_new_orders = True
+                sliced_orders_list.append({
+                    'pk': order.pk,
+                    'first_name': order.first_name,
+                    'last_name': order.last_name,
+                    'avatar': order.get_absolute_buyer_thumbnail,
+                    'order_status': order.order_status,
+                    'order_date': order.order_date,
+                    'total_price': order.total_price,
+                    'articles_count': f"{orders_len} articles" if orders_len > 1 else f"{orders_len} article",
+                })
+                if index == 2:
+                    break
             total_offers_vue_count = sum(
                 filter(None, shop_offers.values_list('offer_vues__nbr_total_vue', flat=True)))
+
             vues_month_and_pourcentage = self.get_vues_month_and_pourcentage(auth_shop)
             total_vue_month = vues_month_and_pourcentage.get('this_month')
             total_vue_pourcentage = vues_month_and_pourcentage.get('pourcentage')
+            order_month_and_pourcentage = self.get_order_month_and_pourcentage(auth_shop)
+            total_sells_month = order_month_and_pourcentage.get('this_month')
+            total_sells_pourcentage = order_month_and_pourcentage.get('pourcentage')
             # Missing
             # global_rating = 4.8
             # total_sells_count = 0
@@ -1269,8 +1331,9 @@ class DashboardView(APIView):
             "shop_url": shop_url,  # for gerer ma boutique button
             "global_rating": global_rating,  # missing
             "has_messages": has_messages,
-            "has_notifications": has_notifications,  # missing
-            "has_orders": has_orders,  # missing
+            "has_notifications": has_notifications,  # not used
+            "has_orders": has_new_orders,
+            "mini_orders_list": sliced_orders_list,
             "indexed_articles_count": indexed_articles_count,
             "remaining_slots_count": remaining_slots_count,
             "all_slots_count": all_slots_count,
@@ -1278,8 +1341,8 @@ class DashboardView(APIView):
             "total_offers_vue_count": total_offers_vue_count,
             "total_vue_month": total_vue_month,
             "total_vue_pourcentage": total_vue_pourcentage,
-            "total_sells_count": total_sells_count,  # missing
-            "total_sells_pourcentage": total_sells_pourcentage,  # missing
-            "total_sells_month": total_sells_month,  # missing
+            "total_sells_count": total_sells_count,
+            "total_sells_pourcentage": total_sells_pourcentage,
+            "total_sells_month": total_sells_month,
         }
         return Response(data=data, status=status.HTTP_200_OK)

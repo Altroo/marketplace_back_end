@@ -17,8 +17,8 @@ class BaseOrderProductDetailsSerializerV2(serializers.Serializer):
 
 
 class BaseOrderServiceDetailsSerializerV2(serializers.Serializer):
-    picked_date = serializers.DateField(format='%d/%m/%Y')
-    picked_hour = serializers.TimeField(format='%H:%M')
+    picked_date = serializers.DateField()
+    picked_hour = serializers.TimeField()
     service_zone_by = serializers.CharField()
     service_longitude = serializers.FloatField()
     service_latitude = serializers.FloatField()
@@ -64,11 +64,16 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
     offer_title = serializers.CharField()
     offer_thumbnail = serializers.CharField(source='get_absolute_offer_thumbnail')
     offer_price = serializers.FloatField()
+    offer_total_price = serializers.SerializerMethodField()
     offer_details = serializers.SerializerMethodField()
     picked_click_and_collect = serializers.BooleanField()
     click_and_collect = serializers.SerializerMethodField()
     picked_delivery = serializers.BooleanField()
     delivery = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_offer_total_price(instance):
+        return instance.offer_price * instance.picked_quantity
 
     @staticmethod
     def get_delivery(instance):
@@ -106,7 +111,7 @@ class BaseOrdersListSerializer(serializers.Serializer):
     last_name = serializers.CharField()
     avatar = serializers.CharField(source='get_absolute_buyer_thumbnail')
     order_number = serializers.CharField()
-    order_date = serializers.DateTimeField(format='%d/%m/%Y')
+    order_date = serializers.DateTimeField()
     articles_count = serializers.SerializerMethodField()
     order_status = serializers.CharField()
     total_price = serializers.FloatField()
@@ -123,6 +128,50 @@ class BaseOrdersListSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
+
+
+# class BaseGetOrderDetailsSerializer(serializers.Serializer):
+#     pk = serializers.IntegerField()
+#     first_name = serializers.CharField()
+#     last_name = serializers.CharField()
+#     avatar = serializers.CharField(source='get_absolute_buyer_thumbnail')
+#     order_number = serializers.CharField()
+#     order_date = serializers.DateTimeField()
+#     articles_count = serializers.SerializerMethodField()
+#     order_status = serializers.CharField()
+#     total_price = serializers.FloatField()
+#     order_details = serializers.SerializerMethodField()
+#     note = serializers.CharField()
+#     highest_delivery_price = serializers.FloatField()
+#
+#     @staticmethod
+#     def get_articles_count(instance: Union[QuerySet, Order]):
+#         return OrderDetails.objects.filter(order=instance).count()
+#
+#     @staticmethod
+#     def get_order_details(instance: Union[QuerySet, Order]):
+#         results = BaseOrderDetailsListSerializer(many=True, source=list(instance.order_details_order.all()))
+#         print(results)
+#         results_list = []
+#         lot_1 = False
+#         lot_2 = False
+#         details_dict = {}
+#         lot_1_list = []
+#         offres_dict = {}
+#         product_longitude = False
+#         product_latitude = False
+#         product_address = False
+#         result: Union[QuerySet, Order]
+#         for result in results:
+#             print(result)
+#         return results.data
+#         # BaseOrderDetailsListSerializer(many=True, source='order_details_order')
+#
+#     def update(self, instance, validated_data):
+#         pass
+#
+#     def create(self, validated_data):
+#         pass
 
 
 class BaseOrderSerializer(serializers.ModelSerializer):
@@ -145,4 +194,19 @@ class BaseOrderDetailsSerializer(serializers.ModelSerializer):
                   'service_latitude', 'service_address', 'service_km_radius']
 
 
+class BaseChiffreAffaireListSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    order_number = serializers.CharField()
+    order_date = serializers.DateTimeField()
+    articles_count = serializers.SerializerMethodField()
+    total_price = serializers.FloatField()
 
+    @staticmethod
+    def get_articles_count(instance: Union[QuerySet, Order]):
+        return OrderDetails.objects.filter(order=instance).count()
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass

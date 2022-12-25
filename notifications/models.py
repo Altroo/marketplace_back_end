@@ -9,6 +9,7 @@ from channels.layers import get_channel_layer
 NOTIFICATION_CHOICES = (
     ('', 'Unset'),
     ('SA', 'Subscription activated'),
+    ('OR', 'Order received'),
 )
 
 

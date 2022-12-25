@@ -2,6 +2,8 @@ from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from shop.models import AuthShop
+from notifications.models import Notifications
 from offers.models import Delivery
 from cart.base.serializers import BaseCartOfferSerializer
 from cart.models import Cart
@@ -144,7 +146,7 @@ class ValidateCartOffersView(APIView):
         str_time_stamp_seconds = str_time_stamp.split('.')
         timestamp_rnd = str_time_stamp_seconds[0][6:]
         uid = urlsafe_base64_encode(force_bytes(unique_id))
-        return '{}-{}'.format(timestamp_rnd, uid[0:3])
+        return '{}-{}'.format(timestamp_rnd, uid[0:3].upper())
 
     def post(self, request, *args, **kwargs):
         unique_id = kwargs.get('unique_id')
@@ -207,29 +209,32 @@ class ValidateCartOffersView(APIView):
                             order.save(update_fields=['highest_delivery_price'])
                             highest_delivery_price = delivery_price
                         delivery_price_count = delivery_price
-
+                picked_click_and_collect = bool(int(check_click_and_collect[index])) if isinstance(
+                        check_click_and_collect, list) and cart_offer.offer.offer_type == 'V' else False
+                picked_delivery = bool(int(check_picked_delivery[index])) if isinstance(
+                        check_picked_delivery, list) and cart_offer.offer.offer_type == 'V' else False
                 order_detail_serializer = BaseOrderDetailsSerializer(data={
                     'order': order.pk,
                     'offer': cart_offer.offer.pk,
                     'offer_type': cart_offer.offer.offer_type,
                     'offer_title': cart_offer.offer.title,
                     'offer_price': cart_offer.offer.price,
-                    'picked_click_and_collect': bool(int(check_click_and_collect[index])) if isinstance(
-                        check_click_and_collect, list) and cart_offer.offer.offer_type == 'V' else False,
+                    'picked_click_and_collect': picked_click_and_collect,
                     'product_longitude': cart_offer.offer.offer_products.product_longitude
-                    if cart_offer.offer.offer_type == 'V' else None,
+                    if cart_offer.offer.offer_type == 'V' and picked_click_and_collect else None,
                     'product_latitude': cart_offer.offer.offer_products.product_latitude
-                    if cart_offer.offer.offer_type == 'V' else None,
+                    if cart_offer.offer.offer_type == 'V' and picked_click_and_collect else None,
                     'product_address': cart_offer.offer.offer_products.product_address
-                    if cart_offer.offer.offer_type == 'V' else None,
-                    'picked_delivery': bool(int(check_picked_delivery[index])) if isinstance(
-                        check_picked_delivery, list) and cart_offer.offer.offer_type == 'V' else False,
+                    if cart_offer.offer.offer_type == 'V' and picked_click_and_collect else None,
+                    'picked_delivery': picked_delivery,
+                    # Deliveries data
                     'delivery_price': delivery_price_count,
-                    'address': address,
-                    'city': city,
-                    'zip_code': zip_code,
-                    'country': country,
-                    'phone': phone,
+                    'address': address if picked_delivery else None,
+                    'city': city if picked_delivery else None,
+                    'zip_code': zip_code if picked_delivery else None,
+                    'country': country if picked_delivery else None,
+                    'phone': phone if picked_delivery or cart_offer.offer.offer_type == 'S' else None,
+                    # end - deliveries data
                     'email': email,
                     'picked_color': cart_offer.picked_color,
                     'picked_size': cart_offer.picked_size,
@@ -258,6 +263,8 @@ class ValidateCartOffersView(APIView):
             if order_details_valid:
                 cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=seller)
                 cart_offers.delete()
+                user = AuthShop.objects.get(pk=seller).user
+                Notifications.objects.create(user=user, type='OR')
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
                 if order_details_serializer_errors:

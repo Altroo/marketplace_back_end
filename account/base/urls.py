@@ -7,11 +7,8 @@ from .views import FacebookLoginView, GoogleLoginView, CheckEmailView, \
     EncloseAccountView, ChangeEmailHasPasswordAccountView, ChangeEmailNotHasPasswordAccountView, \
     DeleteAccountView, CheckAccountView, ChangePasswordView, DashboardView, \
     GetProfileView, SetFacebookEmailAccountView, CreatePasswordAccountView
-# from dj_rest_auth.views import LoginView, PasswordChangeView, LogoutView
-# from dj_rest_auth.views import LogoutView
-# from dj_rest_auth.views import PasswordChangeView
 from dj_rest_auth.registration.views import SocialAccountDisconnectView
-from rest_framework_simplejwt.views import TokenVerifyView  # , TokenRefreshView
+from rest_framework_simplejwt.views import TokenVerifyView
 from dj_rest_auth.jwt_auth import get_refresh_view
 
 app_name = 'account'
