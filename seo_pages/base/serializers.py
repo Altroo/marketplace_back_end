@@ -44,7 +44,7 @@ class BaseCoupDeCoeurSerializer(serializers.Serializer):
                 shop_offers = offers_len[:2]
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
-            elif offers_len >= 2:
+            elif offers_len.count() >= 2:
                 shop_offers = offers_len[:1]
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
@@ -63,7 +63,7 @@ class BaseCoupDeCoeurSerializer(serializers.Serializer):
                 shop_offers = offers_len[2:4]
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
-            elif offers_len >= 2:
+            elif offers_len.count() >= 2:
                 shop_offers = offers_len[1:2]
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
