@@ -49,8 +49,7 @@ class BaseCoupDeCoeurSerializer(serializers.Serializer):
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
             else:
-                shop_offers = offers_len[0]
-                offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
+                offers = BaseCoupDeCoeurShopOffers(offers_len, many=True)
                 return offers.data
         else:
             return {}
@@ -68,8 +67,7 @@ class BaseCoupDeCoeurSerializer(serializers.Serializer):
                 offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
                 return offers.data
             else:
-                shop_offers = offers_len[0]
-                offers = BaseCoupDeCoeurShopOffers(shop_offers, many=True)
+                offers = BaseCoupDeCoeurShopOffers(offers_len, many=True)
                 return offers.data
         else:
             return {}
