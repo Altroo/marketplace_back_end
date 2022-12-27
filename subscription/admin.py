@@ -1,5 +1,13 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
+from django.db import IntegrityError
+from django.http import HttpResponseRedirect
+from django.urls import path
+from datetime import timedelta
+from string import ascii_uppercase
+from random import choice
+from django.utils import timezone
+
 from subscription.models import AvailableSubscription, RequestedSubscriptions, \
     PromoCodes, SubscribedUsers, IndexedArticles
 
@@ -28,12 +36,39 @@ class CustomRequestedSubscriptionAdmin(ModelAdmin):
 
 
 class CustomPromoCodesAdmin(ModelAdmin):
+    change_list_template = "generate_promo_code.html"
+
     list_display = ('pk', 'promo_code', 'type_promo_code', 'usage_unique', 'value', 'promo_code_status',
                     'expiration_date')
     search_fields = ('pk', 'promo_code', 'type_promo_code', 'usage_unique', 'value', 'promo_code_status',
                      'expiration_date')
     list_filter = ('type_promo_code', 'usage_unique', 'promo_code_status')
     ordering = ('-pk',)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('generate_promo_code/', self.generate_promo_code),
+        ]
+        return my_urls + urls
+
+    def generate_promo_code(self, request):
+        promo_code = ''.join(
+            choice(ascii_uppercase) for _ in range(6)
+        )
+        expiration_date = timezone.now() + timedelta(weeks=1)
+        try:
+            self.model.objects.create(
+                promo_code=promo_code,
+                type_promo_code='S',
+                usage_unique=True,
+                value=4,
+                expiration_date=expiration_date,
+            )
+            self.message_user(request, "Promo code Generated")
+        except IntegrityError:
+            self.message_user(request, "Promo code Already exists, click again!", level='ERROR')
+        return HttpResponseRedirect("../")
 
 
 class CustomSubscribedUsersAdmin(ModelAdmin):

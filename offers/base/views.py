@@ -22,7 +22,8 @@ from offers.base.serializers import BaseShopOfferSerializer, \
 from offers.base.filters import TagsFilterSet, BaseOffersListSortByPrice
 from os import path, remove
 from Qaryb_API.settings import API_URL
-from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images
+from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images, \
+    base_inform_marketing_team
 from offers.mixins import PaginationMixinBy5
 from places.models import City, Country
 from offers.base.pagination import GetMyVuesPagination
@@ -757,6 +758,7 @@ class ShopOfferViewV2(APIView):
                     data['service_address'] = service.service_address
                     data['service_km_radius'] = service.service_km_radius
                     # For services
+                    base_inform_marketing_team.apply_async((offer_pk,), )
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
                     service_serializer_errors = service_serializer.errors
@@ -896,6 +898,7 @@ class ShopOfferViewV2(APIView):
                     for i in deliveries:
                         del i['offer']
                     data['deliveries'] = deliveries
+                    base_inform_marketing_team.apply_async((offer_pk,),)
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:

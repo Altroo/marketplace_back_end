@@ -1,0 +1,12 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+    <div>
+			<form action="generate_promo_code/" method="POST">
+        {% csrf_token %}
+        <input type="submit" class="default" value="Generate promo code" name="_save" style="float: none"/>
+      </form>
+    </div>
+    <br />
+    {{ block.super }}
+{% endblock %}

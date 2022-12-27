@@ -1,0 +1,5 @@
+Nom de boutique :
+{{ shop_name }}
+\n
+Lien d'article :
+{{ offer_link }}
