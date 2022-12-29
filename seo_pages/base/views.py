@@ -125,7 +125,7 @@ class GetSeoPageArticlesFiltersListView(APIView):
 
 class GetSeoPageArticlesListView(ListAPIView, PageNumberPagination):
     permission_classes = (permissions.AllowAny,)
-    page_size = 10
+    page_size = 20
     filterset_class = BaseOffersListSortByPrice
     http_method_names = ('get',)
     serializer_class = BaseOffersListSerializer

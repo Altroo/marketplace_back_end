@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.db.models import Count, F, QuerySet
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, permissions
@@ -24,7 +25,6 @@ from os import path, remove
 from Qaryb_API.settings import API_URL
 from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images, \
     base_inform_marketing_team
-from offers.mixins import PaginationMixinBy5
 from places.models import City, Country
 from offers.base.pagination import GetMyVuesPagination
 from datetime import datetime
@@ -2118,8 +2118,9 @@ class ShopOfferViewV2(APIView):
             raise ValidationError(errors)
 
 
-class GetMyShopOffersListView(APIView, PaginationMixinBy5):
+class GetMyShopOffersListView(APIView, PageNumberPagination):
     permission_classes = (permissions.AllowAny,)
+    page_size = 20
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -2151,7 +2152,7 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
                 .select_related('offer_services') \
                 .prefetch_related('offer_delivery') \
                 .filter(auth_shop=auth_shop).order_by('-pinned', '-created_date')
-            page = self.paginate_queryset(queryset=shop_offers)
+            page = self.paginate_queryset(queryset=shop_offers, request=request)
             if page is not None:
                 serializer = BaseOffersListSerializer(instance=page, many=True)
                 return self.get_paginated_response(serializer.data)
@@ -2160,11 +2161,12 @@ class GetMyShopOffersListView(APIView, PaginationMixinBy5):
             raise ValidationError(errors)
 
 
-class GetShopOffersListView(ListAPIView, PaginationMixinBy5):
+class GetShopOffersListView(ListAPIView, PageNumberPagination):
     permission_classes = (permissions.AllowAny,)
     filterset_class = BaseOffersListSortByPrice
     http_method_names = ('get',)
     serializer_class = BaseOffersListSerializer
+    page_size = 20
 
     queryset = Offers.objects.all().select_related('offer_solder') \
         .select_related('offer_products') \
@@ -2584,7 +2586,7 @@ class ShopOfferPinUnpinView(APIView):
 
 class GetOffersVuesListView(APIView, GetMyVuesPagination):
     permission_classes = (permissions.IsAuthenticated,)
-    page_size = 5
+    page_size = 10
 
     def get(self, request, *args, **kwargs):
         user = request.user
