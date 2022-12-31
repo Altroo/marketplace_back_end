@@ -127,10 +127,7 @@ def resize_images_v2(bytes_) -> Tuple[BytesIO, BytesIO]:
     image_processor = ImageProcessor()
     loaded_img = image_processor.load_image_from_io(bytes_)
     resized_img = image_processor.image_resize(loaded_img)
-    resized_thumb = image_processor.image_resize(loaded_img, width=300, height=300)
-    img = image_processor.from_img_to_io(resized_img, 'WEBP')
-    thumb = image_processor.from_img_to_io(resized_thumb, 'WEBP')
-    return img, thumb
+    return image_processor.from_img_to_io(resized_img, 'WEBP')
 
 
 def send_ws_image(user_pk: int, offer_pk: int, url: str, type_: str):
@@ -147,58 +144,61 @@ def send_ws_image(user_pk: int, offer_pk: int, url: str, type_: str):
 
 
 def generate_images_v2(query_, picture: BytesIO, picture_name: str):
-    img, thumb = resize_images_v2(picture)
+    img = resize_images_v2(picture)
     query_.save_image(picture_name, img)
-    query_.save_image('{}_thumbnail'.format(picture_name), thumb)
     if picture_name != 'avatar':
         user_pk = query_.auth_shop.user.pk
         query_pk = query_.pk
         match picture_name:
             case 'picture_1':
                 send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_img, 'OFFER_PICTURE_1')
-                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_thumbnail, 'OFFER_PICTURE_1_THUMB')
             case 'picture_2':
                 send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_img, 'OFFER_PICTURE_2')
-                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_thumbnail, 'OFFER_PICTURE_2_THUMB')
             case 'picture_3':
                 send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_img, 'OFFER_PICTURE_3')
-                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_thumbnail, 'OFFER_PICTURE_3_THUMB')
             case 'picture_4':
                 send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_img, 'OFFER_PICTURE_4')
-                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_thumbnail, 'OFFER_PICTURE_4_THUMB')
-
-# @app.task(bind=True)
-# def base_resize_offer_images(self, offer_pk: int,
-#                              picture_1: str | None,
-#                              picture_2: str | None,
-#                              picture_3: str | None,
-#                              picture_4: str | None):
-#     offer = Offers.objects.get(pk=offer_pk)
-#     if isinstance(picture_1, str):
-#         generate_images_v2(offer, BytesIO(bytes(picture_1)), 'picture_1')
-#     if isinstance(picture_2, str):
-#         generate_images_v2(offer, BytesIO(bytes(picture_2)), 'picture_2')
-#     if isinstance(picture_3, str):
-#         generate_images_v2(offer, BytesIO(bytes(picture_3)), 'picture_3')
-#     if isinstance(picture_4, str):
-#         generate_images_v2(offer, BytesIO(bytes(picture_4)), 'picture_4')
+            case 'picture_1_thumbnail':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_1_thumbnail,
+                              'OFFER_PICTURE_1_THUMB')
+            case 'picture_2_thumbnail':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_2_thumbnail,
+                              'OFFER_PICTURE_2_THUMB')
+            case 'picture_3_thumbnail':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_3_thumbnail,
+                              'OFFER_PICTURE_3_THUMB')
+            case 'picture_4_thumbnail':
+                send_ws_image(user_pk, query_pk, query_.get_absolute_picture_4_thumbnail,
+                              'OFFER_PICTURE_4_THUMB')
 
 
 @app.task(bind=True, serializer='pickle')
 def base_resize_offer_images(self, offer_pk: int,
                              picture_1: BytesIO | None,
+                             thumbnail_1: BytesIO | None,
                              picture_2: BytesIO | None,
+                             thumbnail_2: BytesIO | None,
                              picture_3: BytesIO | None,
-                             picture_4: BytesIO | None):
+                             thumbnail_3: BytesIO | None,
+                             picture_4: BytesIO | None,
+                             thumbnail_4: BytesIO | None):
     offer = Offers.objects.get(pk=offer_pk)
     if isinstance(picture_1, BytesIO):
         generate_images_v2(offer, picture_1, 'picture_1')
+    if isinstance(thumbnail_1, BytesIO):
+        generate_images_v2(offer, thumbnail_1, 'picture_1_thumbnail')
     if isinstance(picture_2, BytesIO):
         generate_images_v2(offer, picture_2, 'picture_2')
+    if isinstance(thumbnail_2, BytesIO):
+        generate_images_v2(offer, thumbnail_2, 'picture_2_thumbnail')
     if isinstance(picture_3, BytesIO):
         generate_images_v2(offer, picture_3, 'picture_3')
+    if isinstance(thumbnail_3, BytesIO):
+        generate_images_v2(offer, thumbnail_3, 'picture_3_thumbnail')
     if isinstance(picture_4, BytesIO):
         generate_images_v2(offer, picture_4, 'picture_4')
+    if isinstance(thumbnail_4, BytesIO):
+        generate_images_v2(offer, thumbnail_4, 'picture_4_thumbnail')
 
 
 @app.task(bind=True, serializer='json')
@@ -291,6 +291,7 @@ def base_delete_shop_media_files(self, media_paths_list):
             remove(media_path)
         except (ValueError, SuspiciousFileOperation, FileNotFoundError):
             pass
+
 
 # @app.task(bind=True)
 # def base_start_deleting_expired_shops(self, shop_pk):

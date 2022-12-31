@@ -86,13 +86,25 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     picture_1 = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
+    picture_1_thumbnail = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
     picture_2 = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
+    picture_2_thumbnail = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     picture_3 = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
+    picture_3_thumbnail = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
     picture_4 = Base64ImageField(
+        max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
+    )
+    picture_4_thumbnail = Base64ImageField(
         max_length=None, use_url=True, required=False, allow_null=True, allow_empty_file=True,
     )
     offer_categories = BaseOfferCategoriesSerializer(many=True, read_only=True)
@@ -103,15 +115,20 @@ class BaseShopOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offers
         fields = ['auth_shop', 'offer_type', 'offer_categories', 'title',
-                  'picture_1', 'picture_2', 'picture_3', 'picture_4',
+                  'picture_1', 'picture_1_thumbnail', 'picture_2', 'picture_2_thumbnail', 'picture_3',
+                  'picture_3_thumbnail', 'picture_4', 'picture_4_thumbnail',
                   'description', 'for_whom', 'creator_label', 'made_in_label',
                   'price']
 
     extra_kwargs = {
         'picture_1': {'required': False},
+        'picture_1_thumbnail': {'required': False},
         'picture_2': {'required': False},
+        'picture_2_thumbnail': {'required': False},
         'picture_3': {'required': False},
+        'picture_3_thumbnail': {'required': False},
         'picture_4': {'required': False},
+        'picture_4_thumbnail': {'required': False},
     }
 
 
@@ -374,7 +391,15 @@ class BaseOffersListSerializer(serializers.Serializer):
 
     @staticmethod
     def get_thumbnail(instance):
-        if instance.picture_1:
+        if instance.picture_1_thumbnail:
+            return instance.get_absolute_picture_1_thumbnail
+        elif instance.picture_2_thumbnail:
+            return instance.get_absolute_picture_2_thumbnail
+        elif instance.picture_3_thumbnail:
+            return instance.get_absolute_picture_3_thumbnail
+        elif instance.picture_4_thumbnail:
+            return instance.get_absolute_picture_4_thumbnail
+        elif instance.picture_1:
             return instance.get_absolute_picture_1_img
         elif instance.picture_2:
             return instance.get_absolute_picture_2_img
