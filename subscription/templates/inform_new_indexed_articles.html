@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Nouveau articles référencés.</title>
+</head>
+<body>
+  <main>
+    {% for article in articles %}
+      <div>Nom boutique : </div>
+      <div>{{article.offer.auth_shop.shop_name}}</div>
+      <a href="https://qaryb.com/shop/{{article.offer.auth_shop.qaryb_link}}">Lien boutique</a>
+      <div>Titre d'article : </div>
+      <div>{{ article.offer.title }}</div>
+      <a href="https://qaryb.com/shop/{{article.offer.auth_shop.qaryb_link}}/article/{{article.offer.pk}}">Lien d'article</a>
+      <br>
+    {% endfor %}
+  </main>
+</body>
+</html>

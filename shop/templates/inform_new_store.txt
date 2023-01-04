@@ -1,5 +1,0 @@
-Nom de boutique :
-{{ shop_name }}
-\n
-Lien :
-{{ shop_link }}

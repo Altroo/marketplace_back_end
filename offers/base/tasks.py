@@ -1,14 +1,9 @@
 from io import BytesIO
 from os import path, remove
 from typing import Tuple
-
-from decouple import config
 from django.core.exceptions import SuspiciousFileOperation
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.core.mail import get_connection, EmailMessage
-from django.template.loader import render_to_string
-
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from offers.models import Offers, OfferVue
@@ -364,31 +359,31 @@ def base_delete_shop_media_files(self, media_paths_list):
 #         auth_shop.delete()
 
 
-@app.task(bind=True, serializer='json')
-def base_inform_marketing_team(self, offer_pk: int):
-    offer = Offers.objects.get(pk=offer_pk)
-    host = 'smtp.gmail.com'
-    port = 587
-    username = 'no-reply@qaryb.com'
-    password = '24YAqua09'
-    use_tls = True
-    mail_subject = f'New offer : {offer.title}'
-    mail_template = 'inform_new_offer.txt'
-    message = render_to_string(mail_template, {
-        'shop_name': offer.auth_shop.shop_name,
-        'offer_link': f"{config('FRONT_DOMAIN')}/shop/{offer.auth_shop.qaryb_link}/article/{offer.pk}"
-    })
-    with get_connection(host=host,
-                        port=port,
-                        username=username,
-                        password=password,
-                        use_tls=use_tls) as connection:
-        email = EmailMessage(
-            mail_subject,
-            message,
-            to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
-            connection=connection,
-            from_email='no-reply@qaryb.com',
-        )
-        email.content_subtype = "html"
-        email.send(fail_silently=False)
+# @app.task(bind=True, serializer='json')
+# def base_inform_marketing_team_new_offer(self, offer_pk: int):
+#     offer = Offers.objects.get(pk=offer_pk)
+#     host = 'smtp.gmail.com'
+#     port = 587
+#     username = 'no-reply@qaryb.com'
+#     password = '24YAqua09'
+#     use_tls = True
+#     mail_subject = f'New offer : {offer.title}'
+#     mail_template = 'inform_new_offer.txt'
+#     message = render_to_string(mail_template, {
+#         'shop_name': offer.auth_shop.shop_name,
+#         'offer_link': f"{config('FRONT_DOMAIN')}/shop/{offer.auth_shop.qaryb_link}/article/{offer.pk}"
+#     })
+#     with get_connection(host=host,
+#                         port=port,
+#                         username=username,
+#                         password=password,
+#                         use_tls=use_tls) as connection:
+#         email = EmailMessage(
+#             mail_subject,
+#             message,
+#             to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
+#             connection=connection,
+#             from_email='no-reply@qaryb.com',
+#         )
+#         email.content_subtype = "html"
+#         email.send(fail_silently=False)

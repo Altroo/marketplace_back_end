@@ -82,10 +82,10 @@ class CustomSubscribedUsersAdmin(ModelAdmin):
 class CustomIndexedArticlesAdmin(ModelAdmin):
     list_display = ('pk', 'subscription',
                     'expiration_date', 'offer', 'offer_title',
-                    'created_date', 'updated_date', 'status')
+                    'created_date', 'updated_date', 'status', 'email_informed')
     search_fields = ('pk', 'subscription__original_request__auth_shop__shop_name',
                      'offer__title',)
-    list_filter = ('status', 'created_date', 'updated_date')
+    list_filter = ('status', 'email_informed', 'created_date', 'updated_date')
     date_hierarchy = 'updated_date'
 
     @staticmethod

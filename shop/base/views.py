@@ -26,7 +26,7 @@ from shop.base.utils import ImageProcessor
 import textwrap
 import arabic_reshaper
 from bidi.algorithm import get_display
-from shop.base.tasks import base_delete_mode_vacance_obj, base_resize_avatar_thumbnail, base_inform_marketing_team
+from shop.base.tasks import base_delete_mode_vacance_obj, base_resize_avatar_thumbnail
 
 
 class ShopView(APIView):
@@ -66,7 +66,6 @@ class ShopView(APIView):
                 'AuthShop',
                 avatar_file.file if isinstance(avatar_file, ContentFile) else None
             ), )
-            base_inform_marketing_team.apply_async((shop.pk,),)
             data = {
                 'pk': shop.pk,
                 'shop_name': shop.shop_name,

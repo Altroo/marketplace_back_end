@@ -310,6 +310,7 @@ class IndexedArticles(Model):
     status = models.CharField(verbose_name='Status', max_length=1,
                               choices=SubscriptionChoices.INDEXED_ARTICLES_STATUS,
                               default='P')
+    email_informed = models.BooleanField(verbose_name='Email informed', default=False)
     # Added/Updated Dates
     created_date = models.DateTimeField(verbose_name='Date création', editable=False, auto_now_add=True, db_index=True)
     updated_date = models.DateTimeField(verbose_name='Date mis à jour', editable=False, auto_now=True)

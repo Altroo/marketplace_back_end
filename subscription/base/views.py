@@ -8,13 +8,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from subscription.models import AvailableSubscription, \
-    PromoCodes, SubscribedUsers, get_facture_path, IndexedArticles
+    PromoCodes, SubscribedUsers, IndexedArticles
 from subscription.base.serializers import BaseGETAvailableSubscriptionsSerializer, \
     BasePOSTRequestSubscriptionSerializer, BasePOSTSubscribedUsersSerializer, \
     BaseGETCurrentUserSubscription, \
     BaseGETIndexedArticlesList, BaseGETAvailableArticlesList, \
     BasePOSTIndexArticlesSerializer
 from shop.models import AuthShop
+from shop.base.tasks import base_inform_marketing_team
 from places.models import Country
 from offers.models import Offers
 from notifications.models import Notifications
@@ -42,32 +43,6 @@ class SubscriptionView(APIView):
         day = str_date[2]
         uid = urlsafe_base64_encode(force_bytes(pk))
         return f'{uid.upper()}-{year}{month}{day}'
-
-    # @staticmethod
-    # def generate_pdf(auth_shop, validated_data):
-    #     # generate pdf
-    #     pdf = FPDF()
-    #     pdf.add_page()
-    #     pdf.set_font('Arial', 'B', 16)
-    #     pdf.cell(200, 10, txt='Nom boutique : ' + auth_shop.shop_name, ln=1, align='L')
-    #     pdf.cell(200, 10, txt='Reference number : ' + validated_data.get('reference_number'), ln=2, align='L')
-    #     base_path = get_facture_path()
-    #     pdf_output_path = "{}{}.{}".format(base_path, uuid4(), 'pdf')
-    #     pdf.output(pdf_output_path)
-    #     return pdf_output_path
-
-    # @staticmethod
-    # def update_pdf(auth_shop, db_data):
-    #     # generate pdf
-    #     pdf = FPDF()
-    #     pdf.add_page()
-    #     pdf.set_font('Arial', 'B', 16)
-    #     pdf.cell(200, 10, txt='Nom boutique : ' + auth_shop.shop_name, ln=1, align='L')
-    #     pdf.cell(200, 10, txt='Reference number : ' + db_data.reference_number, ln=2, align='L')
-    #     base_path = get_facture_path()
-    #     pdf_output_path = "{}{}.{}".format(base_path, uuid4(), 'pdf')
-    #     pdf.output(pdf_output_path)
-    #     return pdf_output_path
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -178,6 +153,7 @@ class SubscriptionView(APIView):
                             'reference_number': reference_number,
                             'total_paid': total_paid,
                         }
+                        base_inform_marketing_team.apply_async((auth_shop.pk, available_slots, ), )
                         return Response(data=output_data, status=status.HTTP_200_OK)
                     # requested_subscription.delete()
                     raise ValidationError(subscribe_user_serializer.errors)

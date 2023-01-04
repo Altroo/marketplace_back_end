@@ -1,10 +1,6 @@
 from collections import defaultdict
-from io import BytesIO
-from typing import Union, Tuple
-
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-from django.core.exceptions import SuspiciousFileOperation, ObjectDoesNotExist
+from typing import Union
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.base import ContentFile
 from django.db import IntegrityError
 from django.db.models import Count, F, QuerySet
@@ -27,8 +23,7 @@ from offers.base.serializers import BaseShopOfferSerializer, \
 from offers.base.filters import TagsFilterSet, BaseOffersListSortByPrice
 from os import path, remove
 from Qaryb_API.settings import API_URL
-from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images, \
-    base_inform_marketing_team
+from offers.base.tasks import base_duplicate_offer_images, base_duplicate_offervue_images, base_resize_offer_images
 from places.models import City, Country
 from offers.base.pagination import GetMyVuesPagination
 from datetime import datetime
@@ -380,7 +375,6 @@ class ShopOfferViewV2(APIView):
                     data['service_address'] = service.service_address
                     data['service_km_radius'] = service.service_km_radius
                     # For services
-                    base_inform_marketing_team.apply_async((offer_pk,), )
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
                     service_serializer_errors = service_serializer.errors
@@ -520,7 +514,6 @@ class ShopOfferViewV2(APIView):
                     for i in deliveries:
                         del i['offer']
                     data['deliveries'] = deliveries
-                    base_inform_marketing_team.apply_async((offer_pk,), )
                     # For products
                     return Response(data=data, status=status.HTTP_200_OK)
                 else:
