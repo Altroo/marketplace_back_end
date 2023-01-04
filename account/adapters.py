@@ -17,16 +17,44 @@ class BaseSocialAccountAdapter(DefaultSocialAccountAdapter):
         except CustomUser.DoesNotExist:
             pass
 
-    def get_app(self, request, provider):
+    # def get_app(self, request, provider, config=None):
+    #     # NOTE: Avoid loading models at top due to registry boot...
+    #     from allauth.socialaccount.models import SocialApp
+    #     # 1 added line here
+    #     from allauth.socialaccount import app_settings
+    #     config = app_settings.PROVIDERS.get(provider, {}).get('APP')
+    #     app = SocialApp.objects.get_or_create(provider=provider)[0]
+    #     app.client_id = config['client_id']
+    #     app.secret = config['secret']
+    #     print(app)
+    #     return app
+
+    def get_app(self, request, provider, config=None):
         # NOTE: Avoid loading models at top due to registry boot...
         from allauth.socialaccount.models import SocialApp
         # 1 added line here
         from allauth.socialaccount import app_settings
-        config = app_settings.PROVIDERS.get(provider, {}).get('APP')
-        app = SocialApp.objects.get_or_create(provider=provider)[0]
-        app.client_id = config['client_id']
-        app.secret = config['secret']
+        config = config or app_settings.PROVIDERS.get(provider, {}).get('APP')
+        if config:
+            app = SocialApp.objects.get_or_create(provider=provider)[0]
+            for field in ["client_id", "secret", "key", "certificate_key"]:
+                setattr(app, field, config.get(field))
+        else:
+            app = SocialApp.objects.get_current(provider, request)
         return app
+
+    # def get_app(self, request, provider, config=None):
+    #     # NOTE: Avoid loading models at top due to registry boot...
+    #     from allauth.socialaccount.models import SocialApp
+    #
+    #     config = config or app_settings.PROVIDERS.get(provider, {}).get("APP")
+    #     if config:
+    #         app = SocialApp(provider=provider)
+    #         for field in ["client_id", "secret", "key", "certificate_key"]:
+    #             setattr(app, field, config.get(field))
+    #     else:
+    #         app = SocialApp.objects.get_current(provider, request)
+    #     return app
 
     def authentication_error(self, request, provider_id, error=None, exception=None, extra_context=None):
         logger.warning('Facebook error! - provider id : {} - error : {} - exception : {} - extra_context : {}'
