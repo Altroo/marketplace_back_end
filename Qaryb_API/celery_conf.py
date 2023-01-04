@@ -15,10 +15,10 @@ app.conf.accept_content = ['application/json', 'application/x-python-serialize']
 app.autodiscover_tasks(
     packages=(
         'account.base.tasks',
-        'shop.base.tasks',
         'offers.base.tasks',
-        'chat.base.tasks',
         'order.base.tasks',
+        'shop.base.tasks',
+        'chat.base.tasks',
         'subscription.base.tasks',
     )
 )
