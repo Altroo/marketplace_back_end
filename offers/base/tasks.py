@@ -381,7 +381,7 @@ def base_delete_shop_media_files(self, media_paths_list):
 #         email = EmailMessage(
 #             mail_subject,
 #             message,
-#             to=('ichrak@qaryb.com', 'yousra@qaryb.com', 'n.hilale@qaryb.com'),
+#             to=('yousra@qaryb.com', 'n.hilale@qaryb.com'),
 #             connection=connection,
 #             from_email='no-reply@qaryb.com',
 #         )

@@ -15,11 +15,10 @@ from subscription.base.serializers import BaseGETAvailableSubscriptionsSerialize
     BaseGETIndexedArticlesList, BaseGETAvailableArticlesList, \
     BasePOSTIndexArticlesSerializer
 from shop.models import AuthShop
-from shop.base.tasks import base_inform_marketing_team
 from places.models import Country
 from offers.models import Offers
 from notifications.models import Notifications
-from subscription.base.tasks import base_generate_pdf
+from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription
 
 
 class SubscriptionView(APIView):
@@ -153,13 +152,13 @@ class SubscriptionView(APIView):
                             'reference_number': reference_number,
                             'total_paid': total_paid,
                         }
-                        base_inform_marketing_team.apply_async((auth_shop.pk, available_slots, ), )
+                        base_inform_new_shop_subscription.apply_async((auth_shop.pk, available_slots, ), )
                         return Response(data=output_data, status=status.HTTP_200_OK)
                     # requested_subscription.delete()
                     raise ValidationError(subscribe_user_serializer.errors)
                 # Subscribed via virement
                 else:
-                    # Rest of cases handled on post_receive
+                    # Rest of cases handled on post_save
                     output_data = {
                         'reference_number': reference_number,
                         'total_paid': total_paid,

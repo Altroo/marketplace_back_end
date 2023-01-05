@@ -11,7 +11,7 @@ from Qaryb_API.settings import API_URL
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from notifications.models import Notifications
-from subscription.base.tasks import base_generate_pdf
+from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription
 
 
 def get_facture_path():
@@ -208,6 +208,7 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
                            'available_slots',
                            'total_paid']
         )
+        base_inform_new_shop_subscription.apply_async((instance.auth_shop.pk, available_slots,), )
         # old_instance.delete()
         base_generate_pdf.apply_async((instance.auth_shop.user.pk, data, original_subscription), )
         Notifications.objects.create(user=instance.auth_shop.user, type='SA')  # Should be notification type upgrade
@@ -262,6 +263,7 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
                 total_paid=total_paid,
             )
             if subscription_created:
+                base_inform_new_shop_subscription.apply_async((instance.auth_shop.pk, available_slots,), )
                 base_generate_pdf.apply_async((instance.auth_shop.user.pk, data, subscription_created), )
                 Notifications.objects.create(user=instance.auth_shop.user, type='SA')
                 if promo_code_obj and promo_code_obj.usage_unique:

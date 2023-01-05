@@ -6,14 +6,13 @@
 </head>
 <body>
   <main>
-    {% for article in articles %}
-      <div>Nom boutique : </div>
-      <div>{{article.offer.auth_shop.shop_name}}</div>
-      <a href="{{front_domain}}/shop/{{article.offer.auth_shop.qaryb_link}}">Lien boutique</a>
-      <div>Titre d'article : </div>
-      <div>{{ article.offer.title }}</div>
-      <a href="{{front_domain}}/shop/{{article.offer.auth_shop.qaryb_link}}/article/{{article.offer.pk}}">Lien d'article</a>
-      <br>
+    {% for key, value in articles.items() %}
+      <a href="{{front_domain}}/shop/{{key}}">Shop : {{key}}</a>
+      {% for i in value %}
+        <a href="{{front_domain}}/shop/{{key}}/article/{{i}}">Lien Article.</a>
+      {% endfor %}
+      <div>---------------------------------------------------------------------------</div>
+      <br/>
     {% endfor %}
   </main>
 </body>
