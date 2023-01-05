@@ -1,12 +1,13 @@
 from __future__ import absolute_import, unicode_literals
-import os
+from os import environ
 from celery import Celery
 from celery.schedules import crontab
+from decouple import config
 from django.conf import settings
 from django.core.mail import get_connection, EmailMessage
 from django.template.loader import render_to_string
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_API.settings")
+environ.setdefault("DJANGO_SETTINGS_MODULE", "Qaryb_API.settings")
 
 app = Celery('Qaryb_API', broker=settings.CELERY_BROKER_URL)
 app.config_from_object('django.conf:settings', namespace='CELERY')
@@ -31,13 +32,13 @@ app.autodiscover_tasks(
 def setup_periodic_tasks(sender, **kwargs):
     # Executes every day at midnight
     sender.add_periodic_task(
-        crontab(hour=00, minute=00),
-        base_inform_marketing_team_new_offer.s('hello'),
+        crontab(hour=23, minute=59),
+        base_inform_marketing_team_indexed_articles.s(),
     )
 
 
 @app.task(bind=True, serializer='json')
-def base_inform_marketing_team_new_offer(self, arg):
+def base_inform_marketing_team_indexed_articles(self):
     # Fixes Apps aren't loaded yet
     from subscription.models import IndexedArticles
 
@@ -51,6 +52,7 @@ def base_inform_marketing_team_new_offer(self, arg):
     mail_template = 'inform_new_indexed_articles.html'
     message = render_to_string(mail_template, {
         'articles': indexed_articles,
+        'front_domain': f"{config('FRONT_DOMAIN')}",
     })
     with get_connection(host=host,
                         port=port,
@@ -69,6 +71,6 @@ def base_inform_marketing_team_new_offer(self, arg):
         indexed_articles.update(email_informed=True)
 
 
-@app.task(bind=True, serializer='json')
-def debug_task(self):
-    print(f'Request: {self.request!r}')
+# @app.task(bind=True, serializer='json')
+# def debug_task(self):
+#     print(f'Request: {self.request!r}')
