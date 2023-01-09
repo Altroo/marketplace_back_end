@@ -1,21 +1,33 @@
+from decouple import config
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
+from django.utils.html import format_html
+
 from seo_pages.models import DefaultSeoPage, HomePage
 
 
 class DefaultSeoPagesAdmin(ModelAdmin):
     filter_horizontal = ('articles',)
-    list_display = ('page_url', 'title', 'tags', 'indexed', 'show_default_seo_articles')
+    # show_default_seo_articles
+    list_display = ('pk', 'get_page_url', 'title', 'indexed')
     search_fields = ('pk', 'page_url', 'title', 'tags', 'header', 'paragraphe',
                      'page_meta_description', 'articles__offer__title',
                      'articles__offer__auth_shop__shop_name')
-    list_filter = ('indexed', 'articles__status')
+    exclude = ('tags',)
+    #  'articles__status'
+    list_filter = ('indexed',)
     list_editable = ('indexed',)
     ordering = ('-pk',)
 
-    @admin.display(description='Default seo articles')
-    def show_default_seo_articles(self, obj):
-        return ", ".join([i.offer.title for i in obj.articles.all()])
+    @admin.display(description='Page url')
+    def get_page_url(self, obj):
+        page_url = obj.page_url
+        html = f"<a href='{config('FRONT_DOMAIN')}/collections/{page_url}' target='_blank'>{page_url}</a>"
+        return format_html(html)
+
+    # @admin.display(description='Default seo articles')
+    # def show_default_seo_articles(self, obj):
+    #     return ", ".join([i.offer.title for i in obj.articles.all()])
 
 
 class HomePageAdmin(ModelAdmin):

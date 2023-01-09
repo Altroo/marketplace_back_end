@@ -151,8 +151,8 @@ class AuthShop(Model):
         return '{} - {}'.format(self.shop_name, self.user.email)
 
     class Meta:
-        verbose_name = 'Auth Shop'
-        verbose_name_plural = 'Auth Shops'
+        verbose_name = 'Boutique'
+        verbose_name_plural = 'Boutiques'
         ordering = ('-created_date',)
 
     @property

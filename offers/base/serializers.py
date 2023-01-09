@@ -419,7 +419,7 @@ class BaseOffersListSerializer(serializers.Serializer):
 
 class BaseOffersMiniProfilListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
-    thumbnail = serializers.SerializerMethodField()
+    thumbnail = serializers.CharField(source='get_absolute_picture_1_thumbnail')
     title = serializers.CharField()
     price = serializers.FloatField()
     solder_type = serializers.CharField(source='offer_solder.solder_type')
@@ -428,18 +428,18 @@ class BaseOffersMiniProfilListSerializer(serializers.Serializer):
     offer_type = serializers.CharField()
     pinned = serializers.BooleanField()
 
-    @staticmethod
-    def get_thumbnail(instance):
-        if instance.picture_1:
-            return instance.get_absolute_picture_1_img
-        elif instance.picture_2:
-            return instance.get_absolute_picture_2_img
-        elif instance.picture_3:
-            return instance.get_absolute_picture_3_img
-        elif instance.picture_4:
-            return instance.get_absolute_picture_4_img
-        else:
-            return None
+    # @staticmethod
+    # def get_thumbnail(instance):
+    #     if instance.picture_1:
+    #         return instance.get_absolute_picture_1_img
+    #     elif instance.picture_2:
+    #         return instance.get_absolute_picture_2_img
+    #     elif instance.picture_3:
+    #         return instance.get_absolute_picture_3_img
+    #     elif instance.picture_4:
+    #         return instance.get_absolute_picture_4_img
+    #     else:
+    #         return None
 
     def update(self, instance, validated_data):
         pass

@@ -18,7 +18,7 @@ class DefaultSeoPage(Model):
     header = models.TextField(verbose_name='Bold Header', default=None, blank=True, null=True)
     paragraphe = models.TextField(verbose_name='Paragraphe', default=None, blank=True, null=True)
     page_meta_description = models.TextField(verbose_name='Meta description', default=None, blank=True, null=True)
-    indexed = models.BooleanField(verbose_name='Page indexed ?', default=False)
+    indexed = models.BooleanField(verbose_name='Page publier ?', default=True)
     articles = models.ManyToManyField(IndexedArticles,
                                       verbose_name='Articles',
                                       related_name='default_seo_page_indexed_articles', blank=True)

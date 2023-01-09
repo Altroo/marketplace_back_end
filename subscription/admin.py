@@ -1,3 +1,4 @@
+from decouple import config
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 from django.db import IntegrityError
@@ -7,7 +8,7 @@ from datetime import timedelta
 from string import ascii_uppercase
 from random import choice
 from django.utils import timezone
-
+from django.utils.html import format_html
 from subscription.models import AvailableSubscription, RequestedSubscriptions, \
     PromoCodes, SubscribedUsers, IndexedArticles
 
@@ -80,25 +81,65 @@ class CustomSubscribedUsersAdmin(ModelAdmin):
 
 
 class CustomIndexedArticlesAdmin(ModelAdmin):
-    list_display = ('pk', 'subscription',
-                    'expiration_date', 'offer', 'offer_title',
-                    'created_date', 'updated_date', 'status', 'email_informed')
+    list_display = ('pk', 'get_article_url', 'get_shop_url', 'show_seo_pages',
+                    'created_date', 'updated_date', 'status')
     search_fields = ('pk', 'subscription__original_request__auth_shop__shop_name',
-                     'offer__title',)
-    list_filter = ('status', 'email_informed', 'created_date', 'updated_date')
+                     'offer__title', 'subscription__original_request__auth_shop__qaryb_link')
+    list_editable = ('status',)
+    list_filter = ('status', 'created_date', 'updated_date',
+                   'subscription__expiration_date', 'default_seo_page_indexed_articles',
+                   'subscription__original_request__auth_shop__qaryb_link')
     date_hierarchy = 'updated_date'
+    exclude = ('email_informed',)
 
-    @staticmethod
-    def available_slots(obj):
-        return obj.subscription.available_slots
+    @admin.display(description='Seo pages')
+    def show_seo_pages(self, obj):
+        return "\n".join([i.page_url for i in obj.default_seo_page_indexed_articles.all()])
+
+    @admin.display(description='Article url')
+    def get_article_url(self, obj):
+        qaryb_link = obj.offer.auth_shop.qaryb_link
+        offer_pk = obj.offer.pk
+        html = f"<a href='{config('FRONT_DOMAIN')}/shop/{qaryb_link}/article/{offer_pk}' " \
+               f"target='_blank'>{obj.offer.title}</a>"
+        return format_html(html)
+
+    @admin.display(description='Shop url')
+    def get_shop_url(self, obj):
+        qaryb_link = obj.offer.auth_shop.qaryb_link
+        html = f"<a href='{config('FRONT_DOMAIN')}/shop/{qaryb_link}' target='_blank'>{qaryb_link}</a>"
+        return format_html(html)
 
     @staticmethod
     def expiration_date(obj):
         return obj.subscription.expiration_date
 
-    @staticmethod
-    def offer_title(obj):
-        return obj.offer.title
+    def get_readonly_fields(self, request, obj=None):
+        # fields = super(CustomIndexedArticlesAdmin, self).get_fields(request, obj)
+        try:
+            groups_list = list(request.user.groups.values_list('name', flat=True))
+            if 'Referencement' in groups_list:
+                return 'subscription', 'offer', 'created_date', 'updated_date'
+            else:
+                return 'subscription', 'offer', 'email_informed', 'status', 'created_date', 'updated_date'
+        except IndexError:
+            pass
+        return ()
+
+    # def get_fields(self, request, obj=None):
+    #     fields = super(CustomIndexedArticlesAdmin, self).get_fields(request, obj)
+    #     try:
+    #         groups_list = list(request.user.groups.values_list('name', flat=True))
+    #         if 'Referencement' in groups_list:
+    #             fields = ('titre_style',)
+    #         else:
+    #             fields = ['titre_style', 'page_title', 'lien_style',
+    #                       'meta_description_style',
+    #                       'h1_style', 'h2_style',
+    #                       'paragraphe_style', 'referencer_style']
+    #     except IndexError:
+    #         pass
+    #     return fields
 
 
 admin.site.register(AvailableSubscription, CustomAvailableSubscriptionAdmin)

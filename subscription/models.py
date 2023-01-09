@@ -42,9 +42,9 @@ class SubscriptionChoices:
     )
 
     INDEXED_ARTICLES_STATUS = (
-        ('P', 'Processing'),
-        ('I', 'Indexed'),
-        ('U', 'Updated'),
+        ('P', 'Non seo'),  # processing
+        ('I', 'Seo'),  # indexed
+        ('U', 'Mis à jour'),  # updated
     )
 
 
@@ -284,7 +284,7 @@ class SubscribedUsers(Model):
                                              default=None)
     facture = models.FilePathField(verbose_name='Facture', path=get_facture_path(), blank=True, null=True, default=None)
     # by default + 1 year from now
-    expiration_date = models.DateTimeField(verbose_name="Date d'expiration Abo",
+    expiration_date = models.DateTimeField(verbose_name="Date expiration Abo",
                                            default=get_expiration_date)
 
     def __str__(self):
@@ -322,8 +322,8 @@ class IndexedArticles(Model):
                                                    self.get_status_display())
 
     class Meta:
-        verbose_name = 'Indexed article'
-        verbose_name_plural = 'Indexed articles'
+        verbose_name = 'Article (référencer)'
+        verbose_name_plural = 'Articles (référencer)'
         ordering = ('-updated_date', '-created_date')
 
 

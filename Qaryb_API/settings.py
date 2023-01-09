@@ -88,7 +88,7 @@ TEMPLATES = [
     {
         'BACKEND': config('TEMPLATES_BACKEND'),
         # 'DIRS': [(os.path.join(BASE_DIR, config('SWAGGER_ADMIN_LINK_PATH')))],
-        'DIRS': [],
+        'DIRS': [(os.path.join(BASE_DIR, 'templates'))],
         'APP_DIRS': config('TEMPLATES_APP_DIRS', cast=bool),
         'OPTIONS': {
             'context_processors': [
