@@ -25,10 +25,6 @@ class DefaultSeoPagesAdmin(ModelAdmin):
         html = f"<a href='{config('FRONT_DOMAIN')}/collections/{page_url}' target='_blank'>{page_url}</a>"
         return format_html(html)
 
-    # @admin.display(description='Default seo articles')
-    # def show_default_seo_articles(self, obj):
-    #     return ", ".join([i.offer.title for i in obj.articles.all()])
-
 
 class HomePageAdmin(ModelAdmin):
     list_display = ('coup_de_coeur_bg', 'coup_de_coeur', 'show_new_shops')

@@ -38,7 +38,7 @@ def base_generate_offer_thumbnails(self, product_pk):
     offer = Offers.objects.get(pk=product_pk)
     offer_picture_1 = offer.picture_1.url if offer.picture_1 else None
     if offer_picture_1 is not None:
-        picture_path = parent_file_dir + '/media' + offer.picture_1.url
+        picture_path = parent_file_dir + offer.picture_1.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         img = resize_images(picture_path)
         offer.save_image('picture_1_thumbnail', img_thumbnail)
@@ -57,7 +57,7 @@ def base_generate_offer_thumbnails(self, product_pk):
 
     offer_picture_2 = offer.picture_2.path if offer.picture_2 else None
     if offer_picture_2 is not None:
-        picture_path = parent_file_dir + '/media' + offer.picture_2.url
+        picture_path = parent_file_dir + offer.picture_2.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         img = resize_images(picture_path)
         offer.save_image('picture_2_thumbnail', img_thumbnail)
@@ -65,7 +65,7 @@ def base_generate_offer_thumbnails(self, product_pk):
 
     offer_picture_3 = offer.picture_3.path if offer.picture_3 else None
     if offer_picture_3 is not None:
-        picture_path = parent_file_dir + '/media' + offer.picture_3.url
+        picture_path = parent_file_dir + offer.picture_3.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         img = resize_images(picture_path)
         offer.save_image('picture_3_thumbnail', img_thumbnail)
@@ -73,7 +73,7 @@ def base_generate_offer_thumbnails(self, product_pk):
 
     offer_picture_4 = offer.picture_4.path if offer.picture_4 else None
     if offer_picture_4 is not None:
-        picture_path = parent_file_dir + '/media' + offer.picture_4.url
+        picture_path = parent_file_dir + offer.picture_4.url
         img_thumbnail = start_generating_thumbnail(picture_path, False)
         img = resize_images(picture_path)
         offer.save_image('picture_4_thumbnail', img_thumbnail)

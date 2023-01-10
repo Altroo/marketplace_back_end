@@ -55,10 +55,14 @@ urlpatterns = [
     path('api/1.0.0/notification/', include('notifications.base.urls', namespace='1.0.0')),
     # Seo pages
     path('api/1.0.0/seo_pages/', include('seo_pages.base.urls', namespace='1.0.0')),
+    # Blog pages
+    path('api/1.0.0/blog/', include('blog.base.urls', namespace='1.0.0')),
     # Version
     path('api/version/', include('version.urls', namespace='1.0.0')),
     # Admin
     path('admin/', admin.site.urls),
+    # ckeditor
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     # Static & media files
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': STATICFILES_DIRS}),
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),

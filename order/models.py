@@ -72,7 +72,7 @@ class Order(Model):
     @property
     def get_absolute_buyer_thumbnail(self):
         if self.buyer_avatar_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.buyer_avatar_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.buyer_avatar_thumbnail.url)
         return None
 
     def __str__(self):
@@ -161,7 +161,7 @@ class OrderDetails(Model):
     @property
     def get_absolute_offer_thumbnail(self):
         if self.offer_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.offer_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.offer_thumbnail.url)
         return None
 
     class Meta:

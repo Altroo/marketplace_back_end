@@ -55,3 +55,5 @@ version/__pycache__
 #version/migrations/__pycache__
 seo_pages/__pycache__
 seo_pages/base/__pycache__
+blog/__pycache__
+blog/base/__pycache__

@@ -188,7 +188,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_1_img(self):
         if self.picture_1:
-            return "{0}/media{1}".format(API_URL, self.picture_1.url)
+            return "{0}{1}".format(API_URL, self.picture_1.url)
         return None
 
     # @property
@@ -206,7 +206,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_1_thumbnail(self):
         if self.picture_1_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.picture_1_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.picture_1_thumbnail.url)
         return None
 
     # @property
@@ -224,7 +224,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_2_img(self):
         if self.picture_2:
-            return "{0}/media{1}".format(API_URL, self.picture_2.url)
+            return "{0}{1}".format(API_URL, self.picture_2.url)
         return None
 
     # @property
@@ -242,7 +242,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_2_thumbnail(self):
         if self.picture_2_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.picture_2_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.picture_2_thumbnail.url)
         return None
 
     # @property
@@ -260,7 +260,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_3_img(self):
         if self.picture_3:
-            return "{0}/media{1}".format(API_URL, self.picture_3.url)
+            return "{0}{1}".format(API_URL, self.picture_3.url)
         return None
 
     # @property
@@ -278,7 +278,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_3_thumbnail(self):
         if self.picture_3_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.picture_3_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.picture_3_thumbnail.url)
         return None
 
     # @property
@@ -296,7 +296,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_4_img(self):
         if self.picture_4:
-            return "{0}/media{1}".format(API_URL, self.picture_4.url)
+            return "{0}{1}".format(API_URL, self.picture_4.url)
         return None
 
     # @property
@@ -314,7 +314,7 @@ class Offers(Model):
     @property
     def get_absolute_picture_4_thumbnail(self):
         if self.picture_4_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.picture_4_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.picture_4_thumbnail.url)
         return None
 
     # @property
@@ -453,7 +453,7 @@ class OfferVue(Model):
     @property
     def get_absolute_thumbnail(self):
         if self.thumbnail:
-            return "{0}/media{1}".format(API_URL, self.thumbnail.url)
+            return "{0}{1}".format(API_URL, self.thumbnail.url)
         return None
 
     def save_image(self, field_name, image):

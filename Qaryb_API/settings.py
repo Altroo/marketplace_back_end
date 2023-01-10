@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
+    'ckeditor',
+    'ckeditor_uploader',
     'account.apps.AccountConfig',
     'shop.apps.ShopConfig',
     'offers.apps.OffersConfig',
@@ -54,6 +56,7 @@ INSTALLED_APPS = [
     'subscription.apps.SubscriptionConfig',
     'notifications.apps.NotificationsConfig',
     'seo_pages.apps.SeoPagesConfig',
+    'blog.apps.BlogConfig',
     'version.apps.VersionConfig'
 ]
 
@@ -139,6 +142,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, config('STATIC_PATH')),
 )
 MEDIA_ROOT = os.path.join(BASE_DIR, config('MEDIA_PATH'))
+MEDIA_URL = '/media/'
 
 # allauth config
 AUTHENTICATION_BACKENDS = [
@@ -311,6 +315,35 @@ ACCOUNT_MAX_EMAIL_ADDRESSES = config('ACCOUNT_MAX_EMAIL_ADDRESSES', cast=int)
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = config('ACCOUNT_DEFAULT_HTTP_PROTOCOL')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
+
+# ckeditor
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_CONFIGS = {
+    'blog_editor': {
+        'skin': 'moono-dark',
+        'defaultLanguage': 'en',
+        'language': 'en',
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            {'name': 'basicstyles',
+             'items': ['Bold', 'Italic', 'Underline', 'Strike', '-', 'RemoveFormat']},
+            {'name': 'styles', 'items': ['Styles', 'Format', 'Font', 'FontSize']},
+            {'name': 'paragraph',
+             'items': ['NumberedList', 'BulletedList', '-', 'Blockquote', '-',
+                       'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock']},
+            {'name': 'colors', 'items': ['TextColor', 'BGColor']},
+            {'name': 'links', 'items': ['Link', 'Unlink']},
+            {'name': 'insert', 'items': ['Image', 'Smiley']},
+        ],
+        'width': '100%',
+    },
+}
+CKEDITOR_IMAGE_BACKEND = 'ckeditor_uploader.backends.PillowBackend'
+CKEDITOR_THUMBNAIL_SIZE = (75, 75)
+CKEDITOR_FORCE_JPEG_COMPRESSION = True
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
 
 # SWAGGER_SETTINGS settings
 # SWAGGER_SETTINGS = {

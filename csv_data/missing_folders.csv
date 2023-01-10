@@ -5,6 +5,7 @@ media,shop_offers
 media,shop_qrcodes
 media,user_avatars
 media,files
+media,blog
 sub,media,orders,buyers_avatar
 logs,debug.log
 logs,ws_debug.log

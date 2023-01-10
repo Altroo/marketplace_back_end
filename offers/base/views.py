@@ -628,13 +628,13 @@ class ShopOfferViewV2(APIView):
                 offer.save(update_fields=['picture_4_thumbnail'])
 
             previous_images = list()
-            previous_images.append(API_URL + '/media' + offer.picture_1.url
+            previous_images.append(API_URL + offer.picture_1.url
                                    if offer.picture_1 else False)
-            previous_images.append(API_URL + '/media' + offer.picture_2.url
+            previous_images.append(API_URL + offer.picture_2.url
                                    if offer.picture_2 else False)
-            previous_images.append(API_URL + '/media' + offer.picture_3.url
+            previous_images.append(API_URL + offer.picture_3.url
                                    if offer.picture_3 else False)
-            previous_images.append(API_URL + '/media' + offer.picture_4.url
+            previous_images.append(API_URL + offer.picture_4.url
                                    if offer.picture_4 else False)
 
             self.correct_image_index(picture_1_file, offer, 'picture_1', picture_1, previous_images)

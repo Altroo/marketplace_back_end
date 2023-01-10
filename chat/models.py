@@ -87,13 +87,13 @@ class MessageModel(Model):
     @property
     def get_absolute_attachment_img(self):
         if self.attachment:
-            return "{0}/media{1}".format(API_URL, self.attachment.url)
+            return "{0}{1}".format(API_URL, self.attachment.url)
         return None
 
     @property
     def get_absolute_attachment_thumbnail(self):
         if self.attachment_thumbnail:
-            return "{0}/media{1}".format(API_URL, self.attachment_thumbnail.url)
+            return "{0}{1}".format(API_URL, self.attachment_thumbnail.url)
         return None
 
 
