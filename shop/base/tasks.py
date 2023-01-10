@@ -54,7 +54,7 @@ def base_resize_avatar_thumbnail(self, object_pk: int, which: str, avatar: Bytes
 
 
 @app.task(bind=True, serializer='json')
-def base_inform_new_shop(self, shop_pk: int, available_slots: int):
+def base_inform_new_shop(self, shop_pk: int):
     shop = AuthShop.objects.get(pk=shop_pk)
     host = 'smtp.gmail.com'
     port = 587
@@ -65,7 +65,6 @@ def base_inform_new_shop(self, shop_pk: int, available_slots: int):
     mail_template = 'inform_new_store.html'
     message = render_to_string(mail_template, {
         'shop_name': shop.shop_name,
-        'available_slots': available_slots,
         'shop_link': f"{config('FRONT_DOMAIN')}/shop/{shop.qaryb_link}"
     })
     with get_connection(host=host,

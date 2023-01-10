@@ -59,7 +59,7 @@ def base_inform_new_shop_subscription(self, shop_pk: int, available_slots: int):
     password = '24YAqua09'
     use_tls = True
     mail_subject = f'Nouvelle boutique : {shop.shop_name}'
-    mail_template = 'inform_new_store.html'
+    mail_template = 'inform_new_subscription.html'
     message = render_to_string(mail_template, {
         'shop_name': shop.shop_name,
         'available_slots': available_slots,
