@@ -318,8 +318,7 @@ class IndexedArticles(Model):
     updated_date = models.DateTimeField(verbose_name='Date mis à jour', editable=False, auto_now=True)
 
     def __str__(self):
-        return 'Article : {} - Status : {}'.format(self.offer.title,
-                                                   self.get_status_display())
+        return '{} - {} - {}'.format(self.offer.title, self.offer.auth_shop.shop_name, self.get_status_display())
 
     class Meta:
         verbose_name = 'Article (référencer)'

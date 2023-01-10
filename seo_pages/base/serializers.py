@@ -14,7 +14,7 @@ class BaseDefaultSeoPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DefaultSeoPage
-        fields = ['pk', 'page_url', 'title', 'tags', 'header', 'paragraphe', 'page_meta_description']
+        fields = ['pk', 'page_url', 'title', 'tags', 'h_one', 'h_two', 'paragraphe', 'page_meta_description']
 
 
 class BaseCoupDeCoeurShopOffers(serializers.Serializer):

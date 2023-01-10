@@ -9,13 +9,15 @@ from shop.models import AuthShop
 
 
 class DefaultSeoPage(Model):
-    page_url = models.SlugField(verbose_name='Page url (unique)', max_length=255, blank=True, null=True,
+    page_url = models.SlugField(verbose_name='Lien de la page (unique)', max_length=255, blank=True, null=True,
                                 unique=True, default=None)
-    title = models.CharField(verbose_name='Title (h1)', max_length=255,
+    title = models.CharField(verbose_name='Titre de la page', max_length=255,
+                             blank=True, null=True, default=None)
+    h_one = models.CharField(verbose_name='H1', max_length=255,
                              blank=True, null=True, default=None)
     tags = ArrayField(models.CharField(verbose_name='Tags', max_length=100, blank=True, null=True, default=None),
                       default=None, size=None, help_text='Separated by comma ","')
-    header = models.TextField(verbose_name='Bold Header', default=None, blank=True, null=True)
+    h_two = models.TextField(verbose_name='H2', default=None, blank=True, null=True)
     paragraphe = models.TextField(verbose_name='Paragraphe', default=None, blank=True, null=True)
     page_meta_description = models.TextField(verbose_name='Meta description', default=None, blank=True, null=True)
     indexed = models.BooleanField(verbose_name='Page publier ?', default=True)
@@ -27,8 +29,8 @@ class DefaultSeoPage(Model):
         return '{} - {}'.format(self.title, self.page_url)
 
     class Meta:
-        verbose_name = 'Default seo page'
-        verbose_name_plural = 'Default seo pages'
+        verbose_name = 'Seo page'
+        verbose_name_plural = 'Seo pages'
         ordering = ('-pk',)
 
 

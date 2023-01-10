@@ -10,13 +10,11 @@ class DefaultSeoPagesAdmin(ModelAdmin):
     filter_horizontal = ('articles',)
     # show_default_seo_articles
     list_display = ('pk', 'get_page_url', 'title', 'indexed')
-    search_fields = ('pk', 'page_url', 'title', 'tags', 'header', 'paragraphe',
+    search_fields = ('pk', 'page_url', 'title', 'tags', 'h_one', 'h_two', 'paragraphe',
                      'page_meta_description', 'articles__offer__title',
                      'articles__offer__auth_shop__shop_name')
     exclude = ('tags',)
-    #  'articles__status'
     list_filter = ('indexed',)
-    list_editable = ('indexed',)
     ordering = ('-pk',)
 
     @admin.display(description='Page url')

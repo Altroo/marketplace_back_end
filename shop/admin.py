@@ -8,8 +8,6 @@ from decouple import config
 from django.utils.html import format_html
 from django.utils import timezone
 from subscription.models import SubscribedUsers, IndexedArticles
-from django.db.models import Q
-from offers.models import Offers
 
 
 class AbonnementStatusFilter(SimpleListFilter):
@@ -41,7 +39,7 @@ class AbonnementStatusFilter(SimpleListFilter):
 
 
 class CustomAuthShopAdmin(ModelAdmin):
-    list_display = ('pk', 'get_qaryb_link', 'get_nbr_article', 'get_nbr_article_referencer', 'creator')
+    list_display = ('pk', 'get_qaryb_link', 'get_nbr_article', 'get_nbr_article_referencer')
     search_fields = ('pk', 'shop_name', 'qaryb_link', 'user')
     list_filter = ('created_date', AbonnementStatusFilter)
     date_hierarchy = 'updated_date'
@@ -52,22 +50,21 @@ class CustomAuthShopAdmin(ModelAdmin):
         html = f"<a href='{config('FRONT_DOMAIN')}/shop/{obj.qaryb_link}' target='_blank'>{obj.shop_name}</a>"
         return format_html(html)
 
-    @admin.display(description="Nbr d'article")
+    @admin.display(description="En attente de référencement")
     def get_nbr_article(self, obj):
-        # subscription = SubscribedUsers.objects.get(original_request__auth_shop=obj)
-        # nbr_article = subscription.available_slots
-        nbr_article = Offers.objects.filter(auth_shop=obj).count()
-        html = '<a href="{reverse}?subscription__original_request__auth_shop__qaryb_link={params}">{nbr}</a>'
-        return format_html(html.format(reverse=reverse('admin:subscription_indexedarticles_changelist'),
-                                       nbr=nbr_article, params=obj.qaryb_link))
+        article_referencer = IndexedArticles.objects.filter(status='P', offer__auth_shop=obj).count()
+        if article_referencer == 0:
+            return '-'
+        html = f'<a href="{reverse("admin:subscription_indexedarticles_changelist")}' \
+               f'?subscription__original_request__auth_shop__qaryb_link={obj.qaryb_link}' \
+               f'&status__exact=P">{article_referencer}</a>'
+        return format_html(html)
 
-    get_nbr_article.allow_tags = True
-
-    @admin.display(description="Nbr d'article référencés")
+    @admin.display(description="Article référencés")
     def get_nbr_article_referencer(self, obj):
         subscription = SubscribedUsers.objects.get(original_request__auth_shop=obj)
         nbr_article = subscription.available_slots
-        article_referencer = IndexedArticles.objects.filter(~Q(status='P'), offer__auth_shop=obj).count()
+        article_referencer = IndexedArticles.objects.filter(status='I', offer__auth_shop=obj).count()
         html = f'<a href="{reverse("admin:subscription_indexedarticles_changelist")}' \
                f'?subscription__original_request__auth_shop__qaryb_link={obj.qaryb_link}' \
                f'&status__exact=I">{article_referencer}/{nbr_article}</a>'

@@ -81,20 +81,26 @@ class CustomSubscribedUsersAdmin(ModelAdmin):
 
 
 class CustomIndexedArticlesAdmin(ModelAdmin):
-    list_display = ('pk', 'get_article_url', 'get_shop_url', 'show_seo_pages',
-                    'created_date', 'updated_date', 'status')
+    list_display = ('pk', 'get_article_url', 'get_shop_url', 'get_seo_pages_urls',
+                    'created_date', 'status')
     search_fields = ('pk', 'subscription__original_request__auth_shop__shop_name',
                      'offer__title', 'subscription__original_request__auth_shop__qaryb_link')
-    list_editable = ('status',)
-    list_filter = ('status', 'created_date', 'updated_date',
+    list_filter = ('status', 'created_date',
                    'subscription__expiration_date', 'default_seo_page_indexed_articles',
                    'subscription__original_request__auth_shop__qaryb_link')
-    date_hierarchy = 'updated_date'
+    date_hierarchy = 'created_date'
     exclude = ('email_informed',)
+    ordering = ('status',)
 
     @admin.display(description='Seo pages')
-    def show_seo_pages(self, obj):
-        return "\n".join([i.page_url for i in obj.default_seo_page_indexed_articles.all()])
+    def get_seo_pages_urls(self, obj):
+        seo_pages = []
+        for seo_page in obj.default_seo_page_indexed_articles.all():
+            seo_pages.append(
+                f"<a href='{config('FRONT_DOMAIN')}/collection/{seo_page.page_url}/' "
+                f"target='_blank'>{seo_page.page_url}</a>"
+            )
+        return format_html(",".join(i for i in seo_pages))
 
     @admin.display(description='Article url')
     def get_article_url(self, obj):
@@ -115,7 +121,6 @@ class CustomIndexedArticlesAdmin(ModelAdmin):
         return obj.subscription.expiration_date
 
     def get_readonly_fields(self, request, obj=None):
-        # fields = super(CustomIndexedArticlesAdmin, self).get_fields(request, obj)
         try:
             groups_list = list(request.user.groups.values_list('name', flat=True))
             if 'Referencement' in groups_list:
@@ -124,22 +129,17 @@ class CustomIndexedArticlesAdmin(ModelAdmin):
                 return 'subscription', 'offer', 'email_informed', 'status', 'created_date', 'updated_date'
         except IndexError:
             pass
-        return ()
+        return super(CustomIndexedArticlesAdmin, self).get_fields(request, obj)
 
-    # def get_fields(self, request, obj=None):
-    #     fields = super(CustomIndexedArticlesAdmin, self).get_fields(request, obj)
-    #     try:
-    #         groups_list = list(request.user.groups.values_list('name', flat=True))
-    #         if 'Referencement' in groups_list:
-    #             fields = ('titre_style',)
-    #         else:
-    #             fields = ['titre_style', 'page_title', 'lien_style',
-    #                       'meta_description_style',
-    #                       'h1_style', 'h2_style',
-    #                       'paragraphe_style', 'referencer_style']
-    #     except IndexError:
-    #         pass
-    #     return fields
+    def changelist_view(self, request, extra_context=None):
+        value = request.META['HTTP_REFERER'].split(request.META['PATH_INFO'])
+        if value[-1] and not value[-1].startswith('?'):
+            if 'status__exact' not in request.GET:
+                q = request.GET.copy()
+                q['status__exact'] = 'P'
+                request.GET = q
+                request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(CustomIndexedArticlesAdmin, self).changelist_view(request, extra_context=extra_context)
 
 
 admin.site.register(AvailableSubscription, CustomAvailableSubscriptionAdmin)
