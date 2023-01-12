@@ -6,14 +6,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from collections import defaultdict
 from order.models import Order
 from order.base.serializers import BaseOrdersListSerializer, \
     BaseChiffreAffaireListSerializer
 from order.base.filters import OrderStatusFilterSet
+from django.db.models import Q
 
 
-class OrdersView(ListAPIView, PageNumberPagination):
+class ShopSellingOrdersView(ListAPIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
     filterset_class = OrderStatusFilterSet
     serializer_class = BaseOrdersListSerializer
@@ -33,6 +33,26 @@ class OrdersView(ListAPIView, PageNumberPagination):
             return self.get_paginated_response(serializer.data)
 
 
+class ShopBuyingOrdersView(ListAPIView, PageNumberPagination):
+    permission_classes = (permissions.IsAuthenticated,)
+    filterset_class = OrderStatusFilterSet
+    serializer_class = BaseOrdersListSerializer
+    http_method_names = ('get',)
+
+    def get_queryset(self) -> Union[QuerySet, Order]:
+        user = self.request.user
+        return Order.objects.filter(buyer=user) \
+            .prefetch_related('order_details_order')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        filter_queryset: QuerySet = self.filter_queryset(queryset)
+        page = self.paginate_queryset(filter_queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+
 class GetOrderDetailsView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -40,11 +60,15 @@ class GetOrderDetailsView(APIView):
     def get(request, *args, **kwargs):
         user = request.user
         order_pk = kwargs.get('order_pk')
-        try:
-            order = Order.objects.get(pk=order_pk, seller__user=user)
-            serializer = BaseOrdersListSerializer(instance=order)
+        sell_order = Order.objects.filter(seller__user=user, pk=order_pk)
+        buy_order = Order.objects.filter(buyer=user, pk=order_pk)
+        if sell_order:
+            serializer = BaseOrdersListSerializer(instance=sell_order[0], context={'order_for': 'S'})
             return Response(data=serializer.data, status=status.HTTP_200_OK)
-        except Order.DoesNotExist:
+        if buy_order:
+            serializer = BaseOrdersListSerializer(instance=buy_order[0], context={'order_for': 'B'})
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        if not sell_order or not buy_order:
             errors = {"errors": ["Order Doesn't exist!"]}
             raise ValidationError(errors)
 

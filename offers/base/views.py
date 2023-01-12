@@ -51,7 +51,10 @@ class ShopOfferViewV2(APIView):
                         .select_related('offer_services') \
                         .prefetch_related('offer_delivery') \
                         .get(pk=offer_pk, auth_shop=shop)
-                    offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'unique_id': unique_id})
+                    if request.user.is_anonymous:
+                        offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'unique_id': unique_id})
+                    else:
+                        offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'user': request.user})
                     # Increase vue by one get or create
                     month = datetime.now().month
                     try:
@@ -84,7 +87,10 @@ class ShopOfferViewV2(APIView):
                     .select_related('offer_services') \
                     .prefetch_related('offer_delivery') \
                     .get(pk=offer_pk)
-                offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'unique_id': unique_id})
+                if request.user.is_anonymous:
+                    offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'unique_id': unique_id})
+                else:
+                    offer_details_serializer = BaseOfferDetailsSerializer(offer, context={'user': request.user})
                 # Increase vue by one get or create
                 month = datetime.now().month
                 try:

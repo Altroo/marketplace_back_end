@@ -1251,8 +1251,7 @@ class DashboardView(APIView):
             remaining_slots_count = all_slots_count = 0
         total_sells_month = total_vue_month = datetime.datetime.now().month
         total_vue_pourcentage = total_sells_pourcentage = '0%'
-        orders_list = []
-        sliced_orders_list = []
+        mixed_orders_list = []
         try:
             check_verified = EmailAddress.objects.get(user=user).verified
         except EmailAddress.DoesNotExist:
@@ -1274,18 +1273,36 @@ class DashboardView(APIView):
             total_sells_count = sum(Order.objects.filter(seller=auth_shop,
                                                          order_status='CM')
                                     .values_list('total_price', flat=True))
-            orders_list = Order.objects.filter(seller=auth_shop)\
+            sellings_list = Order.objects.filter(seller=auth_shop)\
+                .prefetch_related('order_details_order').order_by('-order_date')
+            buyings_list = Order.objects.filter(buyer=user) \
                 .prefetch_related('order_details_order').order_by('-order_date')
 
-            for index, order in enumerate(orders_list):
+            for index, order in enumerate(sellings_list):
                 orders_len = order.order_details_order.all().count()
                 if order.order_status == 'IP':
                     has_new_orders = True
-                sliced_orders_list.append({
+                mixed_orders_list.append({
                     'pk': order.pk,
                     'first_name': order.first_name,
                     'last_name': order.last_name,
                     'avatar': order.get_absolute_buyer_thumbnail,
+                    'order_status': order.order_status,
+                    'order_date': order.order_date,
+                    'total_price': order.total_price,
+                    'articles_count': f"{orders_len} articles" if orders_len > 1 else f"{orders_len} article",
+                })
+                if index == 2:
+                    break
+            for index, order in enumerate(buyings_list):
+                orders_len = order.order_details_order.all().count()
+                if order.order_status == 'CM':
+                    has_new_orders = True
+                mixed_orders_list.append({
+                    'pk': order.pk,
+                    'first_name': order.seller.shop_name,
+                    'last_name': '',
+                    'avatar': order.seller.get_absolute_avatar_thumbnail,
                     'order_status': order.order_status,
                     'order_date': order.order_date,
                     'total_price': order.total_price,
@@ -1333,7 +1350,7 @@ class DashboardView(APIView):
             "has_messages": has_messages,
             "has_notifications": has_notifications,  # not used
             "has_orders": has_new_orders,
-            "mini_orders_list": sliced_orders_list,
+            "mixed_mini_orders_list": mixed_orders_list,
             "indexed_articles_count": indexed_articles_count,
             "remaining_slots_count": remaining_slots_count,
             "all_slots_count": all_slots_count,

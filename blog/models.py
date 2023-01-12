@@ -25,7 +25,7 @@ class Blog(Model):
                              blank=True, null=True, default=None)
     tags = ArrayField(models.CharField(verbose_name='Tags', max_length=100,
                                        blank=True, null=True, default=None),
-                      default=None, size=None, help_text='Separated by comma ","')
+                      default=None, blank=True, null=True, size=None, help_text='Separated by comma ","')
     header = models.TextField(verbose_name='Titre (h1)', blank=True, null=True, default=None)
     page_meta_description = models.TextField(verbose_name='Meta description',
                                              blank=True, null=True, default=None)

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import OrdersView, GetOrderDetailsView, CancelAllView, AcceptOrdersView, \
-    GetChiffreAffaireListView, GetNewOrdersCountView
+from .views import ShopSellingOrdersView, GetOrderDetailsView, CancelAllView, AcceptOrdersView, \
+    GetChiffreAffaireListView, GetNewOrdersCountView, ShopBuyingOrdersView
 
 app_name = 'order'
 
@@ -16,6 +16,8 @@ urlpatterns = [
     path('get_chiffre_affaire/', GetChiffreAffaireListView.as_view()),
     # GET : new orders count
     path('get_new_orders_count/', GetNewOrdersCountView.as_view()),
-    # GET : My buying orders
-    path('', OrdersView.as_view()),
+    # GET : My sellings orders
+    path('sellings/', ShopSellingOrdersView.as_view()),
+    # GET : My buyings orders
+    path('buyings/', ShopBuyingOrdersView.as_view()),
 ]

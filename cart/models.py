@@ -8,6 +8,8 @@ class Cart(Model):
     unique_id = models.CharField(verbose_name='Cart unique ID',
                                  default=None, null=True, blank=True,
                                  max_length=50)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             verbose_name='User', related_name='user_cart', default=None, null=True, blank=True)
     offer = models.ForeignKey(Offers, on_delete=models.CASCADE,
                               verbose_name='Offer', related_name='cart_offer')
     picked_color = models.CharField(verbose_name='Picked Color', max_length=255, default=None, null=True, blank=True)

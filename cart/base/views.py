@@ -1,3 +1,4 @@
+from uuid import uuid4
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -23,12 +24,19 @@ class GetCartOffersDetailsView(APIView, GetCartOffersDetailsPagination):
     def get(self, request, *args, **kwargs):
         unique_id = kwargs.get('unique_id')
         shop_pk = kwargs.get('shop_pk')
-        cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk) \
-            .order_by('-created_date', '-updated_date')
+        if request.user.is_anonymous:
+            cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=shop_pk) \
+                .order_by('-created_date', '-updated_date')
+        else:
+            cart_offers = Cart.objects.filter(user=request.user, offer__auth_shop=shop_pk) \
+                .order_by('-created_date', '-updated_date')
         total_price = GetCartPrices().calculate_total_price(cart_offers)
         page = self.paginate_queryset(request=request, queryset=cart_offers)
         if page is not None:
-            return self.get_paginated_response_custom(unique_id, shop_pk, total_price)
+            if request.user.is_anonymous:
+                return self.get_paginated_response_unique_id_custom(unique_id, shop_pk, total_price)
+            else:
+                return self.get_paginated_response_user_custom(request.user, shop_pk, total_price)
 
 
 class CartQuantityView(APIView):
@@ -40,7 +48,10 @@ class CartQuantityView(APIView):
         cart_pk = kwargs.get('cart_pk')
         action_type: str = kwargs.get('action_type')
         try:
-            cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
+            if request.user.is_anonymous:
+                cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
+            else:
+                cart_offer = Cart.objects.get(user=request.user, pk=cart_pk)
             if action_type == '+':
                 cart_offer.picked_quantity += 1
                 cart_offer.save()
@@ -67,7 +78,10 @@ class CartOffersView(APIView):
         picked_date = request.data.get('picked_date', None)
         picked_hour = request.data.get('picked_hour', None)
         try:
-            Cart.objects.get(unique_id=unique_id, offer_id=offer_pk)
+            if request.user.is_anonymous:
+                Cart.objects.get(unique_id=unique_id, offer_id=offer_pk)
+            else:
+                Cart.objects.get(user=request.user, offer_id=offer_pk)
             errors = {"error": ["Already in cart!"]}
             raise ValidationError(errors)
         except Cart.DoesNotExist:
@@ -78,7 +92,8 @@ class CartOffersView(APIView):
             else:
                 picked_quantity = None
             serializer = BaseCartOfferSerializer(data={
-                "unique_id": unique_id,
+                "unique_id": unique_id if request.user.is_anonymous else None,
+                "user": request.user.pk if not request.user.is_anonymous else None,
                 "offer": offer_pk,
                 "picked_color": picked_color,
                 "picked_size": picked_size,
@@ -96,7 +111,10 @@ class CartOffersView(APIView):
         unique_id = kwargs.get('unique_id')
         cart_pk = kwargs.get('cart_pk')
         try:
-            cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
+            if request.user.is_anonymous:
+                cart_offer = Cart.objects.get(unique_id=unique_id, pk=cart_pk)
+            else:
+                cart_offer = Cart.objects.get(user=request.user, pk=cart_pk)
             cart_offer.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Cart.DoesNotExist:
@@ -109,7 +127,10 @@ class GetMyCartListView(APIView, GetMyCartPagination):
 
     def get(self, request, *args, **kwargs):
         unique_id = kwargs.get('unique_id')
-        cart_offers = Cart.objects.filter(unique_id=unique_id)
+        if request.user.is_anonymous:
+            cart_offers = Cart.objects.filter(unique_id=unique_id)
+        else:
+            cart_offers = Cart.objects.filter(user=request.user)
         # Check how many shop ids exist on user cart
         # pk 1 = 2 times
         # pk 2 = 1 time
@@ -119,7 +140,10 @@ class GetMyCartListView(APIView, GetMyCartPagination):
         total_price = GetCartPrices().calculate_total_price(cart_offers)
         page = self.paginate_queryset(request=request, queryset=cart_offers)
         if page is not None:
-            return self.get_paginated_response_custom(page, unique_id, shop_count, total_price)
+            if request.user.is_anonymous:
+                return self.get_paginated_response_unique_id_custom(page, unique_id, shop_count, total_price)
+            else:
+                return self.get_paginated_response_user_custom(page, request.user, shop_count, total_price)
 
 
 class GetCartCounterView(APIView):
@@ -128,7 +152,10 @@ class GetCartCounterView(APIView):
     @staticmethod
     def get(request, *args, **kwargs):
         unique_id = kwargs.get('unique_id')
-        cart_counter = Cart.objects.filter(unique_id=unique_id).count()
+        if request.user.is_anonymous:
+            cart_counter = Cart.objects.filter(unique_id=unique_id).count()
+        else:
+            cart_counter = Cart.objects.filter(user=request.user).count()
         data = {
             'cart_counter': cart_counter
         }
@@ -162,16 +189,22 @@ class ValidateCartOffersView(APIView):
         last_name = request.data.get('last_name')
         order_serializer = BaseOrderSerializer(data={
             'seller': seller,
+            'buyer': request.user.pk if not request.user.is_anonymous else None,
             'first_name': first_name,
             'last_name': last_name,
             'note': request.data.get('note'),
-            'order_number': self.get_order_number(unique_id),
+            'order_number': self.get_order_number(unique_id) if request.user.is_anonymous
+            else self.get_order_number(uuid4()),
             'total_price': GetCartPrices().calculate_total_price(cart_offers),  # includes solder + quantity
         })
         if order_serializer.is_valid():
             order = order_serializer.save()
             # Generate buyer picture
-            base_generate_user_thumbnail.apply_async((order.pk,), )
+            if request.user.is_anonymous:
+                base_generate_user_thumbnail.apply_async((order.pk,), )
+            else:
+                order.buyer_avatar_thumbnail = request.user.avatar_thumbnail
+                order.save()
             address = request.data.get('address', None)
             city = request.data.get('city', None)
             zip_code = request.data.get('zip_code', None)

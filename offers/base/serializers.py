@@ -336,6 +336,13 @@ class BaseOfferDetailsSerializer(serializers.Serializer):
 
     def get_exist_in_cart(self, instance):
         unique_id = self.context.get("unique_id")
+        user = self.context.get("user")
+        if user is not None:
+            try:
+                Cart.objects.get(user=user, offer=instance.pk)
+                return True
+            except Cart.DoesNotExist:
+                return False
         if unique_id is not None:
             try:
                 Cart.objects.get(unique_id=unique_id, offer=instance.pk)

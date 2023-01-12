@@ -107,9 +107,9 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
 
 class BaseOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    avatar = serializers.CharField(source='get_absolute_buyer_thumbnail')
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     order_number = serializers.CharField()
     order_date = serializers.DateTimeField()
     articles_count = serializers.SerializerMethodField()
@@ -118,6 +118,31 @@ class BaseOrdersListSerializer(serializers.Serializer):
     order_details = BaseOrderDetailsListSerializer(many=True, source='order_details_order')
     note = serializers.CharField()
     highest_delivery_price = serializers.FloatField()
+    order_for = serializers.SerializerMethodField()
+
+    def get_first_name(self, instance):
+        order_for = self.context.get("order_for")
+        if order_for == 'S':
+            return instance.first_name
+        else:
+            return instance.seller.shop_name
+
+    def get_last_name(self, instance):
+        order_for = self.context.get("order_for")
+        if order_for == 'S':
+            return instance.last_name
+        else:
+            return ''
+
+    def get_avatar(self, instance):
+        order_for = self.context.get("order_for")
+        if order_for == 'S':
+            return instance.get_absolute_buyer_thumbnail
+        else:
+            return instance.seller.get_absolute_avatar_thumbnail
+
+    def get_order_for(self, instance):
+        return self.context.get("order_for")
 
     @staticmethod
     def get_articles_count(instance: Union[QuerySet, Order]):
@@ -178,7 +203,7 @@ class BaseOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['seller', 'first_name', 'last_name',
+        fields = ['seller', 'buyer', 'first_name', 'last_name',
                   'note', 'order_number', 'total_price']
 
 

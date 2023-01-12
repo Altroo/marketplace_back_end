@@ -15,8 +15,9 @@ class DefaultSeoPage(Model):
                              blank=True, null=True, default=None)
     h_one = models.CharField(verbose_name='H1', max_length=255,
                              blank=True, null=True, default=None)
-    tags = ArrayField(models.CharField(verbose_name='Tags', max_length=100, blank=True, null=True, default=None),
-                      default=None, size=None, help_text='Separated by comma ","')
+    tags = ArrayField(models.CharField(verbose_name='Tags', max_length=100,
+                                       blank=True, null=True, default=None),
+                      default=None, blank=True, null=True, size=None, help_text='Separated by comma ","')
     h_two = models.TextField(verbose_name='H2', default=None, blank=True, null=True)
     paragraphe = models.TextField(verbose_name='Paragraphe', default=None, blank=True, null=True)
     page_meta_description = models.TextField(verbose_name='Meta description', default=None, blank=True, null=True)

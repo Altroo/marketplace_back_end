@@ -20,6 +20,8 @@ def get_fallback_shop_avatar_path(instance, filename):
 def get_fallback_avatar_path(instance, filename):
     filename, file_extension = path.splitext(filename)
     return path.join('fallback_user_avatars/', str(uuid4()) + file_extension)
+
+
 # ------------------------------------------------------------------------------------
 
 
@@ -47,8 +49,11 @@ class OrderChoices:
 
 class Order(Model):
     seller = models.ForeignKey(AuthShop, on_delete=models.CASCADE, related_name='order_for_auth_shop',
-                               blank=True, null=True)
+                               blank=True, null=True, verbose_name='Seller')
     # buyer details
+    buyer = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                              verbose_name='Buyer', related_name='user_buyer_order',
+                              default=None, null=True, blank=True)
     # Duplicated in order details but this is used for the order list only.
     first_name = models.CharField(_('first name'), max_length=30, blank=True, null=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True, null=True)
