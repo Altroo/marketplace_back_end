@@ -19,12 +19,11 @@ class DefaultSeoPagesAdmin(ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         tags = []
-        if obj.articles:
-            for article in obj.articles.all():
-                for tag in article.offer.tags.all():
-                    if tag.name_tag not in tags:
-                        tags.append(tag.name_tag)
-            obj.tags = tags
+        for article in obj.articles.all():
+            for tag in article.offer.tags.all():
+                if tag.name_tag not in tags:
+                    tags.append(tag.name_tag)
+        obj.tags = tags
         super(DefaultSeoPagesAdmin, self).save_model(request, obj, form, change)
 
     @admin.display(description='Page url')
