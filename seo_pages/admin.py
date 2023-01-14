@@ -13,7 +13,7 @@ class DefaultSeoPagesAdmin(ModelAdmin):
     search_fields = ('pk', 'page_url', 'title', 'tags', 'h_one', 'h_two', 'paragraphe',
                      'page_meta_description', 'articles__offer__title',
                      'articles__offer__auth_shop__shop_name')
-    exclude = ('tags',)
+    # exclude = ('tags',)
     list_filter = ('indexed',)
     ordering = ('-pk',)
 
