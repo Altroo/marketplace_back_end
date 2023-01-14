@@ -27,6 +27,16 @@ class DefaultSeoPage(Model):
                                       verbose_name='Articles',
                                       related_name='default_seo_page_indexed_articles', blank=True)
 
+    def save(self, *args, **kwargs):
+        tags = []
+        if self.articles:
+            for article in self.articles.all():
+                for tag in article.offer.tags.all():
+                    if tag not in tags:
+                        tags.append(tag)
+            self.tags = tags
+            super().save()
+
     def __str__(self):
         return '{} - {}'.format(self.title, self.page_url)
 
