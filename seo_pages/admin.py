@@ -25,7 +25,7 @@ class DefaultSeoPagesAdmin(ModelAdmin):
                     if tag.name_tag not in tags:
                         tags.append(tag.name_tag)
             obj.tags = tags
-            obj.save()
+        super(DefaultSeoPagesAdmin, self).save_model(request, obj, form, change)
 
     @admin.display(description='Page url')
     def get_page_url(self, obj):
