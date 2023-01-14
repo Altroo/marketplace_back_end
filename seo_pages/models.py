@@ -32,8 +32,8 @@ class DefaultSeoPage(Model):
         if self.articles:
             for article in self.articles.all():
                 for tag in article.offer.tags.all():
-                    if tag not in tags:
-                        tags.append(tag)
+                    if tag.name_tag not in tags:
+                        tags.append(tag.name_tag)
             self.tags = tags
             super().save()
 
