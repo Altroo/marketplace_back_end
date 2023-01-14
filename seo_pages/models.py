@@ -35,7 +35,7 @@ class DefaultSeoPage(Model):
                     if tag.name_tag not in tags:
                         tags.append(tag.name_tag)
             self.tags = tags
-            super().save()
+        super(DefaultSeoPage, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{} - {}'.format(self.title, self.page_url)
