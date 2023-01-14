@@ -17,6 +17,16 @@ class DefaultSeoPagesAdmin(ModelAdmin):
     list_filter = ('indexed',)
     ordering = ('-pk',)
 
+    def save_model(self, request, obj, form, change):
+        tags = []
+        if obj.articles:
+            for article in obj.articles.all():
+                for tag in article.offer.tags.all():
+                    if tag.name_tag not in tags:
+                        tags.append(tag.name_tag)
+            obj.tags = tags
+            obj.save()
+
     @admin.display(description='Page url')
     def get_page_url(self, obj):
         page_url = obj.page_url
