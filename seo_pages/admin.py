@@ -17,14 +17,14 @@ class DefaultSeoPagesAdmin(ModelAdmin):
     list_filter = ('indexed',)
     ordering = ('-pk',)
 
-    def save_model(self, request, obj, form, change):
-        tags = []
-        for article in obj.articles.all():
-            for tag in article.offer.tags.all():
-                if tag.name_tag not in tags:
-                    tags.append(tag.name_tag)
-        obj.tags = tags
-        super(DefaultSeoPagesAdmin, self).save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     tags = []
+    #     for article in obj.articles.all():
+    #         for tag in article.offer.tags.all():
+    #             if tag.name_tag not in tags:
+    #                 tags.append(tag.name_tag)
+    #     obj.tags = tags
+    #     super(DefaultSeoPagesAdmin, self).save_model(request, obj, form, change)
 
     @admin.display(description='Page url')
     def get_page_url(self, obj):
