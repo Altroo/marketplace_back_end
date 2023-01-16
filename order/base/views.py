@@ -10,7 +10,7 @@ from order.models import Order
 from order.base.serializers import BaseOrdersListSerializer, \
     BaseChiffreAffaireListSerializer
 from order.base.filters import OrderStatusFilterSet
-from django.db.models import Q
+from notifications.models import Notifications
 
 
 class ShopSellingOrdersView(ListAPIView, PageNumberPagination):
@@ -83,144 +83,6 @@ class GetOrderDetailsView(APIView):
         else:
             return offer_price
 
-    # def get(self, request, *args, **kwargs):
-    #     user = request.user
-    #     order_pk = kwargs.get('order_pk')
-    #     results_list = []
-    #     try:
-    #         order = Order.objects.get(pk=order_pk, seller__user=user)
-    #         product_offers = order.order_details_order.all().exclude(offer_type='S')
-    #         click_and_collect_offers = product_offers.exclude(picked_delivery=False)
-    #         lot_1 = False
-    #         lot_2 = False
-    #         lot_1_pks_to_exclude = []
-    #         if click_and_collect_offers:
-    #             details_dict = {}
-    #             lot_1_list = []
-    #             offres_dict = {}
-    #             product_longitude = False
-    #             product_latitude = False
-    #             product_address = False
-    #             for i in click_and_collect_offers:
-    #                 lot_1_pks_to_exclude.append(i.pk)
-    #                 product_longitude = i.product_longitude
-    #                 product_latitude = i.product_latitude
-    #                 product_address = i.product_address
-    #                 lot_1_dict = {
-    #                     "order_details_pk": i.pk,
-    #                     "offer_pk": i.offer.pk,
-    #                     "offer_type": i.offer_type,
-    #                     "offer_picture": i.get_absolute_offer_thumbnail,
-    #                     "offer_title": i.offer_title,
-    #                     "order_status": order.order_status,
-    #                     "offer_total_price": self.get_offer_total_price(i, 'V'),
-    #                     "offer_details": {
-    #                         "picked_color": i.picked_color,
-    #                         "picked_size": i.picked_size,
-    #                         "picked_quantity": i.picked_quantity,
-    #                     }
-    #                 }
-    #                 lot_1_list.append(lot_1_dict)
-    #             if product_longitude and product_latitude and product_address:
-    #                 click_and_collect = {
-    #                     "product_longitude": product_longitude,
-    #                     "product_latitude": product_latitude,
-    #                     "product_address": product_address,
-    #                 }
-    #                 offres_dict['click_and_collect'] = click_and_collect
-    #             else:
-    #                 offres_dict['click_and_collect'] = {}
-    #             offres_dict["order_details"] = lot_1_list
-    #             offres_dict['global_offer_type'] = 'V'
-    #             # Lot 1
-    #             details_dict["lot"] = offres_dict
-    #             lot_1 = True
-    #             results_list.append(details_dict)
-    #
-    #         # Check for Lot 2
-    #         # deliveries + click & collect
-    #         click_and_collect_deliveries_offers = product_offers.exclude(pk__in=lot_1_pks_to_exclude)
-    #         if click_and_collect_deliveries_offers:
-    #             details_dict = {}
-    #             lot_1_list = []
-    #             offres_dict = {}
-    #             product_longitude = False
-    #             product_latitude = False
-    #             product_address = False
-    #             list_of_cities = []
-    #             list_of_prices = []
-    #             list_of_days = []
-    #             deliveries_output = []
-    #             for i in click_and_collect_deliveries_offers:
-    #                 product_longitude = i.product_longitude
-    #                 product_latitude = i.product_latitude
-    #                 product_address = i.product_address
-    #                 lot_1_dict = {
-    #                     "order_details_pk": i.pk,
-    #                     "offer_pk": i.offer.pk,
-    #                     "offer_type": i.offer_type,
-    #                     "offer_picture": i.get_absolute_offer_thumbnail,
-    #                     "offer_title": i.offer_title,
-    #                     "order_status": order.order_status,
-    #                     "offer_total_price": self.get_offer_total_price(i, 'V'),
-    #                     "offer_details": {
-    #                         "picked_color": i.picked_color,
-    #                         "picked_size": i.picked_size,
-    #                         "picked_quantity": i.picked_quantity,
-    #                     }
-    #                 }
-    #                 lot_1_list.append(lot_1_dict)
-    #             if product_longitude and product_latitude and product_address:
-    #                 click_and_collect = {
-    #                     "product_longitude": product_longitude,
-    #                     "product_latitude": product_latitude,
-    #                     "product_address": product_address,
-    #                 }
-    #                 offres_dict['click_and_collect'] = click_and_collect
-    #             else:
-    #                 offres_dict['click_and_collect'] = {}
-    #
-    #         # Missing
-    #         # Avatar - order_date - articles_count - total_price - note - highest_delivery_price
-    #         # serializer = BaseGetOrderDetailsSerializer(instance=order)
-    #         # return Response(data=serializer.data, status=status.HTTP_200_OK)
-    #     except Order.DoesNotExist:
-    #         errors = {"errors": ["Order Doesn't exist!"]}
-    #         raise ValidationError(errors)
-
-    # def get(self, request, *args, **kwargs):
-    #     user = request.user
-    #     order_pk = kwargs.get('order_pk')
-    #     results_list = []
-    #     try:
-    #         order = Order.objects.get(pk=order_pk, seller__user=user)
-    #         offers = order.order_details_order.all()
-    #         click_and_collect_offers = offers.filter(picked_click_and_collect=True)
-    #         lot_1 = False
-    #         lot_2 = False
-    #         click_and_collect_list = defaultdict(list)
-    #         if click_and_collect_offers:
-    #             for i in click_and_collect_offers:
-    #                 click_and_collect_dict = {
-    #                     'product_longitude': i.product_longitude,
-    #                     'product_latitude': i.product_latitude,
-    #                     'product_address': i.product_address,
-    #                 }
-    #                 if len(click_and_collect_list) > 0:
-    #                     for key, value in click_and_collect_list.items():
-    #                         if click_and_collect_dict != value:
-    #                             click_and_collect_list[i.pk].append(click_and_collect_dict)
-    #                 else:
-    #                     click_and_collect_list[i.pk].append(click_and_collect_dict)
-    #         print(click_and_collect_list)
-    #         # Missing
-    #         # Avatar - order_date - articles_count - total_price - note - highest_delivery_price
-    #         # serializer = BaseGetOrderDetailsSerializer(instance=order)
-    #         # return Response(data=serializer.data, status=status.HTTP_200_OK)
-    #     except Order.DoesNotExist:
-    #         errors = {"errors": ["Order Doesn't exist!"]}
-    #         raise ValidationError(errors)
-
 
 class CancelAllView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -229,14 +91,19 @@ class CancelAllView(APIView):
     def post(request, *args, **kwargs):
         user = request.user
         order_pk = request.data.get('order_pk')
-        try:
-            order = Order.objects.get(pk=order_pk, seller__user=user)
-            order.order_status = 'CA'
-            order.save(update_fields=['order_status'])
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Order.DoesNotExist:
-            errors = {"error": ["Order doesn't exist!"]}
-            raise ValidationError(errors)
+        sell_order = Order.objects.filter(seller__user=user, pk=order_pk)
+        buy_order = Order.objects.filter(buyer=user, pk=order_pk)
+        if sell_order:
+            sell_order[0].order_status = 'CA'
+            sell_order[0].save(update_fields=['order_status'])
+            Notifications.objects.create(user=sell_order[0].buyer,
+                                         body="Commande annulée par le vendeur.", type='CS')
+        if buy_order:
+            buy_order[0].order_status = 'CA'
+            buy_order[0].save(update_fields=['order_status'])
+            Notifications.objects.create(user=buy_order[0].seller,
+                                         body="Commande annulée par l'acheteur.", type='CB')
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AcceptOrdersView(APIView):
@@ -268,6 +135,9 @@ class AcceptOrdersView(APIView):
             if order.order_status == 'IP':
                 order.order_status = 'CM'
                 order.save(update_fields=['order_status'])
+                Notifications.objects.create(user=order.buyer,
+                                             body="Votre commande à été accepté par le vendeur",
+                                             type='OA')
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             errors = {"error": ["Order doesn't exist!"]}
