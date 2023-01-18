@@ -47,6 +47,12 @@ class SubscriptionChoices:
         ('U', 'Mis à jour'),  # updated
     )
 
+    TRANCHE_HORAIRE = (
+        ('M', '9-12'),
+        ('A', '13-16'),
+        ('S', '17-18'),
+    )
+
 
 class AvailableSubscription(Model):
     nbr_article = models.PositiveIntegerField(verbose_name="Nombre d'article", blank=True, null=True, default=None)
@@ -335,3 +341,25 @@ def check_if_article_updated(sender, instance: Union[QuerySet, IndexedArticles],
     if not created and article.status == 'I':
         article.status = 'U'
         article.save(update_fields=['status'])
+
+
+class RequestedSignIns(Model):
+    first_name = models.CharField(verbose_name='Nom', max_length=30, blank=False, null=False)
+    last_name = models.CharField(verbose_name='Prénom', max_length=30, blank=False, null=False)
+    phone = models.CharField(verbose_name='Téléphone', max_length=15, blank=False, null=False)
+    instagram_page = models.SlugField(verbose_name='Lien de la page (instagram)',
+                                      max_length=255, blank=True, null=True,
+                                      default=None)
+    horaire = models.CharField(verbose_name="Horaire", max_length=1,
+                               choices=SubscriptionChoices.TRANCHE_HORAIRE,
+                               default='M')
+    created_date = models.DateTimeField(verbose_name='Date de création',
+                                        editable=False, auto_now_add=True, db_index=True)
+
+    def __str__(self):
+        return '{} - {} - {}'.format(self.first_name, self.last_name, self.instagram_page)
+
+    class Meta:
+        verbose_name = 'Requested SignIn'
+        verbose_name_plural = 'Requested SignIns'
+        ordering = ('-pk',)

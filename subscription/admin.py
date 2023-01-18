@@ -10,7 +10,7 @@ from random import choice
 from django.utils import timezone
 from django.utils.html import format_html
 from subscription.models import AvailableSubscription, RequestedSubscriptions, \
-    PromoCodes, SubscribedUsers, IndexedArticles
+    PromoCodes, SubscribedUsers, IndexedArticles, RequestedSignIns
 
 
 class CustomAvailableSubscriptionAdmin(ModelAdmin):
@@ -140,6 +140,16 @@ class CustomIndexedArticlesAdmin(ModelAdmin):
                 request.GET = q
                 request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(CustomIndexedArticlesAdmin, self).changelist_view(request, extra_context=extra_context)
+
+
+class CustomRequestedSignInsAdmin(ModelAdmin):
+    list_display = ('pk', 'first_name', 'last_name',
+                    'phone', 'instagram_page', 'horaire', 'created_date')
+    search_fields = ('pk', 'first_name', 'last_name',
+                     'phone', 'instagram_page', 'horaire')
+    list_filter = ('horaire', 'created_date',)
+    date_hierarchy = 'created_date'
+    ordering = ('-pk',)
 
 
 admin.site.register(AvailableSubscription, CustomAvailableSubscriptionAdmin)

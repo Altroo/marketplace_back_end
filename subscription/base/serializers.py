@@ -1,7 +1,14 @@
 from rest_framework import serializers
 from subscription.models import AvailableSubscription, RequestedSubscriptions, \
-    SubscribedUsers, IndexedArticles
+    SubscribedUsers, IndexedArticles, RequestedSignIns
 from django.utils import timezone
+
+
+class BasePOSTRequestedSignInsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RequestedSignIns
+        fields = ['first_name', 'last_name', 'phone',
+                  'instagram_page', 'horaire']
 
 
 class BaseGETAvailableSubscriptionsSerializer(serializers.ModelSerializer):

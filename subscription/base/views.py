@@ -13,12 +13,13 @@ from subscription.base.serializers import BaseGETAvailableSubscriptionsSerialize
     BasePOSTRequestSubscriptionSerializer, BasePOSTSubscribedUsersSerializer, \
     BaseGETCurrentUserSubscription, \
     BaseGETIndexedArticlesList, BaseGETAvailableArticlesList, \
-    BasePOSTIndexArticlesSerializer
+    BasePOSTIndexArticlesSerializer, BasePOSTRequestedSignInsSerializer
 from shop.models import AuthShop
 from places.models import Country
 from offers.models import Offers
 from notifications.models import Notifications
-from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription
+from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription, \
+    append_google_sheet_row
 
 
 class SubscriptionView(APIView):
@@ -248,267 +249,6 @@ class SubscriptionView(APIView):
             errors = {"error": ["Shop not found."]}
             raise ValidationError(errors)
 
-    # def patch(self, request, *args, **kwargs):
-    #     user = request.user
-    #     try:
-    #         # TODO fix duplicate
-    #         subscribed_user = SubscribedUsers.objects.get(original_request__auth_shop__user=user)
-    #         subscribed_user = SubscribedUsers.objects.filter(original_request__auth_shop__user=user).order_by(
-    #             'expiration_date').first()
-    #         nbr_article = request.data.get('nbr_article')
-    #         company = request.data.get('company', '')
-    #         ice = request.data.get('ice', '')
-    #         first_name = request.data.get('first_name', '')
-    #         last_name = request.data.get('last_name', '')
-    #         adresse = request.data.get('adresse', '')
-    #         city = request.data.get('city', '')
-    #         code_postal = request.data.get('code_postal', '')
-    #         country = request.data.get('country')
-    #         try:
-    #             country_obj = Country.objects.get(name_fr=country)
-    #         except Country.DoesNotExist:
-    #             country_obj = Country.objects.get(name_fr='Maroc')  # fallback
-    #         promo_code = request.data.get('promo_code')
-    #         promo_code_obj = None
-    #         try:
-    #             promo_code_obj = PromoCodes.objects.get(promo_code=promo_code)
-    #         except PromoCodes.DoesNotExist:
-    #             pass
-    #             # errors = {"error": ["Promo code non valid."]}
-    #             # raise ValidationError(errors)
-    #             # promo_code_obj = None
-    #         try:
-    #             nbr_articles_obj = AvailableSubscription.objects.get(nbr_article=nbr_article)
-    #         except AvailableSubscription.DoesNotExist:
-    #             errors = {"error": ["Cette formule n'existe pas."]}
-    #             raise ValidationError(errors)
-    #         payment_type = request.data.get('payment_type')
-    #         reference_number = self.generate_reference_number(subscribed_user.original_request.auth_shop.pk)
-    #         facture_number = self.generate_facture_number(user.pk)
-    #         # requested_subscription_serializer = BasePUTRequestSubscriptionSerializer(
-    #         #     subscribed_user.original_request,
-    #         #     data={
-    #         #         'subscription': nbr_articles_obj.pk,
-    #         #         'company': company,
-    #         #         'ice': ice,
-    #         #         'first_name': first_name,
-    #         #         'last_name': last_name,
-    #         #         'adresse': adresse,
-    #         #         'city': city,
-    #         #         'code_postal': code_postal,
-    #         #         'country': country_obj.pk,
-    #         #         'promo_code': promo_code_obj.pk if promo_code_obj else None,
-    #         #         'payment_type': payment_type,
-    #         #         'reference_number': reference_number,
-    #         #         'facture_number': facture_number,
-    #         #     }, partial=True)
-    #
-    #         previous_expiration_date = subscribed_user.expiration_date
-    #         remaining_days = previous_expiration_date - timezone.now()
-    #         final_price = remaining_days.days * (nbr_articles_obj.prix_ttc / 365)
-    #         total_paid = subscribed_user.total_paid + round(final_price)
-    #         available_slots = nbr_articles_obj.nbr_article + subscribed_user.available_slots
-    #         remaining_to_pay = remaining_days.days * (nbr_articles_obj.prix_ttc / 365)
-    #         requested_subscription_serializer = BasePOSTRequestSubscriptionSerializer(data={
-    #             'auth_shop': subscribed_user.original_request.auth_shop.pk,
-    #             'subscription': nbr_articles_obj.pk,
-    #             'company': company,
-    #             'ice': ice,
-    #             'first_name': first_name,
-    #             'last_name': last_name,
-    #             'adresse': adresse,
-    #             'city': city,
-    #             'code_postal': code_postal,
-    #             'country': country_obj.pk,
-    #             'promo_code': promo_code_obj.pk if promo_code_obj else None,
-    #             'payment_type': payment_type,
-    #             'reference_number': reference_number,
-    #             'facture_number': facture_number,
-    #             'remaining_to_pay': remaining_to_pay,
-    #         })
-    #         if requested_subscription_serializer.is_valid():
-    #             # days remain * (new price / 365) = final price.
-    #
-    #             # if promo_code_obj:
-    #             #     if promo_code_obj.promo_code_status == 'E':
-    #             #         return
-    #             #     elif promo_code_obj.type_promo_code == 'S' and promo_code_obj.value is not None:
-    #             #         total_paid = subscribed_user.total_paid + final_price
-    #             #         available_slots = promo_code_obj.value + subscribed_user.available_slots
-    #             #     elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
-    #             #         total_paid = round(nbr_articles_obj.prix_ttc - promo_code_obj.value) + \
-    #             #                      subscribed_user.total_paid
-    #             #         remaining_to_pay = round(final_price - promo_code_obj.value)
-    #             #     requested_subscription = requested_subscription_serializer.save()
-    #
-    #             # subscribe_user_serializer = BasePUTSubscribedUsersSerializer(subscribed_user, data={
-    #             #     'available_slots': available_slots,
-    #             #     'total_paid': total_paid,
-    #             # }, partial=True)
-    #             # if subscribe_user_serializer.is_valid():
-    #             #     subscribe_user_serializer.save()
-    #             #     requested_subscription.status = 'P'
-    #             #     requested_subscription.save(update_fields=['status'])
-    #             #     tva = (instance.subscription.prix_ttc - instance.subscription.prix_ht) - (
-    #             #         promo_code_obj.value if (promo_code_obj and promo_code_obj.value) is not None else 0)
-    #             #     prix_ht = instance.subscription.prix_ht - (
-    #             #         promo_code_obj.value if promo_code_obj and promo_code_obj.value is not None else 0)
-    #             #     prix_ttc = prix_ht + tva
-    #             #
-    #             #     data = {
-    #             #         'facture_numero': facture_number,
-    #             #         'reference_number': reference_number,
-    #             #         'created_date': requested_subscription_serializer.data.get('updated_date'),
-    #             #         'first_name': first_name,
-    #             #         'last_name': last_name,
-    #             #         'company': company,
-    #             #         'ice': ice,
-    #             #         'adresse': adresse,
-    #             #         'code_postal': code_postal,
-    #             #         'city': city,
-    #             #         'country': country_obj.name_fr,
-    #             #         'nbr_article': nbr_articles_obj.nbr_article,
-    #             #         'prix_ht': prix_ht,
-    #             #         'tva': tva,
-    #             #         'prix_ttc': prix_ttc,
-    #             #     }
-    #             #     base_generate_pdf.apply_async((user.pk, data, subscribed_user), )
-    #             #     # TODO : enable once test is done
-    #             #     if promo_code_obj and promo_code_obj.usage_unique:
-    #             #         promo_code_obj.promo_code_status = 'E'
-    #             #         promo_code_obj.save()
-    #             #     output_data = {
-    #             #         'reference_number': reference_number,
-    #             #         'total_paid': remaining_to_pay,
-    #             #     }
-    #
-    #             return Response(data=output_data, status=status.HTTP_204_NO_CONTENT)
-    #             # else:
-    #             #     requested_subscription.delete()
-    #             #     raise ValidationError(subscribe_user_serializer.errors)
-    #         raise ValidationError(requested_subscription_serializer.errors)
-    #     except SubscribedUsers.DoesNotExist:
-    #         errors = {"error": ["Subscription not found."]}
-    #         raise ValidationError(errors)
-
-    # def patch(self, request, *args, **kwargs):
-    #     user = request.user
-    #     try:
-    #         current_subscription = SubscribedUsers.objects.filter(
-    #             original_request__auth_shop__user=user,
-    #             status='A').last()
-    #         nbr_article = request.data.get('nbr_article')
-    #         company = request.data.get('company', '')
-    #         ice = request.data.get('ice', '')
-    #         first_name = request.data.get('first_name', '')
-    #         last_name = request.data.get('last_name', '')
-    #         adresse = request.data.get('adresse', '')
-    #         city = request.data.get('city', '')
-    #         code_postal = request.data.get('code_postal', '')
-    #         country = request.data.get('country')
-    #         try:
-    #             country_obj = Country.objects.get(name_fr=country)
-    #         except Country.DoesNotExist:
-    #             country_obj = Country.objects.get(name_fr='Maroc')  # fallback
-    #         promo_code = request.data.get('promo_code')
-    #         promo_code_obj = None
-    #         try:
-    #             promo_code_obj = PromoCodes.objects.get(promo_code=promo_code)
-    #         except PromoCodes.DoesNotExist:
-    #             pass
-    #         try:
-    #             nbr_articles_obj = AvailableSubscription.objects.get(nbr_article=nbr_article)
-    #         except AvailableSubscription.DoesNotExist:
-    #             errors = {"error": ["Cette formule n'existe pas."]}
-    #             raise ValidationError(errors)
-    #         payment_type = request.data.get('payment_type')
-    #         auth_shop_pk = current_subscription.original_request.auth_shop.pk
-    #         reference_number = self.generate_reference_number(auth_shop_pk)
-    #         facture_number = self.generate_facture_number(user.pk)
-    #         requested_subscription_serializer = BasePOSTRequestSubscriptionSerializer(data={
-    #             'auth_shop': auth_shop_pk,
-    #             'subscription': nbr_articles_obj.pk,
-    #             'company': company,
-    #             'ice': ice,
-    #             'first_name': first_name,
-    #             'last_name': last_name,
-    #             'adresse': adresse,
-    #             'city': city,
-    #             'code_postal': code_postal,
-    #             'country': country_obj.pk,
-    #             'promo_code': promo_code_obj.pk if promo_code_obj else None,
-    #             'payment_type': payment_type,
-    #             'reference_number': reference_number,
-    #             'facture_number': facture_number,
-    #         })
-    #         if requested_subscription_serializer.is_valid():
-    #             requested_subscription = requested_subscription_serializer.save()
-    #             validated_data = requested_subscription_serializer.validated_data
-    #             total_paid = nbr_articles_obj.prix_ttc
-    #             available_slots = nbr_articles_obj.nbr_article
-    #             if promo_code_obj:
-    #                 if promo_code_obj.promo_code_status == 'E':
-    #                     return
-    #                 elif promo_code_obj.type_promo_code == 'S' and promo_code_obj.value is not None:
-    #                     total_paid = 0
-    #                     available_slots = promo_code_obj.value
-    #                 elif promo_code_obj.type_promo_code == 'P' and promo_code_obj.value is not None:
-    #                     total_paid = round(total_paid - promo_code_obj.value)
-    #             free_data = {
-    #                 'facture_numero': facture_number,
-    #                 'reference_number': reference_number,
-    #                 'created_date': requested_subscription_serializer.data.get('created_date'),
-    #                 'first_name': first_name,
-    #                 'last_name': last_name,
-    #                 'company': company,
-    #                 'ice': ice,
-    #                 'adresse': adresse,
-    #                 'code_postal': code_postal,
-    #                 'city': city,
-    #                 'country': country_obj.name_fr,
-    #                 'nbr_article': nbr_articles_obj.nbr_article,
-    #                 'prix_ht': '0,00',
-    #                 'tva': '0,00',
-    #                 'prix_ttc': '0,00',
-    #             }
-    #             if total_paid == 0:
-    #                 # auto accept
-    #                 requested_subscription.status = 'A'
-    #                 requested_subscription.save(update_fields=['status'])
-    #                 subscribe_user_serializer = BasePOSTSubscribedUsersSerializer(data={
-    #                     'original_request': requested_subscription.pk,
-    #                     'available_slots': available_slots,
-    #                     'total_paid': total_paid,
-    #                 })
-    #                 if subscribe_user_serializer.is_valid():
-    #                     subscribe_user_serializer.save()
-    #                     subscription = SubscribedUsers.objects.get(
-    #                         pk=subscribe_user_serializer.data.get('pk'))
-    #                     base_generate_pdf.apply_async((user.pk, free_data, subscription), )
-    #                     if promo_code_obj and promo_code_obj.usage_unique:
-    #                         promo_code_obj.promo_code_status = 'E'
-    #                         promo_code_obj.save()
-    #                     Notifications.objects.create(user=user, type='SA')
-    #                     output_data = {
-    #                         'reference_number': validated_data.get('reference_number'),
-    #                         'total_paid': total_paid,
-    #                     }
-    #                     return Response(data=output_data, status=status.HTTP_200_OK)
-    #                 # requested_subscription.delete()
-    #                 raise ValidationError(subscribe_user_serializer.errors)
-    #             else:
-    #                 output_data = {
-    #                     'reference_number': validated_data.get('reference_number'),
-    #                     'total_paid': total_paid,
-    #                 }
-    #                 return Response(data=output_data, status=status.HTTP_200_OK)
-    #                 # requested_subscription.delete()
-    #                 # raise ValidationError(subscribe_user_serializer.errors)
-    #         raise ValidationError(requested_subscription_serializer.errors)
-    #     except SubscribedUsers.DoesNotExist:
-    #         errors = {"error": ["Subscription not found."]}
-    #         raise ValidationError(errors)
-
     @staticmethod
     def get(request, *args, **kwargs):
         nbr_article = kwargs.get('nbr_article')
@@ -648,3 +388,36 @@ class GetUserAvailableArticlesView(APIView, PageNumberPagination):
         if page is not None:
             serializer = BaseGETAvailableArticlesList(page, many=True)
             return self.get_paginated_response(serializer.data)
+
+
+class RequestedSignInsView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+        phone = request.data.get('phone')
+        instagram_page = request.data.get('instagram_page')
+        horaire = request.data.get('horaire')
+        serializer = BasePOSTRequestedSignInsSerializer(data={
+            'first_name': first_name,
+            'last_name': last_name,
+            'phone': phone,
+            'instagram_page': instagram_page,
+            'horaire': horaire,
+        })
+        if serializer.is_valid():
+            serializer.save()
+            if horaire == 'M':
+                str_horaire = '9-12'
+            elif horaire == 'A':
+                str_horaire = '13-16'
+            else:
+                str_horaire = '17-18'
+            data = [
+                [first_name, last_name, phone, instagram_page, str_horaire],
+            ]
+            append_google_sheet_row.apply_async((data,), )
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        raise ValidationError(serializer.errors)

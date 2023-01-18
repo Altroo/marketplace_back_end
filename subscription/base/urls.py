@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import AvailableSubscriptionView, SubscriptionView, \
     PromoCodeView, GetUserSubscriptionView, GetUserIndexedArticlesView, \
-    GetUserAvailableArticlesView
+    GetUserAvailableArticlesView, RequestedSignInsView
 
 app_name = 'subscription'
 
@@ -16,5 +16,6 @@ urlpatterns = [
     path('available_articles/', GetUserAvailableArticlesView.as_view()),
     # Delete
     path('indexed_articles/<str:indexed_article_pk>', GetUserIndexedArticlesView.as_view()),
-
+    # POST
+    path('requested_signins/', RequestedSignInsView.as_view()),
 ]
