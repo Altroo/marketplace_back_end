@@ -7,7 +7,7 @@ from blog.models import Blog
 
 class BlogAdmin(ModelAdmin):
     list_display = ('pk', 'get_page_url', 'title', 'indexed')
-    search_fields = ('pk', 'page_url', 'title', 'tags', 'header', 'content',
+    search_fields = ('pk', 'page_url', 'title', 'tags', 'h_one', 'content',
                      'page_meta_description',)
     list_filter = ('indexed',)
     list_editable = ('indexed',)

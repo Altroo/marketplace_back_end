@@ -107,6 +107,7 @@ class BaseOrderDetailsListSerializer(serializers.Serializer):
 
 class BaseOrdersListSerializer(serializers.Serializer):
     pk = serializers.IntegerField()
+    link = serializers.SerializerMethodField()
     first_name = serializers.SerializerMethodField()
     last_name = serializers.SerializerMethodField()
     avatar = serializers.SerializerMethodField()
@@ -119,6 +120,13 @@ class BaseOrdersListSerializer(serializers.Serializer):
     note = serializers.CharField()
     highest_delivery_price = serializers.FloatField()
     order_for = serializers.SerializerMethodField()
+
+    def get_link(self, instance):
+        order_for = self.context.get("order_for")
+        if order_for == 'S':
+            return instance.buyer.pk
+        else:
+            return instance.seller.qaryb_link
 
     def get_first_name(self, instance):
         order_for = self.context.get("order_for")
@@ -153,50 +161,6 @@ class BaseOrdersListSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
-
-
-# class BaseGetOrderDetailsSerializer(serializers.Serializer):
-#     pk = serializers.IntegerField()
-#     first_name = serializers.CharField()
-#     last_name = serializers.CharField()
-#     avatar = serializers.CharField(source='get_absolute_buyer_thumbnail')
-#     order_number = serializers.CharField()
-#     order_date = serializers.DateTimeField()
-#     articles_count = serializers.SerializerMethodField()
-#     order_status = serializers.CharField()
-#     total_price = serializers.FloatField()
-#     order_details = serializers.SerializerMethodField()
-#     note = serializers.CharField()
-#     highest_delivery_price = serializers.FloatField()
-#
-#     @staticmethod
-#     def get_articles_count(instance: Union[QuerySet, Order]):
-#         return OrderDetails.objects.filter(order=instance).count()
-#
-#     @staticmethod
-#     def get_order_details(instance: Union[QuerySet, Order]):
-#         results = BaseOrderDetailsListSerializer(many=True, source=list(instance.order_details_order.all()))
-#         print(results)
-#         results_list = []
-#         lot_1 = False
-#         lot_2 = False
-#         details_dict = {}
-#         lot_1_list = []
-#         offres_dict = {}
-#         product_longitude = False
-#         product_latitude = False
-#         product_address = False
-#         result: Union[QuerySet, Order]
-#         for result in results:
-#             print(result)
-#         return results.data
-#         # BaseOrderDetailsListSerializer(many=True, source='order_details_order')
-#
-#     def update(self, instance, validated_data):
-#         pass
-#
-#     def create(self, validated_data):
-#         pass
 
 
 class BaseOrderSerializer(serializers.ModelSerializer):

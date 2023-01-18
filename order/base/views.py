@@ -63,10 +63,12 @@ class GetOrderDetailsView(APIView):
         sell_order = Order.objects.filter(seller__user=user, pk=order_pk)
         buy_order = Order.objects.filter(buyer=user, pk=order_pk)
         if sell_order:
-            serializer = BaseOrdersListSerializer(instance=sell_order[0], context={'order_for': 'S'})
+            serializer = BaseOrdersListSerializer(instance=sell_order[0],
+                                                  context={'order_for': 'S'})
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         if buy_order:
-            serializer = BaseOrdersListSerializer(instance=buy_order[0], context={'order_for': 'B'})
+            serializer = BaseOrdersListSerializer(instance=buy_order[0],
+                                                  context={'order_for': 'B'})
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         if not sell_order or not buy_order:
             errors = {"errors": ["Order Doesn't exist!"]}
@@ -98,12 +100,13 @@ class CancelAllView(APIView):
             sell_order[0].save(update_fields=['order_status'])
             Notifications.objects.create(user=sell_order[0].buyer,
                                          body="Commande annulée par le vendeur.", type='CS')
+            return Response(status=status.HTTP_204_NO_CONTENT)
         if buy_order:
             buy_order[0].order_status = 'CA'
             buy_order[0].save(update_fields=['order_status'])
-            Notifications.objects.create(user=buy_order[0].seller,
+            Notifications.objects.create(user=buy_order[0].seller.user,
                                          body="Commande annulée par l'acheteur.", type='CB')
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AcceptOrdersView(APIView):

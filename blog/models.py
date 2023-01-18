@@ -15,7 +15,7 @@ def get_blog_imgs_path(instance, filename):
 
 class Blog(Model):
     page_url = models.SlugField(verbose_name='Page url (unique)', max_length=255, blank=True, null=True,
-                                unique=True, default=None)
+                                unique=True, default=None, help_text='ex : ma-blog-page')
     background_image = models.ImageField(verbose_name='Background image',
                                          upload_to=get_blog_imgs_path, blank=True, null=True,
                                          default=None)
@@ -25,14 +25,15 @@ class Blog(Model):
                              blank=True, null=True, default=None)
     tags = ArrayField(models.CharField(verbose_name='Tags', max_length=100,
                                        blank=True, null=True, default=None),
-                      default=None, blank=True, null=True, size=None, help_text='Separated by comma ","')
-    header = models.TextField(verbose_name='Titre (h1)', blank=True, null=True, default=None)
+                      default=None, blank=True, null=True, size=None,
+                      help_text='ex : Divers,Beauté,Santé & Bien être... (Séparer par une virgule ",").')
+    h_one = models.TextField(verbose_name='H1', blank=True, null=True, default=None)
     page_meta_description = models.TextField(verbose_name='Meta description',
                                              blank=True, null=True, default=None)
-    content = RichTextUploadingField(config_name='blog_editor', verbose_name='Page content',
+    content = RichTextUploadingField(config_name='blog_editor', verbose_name='Le contenu de la page',
                                      blank=True, null=True, default=None)
     indexed = models.BooleanField(verbose_name='Page publier ?', default=True)
-    created_date = models.DateTimeField(verbose_name='Created date',
+    created_date = models.DateTimeField(verbose_name='Date de création',
                                         editable=False, auto_now_add=True, db_index=True)
 
     # background_image = RichTextUploadingField(verbose_name='Background image', config_name='background_uploader',
