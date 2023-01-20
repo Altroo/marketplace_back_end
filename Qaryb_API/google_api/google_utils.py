@@ -7,13 +7,6 @@ from googleapiclient.discovery import build
 
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), ".."))
 
-GOOGLE_SCOPES = [
-    'https://www.googleapis.com/auth/indexing',
-    'https://www.googleapis.com/auth/drive',
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/spreadsheets'
-]
-
 
 class GoogleUtils:
     def __init__(self):
@@ -21,13 +14,13 @@ class GoogleUtils:
         self.errors = []
 
     @staticmethod
-    def get_or_create_google_credentials():
+    def get_or_create_google_credentials(scopes):
         # parent_file_dir + '/Qaryb_API/google_api/
         creds = None
         if path.exists(parent_file_dir + '/google_api/token.json'):
             creds = Credentials.from_authorized_user_file(
                 parent_file_dir + '/google_api/token.json',
-                GOOGLE_SCOPES
+                scopes
             )
             # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
@@ -36,7 +29,7 @@ class GoogleUtils:
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     parent_file_dir + '/google_api/secret.json',
-                    GOOGLE_SCOPES
+                    scopes
                 )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
@@ -62,7 +55,12 @@ class GoogleUtils:
             self.responses.append(response)
 
     def insert_sheet(self, data):
-        credentials = self.get_or_create_google_credentials()
+        scopes = [
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/drive.file',
+            'https://www.googleapis.com/auth/spreadsheets'
+        ]
+        credentials = self.get_or_create_google_credentials(scopes)
         service = build('sheets', 'v4', credentials=credentials)
         service.spreadsheets().values().append(
             spreadsheetId=GOOGLE_SPREADSHEET_ID,
@@ -75,7 +73,10 @@ class GoogleUtils:
         ).execute()
 
     def index_pages(self, urls_to_index):
-        credentials = self.get_or_create_google_credentials()
+        scopes = [
+            'https://www.googleapis.com/auth/indexing',
+        ]
+        credentials = self.get_or_create_google_credentials(scopes)
         service = build('indexing', 'v3', credentials=credentials)
         batch = service.new_batch_http_request(callback=self.indexing_event)
         for url, api_type in urls_to_index.items():
