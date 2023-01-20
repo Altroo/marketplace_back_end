@@ -37,6 +37,7 @@ class DefaultSeoPagesAdmin(ModelAdmin):
                      'page_meta_description', 'articles__offer__title',
                      'articles__offer__auth_shop__shop_name')
     list_filter = ('indexed', 'indexed_date')
+    readonly_fields = ('indexed_date',)
     ordering = ('-pk',)
     filter_horizontal = ('articles',)
     actions = [call_google_index]

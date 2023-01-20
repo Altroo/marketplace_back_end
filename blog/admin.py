@@ -35,7 +35,7 @@ class BlogAdmin(ModelAdmin):
     search_fields = ('pk', 'page_url', 'title', 'tags', 'h_one', 'content',
                      'page_meta_description',)
     list_filter = ('indexed', 'indexed_date')
-    list_editable = ('indexed',)
+    readonly_fields = ('indexed_date',)
     ordering = ('-pk',)
     date_hierarchy = 'created_date'
     actions = [call_google_index]
