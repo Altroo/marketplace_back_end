@@ -38,11 +38,16 @@ def get_or_create_credentials():
     return creds
 
 
-def insert_event(request_id, response, exception):
-    if exception is not None:
-        messages.error(request_id, exception)
-    else:
-        messages.info(request_id, response)
+class GoogleCallBack:
+    def __init__(self):
+        self.responses = []
+        self.errors = []
+
+    def insert_event(self, request_id, response, exception):
+        if exception is not None:
+            self.errors.append(exception)
+        else:
+            self.responses.append(response)
 
 
 @admin.action(description='Indéxé les pages selectionnez.')
@@ -54,7 +59,8 @@ def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoP
 
     credentials = get_or_create_credentials()
     service = build('indexing', 'v3', credentials=credentials)
-    batch = service.new_batch_http_request(callback=insert_event)
+    callbacks = GoogleCallBack()
+    batch = service.new_batch_http_request(callback=callbacks.insert_event)
     for url, api_type in urls_to_index.items():
         batch.add(
             service.urlNotifications().publish(
@@ -62,6 +68,12 @@ def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoP
             )
         )
     batch.execute()
+    if len(callbacks.responses) > 0:
+        for response in callbacks.responses:
+            messages.info(request, response)
+    if len(callbacks.errors) > 0:
+        for error in callbacks.errors:
+            messages.error(request, error)
 
 
 class DefaultSeoPagesAdmin(ModelAdmin):
