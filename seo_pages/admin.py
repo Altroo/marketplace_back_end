@@ -4,6 +4,7 @@ from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 from django.utils.html import format_html
+from django.utils import timezone
 from seo_pages.models import DefaultSeoPage, HomePage
 from Qaryb_API.google_api.google_utils import GoogleUtils
 
@@ -20,11 +21,10 @@ def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoP
     if len(google.responses) > 0:
         for response in google.responses:
             url = response['urlNotificationMetadata']['url']
-            indexed_date = str(response['urlNotificationMetadata']['latestUpdate']['notifyTime']).replace('\xa0', '')
+            now = timezone.now()
             page_url = url.split('/')[-1]
-            # queryset.filter(page_url=page_url).update(indexed_date=indexed_date)
-            messages.info(request, f"{indexed_date}")
-            messages.info(request, f"Page : {page_url} à été indexé avec succès, dernière date : {indexed_date}")
+            queryset.filter(page_url=page_url).update(indexed_date=now)
+            messages.info(request, f"Page : {page_url} à été indexé avec succès, dernière date : {now}")
     if len(google.errors) > 0:
         for error in google.errors:
             messages.error(request, error)
