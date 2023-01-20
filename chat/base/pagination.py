@@ -21,7 +21,6 @@ class BaseMessagePagination(PageNumberPagination):
                 online_timestamp = None
                 online_status = False
             try:
-                # auth_shop = AuthShop.objects.get(user=target)
                 auth_shop = AuthShop.objects.select_related('auth_shop_mode_vacance').get(user=target)
                 try:
                     today_date = date.today()
@@ -46,7 +45,7 @@ class BaseMessagePagination(PageNumberPagination):
                     'shop_avatar': auth_shop.get_absolute_avatar_thumbnail,
                     'mode_vacance': mode_vacance
                 }
-            except ModeVacance.DoesNotExist:
+            except (ModeVacance.DoesNotExist, AuthShop.DoesNotExist):
                 shop = {
                 }
             return Response({

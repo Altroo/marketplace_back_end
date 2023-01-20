@@ -11,7 +11,6 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.core.mail import get_connection
 from shop.models import AuthShop
-import os.path
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -95,25 +94,30 @@ def base_inform_new_shop_subscription(self, shop_pk: int, available_slots: int):
 
 def get_or_create_credentials():
     creds = None
-    if os.path.exists(parent_file_dir + '/Qaryb_API/token.json'):
-        creds = Credentials.from_authorized_user_file(parent_file_dir + '/Qaryb_API/token.json', GOOGLE_SCOPES)
+    if path.exists(parent_file_dir + '/Qaryb_API/google_api/sheet_token.json'):
+        creds = Credentials.from_authorized_user_file(
+            parent_file_dir + '/Qaryb_API/google_api/sheet_token.json',
+            GOOGLE_SCOPES
+        )
         # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                parent_file_dir + '/Qaryb_API/google.json', GOOGLE_SCOPES)
+                parent_file_dir + '/Qaryb_API/google_api/secret.json',
+                GOOGLE_SCOPES
+            )
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open(parent_file_dir + '/Qaryb_API/token.json', 'w') as token:
+        with open(parent_file_dir + '/Qaryb_API/google_api/sheet_token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
 
 
 @app.task(bind=True, serializer='pickle')
 def append_google_sheet_row(self, data):
-    credentials = get_or_create_credentials()  # or use GoogleCredentials.get_application_default()
+    credentials = get_or_create_credentials()
     service = build('sheets', 'v4', credentials=credentials)
     service.spreadsheets().values().append(
         spreadsheetId=GOOGLE_SPREADSHEET_ID,
