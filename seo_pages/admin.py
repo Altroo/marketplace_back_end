@@ -22,7 +22,8 @@ def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoP
             url = response['urlNotificationMetadata']['url']
             indexed_date = str(response['urlNotificationMetadata']['latestUpdate']['notifyTime']).replace('\xa0', '')
             page_url = url.split('/')[-1]
-            queryset.filter(page_url=page_url).update(indexed_date=indexed_date)
+            # queryset.filter(page_url=page_url).update(indexed_date=indexed_date)
+            messages.info(request, f"{indexed_date}")
             messages.info(request, f"Page : {page_url} à été indexé avec succès, dernière date : {indexed_date}")
     if len(google.errors) > 0:
         for error in google.errors:
