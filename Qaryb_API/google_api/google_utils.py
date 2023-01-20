@@ -5,6 +5,8 @@ from os import path
 from Qaryb_API.settings import GOOGLE_SPREADSHEET_ID
 from googleapiclient.discovery import build
 
+parent_file_dir = path.abspath(path.join(path.dirname(__file__), ".."))
+
 GOOGLE_SCOPES = [
     'https://www.googleapis.com/auth/indexing',
     'https://www.googleapis.com/auth/drive',
@@ -20,18 +22,25 @@ class GoogleUtils:
 
     @staticmethod
     def get_or_create_google_credentials():
+        # parent_file_dir + '/Qaryb_API/google_api/
         creds = None
-        if path.exists('token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', GOOGLE_SCOPES)
+        if path.exists(parent_file_dir + '/google_api/token.json'):
+            creds = Credentials.from_authorized_user_file(
+                parent_file_dir + '/google_api/token.json',
+                GOOGLE_SCOPES
+            )
             # If there are no (valid) credentials available, let the user log in.
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
-                flow = InstalledAppFlow.from_client_secrets_file('secret.json', GOOGLE_SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    parent_file_dir + '/google_api/secret.json',
+                    GOOGLE_SCOPES
+                )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open('/Qaryb_API/google_api/indexing_token.json', 'w') as token:
+            with open(parent_file_dir + '/google_api/token.json', 'w') as token:
                 token.write(creds.to_json())
         return creds
 
