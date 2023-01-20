@@ -1,90 +1,43 @@
 from typing import Union
-from os import path
 from decouple import config
 from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
 from django.db.models import QuerySet
 from django.utils.html import format_html
 from seo_pages.models import DefaultSeoPage, HomePage
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-
-parent_file_dir = path.abspath(path.join(path.dirname(__file__), ".."))
-GOOGLE_SCOPES = ["https://www.googleapis.com/auth/indexing"]
-
-
-def get_or_create_credentials():
-    creds = None
-    if path.exists(parent_file_dir + '/Qaryb_API/google_api/indexing_token.json'):
-        creds = Credentials.from_authorized_user_file(
-            parent_file_dir + '/Qaryb_API/google_api/indexing_token.json',
-            GOOGLE_SCOPES
-        )
-        # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                parent_file_dir + '/Qaryb_API/google_api/secret.json',
-                GOOGLE_SCOPES
-            )
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open(parent_file_dir + '/Qaryb_API/google_api/indexing_token.json', 'w') as token:
-            token.write(creds.to_json())
-    return creds
-
-
-class GoogleCallBack:
-    def __init__(self):
-        self.responses = []
-        self.errors = []
-
-    def insert_event(self, request_id, response, exception):
-        if exception is not None:
-            self.errors.append(exception)
-        else:
-            self.responses.append(response)
+from Qaryb_API.google_api.google_utils import GoogleUtils
 
 
 @admin.action(description='Indéxé les pages selectionnez.')
 def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoPage]):
-    urls = [f"https://qaryb.com/collections/{i.page_url}/" for i in queryset]
+    urls = [f"https://qaryb.com/collections/{i.page_url}" for i in queryset]
     urls_to_index = {}
     for url in urls:
         urls_to_index[url] = 'URL_UPDATED'
 
-    credentials = get_or_create_credentials()
-    service = build('indexing', 'v3', credentials=credentials)
-    callbacks = GoogleCallBack()
-    batch = service.new_batch_http_request(callback=callbacks.insert_event)
-    for url, api_type in urls_to_index.items():
-        batch.add(
-            service.urlNotifications().publish(
-                body={"url": url, "type": api_type}
-            )
-        )
-    batch.execute()
-    if len(callbacks.responses) > 0:
-        for response in callbacks.responses:
-            messages.info(request, response)
-    if len(callbacks.errors) > 0:
-        for error in callbacks.errors:
+    google = GoogleUtils()
+    google.index_pages(urls_to_index)
+    if len(google.responses) > 0:
+        for response in google.responses:
+            url = response['urlNotificationMetadata']['url']
+            indexed_date = response['urlNotificationMetadata']['latestUpdate']['notifyTime']
+            page_url = url.split('/')[-1]
+            queryset.filter(page_url=page_url).update(indexed_date=indexed_date)
+            messages.info(request, f"Page : {page_url} à été indexé avec succès, dernière date : {indexed_date}")
+    if len(google.errors) > 0:
+        for error in google.errors:
             messages.error(request, error)
 
 
 class DefaultSeoPagesAdmin(ModelAdmin):
-    filter_horizontal = ('articles',)
     # show_default_seo_articles
-    list_display = ('pk', 'get_page_url', 'title', 'indexed')
+    list_display = ('pk', 'get_page_url', 'title', 'indexed', 'indexed_date')
     search_fields = ('pk', 'page_url', 'title', 'tags', 'h_one', 'h_two', 'paragraphe',
                      'page_meta_description', 'articles__offer__title',
                      'articles__offer__auth_shop__shop_name')
-    list_filter = ('indexed',)
+    list_filter = ('indexed', 'indexed_date')
     ordering = ('-pk',)
+    filter_horizontal = ('articles',)
     actions = [call_google_index]
 
     @admin.display(description='Page url')

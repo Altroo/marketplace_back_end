@@ -26,6 +26,7 @@ class DefaultSeoPage(Model):
     articles = models.ManyToManyField(IndexedArticles,
                                       verbose_name='Articles',
                                       related_name='default_seo_page_indexed_articles', blank=True)
+    indexed_date = models.DateField(verbose_name="Dernière date d'indexation", blank=True, null=True, default=None)
 
     def __str__(self):
         return '{} - {}'.format(self.title, self.page_url)

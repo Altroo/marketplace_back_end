@@ -35,6 +35,7 @@ class Blog(Model):
     indexed = models.BooleanField(verbose_name='Page publier ?', default=True)
     created_date = models.DateTimeField(verbose_name='Date de création',
                                         editable=False, auto_now_add=True, db_index=True)
+    indexed_date = models.DateField(verbose_name="Dernière date d'indexation", blank=True, null=True, default=None)
 
     # background_image = RichTextUploadingField(verbose_name='Background image', config_name='background_uploader',
     #                                               blank=True, null=True, default=None)
