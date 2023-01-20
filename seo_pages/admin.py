@@ -40,13 +40,9 @@ def get_or_create_credentials():
 
 def insert_event(request_id, response, exception):
     if exception is not None:
-        return {
-            'exception': exception,
-        }
+        messages.error(request_id, exception)
     else:
-        return {
-            'response': response,
-        }
+        messages.info(request_id, response)
 
 
 @admin.action(description='Indéxé les pages selectionnez.')
@@ -65,11 +61,7 @@ def call_google_index(modeladmin, request, queryset: Union[QuerySet, DefaultSeoP
                 body={"url": url, "type": api_type}
             )
         )
-    result = batch.execute()
-    if result['exception']:
-        messages.error(request, result)
-    else:
-        messages.info(request, result)
+    batch.execute()
 
 
 class DefaultSeoPagesAdmin(ModelAdmin):
