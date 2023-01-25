@@ -6,6 +6,7 @@ from chat.models import MessageModel, Status, ArchivedConversations
 from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
                                         CreateOnlyDefault, CurrentUserDefault)
+from shop.base.utils import Base64ImageField
 
 
 # from chat.v2_0_0.tasks import NotifyMessageReceivedTaskV2
@@ -14,6 +15,10 @@ from rest_framework.serializers import (ModelSerializer,
 # Messages list of a target
 class BaseMessageModelSerializer(ModelSerializer):
     initiator = SerializerMethodField()
+    attachment = Base64ImageField(
+        max_length=None, use_url=True,
+    )
+
     attachment_link = SerializerMethodField()
     attachment_thumbnail_link = SerializerMethodField()
 
@@ -31,7 +36,11 @@ class BaseMessageModelSerializer(ModelSerializer):
 
     @staticmethod
     def get_initiator(instance):
-        return instance.user.email
+        try:
+            shop = AuthShop.objects.get(user=instance.user.pk).shop_name
+        except AuthShop.DoesNotExist:
+            shop = instance.user.first_name + ' ' + instance.user.last_name
+        return shop
 
     @staticmethod
     async def notify_message_received_async(instance):
@@ -233,20 +242,32 @@ class BaseChatUserModelSerializer(ModelSerializer):
             if result_msg_user.created > result_msg_recipient.created:
                 if result_msg_user.attachment.name:
                     return 'Photo'
-                return result_msg_user.body
+                if len(str(result_msg_user.body)) < 30:
+                    return result_msg_user.body
+                else:
+                    return result_msg_user.body[0:30] + '...'
             else:
                 if result_msg_recipient.attachment.name:
                     return 'Photo'
-                return result_msg_recipient.body
+                if len(str(result_msg_recipient.body)) < 30:
+                    return result_msg_recipient.body
+                else:
+                    return result_msg_recipient.body[0:30] + '...'
         else:
             if result_msg_user:
                 if result_msg_user.attachment.name:
                     return 'Photo'
-                return result_msg_user.body
+                if len(str(result_msg_user.body)) < 30:
+                    return result_msg_user.body
+                else:
+                    return result_msg_user.body[0:30] + '...'
             if result_msg_recipient:
                 if result_msg_recipient.attachment.name:
                     return 'Photo'
-                return result_msg_recipient.body
+                if len(str(result_msg_recipient.body)) < 30:
+                    return result_msg_recipient.body
+                else:
+                    return result_msg_recipient.body[0:30] + '...'
 
     @staticmethod
     def get_online(instance):

@@ -30,7 +30,7 @@ class BaseBlogPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = ['pk', 'page_url', 'background_image', 'background_image_alt',
-                  'title', 'tags', 'header', 'content',
+                  'title', 'tags', 'h_one', 'content',
                   'page_meta_description', 'created_date']
 
 

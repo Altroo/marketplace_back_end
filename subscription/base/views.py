@@ -398,8 +398,13 @@ class RequestedSignInsView(APIView):
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         phone = request.data.get('phone')
+        email = request.data.get('email')
         instagram_page = request.data.get('instagram_page')
         horaire = request.data.get('horaire')
+        now_date = datetime.now().isoformat().split('T')[0].split('-')
+        year = now_date[0][2:]
+        month = now_date[1]
+        day = now_date[2]
         serializer = BasePOSTRequestedSignInsSerializer(data={
             'first_name': first_name,
             'last_name': last_name,
@@ -416,7 +421,7 @@ class RequestedSignInsView(APIView):
             else:
                 str_horaire = '17-18'
             data = [
-                [first_name, last_name, phone, instagram_page, str_horaire],
+                [f"{day}/{month}/{year}", f"{first_name} {last_name}", email, phone, instagram_page, str_horaire],
             ]
             append_google_sheet_row.apply_async((data,), )
             return Response(status=status.HTTP_204_NO_CONTENT)
