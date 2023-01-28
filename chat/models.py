@@ -18,7 +18,6 @@ def chat_img_directory_path(instance, filename):
     return path.join('chat/', str(uuid4()) + file_extension)
 
 
-# TODO change to just Message
 class MessageModel(Model):
     user = ForeignKey(CustomUser, on_delete=SET_NULL, verbose_name='Sender', related_name='sent_messages',
                       db_index=True, null=True)

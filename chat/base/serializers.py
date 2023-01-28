@@ -1,26 +1,22 @@
+from typing import Union
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from account.models import CustomUser
+from django.db.models import QuerySet
 from shop.models import AuthShop
 from chat.models import MessageModel, Status, ArchivedConversations
-from rest_framework.serializers import (ModelSerializer,
-                                        SerializerMethodField,
-                                        CreateOnlyDefault, CurrentUserDefault)
+from rest_framework import serializers
 from shop.base.utils import Base64ImageField
 
 
-# from chat.v2_0_0.tasks import NotifyMessageReceivedTaskV2
-
-
 # Messages list of a target
-class BaseMessageModelSerializer(ModelSerializer):
-    initiator = SerializerMethodField()
+class BaseMessageModelSerializer(serializers.ModelSerializer):
+    initiator = serializers.SerializerMethodField()
     attachment = Base64ImageField(
-        max_length=None, use_url=True,
+        max_length=None, use_url=True, required=False
     )
 
-    attachment_link = SerializerMethodField()
-    attachment_thumbnail_link = SerializerMethodField()
+    attachment_link = serializers.SerializerMethodField()
+    attachment_thumbnail_link = serializers.SerializerMethodField()
 
     @staticmethod
     def get_attachment_link(instance):
@@ -161,8 +157,8 @@ class BaseMessageModelSerializer(ModelSerializer):
                   'viewed')
         extra_kwargs = {
             'user': {
-                'default': CreateOnlyDefault(
-                    CurrentUserDefault()
+                'default': serializers.CreateOnlyDefault(
+                    serializers.CurrentUserDefault()
                 ),
             },
             'attachment': {'required': False, 'write_only': True},
@@ -170,165 +166,296 @@ class BaseMessageModelSerializer(ModelSerializer):
         }
 
 
-# Conversations list
-class BaseChatUserModelSerializer(ModelSerializer):
-    pk = SerializerMethodField()
-    body = SerializerMethodField()
-    online = SerializerMethodField()
-    user_pk = SerializerMethodField()
-    user_avatar = SerializerMethodField()
-    user_first_name = SerializerMethodField()
-    user_last_name = SerializerMethodField()
-    viewed = SerializerMethodField()
-    created = SerializerMethodField()
-    shop_pk = SerializerMethodField()
-    shop_name = SerializerMethodField()
-    shop_avatar_thumbnail = SerializerMethodField()
+class BaseConversationsSerializer(serializers.Serializer):
+    pk = serializers.IntegerField()
+    body = serializers.SerializerMethodField()
+    viewed = serializers.SerializerMethodField()
+    created = serializers.DateTimeField()
 
-    @staticmethod
-    def get_user_pk(instance):
-        return instance.pk
+    user_pk = serializers.SerializerMethodField()
+    user_first_name = serializers.SerializerMethodField()
+    user_last_name = serializers.SerializerMethodField()
+    user_avatar = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_user_first_name(instance):
-        user_receiver = CustomUser.objects.get(pk=instance.pk)
-        return user_receiver.first_name
+    online = serializers.SerializerMethodField()
+    shop_pk = serializers.SerializerMethodField()
+    shop_name = serializers.SerializerMethodField()
+    shop_avatar_thumbnail = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_user_last_name(instance):
-        user_receiver = CustomUser.objects.get(pk=instance.pk)
-        return user_receiver.last_name
+    def get_user_pk(self, instance: Union[QuerySet, MessageModel]):
+        user = self.context.get("user")
+        if instance.user == user:
+            return instance.recipient.pk
+        else:
+            return instance.user.pk
 
-    @staticmethod
-    def get_user_avatar(instance):
-        user_receiver = CustomUser.objects.get(pk=instance.pk)
-        return user_receiver.get_absolute_avatar_thumbnail
+    def get_user_first_name(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            return instance.recipient.first_name
+        else:
+            return instance.user.first_name
+
+    def get_user_last_name(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            return instance.recipient.last_name
+        else:
+            return instance.user.last_name
+
+    def get_user_avatar(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            return instance.recipient.get_absolute_avatar_thumbnail
+        else:
+            return instance.user.get_absolute_avatar_thumbnail
+
+    def get_online(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            try:
+                if instance.recipient.status:
+                    return instance.recipient.status.online
+                else:
+                    return False
+            except Status.DoesNotExist:
+                return False
+        else:
+            try:
+                if instance.user.status:
+                    return instance.user.status.online
+                else:
+                    return False
+            except Status.DoesNotExist:
+                return False
+
+    def get_shop_pk(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            try:
+                shop = AuthShop.objects.get(user=instance.recipient.pk).pk
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
+        else:
+            try:
+                shop = AuthShop.objects.get(user=instance.user.pk).pk
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
+
+    def get_shop_name(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            try:
+                shop = AuthShop.objects.get(user=instance.recipient.pk).shop_name
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
+        else:
+            try:
+                shop = AuthShop.objects.get(user=instance.user.pk).shop_name
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
+
+    def get_shop_avatar_thumbnail(self, instance):
+        user = self.context.get("user")
+        if instance.user == user:
+            try:
+                shop = AuthShop.objects.get(user=instance.recipient.pk).get_absolute_avatar_thumbnail
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
+        else:
+            try:
+                shop = AuthShop.objects.get(user=instance.user.pk).get_absolute_avatar_thumbnail
+            except AuthShop.DoesNotExist:
+                shop = None
+            return shop
 
     def get_viewed(self, instance):
-        user = self.context.get('request').user
-        result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
-        result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
-        if result_msg_user and result_msg_recipient:
-            if result_msg_user.created > result_msg_recipient.created:
-                return True
-            else:
-                return result_msg_recipient.viewed
+        user = self.context.get("user")
+        if instance.user == user:
+            return True
         else:
-            if result_msg_user:
-                return True
-            if result_msg_recipient:
-                return result_msg_recipient.viewed
-
-    def get_created(self, instance):
-        user = self.context.get('request').user
-        result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
-        result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
-        if result_msg_user and result_msg_recipient:
-            if result_msg_user.created > result_msg_recipient.created:
-                return result_msg_user.created
-            else:
-                return result_msg_recipient.created
-        else:
-            if result_msg_user:
-                return result_msg_user.created
-            if result_msg_recipient:
-                return result_msg_recipient.created
-
-    def get_body(self, instance):
-        user = self.context.get('request').user
-        result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
-        result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
-        if result_msg_user and result_msg_recipient:
-            if result_msg_user.created > result_msg_recipient.created:
-                if result_msg_user.attachment.name:
-                    return 'Photo'
-                if len(str(result_msg_user.body)) < 30:
-                    return result_msg_user.body
-                else:
-                    return result_msg_user.body[0:30] + '...'
-            else:
-                if result_msg_recipient.attachment.name:
-                    return 'Photo'
-                if len(str(result_msg_recipient.body)) < 30:
-                    return result_msg_recipient.body
-                else:
-                    return result_msg_recipient.body[0:30] + '...'
-        else:
-            if result_msg_user:
-                if result_msg_user.attachment.name:
-                    return 'Photo'
-                if len(str(result_msg_user.body)) < 30:
-                    return result_msg_user.body
-                else:
-                    return result_msg_user.body[0:30] + '...'
-            if result_msg_recipient:
-                if result_msg_recipient.attachment.name:
-                    return 'Photo'
-                if len(str(result_msg_recipient.body)) < 30:
-                    return result_msg_recipient.body
-                else:
-                    return result_msg_recipient.body[0:30] + '...'
+            return instance.viewed
 
     @staticmethod
-    def get_online(instance):
-        try:
-            if instance.status:
-                return instance.status.online
-            else:
-                return False
-        except Status.DoesNotExist:
-            return False
-
-    @staticmethod
-    def get_shop_pk(instance):
-        try:
-            shop = AuthShop.objects.get(user=instance.pk).pk
-        except AuthShop.DoesNotExist:
-            shop = None
-        return shop
-
-    @staticmethod
-    def get_shop_name(instance):
-        try:
-            shop = AuthShop.objects.get(user=instance.pk).shop_name
-        except AuthShop.DoesNotExist:
-            shop = None
-        return shop
-
-    @staticmethod
-    def get_shop_avatar_thumbnail(instance):
-        try:
-            shop = AuthShop.objects.get(user=instance.pk).get_absolute_avatar_thumbnail
-        except AuthShop.DoesNotExist:
-            shop = None
-        return shop
-
-    def get_pk(self, instance):
-        user = self.context.get('request').user
-        result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('created').last()
-        result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('created').last()
-        if result_msg_user and result_msg_recipient:
-            if result_msg_user.created > result_msg_recipient.created:
-                return result_msg_user.pk
-            else:
-                return result_msg_recipient.pk
+    def get_body(instance):
+        if instance.attachment.name:
+            return 'Photo'
+        if len(str(instance.body)) < 30:
+            return instance.body
         else:
-            if result_msg_user:
-                return result_msg_user.pk
-            if result_msg_recipient:
-                return result_msg_recipient.pk
+            return instance.body[0:30] + '...'
 
-    class Meta:
-        model = CustomUser
-        fields = ['pk', 'user_pk', 'user_avatar', 'user_first_name', 'user_last_name',
-                  'body', 'viewed', 'created', 'online',
-                  'shop_pk', 'shop_name', 'shop_avatar_thumbnail']
-        extra_kwargs = {
-            'pk': {'read_only': True}
-        }
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
 
 
-class BaseArchiveConversationSerializer(ModelSerializer):
+# # Conversations list
+# class BaseChatUserModelSerializer(serializers.ModelSerializer):
+#     pk = serializers.SerializerMethodField()
+#     body = serializers.SerializerMethodField()
+#     online = serializers.SerializerMethodField()
+#     user_pk = serializers.SerializerMethodField()
+#     user_avatar = serializers.SerializerMethodField()
+#     user_first_name = serializers.SerializerMethodField()
+#     user_last_name = serializers.SerializerMethodField()
+#     viewed = serializers.SerializerMethodField()
+#     created = serializers.SerializerMethodField()
+#     shop_pk = serializers.SerializerMethodField()
+#     shop_name = serializers.SerializerMethodField()
+#     shop_avatar_thumbnail = serializers.SerializerMethodField()
+#
+#     @staticmethod
+#     def get_user_pk(instance):
+#         return instance.pk
+#
+#     @staticmethod
+#     def get_user_first_name(instance):
+#         user_receiver = CustomUser.objects.get(pk=instance.pk)
+#         return user_receiver.first_name
+#
+#     @staticmethod
+#     def get_user_last_name(instance):
+#         user_receiver = CustomUser.objects.get(pk=instance.pk)
+#         return user_receiver.last_name
+#
+#     @staticmethod
+#     def get_user_avatar(instance):
+#         user_receiver = CustomUser.objects.get(pk=instance.pk)
+#         return user_receiver.get_absolute_avatar_thumbnail
+#
+#     def get_viewed(self, instance):
+#         user = self.context.get('request').user
+#         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('-created').first()
+#         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('-created').first()
+#         if result_msg_user and result_msg_recipient:
+#             if result_msg_user.created > result_msg_recipient.created:
+#                 return True
+#             else:
+#                 return result_msg_recipient.viewed
+#         else:
+#             if result_msg_user:
+#                 return True
+#             if result_msg_recipient:
+#                 return result_msg_recipient.viewed
+#
+#     def get_created(self, instance):
+#         user = self.context.get('request').user
+#         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('-created').first()
+#         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('-created').first()
+#         if result_msg_user and result_msg_recipient:
+#             if result_msg_user.created > result_msg_recipient.created:
+#                 return result_msg_user.created
+#             else:
+#                 return result_msg_recipient.created
+#         else:
+#             if result_msg_user:
+#                 return result_msg_user.created
+#             if result_msg_recipient:
+#                 return result_msg_recipient.created
+#
+#     def get_body(self, instance):
+#         user = self.context.get('request').user
+#         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('-created').first()
+#         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('-created').first()
+#         if result_msg_user and result_msg_recipient:
+#             if result_msg_user.created > result_msg_recipient.created:
+#                 if result_msg_user.attachment.name:
+#                     return 'Photo'
+#                 if len(str(result_msg_user.body)) < 30:
+#                     return result_msg_user.body
+#                 else:
+#                     return result_msg_user.body[0:30] + '...'
+#             else:
+#                 if result_msg_recipient.attachment.name:
+#                     return 'Photo'
+#                 if len(str(result_msg_recipient.body)) < 30:
+#                     return result_msg_recipient.body
+#                 else:
+#                     return result_msg_recipient.body[0:30] + '...'
+#         else:
+#             if result_msg_user:
+#                 if result_msg_user.attachment.name:
+#                     return 'Photo'
+#                 if len(str(result_msg_user.body)) < 30:
+#                     return result_msg_user.body
+#                 else:
+#                     return result_msg_user.body[0:30] + '...'
+#             if result_msg_recipient:
+#                 if result_msg_recipient.attachment.name:
+#                     return 'Photo'
+#                 if len(str(result_msg_recipient.body)) < 30:
+#                     return result_msg_recipient.body
+#                 else:
+#                     return result_msg_recipient.body[0:30] + '...'
+#
+#     @staticmethod
+#     def get_online(instance):
+#         try:
+#             if instance.status:
+#                 return instance.status.online
+#             else:
+#                 return False
+#         except Status.DoesNotExist:
+#             return False
+#
+#     @staticmethod
+#     def get_shop_pk(instance):
+#         try:
+#             shop = AuthShop.objects.get(user=instance.pk).pk
+#         except AuthShop.DoesNotExist:
+#             shop = None
+#         return shop
+#
+#     @staticmethod
+#     def get_shop_name(instance):
+#         try:
+#             shop = AuthShop.objects.get(user=instance.pk).shop_name
+#         except AuthShop.DoesNotExist:
+#             shop = None
+#         return shop
+#
+#     @staticmethod
+#     def get_shop_avatar_thumbnail(instance):
+#         try:
+#             shop = AuthShop.objects.get(user=instance.pk).get_absolute_avatar_thumbnail
+#         except AuthShop.DoesNotExist:
+#             shop = None
+#         return shop
+#
+#     def get_pk(self, instance):
+#         user = self.context.get('request').user
+#         result_msg_user = MessageModel.objects.filter(user=user, recipient=instance).order_by('-created').first()
+#         result_msg_recipient = MessageModel.objects.filter(user=instance, recipient=user).order_by('-created').first()
+#         if result_msg_user and result_msg_recipient:
+#             if result_msg_user.created > result_msg_recipient.created:
+#                 return result_msg_user.pk
+#             else:
+#                 return result_msg_recipient.pk
+#         else:
+#             if result_msg_user:
+#                 return result_msg_user.pk
+#             if result_msg_recipient:
+#                 return result_msg_recipient.pk
+#
+#     class Meta:
+#         model = CustomUser
+#         fields = ['pk', 'user_pk', 'user_avatar', 'user_first_name', 'user_last_name',
+#                   'body', 'viewed', 'created', 'online',
+#                   'shop_pk', 'shop_name', 'shop_avatar_thumbnail']
+#         extra_kwargs = {
+#             'pk': {'read_only': True}
+#         }
+
+
+class BaseArchiveConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ArchivedConversations
         fields = ['user', 'recipient']

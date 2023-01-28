@@ -420,6 +420,8 @@ class RequestedSignInsView(APIView):
                 str_horaire = '13-16'
             else:
                 str_horaire = '17-18'
+            # format date : 11/06/2020 10:39:09
+            # insta page = link
             data = [
                 [f"{day}/{month}/{year}", f"{first_name} {last_name}", email, phone, instagram_page, str_horaire],
             ]

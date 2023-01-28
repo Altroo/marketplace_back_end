@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from account.models import CustomUser
 from shop.models import AuthShop
 from chat.models import Status
+from collections import OrderedDict
+from rest_framework.exceptions import NotFound
+from django.core.paginator import InvalidPage
 
 
 class BaseMessagePagination(PageNumberPagination):
@@ -70,3 +73,11 @@ class BaseMessagePagination(PageNumberPagination):
 
 class BaseConversationPagination(PageNumberPagination):
     page_size = CONVERSATIONS_TO_LOAD
+    #
+    # def get_paginated_response(self, data):
+    #     return Response(OrderedDict([
+    #         ('count', self.page.paginator.count),
+    #         ('next', self.get_next_link()),
+    #         ('previous', self.get_previous_link()),
+    #         ('results', sorted(data, key=lambda k: (k['created']), reverse=True))
+    #     ]))
