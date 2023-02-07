@@ -263,7 +263,7 @@ class SubscriptionView(APIView):
 
 # Create your views here.
 class AvailableSubscriptionView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     @staticmethod
     def get(request, *args, **kwargs):
