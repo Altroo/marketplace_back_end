@@ -54,7 +54,7 @@ class GoogleUtils:
             # }
             self.responses.append(response)
 
-    def insert_sheet(self, data):
+    def insert_sheet(self, data, ligne_number: int):
         scopes = [
             'https://www.googleapis.com/auth/drive',
             'https://www.googleapis.com/auth/drive.file',
@@ -64,7 +64,7 @@ class GoogleUtils:
         service = build('sheets', 'v4', credentials=credentials)
         service.spreadsheets().values().append(
             spreadsheetId=GOOGLE_SPREADSHEET_ID,
-            range="Sheet1!A:Z",
+            range=f"Suivis Leads [Date campagne]!B{ligne_number}:H{ligne_number}",
             body={
                 "majorDimension": "ROWS",
                 "values": data

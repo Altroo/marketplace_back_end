@@ -8,7 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from subscription.models import AvailableSubscription, \
-    PromoCodes, SubscribedUsers, IndexedArticles
+    PromoCodes, SubscribedUsers, IndexedArticles, RequestedSignIns
 from subscription.base.serializers import BaseGETAvailableSubscriptionsSerializer, \
     BasePOSTRequestSubscriptionSerializer, BasePOSTSubscribedUsersSerializer, \
     BaseGETCurrentUserSubscription, \
@@ -67,9 +67,9 @@ class SubscriptionView(APIView):
                 promo_code_obj = PromoCodes.objects.get(promo_code=promo_code)
             except PromoCodes.DoesNotExist:
                 pass
-                # errors = {"error": ["Promo code non valid."]}
-                # raise ValidationError(errors)
-                # promo_code_obj = None
+            # errors = {"error": ["Promo code non valid."]}
+            # raise ValidationError(errors)
+            # promo_code_obj = None
             try:
                 nbr_articles_obj = AvailableSubscription.objects.get(nbr_article=nbr_article)
             except AvailableSubscription.DoesNotExist:
@@ -153,7 +153,7 @@ class SubscriptionView(APIView):
                             'reference_number': reference_number,
                             'total_paid': total_paid,
                         }
-                        base_inform_new_shop_subscription.apply_async((auth_shop.pk, available_slots, ), )
+                        base_inform_new_shop_subscription.apply_async((auth_shop.pk, available_slots,), )
                         return Response(data=output_data, status=status.HTTP_200_OK)
                     # requested_subscription.delete()
                     raise ValidationError(subscribe_user_serializer.errors)
@@ -193,9 +193,9 @@ class SubscriptionView(APIView):
                 promo_code_obj = PromoCodes.objects.get(promo_code=promo_code)
             except PromoCodes.DoesNotExist:
                 pass
-                # errors = {"error": ["Promo code non valid."]}
-                # raise ValidationError(errors)
-                # promo_code_obj = None
+            # errors = {"error": ["Promo code non valid."]}
+            # raise ValidationError(errors)
+            # promo_code_obj = None
             try:
                 nbr_articles_obj = AvailableSubscription.objects.get(nbr_article=nbr_article)
             except AvailableSubscription.DoesNotExist:
@@ -395,36 +395,36 @@ class RequestedSignInsView(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
+        all_objects = RequestedSignIns.objects.all().count()
+        name = request.data.get('name')
         phone = request.data.get('phone')
         email = request.data.get('email')
         instagram_page = request.data.get('instagram_page')
-        horaire = request.data.get('horaire')
-        now_date = datetime.now().isoformat().split('T')[0].split('-')
-        year = now_date[0][2:]
-        month = now_date[1]
-        day = now_date[2]
+        creneau = request.data.get('creneau')
+        secteur = request.data.get('secteur')
+        now_date = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        if creneau == '9h-12h':
+            creneau_str = 'M'
+        elif creneau == '13h-16h':
+            creneau_str = 'A'
+        else:
+            creneau_str = 'S'
         serializer = BasePOSTRequestedSignInsSerializer(data={
-            'first_name': first_name,
-            'last_name': last_name,
+            'name': name,
             'phone': phone,
             'instagram_page': instagram_page,
-            'horaire': horaire,
+            'email': email,
+            'secteur': secteur,
+            'creneau': creneau_str,
         })
         if serializer.is_valid():
             serializer.save()
-            if horaire == 'M':
-                str_horaire = '9-12'
-            elif horaire == 'A':
-                str_horaire = '13-16'
-            else:
-                str_horaire = '17-18'
             # format date : 11/06/2020 10:39:09
             # insta page = link
             data = [
-                [f"{day}/{month}/{year}", f"{first_name} {last_name}", email, phone, instagram_page, str_horaire],
+                [f"{now_date}", f"{name}", email, phone, instagram_page, creneau, secteur],
             ]
-            append_google_sheet_row.apply_async((data,), )
+            ligne_number = all_objects + 18
+            append_google_sheet_row.apply_async((data, ligne_number), )
             return Response(status=status.HTTP_204_NO_CONTENT)
         raise ValidationError(serializer.errors)

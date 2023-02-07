@@ -344,20 +344,21 @@ def check_if_article_updated(sender, instance: Union[QuerySet, IndexedArticles],
 
 
 class RequestedSignIns(Model):
-    first_name = models.CharField(verbose_name='Nom', max_length=30, blank=False, null=False)
-    last_name = models.CharField(verbose_name='Prénom', max_length=30, blank=False, null=False)
-    phone = models.CharField(verbose_name='Téléphone', max_length=15, blank=False, null=False)
+    name = models.CharField(verbose_name='Nom & prénom', max_length=255, blank=True, null=True, default=None)
+    phone = models.CharField(verbose_name='Téléphone', max_length=15, blank=True, null=True, default=None)
     instagram_page = models.CharField(verbose_name='Lien de la page (instagram)',
-                                      max_length=255, blank=True, null=True,
-                                      default=None)
-    horaire = models.CharField(verbose_name="Horaire", max_length=1,
+                                      max_length=255, blank=True, null=True, default=None)
+    email = models.CharField(verbose_name='Email', max_length=255, blank=True, null=True, default=None)
+    secteur = models.CharField(verbose_name="Secteur d'activité", max_length=255, blank=True,
+                               null=True, default=None)
+    creneau = models.CharField(verbose_name="Créneau", max_length=1,
                                choices=SubscriptionChoices.TRANCHE_HORAIRE,
                                default='M')
     created_date = models.DateTimeField(verbose_name='Date de création',
                                         editable=False, auto_now_add=True, db_index=True)
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.first_name, self.last_name, self.instagram_page)
+        return '{} - {} - {}'.format(self.name, self.email, self.instagram_page)
 
     class Meta:
         verbose_name = 'Requested SignIn'

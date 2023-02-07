@@ -7,8 +7,7 @@ from django.utils import timezone
 class BasePOSTRequestedSignInsSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestedSignIns
-        fields = ['first_name', 'last_name', 'phone',
-                  'instagram_page', 'horaire']
+        fields = ['name', 'phone', 'instagram_page', 'email', 'secteur', 'creneau']
 
 
 class BaseGETAvailableSubscriptionsSerializer(serializers.ModelSerializer):

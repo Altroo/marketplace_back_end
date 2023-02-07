@@ -21,6 +21,16 @@ class CustomAvailableSubscriptionAdmin(ModelAdmin):
     ordering = ('nbr_article',)
 
 
+class CustomRequestedSignInsAdmin(ModelAdmin):
+    list_display = ('pk', 'name', 'phone', 'instagram_page', 'email',
+                    'secteur', 'creneau', 'created_date')
+    search_fields = ('pk', 'name', 'phone', 'instagram_page', 'email',
+                     'secteur', 'creneau')
+    list_filter = ('creneau', 'created_date',)
+    ordering = ('-pk',)
+    date_hierarchy = 'created_date'
+
+
 class CustomRequestedSubscriptionAdmin(ModelAdmin):
     list_display = ('pk', 'auth_shop', 'subscription',
                     'first_name',
@@ -142,18 +152,9 @@ class CustomIndexedArticlesAdmin(ModelAdmin):
         return super(CustomIndexedArticlesAdmin, self).changelist_view(request, extra_context=extra_context)
 
 
-class CustomRequestedSignInsAdmin(ModelAdmin):
-    list_display = ('pk', 'first_name', 'last_name',
-                    'phone', 'instagram_page', 'horaire', 'created_date')
-    search_fields = ('pk', 'first_name', 'last_name',
-                     'phone', 'instagram_page', 'horaire')
-    list_filter = ('horaire', 'created_date',)
-    date_hierarchy = 'created_date'
-    ordering = ('-pk',)
-
-
 admin.site.register(AvailableSubscription, CustomAvailableSubscriptionAdmin)
 admin.site.register(RequestedSubscriptions, CustomRequestedSubscriptionAdmin)
 admin.site.register(PromoCodes, CustomPromoCodesAdmin)
 admin.site.register(SubscribedUsers, CustomSubscribedUsersAdmin)
 admin.site.register(IndexedArticles, CustomIndexedArticlesAdmin)
+admin.site.register(RequestedSignIns, CustomRequestedSignInsAdmin)

@@ -14,7 +14,7 @@ SCOPES = ['https://www.googleapis.com/auth/drive',
           'https://www.googleapis.com/auth/spreadsheets']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1e1gA_7D23B_3Jje15kJHkxxPwLK9v7lztSL8ZZ98O8o'
+SAMPLE_SPREADSHEET_ID = '1xACIYf_T2b1dgiCUWnndQcBx99ADx6wrOhWmoqd8NVk'
 
 
 def get_or_create_credentials(scopes):
@@ -37,7 +37,7 @@ def get_or_create_credentials(scopes):
 
 def main():
     rows = [
-        ["Yooy", "Altroo", "063322112", "ma-insta", "9-12"],
+        ["07/02/2023 15:03:15", "Youness El Alami 2", "y.elalami@qaryb.com", "+212634868898", "https://ma-page", "9h-12h", "mon secteur"],
     ]
 
     # -----------
@@ -46,7 +46,7 @@ def main():
     service = build('sheets', 'v4', credentials=credentials)
     service.spreadsheets().values().append(
         spreadsheetId=SAMPLE_SPREADSHEET_ID,
-        range="Sheet1!A:Z",
+        range="Suivis Leads [Date campagne]!B:H",
         body={
             "majorDimension": "ROWS",
             "values": rows

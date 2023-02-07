@@ -70,6 +70,7 @@ class BaseMessageModelViewSet(ModelViewSet):
         #         return MessageModel.objects.filter(Q(recipient=self.request.user) |
         #                                            Q(user=self.request.user)).exclude(body='K8Fe6DoFgl9Xt0')
 
+
 # Conversations list
 class BaseChatConversationView(APIView, PageNumberPagination):
     permission_classes = (permissions.IsAuthenticated,)
