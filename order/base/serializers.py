@@ -124,7 +124,10 @@ class BaseOrdersListSerializer(serializers.Serializer):
     def get_link(self, instance):
         order_for = self.context.get("order_for")
         if order_for == 'S':
-            return instance.buyer.pk
+            if instance.buyer:
+                return instance.buyer.pk
+            else:
+                return None
         else:
             return instance.seller.qaryb_link
 
