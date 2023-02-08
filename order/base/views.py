@@ -138,9 +138,10 @@ class AcceptOrdersView(APIView):
             if order.order_status == 'IP':
                 order.order_status = 'CM'
                 order.save(update_fields=['order_status'])
-                Notifications.objects.create(user=order.buyer,
-                                             body="Votre commande à été accepté par le vendeur.",
-                                             type='OA')
+                if order.buyer:
+                    Notifications.objects.create(user=order.buyer,
+                                                 body="Votre commande à été accepté par le vendeur.",
+                                                 type='OA')
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             errors = {"error": ["Order doesn't exist!"]}
