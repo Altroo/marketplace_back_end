@@ -150,7 +150,10 @@ class BaseOrdersListSerializer(serializers.Serializer):
         if order_for == 'S':
             return instance.get_absolute_buyer_thumbnail
         else:
-            return instance.seller.get_absolute_avatar_thumbnail
+            if instance.seller.get_absolute_avatar_thumbnail:
+                return instance.seller.get_absolute_avatar_thumbnail
+            else:
+                return instance.seller.get_absolute_avatar_img
 
     def get_order_for(self, instance):
         return self.context.get("order_for")
