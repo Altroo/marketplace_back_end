@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='requestedsignins',
             name='unique_number',
-            field=models.CharField(default=uuid.UUID('8cbaaf15-ca2f-4dca-be3f-a9d9edd77b3f'), max_length=255, unique=True, verbose_name='Unique number'),
+            field=models.CharField(default=uuid.UUID('8cbaaf15-ca2f-4dca-be3f-a9d9edd77b3f'), max_length=255, verbose_name='Unique number'),
         ),
     ]
