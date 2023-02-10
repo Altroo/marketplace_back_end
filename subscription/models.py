@@ -343,6 +343,10 @@ def check_if_article_updated(sender, instance: Union[QuerySet, IndexedArticles],
         article.save(update_fields=['status'])
 
 
+def get_unique_number():
+    return str(uuid4())
+
+
 class RequestedSignIns(Model):
     name = models.CharField(verbose_name='Nom & prénom', max_length=255, blank=True, null=True, default=None)
     phone = models.CharField(verbose_name='Téléphone', max_length=15, blank=True, null=True, default=None)
@@ -354,7 +358,8 @@ class RequestedSignIns(Model):
     creneau = models.CharField(verbose_name="Créneau", max_length=1,
                                choices=SubscriptionChoices.TRANCHE_HORAIRE,
                                default='M')
-    unique_number = models.CharField(verbose_name="Unique number", max_length=255, unique=True, default=uuid4())
+    unique_number = models.CharField(verbose_name="Unique number", max_length=255, unique=True,
+                                     default=get_unique_number())
     line_number = models.IntegerField(verbose_name='Line number', blank=True, null=True)
     created_date = models.DateTimeField(verbose_name='Date de création',
                                         editable=False, auto_now_add=True, db_index=True)
