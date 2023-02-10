@@ -23,9 +23,9 @@ class CustomAvailableSubscriptionAdmin(ModelAdmin):
 
 class CustomRequestedSignInsAdmin(ModelAdmin):
     list_display = ('pk', 'name', 'phone', 'instagram_page', 'email',
-                    'secteur', 'creneau', 'created_date')
+                    'secteur', 'creneau', 'unique_number', 'line_number', 'created_date')
     search_fields = ('pk', 'name', 'phone', 'instagram_page', 'email',
-                     'secteur', 'creneau')
+                     'secteur', 'creneau', 'unique_number', 'line_number')
     list_filter = ('creneau', 'created_date',)
     ordering = ('-pk',)
     date_hierarchy = 'created_date'

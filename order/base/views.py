@@ -1,5 +1,6 @@
 from typing import Union
 from django.db.models import QuerySet
+from django.template.loader import render_to_string
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -11,6 +12,7 @@ from order.base.serializers import BaseOrdersListSerializer, \
     BaseChiffreAffaireListSerializer
 from order.base.filters import OrderStatusFilterSet
 from notifications.models import Notifications
+from order.base.tasks import base_send_order_email
 
 
 class ShopSellingOrdersView(ListAPIView, PageNumberPagination):
@@ -96,16 +98,31 @@ class CancelAllView(APIView):
         sell_order = Order.objects.filter(seller__user=user, pk=order_pk)
         buy_order = Order.objects.filter(buyer=user, pk=order_pk)
         if sell_order:
+            # Commande annulée par le vendeur.
             sell_order[0].order_status = 'CA'
             sell_order[0].save(update_fields=['order_status'])
-            Notifications.objects.create(user=sell_order[0].buyer,
-                                         body="Commande annulée par le vendeur.", type='CS')
+            Notifications.objects.create(user=sell_order[0].buyer, type='CS')
             return Response(status=status.HTTP_204_NO_CONTENT)
+        #         if sell_order:
+        #             # Commande annulée par le vendeur.
+        #             sell_order[0].order_status = 'CA'
+        #             sell_order[0].save(update_fields=['order_status'])
+        #             if sell_order[0].buyer:
+        #                 Notifications.objects.create(user=sell_order[0].buyer, type='CA')
+        #                 mail_subject = 'Votre commande est annulée'
+        #                 mail_template = 'commande_annulee_vendeur.html'
+        #                 message = render_to_string(mail_template, {
+        #                     'first_name': user.first_name,
+        #                     'email': user.first_name,
+        #                 })
+        #                 # email_, mail_subject, message, type_
+        #                 base_send_order_email.apply_async((sell_order[0].buyer.email, mail_subject, message, ''), )
+        #             return Response(status=status.HTTP_204_NO_CONTENT)
         if buy_order:
+            # Commande annulée par l'acheteur.
             buy_order[0].order_status = 'CA'
             buy_order[0].save(update_fields=['order_status'])
-            Notifications.objects.create(user=buy_order[0].seller.user,
-                                         body="Commande annulée par l'acheteur.", type='CB')
+            Notifications.objects.create(user=buy_order[0].seller.user, type='CA')
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -139,9 +156,8 @@ class AcceptOrdersView(APIView):
                 order.order_status = 'CM'
                 order.save(update_fields=['order_status'])
                 if order.buyer:
-                    Notifications.objects.create(user=order.buyer,
-                                                 body="Votre commande à été accepté par le vendeur.",
-                                                 type='OA')
+                    # Votre commande à été accepté par le vendeur.
+                    Notifications.objects.create(user=order.buyer, type='OA')
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             errors = {"error": ["Order doesn't exist!"]}

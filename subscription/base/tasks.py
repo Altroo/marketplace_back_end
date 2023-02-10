@@ -83,6 +83,6 @@ def base_inform_new_shop_subscription(self, shop_pk: int, available_slots: int):
 
 
 @app.task(bind=True, serializer='pickle')
-def append_google_sheet_row(self, data, ligne_number):
+def append_google_sheet_row(self, data, ligne_number, type_):
     google = GoogleUtils()
-    google.insert_sheet(data, ligne_number)
+    google.insert_sheet(data, ligne_number, type_)

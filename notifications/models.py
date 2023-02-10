@@ -11,8 +11,7 @@ NOTIFICATION_CHOICES = (
     ('SA', 'Subscription activated'),
     ('OR', 'Order received'),
     ('OA', 'Order accepted'),
-    ('CS', 'Order cancelled by the seller'),
-    ('CB', 'Order cancelled by the buyer'),
+    ('CA', 'Order cancelled'),
 )
 
 

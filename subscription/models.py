@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from notifications.models import Notifications
 from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription
-
+from uuid import uuid4
 
 def get_facture_path():
     return path.join('media/files/')
@@ -48,9 +48,9 @@ class SubscriptionChoices:
     )
 
     TRANCHE_HORAIRE = (
-        ('M', '9-12'),
-        ('A', '13-16'),
-        ('S', '17-18'),
+        ('M', '9h-12h'),
+        ('A', '13h-16h'),
+        ('S', '17h-18h'),
     )
 
 
@@ -354,6 +354,8 @@ class RequestedSignIns(Model):
     creneau = models.CharField(verbose_name="Créneau", max_length=1,
                                choices=SubscriptionChoices.TRANCHE_HORAIRE,
                                default='M')
+    unique_number = models.CharField(verbose_name="Unique number", max_length=255, unique=True, default=uuid4())
+    line_number = models.IntegerField(verbose_name='Line number', blank=True, null=True)
     created_date = models.DateTimeField(verbose_name='Date de création',
                                         editable=False, auto_now_add=True, db_index=True)
 

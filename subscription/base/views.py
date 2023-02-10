@@ -7,6 +7,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from Qaryb_API.google_api.google_utils import GoogleUtils
 from subscription.models import AvailableSubscription, \
     PromoCodes, SubscribedUsers, IndexedArticles, RequestedSignIns
 from subscription.base.serializers import BaseGETAvailableSubscriptionsSerializer, \
@@ -20,6 +22,7 @@ from offers.models import Offers
 from notifications.models import Notifications
 from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription, \
     append_google_sheet_row
+from uuid import uuid4
 
 
 class SubscriptionView(APIView):
@@ -396,35 +399,57 @@ class RequestedSignInsView(APIView):
     @staticmethod
     def post(request, *args, **kwargs):
         all_objects = RequestedSignIns.objects.all().count()
-        name = request.data.get('name')
-        phone = request.data.get('phone')
-        email = request.data.get('email')
-        instagram_page = request.data.get('instagram_page')
-        creneau = request.data.get('creneau')
-        secteur = request.data.get('secteur')
-        now_date = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        if creneau == '9h-12h':
-            creneau_str = 'M'
-        elif creneau == '13h-16h':
-            creneau_str = 'A'
+        unique_number = request.data.get('unique_number')
+        if unique_number:
+            email = request.data.get('email')
+            secteur = request.data.get('secteur')
+            try:
+                requested_signin = RequestedSignIns.objects.get(unique_number=unique_number)
+                requested_signin.email = email
+                requested_signin.secteur = secteur
+                requested_signin.save()
+                now_date = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+                data = [
+                    [now_date, requested_signin.name,
+                     requested_signin.email, requested_signin.phone,
+                     requested_signin.instagram_page,
+                     requested_signin.get_creneau_display(),
+                     requested_signin.secteur],
+                ]
+                ligne_number = requested_signin.line_number
+                append_google_sheet_row.apply_async((data, ligne_number, 'update'), )
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except RequestedSignIns.DoesNotExist:
+                return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            creneau_str = 'S'
-        serializer = BasePOSTRequestedSignInsSerializer(data={
-            'name': name,
-            'phone': phone,
-            'instagram_page': instagram_page,
-            'email': email,
-            'secteur': secteur,
-            'creneau': creneau_str,
-        })
-        if serializer.is_valid():
-            serializer.save()
-            # format date : 11/06/2020 10:39:09
-            # insta page = link
-            data = [
-                [f"{now_date}", f"{name}", email, phone, instagram_page, creneau, secteur],
-            ]
-            ligne_number = all_objects + 18
-            append_google_sheet_row.apply_async((data, ligne_number), )
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        raise ValidationError(serializer.errors)
+            name = request.data.get('name')
+            phone = request.data.get('phone')
+            instagram_page = request.data.get('instagram_page')
+            creneau = request.data.get('creneau')
+            generated_unique_number = str(uuid4())
+            now_date = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+            if creneau == '9h-12h':
+                creneau_str = 'M'
+            elif creneau == '13h-16h':
+                creneau_str = 'A'
+            else:
+                creneau_str = 'S'
+            line_number = all_objects + 18
+            serializer = BasePOSTRequestedSignInsSerializer(data={
+                'name': name,
+                'phone': phone,
+                'instagram_page': instagram_page,
+                'creneau': creneau_str,
+                'unique_number': generated_unique_number,
+                'line_number': line_number,
+            })
+            if serializer.is_valid():
+                serializer.save()
+                # format date : 11/06/2020 10:39:09
+                # insta page = link
+                data = [
+                    [f"{now_date}", f"{name}", '', phone, instagram_page, creneau, ''],
+                ]
+                append_google_sheet_row.apply_async((data, line_number, 'append'), )
+                return Response(data={'unique_number': generated_unique_number}, status=status.HTTP_200_OK)
+            raise ValidationError(serializer.errors)

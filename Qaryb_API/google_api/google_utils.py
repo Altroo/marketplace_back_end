@@ -54,7 +54,7 @@ class GoogleUtils:
             # }
             self.responses.append(response)
 
-    def insert_sheet(self, data, ligne_number: int):
+    def insert_sheet(self, data, ligne_number: int, type_):
         scopes = [
             'https://www.googleapis.com/auth/drive',
             'https://www.googleapis.com/auth/drive.file',
@@ -62,15 +62,27 @@ class GoogleUtils:
         ]
         credentials = self.get_or_create_google_credentials(scopes)
         service = build('sheets', 'v4', credentials=credentials)
-        service.spreadsheets().values().append(
-            spreadsheetId=GOOGLE_SPREADSHEET_ID,
-            range=f"Suivis Leads [Date campagne]!B{ligne_number}:H{ligne_number}",
-            body={
-                "majorDimension": "ROWS",
-                "values": data
-            },
-            valueInputOption="USER_ENTERED"
-        ).execute()
+        if type_ == 'update':
+            print('calling updating')
+            service.spreadsheets().values().update(
+                spreadsheetId=GOOGLE_SPREADSHEET_ID,
+                range=f"Suivis Leads [Date campagne]!B{ligne_number}:H{ligne_number}",
+                body={
+                    "majorDimension": "ROWS",
+                    "values": data
+                },
+                valueInputOption="USER_ENTERED"
+            ).execute()
+        else:
+            service.spreadsheets().values().append(
+                spreadsheetId=GOOGLE_SPREADSHEET_ID,
+                range=f"Suivis Leads [Date campagne]!B{ligne_number}:H{ligne_number}",
+                body={
+                    "majorDimension": "ROWS",
+                    "values": data
+                },
+                valueInputOption="USER_ENTERED"
+            ).execute()
 
     def index_pages(self, urls_to_index):
         scopes = [

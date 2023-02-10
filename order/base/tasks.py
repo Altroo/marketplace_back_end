@@ -5,6 +5,8 @@ from order.models import Order, OrderDetails
 from offers.models import Offers
 from shop.base.utils import ImageProcessor
 from account.base.tasks import start_generating_avatar_and_thumbnail, from_img_to_io
+from account.models import CustomUser
+from django.core.mail import EmailMessage
 
 logger = get_task_logger(__name__)
 parent_file_dir = path.abspath(path.join(path.dirname(__file__), "../.."))
@@ -37,3 +39,12 @@ def base_duplicate_order_offer_image(self, offer_pk, order_details_pk):
     if offer.picture_1_thumbnail:
         offer_thumbnail = start_generating_thumbnail(offer.picture_1_thumbnail.path, True)
         order_details.save_image('offer_thumbnail', offer_thumbnail)
+
+
+@app.task(bind=True, serializer='json')
+def base_send_order_email(self, email_, mail_subject, message, type_):
+    email = EmailMessage(
+        mail_subject, message, to=(email_,)
+    )
+    email.content_subtype = "html"
+    email.send(fail_silently=False)
