@@ -10,6 +10,7 @@ NOTIFICATION_CHOICES = (
     ('', 'Unset'),
     ('SA', 'Subscription activated'),
     ('OR', 'Order received'),
+    ('CR', 'Commande received'),
     ('OA', 'Order accepted'),
     ('CA', 'Order cancelled'),
 )

@@ -215,33 +215,36 @@
                                                         <tr>
                                                             <td align="left"
                                                                 style="padding:0;Margin:0;padding-left:15px;padding-right:15px;text-align:left">
-                                                                  <!-- Altroo :  Action -->
-                                                                  <span class="es-button-border"
-                                                                        style="display:inline-block;width:auto;">
-                                                                      <a href="/" class="es-button" target="_blank"
-                                                                            style="border-color: #d9d9d9;padding: 14px 32px;
-                                                                            mso-style-priority:100 !important;
-                                                                            font-weight: 700;
-                                                                            text-decoration:none;
-                                                                            -webkit-text-size-adjust:none;
-                                                                            -ms-text-size-adjust:none;
-                                                                            mso-line-height-rule:exactly;
-                                                                            font-size:20px;
-                                                                            border-style:solid;
-                                                                            border-width:1px;
-                                                                            display:inline-block;
-                                                                            border-radius:10px;
-                                                                            font-family:Arial, 'helvetica neue', Helvetica, verdana, sans-serif;
-                                                                            font-style:normal;
-                                                                            line-height:23px;
-                                                                            width:auto;
-                                                                            text-align:left;
-                                                                            color: #FFFFFF;
-                                                                            background-color: #0D070B;
-                                                                            letter-spacing: -0.01em;">
-                                                                          Voir ma commande
-                                                                      </a>
-                                                                </span>
+                                                                <!-- Altroo :  Action -->
+                                                              {% if href is not None %}
+                                                                <span class="es-button-border"
+                                                                      style="display:inline-block;width:auto;">
+                                                                          <a href="{{ href }}" class="es-button"
+                                                                             target="_blank"
+                                                                             style="border-color: #d9d9d9;padding: 14px 32px;
+                                                                                mso-style-priority:100 !important;
+                                                                                font-weight: 700;
+                                                                                text-decoration:none;
+                                                                                -webkit-text-size-adjust:none;
+                                                                                -ms-text-size-adjust:none;
+                                                                                mso-line-height-rule:exactly;
+                                                                                font-size:20px;
+                                                                                border-style:solid;
+                                                                                border-width:1px;
+                                                                                display:inline-block;
+                                                                                border-radius:10px;
+                                                                                font-family:Arial, 'helvetica neue', Helvetica, verdana, sans-serif;
+                                                                                font-style:normal;
+                                                                                line-height:23px;
+                                                                                width:auto;
+                                                                                text-align:left;
+                                                                                color: #FFFFFF;
+                                                                                background-color: #0D070B;
+                                                                                letter-spacing: -0.01em;">
+                                                                              Voir ma commande
+                                                                          </a>
+                                                                    </span>
+                                                                {% endif %}
                                                             </td>
                                                         </tr>
                                                         <tr>

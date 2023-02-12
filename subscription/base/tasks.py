@@ -86,3 +86,19 @@ def base_inform_new_shop_subscription(self, shop_pk: int, available_slots: int):
 def append_google_sheet_row(self, data, ligne_number, type_):
     google = GoogleUtils()
     google.insert_sheet(data, ligne_number, type_)
+
+
+@app.task(bind=True, serializer='json')
+def base_send_subscription_email(self, email, first_name, href):
+    mail_subject = 'Veuillez référencer vos articles'
+    mail_template = 'abonnement_active.html'
+    message = render_to_string(mail_template, {
+        'first_name': first_name,
+        'email': email,
+        'href': href,
+    })
+    email_provider = EmailMessage(
+        mail_subject, message, to=(email,)
+    )
+    email_provider.content_subtype = "html"
+    email_provider.send(fail_silently=False)

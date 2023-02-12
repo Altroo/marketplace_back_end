@@ -11,8 +11,9 @@ from Qaryb_API.settings import API_URL
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from notifications.models import Notifications
-from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription
+from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription, base_send_subscription_email
 import uuid
+from decouple import config
 
 
 def get_facture_path():
@@ -219,6 +220,9 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
         # old_instance.delete()
         base_generate_pdf.apply_async((instance.auth_shop.user.pk, data, original_subscription), )
         Notifications.objects.create(user=instance.auth_shop.user, type='SA')  # Should be notification type upgrade
+        base_send_subscription_email.apply_async((
+            instance.auth_shop.user.email, instance.first_name,
+            f'{config("FRONT_DOMAIN")}/dashboard/my-business/articles-references',), )
         if promo_code_obj and promo_code_obj.usage_unique and promo_code_obj.type_promo_code == 'P':
             promo_code_obj.promo_code_status = 'E'
             promo_code_obj.save()
@@ -227,6 +231,9 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
         try:
             SubscribedUsers.objects.get(original_request=instance.pk)
             Notifications.objects.create(user=instance.auth_shop.user, type='SA')
+            base_send_subscription_email.apply_async((
+                instance.auth_shop.user.email, instance.first_name,
+                f'{config("FRONT_DOMAIN")}/dashboard/my-business/articles-references',), )
         except SubscribedUsers.DoesNotExist:
             # Manual subscription case
             total_paid = instance.subscription.prix_ttc
@@ -273,6 +280,9 @@ def send_notification_ws(sender, instance: Union[QuerySet, RequestedSubscription
                 base_inform_new_shop_subscription.apply_async((instance.auth_shop.pk, available_slots,), )
                 base_generate_pdf.apply_async((instance.auth_shop.user.pk, data, subscription_created), )
                 Notifications.objects.create(user=instance.auth_shop.user, type='SA')
+                base_send_subscription_email.apply_async((
+                    instance.auth_shop.user.email, instance.first_name,
+                    f'{config("FRONT_DOMAIN")}/dashboard/my-business/articles-references',), )
                 if promo_code_obj and promo_code_obj.usage_unique:
                     promo_code_obj.promo_code_status = 'E'
                     promo_code_obj.save()

@@ -1,11 +1,11 @@
 from os import path
+from django.template.loader import render_to_string
 from Qaryb_API.celery_conf import app
 from celery.utils.log import get_task_logger
 from order.models import Order, OrderDetails
 from offers.models import Offers
 from shop.base.utils import ImageProcessor
 from account.base.tasks import start_generating_avatar_and_thumbnail, from_img_to_io
-from account.models import CustomUser
 from django.core.mail import EmailMessage
 
 logger = get_task_logger(__name__)
@@ -42,9 +42,18 @@ def base_duplicate_order_offer_image(self, offer_pk, order_details_pk):
 
 
 @app.task(bind=True, serializer='json')
-def base_send_order_email(self, email_, mail_subject, message, type_):
-    email = EmailMessage(
-        mail_subject, message, to=(email_,)
+def base_send_order_email(self, mail_subject, mail_template, email, first_name, href=None, shop_name=None):
+    data_to_render = {
+        'first_name': first_name,
+        'email': email,
+    }
+    if href:
+        data_to_render['href'] = href
+    if shop_name:
+        data_to_render['shop_name'] = shop_name
+    message = render_to_string(mail_template, data_to_render)
+    email_provider = EmailMessage(
+        mail_subject, message, to=(email,)
     )
-    email.content_subtype = "html"
-    email.send(fail_silently=False)
+    email_provider.content_subtype = "html"
+    email_provider.send(fail_silently=False)

@@ -7,8 +7,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from Qaryb_API.google_api.google_utils import GoogleUtils
 from subscription.models import AvailableSubscription, \
     PromoCodes, SubscribedUsers, IndexedArticles, RequestedSignIns
 from subscription.base.serializers import BaseGETAvailableSubscriptionsSerializer, \
@@ -21,9 +19,9 @@ from places.models import Country
 from offers.models import Offers
 from notifications.models import Notifications
 from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subscription, \
-    append_google_sheet_row
+    append_google_sheet_row, base_send_subscription_email
 from uuid import uuid4
-
+from decouple import config
 
 class SubscriptionView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -152,6 +150,9 @@ class SubscriptionView(APIView):
                             promo_code_obj.promo_code_status = 'E'
                             promo_code_obj.save()
                         Notifications.objects.create(user=user, type='SA')
+                        base_send_subscription_email.apply_async((
+                            user.email, user.first_name,
+                            f'{config("FRONT_DOMAIN")}/dashboard/my-business/articles-references',),)
                         output_data = {
                             'reference_number': reference_number,
                             'total_paid': total_paid,

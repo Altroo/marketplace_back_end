@@ -16,6 +16,8 @@ from django.utils.encoding import force_bytes
 from order.base.tasks import base_generate_user_thumbnail, base_duplicate_order_offer_image
 from order.base.serializers import BaseOrderSerializer, BaseOrderDetailsSerializer
 from collections import Counter
+from decouple import config
+from order.base.tasks import base_send_order_email
 
 
 class GetCartOffersDetailsView(APIView, GetCartOffersDetailsPagination):
@@ -296,8 +298,37 @@ class ValidateCartOffersView(APIView):
             if order_details_valid:
                 cart_offers = Cart.objects.filter(unique_id=unique_id, offer__auth_shop=seller)
                 cart_offers.delete()
-                user = AuthShop.objects.get(pk=seller).user
-                Notifications.objects.create(user=user, type='OR')
+                auth_shop = AuthShop.objects.get(pk=seller)
+                Notifications.objects.create(user=auth_shop.user, type='OR')
+                # Email to buyer
+                if request.user.is_anonymous:
+                    # anonymous email to buyer
+                    mail_subject = 'Votre commande a bien été reçue'
+                    mail_template = 'commande_recue_acheteur.html'
+                    shop_name = auth_shop.shop_name
+                    href = None
+                    base_send_order_email.apply_async((mail_subject, mail_template,
+                                                       email, first_name, href,
+                                                       shop_name), )
+                else:
+                    Notifications.objects.create(user=request.user, type='CR')
+                    mail_subject = 'Votre commande a bien été reçue'
+                    mail_template = 'commande_recue_acheteur.html'
+                    shop_name = auth_shop.shop_name
+                    href = f'{config("FRONT_DOMAIN")}$/dashboard/my-business/orders/{order.pk}'
+                    base_send_order_email.apply_async((mail_subject, mail_template,
+                                                       email, first_name, href,
+                                                       shop_name), )
+                # Email to seller
+                vendeur_mail_subject = 'Veuillez traiter votre commande'
+                vendeur_mail_template = 'commande_recue_vendeur.html'
+                vendeur_email = auth_shop.user.email
+                vendeur_first_name = auth_shop.user.first_name
+                vendeur_shop_name = auth_shop.shop_name
+                vendeur_href = f'{config("FRONT_DOMAIN")}$/dashboard/my-business/orders/{order.pk}'
+                base_send_order_email.apply_async((vendeur_mail_subject, vendeur_mail_template,
+                                                   vendeur_email, vendeur_first_name, vendeur_href,
+                                                   vendeur_shop_name), )
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
                 if order_details_serializer_errors:
