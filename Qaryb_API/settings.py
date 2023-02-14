@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'colorfield',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    # 'rest_framework_simplejwt.token_blacklist',
+    # 'rest_framework.authtoken',
     'django_filters',
     'dj_rest_auth',
     'allauth',
@@ -168,6 +169,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (config('REST_FRAMEWORK_DEFAULT_FILTER_BACKENDS'),),
     'EXCEPTION_HANDLER': 'shop.base.utils.api_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
+    'TOKEN_MODEL': None,
 }
 
 # dj_rest_auth config

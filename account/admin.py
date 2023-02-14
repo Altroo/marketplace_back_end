@@ -3,8 +3,8 @@ from django.contrib.admin import ModelAdmin
 from .forms import CustomAuthShopCreationForm, CustomAuthShopChangeForm
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib import admin
-from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
-from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
+# from rest_framework_simplejwt.token_blacklist.admin import OutstandingTokenAdmin, BlacklistedTokenAdmin
+# from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 from allauth.socialaccount.admin import SocialAccountAdmin, SocialAppAdmin, SocialTokenAdmin
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 
@@ -38,11 +38,11 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('-pk',)
 
 
-class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
-    actions = []
-
-    def has_delete_permission(self, *args, **kwargs):
-        return True
+# class CustomOutstandingTokenAdmin(OutstandingTokenAdmin):
+#     actions = []
+#
+#     def has_delete_permission(self, *args, **kwargs):
+#         return True
 
 
 class CustomBlockedUsersAdmin(ModelAdmin):
@@ -98,15 +98,15 @@ class CustomEnclosedAccountsAdmin(ModelAdmin):
     #     return False
 
 
-class CustomBlacklistedTokenAdmin(BlacklistedTokenAdmin):
-    pass
-    # # Add permission removed
-    # def has_add_permission(self, *args, **kwargs):
-    #     return False
-    #
-    # # Delete permission removed
-    # def has_delete_permission(self, *args, **kwargs):
-    #     return False
+# class CustomBlacklistedTokenAdmin(BlacklistedTokenAdmin):
+#     pass
+#     # # Add permission removed
+#     # def has_add_permission(self, *args, **kwargs):
+#     #     return False
+#     #
+#     # # Delete permission removed
+#     # def has_delete_permission(self, *args, **kwargs):
+#     #     return False
 
 
 class CustomSocialAccountAdmin(SocialAccountAdmin):
@@ -158,10 +158,10 @@ class CustomDeletedAccountsAdmin(ModelAdmin):
 
 
 # Token Blacklist
-admin.site.unregister(OutstandingToken)
-admin.site.unregister(BlacklistedToken)
-admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
-admin.site.register(BlacklistedToken, CustomBlacklistedTokenAdmin)
+# admin.site.unregister(OutstandingToken)
+# admin.site.unregister(BlacklistedToken)
+# admin.site.register(OutstandingToken, CustomOutstandingTokenAdmin)
+# admin.site.register(BlacklistedToken, CustomBlacklistedTokenAdmin)
 # Social accounts
 admin.site.unregister(SocialAccount)
 admin.site.unregister(SocialApp)
