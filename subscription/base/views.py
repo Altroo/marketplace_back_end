@@ -23,6 +23,7 @@ from subscription.base.tasks import base_generate_pdf, base_inform_new_shop_subs
 from uuid import uuid4
 from decouple import config
 
+
 class SubscriptionView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
