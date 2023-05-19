@@ -4,7 +4,7 @@ psycopg2-binary==2.9.6
 gunicorn==20.1.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
-django-cors-headers==3.14.0
+django-cors-headers==4.0.0
 django-colorfield==0.8.0
 Pillow==9.5.0
 olefile==0.46
