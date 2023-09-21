@@ -1,10 +1,32 @@
+# from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
+# from rest_framework_simplejwt.serializers import TokenObtainSerializer
+# from rest_framework_simplejwt.settings import api_settings
+# from rest_framework_simplejwt.tokens import RefreshToken
+
 from account.models import CustomUser, BlockedUsers, ReportedUsers, UserAddress, EnclosedAccounts, DeletedAccounts
 from django.contrib.auth.password_validation import validate_password
 from allauth.account.models import EmailAddress
 from offers.base.serializers import BaseShopCitySerializer
 from places.base.serializers import BaseCountriesSerializer
 from places.models import Country
+
+
+# class TokenObtainPairSerializer(TokenObtainSerializer):
+#     token_class = RefreshToken
+#
+#     def validate(self, attrs):
+#         data = super().validate(attrs)
+#
+#         refresh = self.get_token(self.user)
+#
+#         data["refresh_token"] = str(refresh)
+#         data["access_token"] = str(refresh.access_token)
+#
+#         if api_settings.UPDATE_LAST_LOGIN:
+#             update_last_login(None, self.user)
+#
+#         return data
 
 
 class BaseChangePasswordSerializer(serializers.Serializer):

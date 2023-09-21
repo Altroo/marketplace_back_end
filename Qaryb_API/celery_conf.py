@@ -28,7 +28,7 @@ app.conf.beat_schedule = {
     # Executes every Midnight
     'inform-indexed-articles': {
         'task': 'shop.base.tasks.base_inform_indexed_articles',
-        'schedule': crontab(hour=0, minute=0),
+        'schedule': crontab(hour='0', minute='0'),
     },
 }
 

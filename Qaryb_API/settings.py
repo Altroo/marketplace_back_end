@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True
@@ -173,12 +174,23 @@ REST_FRAMEWORK = {
 }
 
 # dj_rest_auth config
-REST_USE_JWT = config('REST_USE_JWT', cast=bool)
-JWT_AUTH_RETURN_EXPIRATION = config('JWT_AUTH_RETURN_EXPIRATION', cast=bool)
-JWT_AUTH_COOKIE = config('JWT_AUTH_COOKIE')
-JWT_AUTH_REFRESH_COOKIE = config('JWT_AUTH_REFRESH_COOKIE')
-REST_AUTH_TOKEN_MODEL = None
-OLD_PASSWORD_FIELD_ENABLED = True
+# USE_JWT = config('REST_USE_JWT', cast=bool)
+# JWT_AUTH_RETURN_EXPIRATION = config('JWT_AUTH_RETURN_EXPIRATION', cast=bool)
+# JWT_AUTH_COOKIE = config('JWT_AUTH_COOKIE')
+# JWT_AUTH_REFRESH_COOKIE = config('JWT_AUTH_REFRESH_COOKIE')
+# TOKEN_MODEL = None
+# OLD_PASSWORD_FIELD_ENABLED = True
+
+REST_AUTH = {
+    'USE_JWT': config('REST_USE_JWT', cast=bool),
+    'JWT_AUTH_RETURN_EXPIRATION': config('JWT_AUTH_RETURN_EXPIRATION', cast=bool),
+    'JWT_AUTH_COOKIE': config('JWT_AUTH_COOKIE'),
+    'JWT_AUTH_REFRESH_COOKIE': config('JWT_AUTH_REFRESH_COOKIE'),
+    'TOKEN_MODEL': None,
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'JWT_AUTH_HTTPONLY': False,
+    # 'LOGIN_SERIALIZER': 'account.base.serializers.TokenObtainPairSerializer'
+}
 
 # Logging
 LOGGING = {
